@@ -1,4 +1,5 @@
 import './App.css';
+import VolunteerConnect from './components/VolunteerConnect';
 
 function App() {
 
@@ -6,12 +7,13 @@ function App() {
   return (
     <>
 
-    <div>
+    {/* <div>
       <h1>Test</h1>
       <p>
         random text.
       </p>
-    </div>
+    </div> */}
+    <VolunteerConnect />
 
     </>
   );
