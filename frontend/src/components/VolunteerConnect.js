@@ -9,6 +9,9 @@ function VolunteerConnect() {
   const handle_get_started = () => {
     nav("/signup")
   }
+  const profile_get_started = () => {
+  nav("/profile")
+}
 
   return (
     <div className="container-fluid vh-100 d-flex flex-column bg-light col-12">
@@ -55,7 +58,7 @@ function VolunteerConnect() {
                     More
                     </a>
                     <ul className="dropdown-menu">
-                        <li><a className="dropdown-item" href="#about">About</a></li>
+                        <li><a className="dropdown-item" href="/about">About</a></li>
                         <li><a className="dropdown-item" href="#contact">Contact</a></li>
                     </ul>
                 </li>
@@ -65,7 +68,7 @@ function VolunteerConnect() {
         {/* Right Side */}
         <div className="d-flex align-items-center gap-3">
             <i className="bi bi-bell fs-5"></i>
-            <i className="bi bi-person-circle fs-5"></i>
+            <i className="bi bi-person-circle fs-5" onClick={profile_get_started}></i>
             <button className="btn btn-primary" onClick={handle_get_started}>Get Started</button>
         </div>
     </nav>
