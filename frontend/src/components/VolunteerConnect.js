@@ -11,6 +11,9 @@ function VolunteerConnect() {
   const profile_get_started = () => {
   nav("/profile")
 }
+  const notification_get_started = () => {
+  nav("notifications")
+}
 
   const handle_map_button = () => {
     nav("/maps")
@@ -70,7 +73,7 @@ function VolunteerConnect() {
 
         {/* Right Side */}
         <div className="d-flex align-items-center gap-3">
-            <i className="bi bi-bell fs-5"></i>
+            <i className="bi bi-bell fs-5" onClick={notification_get_started}></i>
             <i className="bi bi-person-circle fs-5" onClick={profile_get_started}></i>
             <button className="btn btn-primary" onClick={handle_get_started}>Get Started</button>
         </div>
