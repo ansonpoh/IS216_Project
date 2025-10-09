@@ -1,19 +1,15 @@
 import './App.css';
 import VolunteerConnect from './components/VolunteerConnect';
+import {Routes, Route} from "react-router-dom";
 
 function App() {
 
 
   return (
     <>
-
-    {/* <div>
-      <h1>Test</h1>
-      <p>
-        random text.
-      </p>
-    </div> */}
-    <VolunteerConnect />
+    <Routes>
+      <Route path='/' element={<VolunteerConnect />}/>
+    </Routes>
 
     </>
   );
