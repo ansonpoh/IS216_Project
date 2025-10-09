@@ -8,6 +8,9 @@ function VolunteerConnect() {
   const handle_get_started = () => {
     nav("/signup")
   }
+  const profile_get_started = () => {
+  nav("/profile")
+}
 
   const handle_map_button = () => {
     nav("/maps")
@@ -44,9 +47,9 @@ function VolunteerConnect() {
                 <li className="nav-item">
                     <a className="nav-link" href="/maps">Map</a>
                 </li>
-                <li className="nav-item">
+                {/* <li className="nav-item">
                     <a className="nav-link" href="#impact">My Impact</a>
-                </li>
+                </li> */}
                 <li className="nav-item">
                     <a className="nav-link" href="#opportunities">Opportunities</a>
                 </li>
@@ -58,8 +61,8 @@ function VolunteerConnect() {
                     More
                     </a>
                     <ul className="dropdown-menu">
-                        <li><a className="dropdown-item" href="#about">About</a></li>
-                        <li><a className="dropdown-item" href="#contact">Contact</a></li>
+                        <li><a className="dropdown-item" href="/about">About</a></li>
+                        {/* <li><a className="dropdown-item" href="#contact">Contact</a></li> */}
                     </ul>
                 </li>
             </ul>
@@ -68,7 +71,7 @@ function VolunteerConnect() {
         {/* Right Side */}
         <div className="d-flex align-items-center gap-3">
             <i className="bi bi-bell fs-5"></i>
-            <i className="bi bi-person-circle fs-5"></i>
+            <i className="bi bi-person-circle fs-5" onClick={profile_get_started}></i>
             <button className="btn btn-primary" onClick={handle_get_started}>Get Started</button>
         </div>
     </nav>

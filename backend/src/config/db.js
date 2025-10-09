@@ -13,7 +13,7 @@ console.log(process.env.DATABASE_URL)
 // tests connection
 try {
     const query = `select * from users`;
-    let res = await pool.query(query); 
+    let res = await pool.query(query);
     console.log(res.rows)
 } catch (err) {
     console.log(err); 
