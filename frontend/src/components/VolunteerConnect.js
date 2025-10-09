@@ -1,7 +1,6 @@
 import React from "react";
 import "../styles/VolunteerConnect.css";
 import { useNavigate } from "react-router-dom";
-
 function VolunteerConnect() {
 
   const nav = useNavigate();
@@ -12,6 +11,10 @@ function VolunteerConnect() {
   const profile_get_started = () => {
   nav("/profile")
 }
+
+  const handle_map_button = () => {
+    nav("/maps")
+  }
 
   return (
     <div className="container-fluid vh-100 d-flex flex-column bg-light col-12">
@@ -42,7 +45,7 @@ function VolunteerConnect() {
                     </a>
                 </li>
                 <li className="nav-item">
-                    <a className="nav-link" href="#map">Map</a>
+                    <a className="nav-link" href="/maps">Map</a>
                 </li>
                 <li className="nav-item">
                     <a className="nav-link" href="#impact">My Impact</a>
