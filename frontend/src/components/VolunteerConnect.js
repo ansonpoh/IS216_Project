@@ -4,6 +4,10 @@ import { useNavigate } from "react-router-dom";
 function VolunteerConnect() {
 
   const nav = useNavigate();
+  
+  const handle_get_started = () => {
+    nav("/signup")
+  }
 
   const handle_map_button = () => {
     nav("/maps")
@@ -65,7 +69,7 @@ function VolunteerConnect() {
         <div className="d-flex align-items-center gap-3">
             <i className="bi bi-bell fs-5"></i>
             <i className="bi bi-person-circle fs-5"></i>
-            <button className="btn btn-primary">Get Started</button>
+            <button className="btn btn-primary" onClick={handle_get_started}>Get Started</button>
         </div>
     </nav>
 
