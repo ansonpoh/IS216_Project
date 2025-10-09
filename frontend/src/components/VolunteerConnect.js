@@ -47,9 +47,9 @@ function VolunteerConnect() {
                 <li className="nav-item">
                     <a className="nav-link" href="/maps">Map</a>
                 </li>
-                <li className="nav-item">
+                {/* <li className="nav-item">
                     <a className="nav-link" href="#impact">My Impact</a>
-                </li>
+                </li> */}
                 <li className="nav-item">
                     <a className="nav-link" href="#opportunities">Opportunities</a>
                 </li>
@@ -62,7 +62,7 @@ function VolunteerConnect() {
                     </a>
                     <ul className="dropdown-menu">
                         <li><a className="dropdown-item" href="/about">About</a></li>
-                        <li><a className="dropdown-item" href="#contact">Contact</a></li>
+                        {/* <li><a className="dropdown-item" href="#contact">Contact</a></li> */}
                     </ul>
                 </li>
             </ul>
