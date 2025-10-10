@@ -28,12 +28,12 @@ app.listen(3001, async () => {
     //     console.log(err);
     // }
 
-    try {
-        const res = await axios.get("http://localhost:3001/orgs/get_all_orgs")
-        console.log(res.data);
-    } catch (err) {
-        console.log(err);
-    }
+    // try {
+    //     const res = await axios.get("http://localhost:3001/orgs/get_all_orgs")
+    //     console.log(res.data);
+    // } catch (err) {
+    //     console.log(err);
+    // }
 
 });
 
