@@ -14,6 +14,19 @@
 
     To start the app, run "npm start" within the frontend folder.
 
+## Running
+
+1. **Start backend server**
+
+    Open up a terminal, cd into the backend folder and run nodemon src/index.js.
+
+2. **Start frontend server**
+
+    Open up a new terminal, cd into frontend folder and run npm start.
+
+3 **Notes**
+
+    Try not to create and run multiple instances of a server.
 
 ## Information
 
