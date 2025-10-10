@@ -4,12 +4,12 @@ import bcrypt from "bcrypt";
 
 export async function check_if_user_email_in_use_handler (req, res) {
     try {
-        const {email} = req.body;
+        const {email} = req.query;
         const result = await check_if_user_email_in_use(email);
         if(result) {
-            return res.json({message: true});
+            return res.json({status: true});
         } else {
-            return res.json({message: false});
+            return res.json({status: false});
         }
     } catch (err) {
         console.error(err);
@@ -19,12 +19,18 @@ export async function check_if_user_email_in_use_handler (req, res) {
 
 export async function register_user_handler (req,res) {
     try {
-        const {username, email, password, bio} = req.body;
-        const result = await register_user(username, email, password, bio);
+        const {username, email, password} = req.body;
+        const email_in_use = await check_if_user_email_in_use(email);
+        if(email_in_use) {
+            return res.json({status: false})
+        }
+        const result = await register_user(username, email, password);
         if(result) {
-            return res.json({message: "success"});
+            const user = await get_user_by_email(email);
+            const user_id = user[0].user_id;
+            return res.json({status: true, id: user_id});
         } else {
-            return res.json({message: "failed"});
+            return res.json({status: false});
         }
     } catch (err) {
         console.error(err);
@@ -32,16 +38,37 @@ export async function register_user_handler (req,res) {
     }
 }
 
-export async function login_handler (req, res) {
+export async function login_user_handler (req, res) {
     try {
         const {email, password} = req.body;
         const email_in_use = await check_if_user_email_in_use(email);
         if(!email_in_use) {
-            return res.json({message: "Email not registered!"});
+            return res.json({status: false, message: "Email not registered!"});
         }
         
-        const user_data = await get_user_by_email(email);
+        const user = await get_user_by_email(email);
+        const data = user[0];
+        const hashed_password = data.password_hash;
+        const user_id = data.user_id;
+        const bcryptCompare = util.promisify(bcrypt.compare);
+        const passwords_match = await bcryptCompare(password, hashed_password);
+        if(passwords_match) {
+            return res.json({status: true, id: user_id});
+        } else {
+            return res.json({status: false});
+        }
 
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
+export async function get_user_by_id_handler (req, res) {
+    try {
+        const {id} = req.query;
+        const result = await get_user_by_id(id);
+        return res.json({result});
     } catch (err) {
         console.error(err);
         throw err;

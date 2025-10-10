@@ -6,21 +6,25 @@ import AboutPage from './components/AboutPage';
 import ProfilePage from './components/ProfilePage';
 import NotificationsPage from './components/NotificationPage';
 import {Routes, Route} from "react-router-dom";
+import { AuthProvider } from './contexts/AuthProvider';
 
 function App() {
 
 
   return (
     <>
-    <Routes>
-      <Route path='/' element={<VolunteerConnect />}/>
-      <Route path='/maps' element={<InteractiveMapDashboard />}/>
-      <Route path='/signup' element={<AuthPage />}/>
-      <Route path='/about' element={<AboutPage/>} />
-      <Route path='/profile' element={<ProfilePage/>} />
-      <Route path="/notifications" element={<NotificationsPage />} />
+    <AuthProvider>
+      <Routes>
+        <Route path='/' element={<VolunteerConnect />}/>
+        <Route path='/maps' element={<InteractiveMapDashboard />}/>
+        <Route path='/signup' element={<AuthPage />}/>
+        <Route path='/about' element={<AboutPage/>} />
+        <Route path='/profile' element={<ProfilePage/>} />
+        <Route path="/notifications" element={<NotificationsPage />} />
     
-    </Routes>
+      </Routes>
+    </AuthProvider>
+
 
     </>
   );

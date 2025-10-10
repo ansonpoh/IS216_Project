@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import axios from "axios";
 
 import userRoutes from "./routes/userRoutes.js";
+import orgsRoutes from "./routes/orgRoutes.js";
 
 const app = express();
 dotenv.config();
@@ -19,15 +20,25 @@ app.use(
 
 app.listen(3001, async () => {
     console.log(3001)
+
+    // try {
+    //     const res = await axios.get("http://localhost:3001/users/get_user_by_id", {params : {id: "b3d7a372-1311-42da-ae22-0edf3a24546e"}})
+    //     console.log(res.data);
+    // } catch (err) {
+    //     console.log(err);
+    // }
+
     try {
-        const res = await axios.get("http://localhost:3001/users/get_all_users")
+        const res = await axios.get("http://localhost:3001/orgs/get_all_orgs")
         console.log(res.data);
     } catch (err) {
         console.log(err);
     }
+
 });
 
 app.use("/users", userRoutes);
+app.use("/orgs", orgsRoutes);
 
 
 
