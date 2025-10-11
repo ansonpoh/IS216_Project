@@ -1,10 +1,10 @@
 import './App.css';
-import VolunteerConnect from './components/VolunteerConnect';
+import VolunteerConnect from './pages/VolunteerConnect';
 import InteractiveMapDashboard from './pages/interactive-map-dashboard';
-import AuthPage from './components/Signup';
-import AboutPage from './components/AboutPage';
-import ProfilePage from './components/ProfilePage';
-import NotificationsPage from './components/NotificationPage';
+import AuthPage from './pages/Signup';
+import AboutPage from './pages/AboutPage';
+import ProfilePage from './pages/ProfilePage';
+import NotificationsPage from './pages/NotificationPage';
 import {Routes, Route} from "react-router-dom";
 import { AuthProvider } from './contexts/AuthProvider';
 
