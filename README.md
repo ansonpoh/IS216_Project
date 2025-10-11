@@ -8,11 +8,8 @@
 
 2. **Install modules**
 
-    Run "npm install" within the frontend folder
+    Run "npm install" within the frontend and backend folder.
 
-3. **Running**
-
-    To start the app, run "npm start" within the frontend folder.
 
 ## Running
 
@@ -24,7 +21,7 @@
 
     Open up a new terminal, cd into frontend folder and run npm start.
 
-3 **Notes**
+3. **Notes**
 
     Try not to create and run multiple instances of a server.
 
