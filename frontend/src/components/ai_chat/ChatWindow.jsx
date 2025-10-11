@@ -8,6 +8,8 @@ export default function ChatWindow() {
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(false);
     const [showSuggestions, setShowSuggestions] = useState(true);
+    const [events, setEvents] = useState();
+    const [categories, setCategories] = useState();
 
     const chatBoxRef = useRef(null);
 
@@ -20,6 +22,33 @@ export default function ChatWindow() {
       }
     }, [messages, loading]);
 
+    useEffect(() => {
+      const get_categories = async () => {
+        try {
+          const result = await axios.get("http://localhost:3001/events/get_all_categories");
+          const data = result.data.result;
+          setCategories(data);
+        } catch (err) {
+          console.error(err);
+          throw err;
+        }
+      }
+
+      const get_all_events = async () => {
+        try {
+          const result = await axios.get("http://localhost:3001/events/get_all_events");
+          const data = result.data.result;
+          setEvents(data);
+        } catch (err) {
+          console.error(err);
+          throw err;
+        }
+      }
+
+      get_categories();
+      get_all_events();
+    }, [])
+
     // handle sending message
     const sendMessage = async (userMessage) => {
         const newMessages = [...messages, { role: "user", content: userMessage }];
@@ -27,12 +56,22 @@ export default function ChatWindow() {
         setLoading(true);
         setShowSuggestions(false); // hide quick cards after first interaction
 
+        console.log("Payload sent to API:", {
+          message: userMessage,
+          events,
+          categories
+        });
+        
         try {
-            const response = await axios.post("http://localhost:3001/api/chat", {
-                message: userMessage,
-            });
-            const aiReply = response.data.reply || "(No response)";
-            setMessages([...newMessages, { role: "assistant", content: aiReply }]);
+
+          const payload = {
+            message: userMessage,
+            events: events || [],
+          }
+
+          const response = await axios.post("http://localhost:3001/api/chat", payload);
+          const aiReply = response.data.reply || "(No response)";
+          setMessages([...newMessages, { role: "assistant", content: aiReply }]);
         } catch (error) {
             console.error(error);
             setMessages([
@@ -44,7 +83,7 @@ export default function ChatWindow() {
         }
     };
 
-    // 🔹 handle clicking one of the cards
+    // handle clicking one of the cards
     const handleSuggestionClick = (text) => {
         sendMessage(text);
     };

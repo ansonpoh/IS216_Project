@@ -11,20 +11,28 @@ const MODEL = process.env.OR_MODEL;
 const API_KEY = process.env.OR_API;
 
 router.post("/", async (req, res) => {
-  const userMessage = req.body.message;
+  const {message, events} = req.body;
 
-  if (!userMessage) {
+  if (!message) {
     return res.status(400).json({ error: "Missing 'message' in request body." });
   }
 
   try {
     console.log("Sending message to OpenRouter...");
 
+    const prompt = `The user said ${message}. 
+      You are a volunteer recommendation assistant.
+      Here are the available events: ${events.map(e => `- ${e.title} (${e.category} at ${e.location} on ${e.date}, starting at ${e.start_time} and ending at ${e.end_time})`)}
+      Suggest up to 3 most suitable based on the user requirements.
+
+      For now just return the title of the event.
+      `
+
     const response = await axios.post(
       OPENROUTER_API,
       {
         model: MODEL,
-        messages: [{ role: "user", content: userMessage }],
+        messages: [{ role: "user", content: prompt }],
       },
       {
         headers: {

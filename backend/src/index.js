@@ -5,7 +5,9 @@ import axios from "axios";
 
 import userRoutes from "./routes/userRoutes.js";
 import orgsRoutes from "./routes/orgRoutes.js";
+import eventRoutes from "./routes/eventRoutes.js"
 import chatRoutes from "./routes/chatRoutes.js";
+
 
 const app = express();
 dotenv.config();
@@ -40,6 +42,7 @@ app.listen(3001, async () => {
 
 app.use("/users", userRoutes);
 app.use("/orgs", orgsRoutes);
+app.use("/events", eventRoutes);
 app.use("/api/chat", chatRoutes);
 
 

@@ -42,7 +42,7 @@ export async function publish_event() {
     }
 }
 
-export async function get_event(event_id) {
+export async function get_event_by_id(event_id) {
     try {
         const query = `select * from events where event_id = $1`;
         const values = event_id;
