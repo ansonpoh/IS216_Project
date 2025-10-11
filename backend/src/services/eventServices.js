@@ -65,6 +65,29 @@ export async function get_all_events() {
     }    
 }
 
+export async function get_events_by_category(category_id) {
+    try {
+        const query = `select event_id from event_category_map where category_id = $1`;
+        const values = [category_id];
+        const result = await pool.query(query, values);
+        return result.rows;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }    
+}
+
+export async function get_all_categories() {
+    try {
+        const query = `select * from event_categories`;
+        const result = await pool.query(query);
+        return result.rows;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
 export async function get_all_published_events() {
     try {
         const query = `select * from events where is_published=$1`;

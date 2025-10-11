@@ -1,0 +1,43 @@
+.chat-bubble {
+  border-radius: 18px;
+  max-width: 75%;
+  word-wrap: break-word;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.user-bubble {
+  border-bottom-right-radius: 0;
+}
+
+.bot-bubble {
+  border-bottom-left-radius: 0;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  font-size: 18px;
+}
+
+.typing-dots span {
+  height: 8px;
+  width: 8px;
+  margin: 0 2px;
+  background-color: #999;
+  border-radius: 50%;
+  display: inline-block;
+  animation: blink 1.4s infinite both;
+}
+
+.typing-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.typing-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes blink {
+  0% { opacity: 0.2; }
+  20% { opacity: 1; }
+  100% { opacity: 0.2; }
+}

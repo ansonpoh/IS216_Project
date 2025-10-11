@@ -1,6 +1,8 @@
 import React from "react";
 import "../styles/VolunteerConnect.css";
 import { useNavigate } from "react-router-dom";
+import ChatWindow from "../components/ai_chat/ChatWindow";
+
 function VolunteerConnect() {
 
   const nav = useNavigate();
@@ -9,20 +11,17 @@ function VolunteerConnect() {
     nav("/signup")
   }
   const profile_get_started = () => {
-  nav("/profile")
-}
-  const notification_get_started = () => {
-  nav("notifications")
-}
-
-  const handle_map_button = () => {
-    nav("/maps")
+    nav("/profile")
   }
+  const notification_get_started = () => {
+    nav("notifications")
+  }
+
 
   return (
     <div className="container-fluid vh-100 d-flex flex-column bg-light col-12">
       {/* Navbar */}
-    <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4">
+      <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4">
         {/* Brand */}
         <a className="navbar-brand fw-bold text-primary d-flex align-items-center" href="/">
             <i className="bi bi-heart-fill text-success me-2"></i>
@@ -77,11 +76,15 @@ function VolunteerConnect() {
             <i className="bi bi-person-circle fs-5" onClick={profile_get_started}></i>
             <button className="btn btn-primary" onClick={handle_get_started}>Get Started</button>
         </div>
-    </nav>
+      </nav>
+      
+      <div className="d-flex justify-content-center align-items-center bg-light" style={{overflow: "hidden"}}>
+        <ChatWindow />
+      </div>
 
       {/* Content */}
-      <div className="flex-grow-1 d-flex flex-column align-items-center justify-content-center text-center p-4">
-        <h3 className="fw-bold">Welcome to VolunteerConnect AI</h3>
+      {/* <div className="flex-grow-1 d-flex flex-column align-items-center justify-content-center text-center p-4"> */}
+        {/* <h3 className="fw-bold">Welcome to VolunteerConnect AI</h3>
         <p className="text-muted w-75 mx-auto">
           I'm here to help you discover meaningful volunteer opportunities that
           match your interests, skills, and schedule. Let's find the perfect way
@@ -93,10 +96,10 @@ function VolunteerConnect() {
         </h5>
         <p className="text-muted">
           Choose a starting point below or ask me anything about volunteering
-        </p>
+        </p> */}
 
         {/* Option Cards */}
-        <div className="options-list mt-4">
+        {/* <div className="options-list mt-4">
           <div className="option-card">
             <i className="bi bi-heart text-primary"></i>
             <div>
@@ -136,10 +139,10 @@ function VolunteerConnect() {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Chat Box */}
-        <div className="input-group mt-4 w-50">
+        {/* <div className="input-group mt-4 w-50">
           <input
             type="text"
             className="form-control"
@@ -148,8 +151,8 @@ function VolunteerConnect() {
           <button className="btn btn-primary">
             <i className="bi bi-send"></i>
           </button>
-        </div>
-      </div>
+        </div> */}
+      {/* </div> */}
     </div>
   );
 }
