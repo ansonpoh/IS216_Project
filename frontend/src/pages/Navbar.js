@@ -51,14 +51,14 @@ function Navbar() {
           <li className="nav-item">
             <a className="nav-link" href="#community">Community</a>
           </li>
-          <li className="nav-item dropdown">
+          {/* <li className="nav-item dropdown">
             <a className="nav-link dropdown-toggle" href="#more" role="button" data-bs-toggle="dropdown">
               More
             </a>
             <ul className="dropdown-menu">
               <li><a className="dropdown-item" href="#about">About</a></li>
             </ul>
-          </li>
+          </li> */}
         </ul>
       </div>
 

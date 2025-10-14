@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import Navbar from "../../components/Navbar.js";
+import Navbar from "../Navbar.js";
 
 const InteractiveMapDashboard = () => {
   const [activeFilters, setActiveFilters] = useState(["Cafés"]);
