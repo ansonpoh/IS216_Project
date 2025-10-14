@@ -4,10 +4,16 @@ import { useNavigate } from "react-router-dom";
 function Navbar() {
   const navigate = useNavigate();
   
-  const handleGetStarted = () => {
-    navigate("/signup");
-  };
+  const profile_get_started = () => {
+    navigate("/profile")
+  }
+  const notification_get_started = () => {
+    navigate("notifications")
+  }
 
+  const handle_get_started = () => {
+    navigate("/signup")
+  }
   const handleMapButton = () => {
     navigate("/maps");
   };
@@ -38,7 +44,7 @@ function Navbar() {
       <div className="collapse navbar-collapse justify-content-center" id="navbarNav">
         <ul className="navbar-nav gap-3">
           <li className="nav-item">
-            <a className="nav-link active fw-semibold" href="#chat">
+            <a className="nav-link active fw-semibold" href="/">
               AI Chat
             </a>
           </li>
@@ -46,10 +52,10 @@ function Navbar() {
             <a className="nav-link" href="/maps" onClick={(e) => { e.preventDefault(); handleMapButton(); }}>Map</a>
           </li>
           <li className="nav-item">
-            <a className="nav-link" href="#opportunities">Opportunities</a>
+            <a className="nav-link" href="/">Opportunities</a>
           </li>
           <li className="nav-item">
-            <a className="nav-link" href="#community">Community</a>
+            <a className="nav-link" href="/">Community</a>
           </li>
           {/* <li className="nav-item dropdown">
             <a className="nav-link dropdown-toggle" href="#more" role="button" data-bs-toggle="dropdown">
@@ -64,9 +70,9 @@ function Navbar() {
 
       {/* Right Side */}
       <div className="d-flex align-items-center gap-3">
-        <i className="bi bi-bell fs-5"></i>
-        <i className="bi bi-person-circle fs-5"></i>
-        <button className="btn btn-primary" onClick={handleGetStarted}>Get Started</button>
+          <i className="bi bi-bell fs-5" onClick={notification_get_started}></i>
+          <i className="bi bi-person-circle fs-5" onClick={profile_get_started}></i>
+          <button className="btn btn-primary" onClick={handle_get_started}>Get Started</button>
       </div>
     </nav>
   );

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useUser } from "../contexts/UserContext";
 import { useNavigate } from "react-router-dom";
+import Navbar from "./Navbar";
 
 const AuthPage = () => {
 
@@ -76,7 +77,9 @@ const AuthPage = () => {
   };
 
   return (
-    <div className="min-vh-100 d-flex align-items-center bg-body-secondary">
+    <>
+    <Navbar/>
+      <div className="min-vh-100 d-flex align-items-center bg-body-secondary">
       <div className="container">
         <div className="row justify-content-center">
           <div className="col-12 col-md-8 col-lg-5">
@@ -247,6 +250,8 @@ const AuthPage = () => {
         </div>
       </div>
     </div>
+    </>
+
   );
 };
 

@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import Navbar from "./Navbar";
 // Optional: reuse your existing chart (comment out if you don't have it)
 // import ImpactChart from "./components/ImpactChart";
 
@@ -45,6 +46,8 @@ const ProfilePage = () => {
   );
 
   return (
+    <>
+    <Navbar/>
     <div className="bg-body-secondary">
       {/* Header */}
       <section className="py-5 bg-white border-bottom">
@@ -242,6 +245,8 @@ const ProfilePage = () => {
         </div>
       </section>
     </div>
+    </>
+
   );
 };
 

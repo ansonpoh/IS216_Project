@@ -1,5 +1,6 @@
 // NotificationsPage.jsx
 import React, { useMemo, useState } from "react";
+import Navbar from "./Navbar";
 
 const seed = [
   { id: "1", title: "Champion badge earned!", body: "You crossed 100 hours 🎉", ts: Date.now()-1000*60*12, read: false, type: "achievement" },
@@ -30,6 +31,8 @@ export default function NotificationsPage() {
   const toggleRead = (id) => setItems(prev => prev.map(n => n.id===id ? ({...n, read:!n.read}) : n));
 
   return (
+    <>
+    <Navbar/>
     <div className="bg-body-secondary min-vh-100">
       {/* Header */}
       <div className="bg-white border-bottom">
@@ -91,5 +94,7 @@ export default function NotificationsPage() {
         )}
       </div>
     </div>
+    </>
+    
   );
 }
