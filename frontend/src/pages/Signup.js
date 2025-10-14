@@ -1,9 +1,16 @@
 import React, { useState } from "react";
+import axios from "axios";
+import { useUser } from "../contexts/UserContext";
+import { useNavigate } from "react-router-dom";
 
 const AuthPage = () => {
+
+  const {setUser} = useUser();
+  const nav = useNavigate();
+
   const [mode, setMode] = useState("login"); // 'login' | 'signup'
   const [form, setForm] = useState({
-    fullName: "",
+    username: "",
     email: "",
     password: "",
     confirm: "",
@@ -20,7 +27,7 @@ const AuthPage = () => {
 
   const validate = () => {
     const next = {};
-    if (isSignup && !form.fullName.trim()) next.fullName = "Full name is required.";
+    if (isSignup && !form.username.trim()) next.username = "Full name is required.";
     if (!/^\S+@\S+\.\S+$/.test(form.email)) next.email = "Enter a valid email.";
     if (form.password.length < 6) next.password = "At least 6 characters.";
     if (isSignup && form.password !== form.confirm) next.confirm = "Passwords do not match.";
@@ -29,18 +36,43 @@ const AuthPage = () => {
     return Object.keys(next).length === 0;
   };
 
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!validate()) return;
 
     if (isSignup) {
-      // TODO: replace with your real sign-up call
-      console.log("Sign up:", { fullName: form.fullName, email: form.email });
+      axios.post("http://localhost:3001/users/register", {username: form.username, email: form.email, password: form.password})
+        .then((res) => {
+          const data = res.data;
+          if(data.status) {
+            sessionStorage.setItem("auth_role", "user");
+            sessionStorage.setItem("user", JSON.stringify({ user_id: data.id }));
+            setUser({user_id: data.id});
+            nav("/")
+            // To remove
+            alert("Registration Success!")
+          } else {
+            alert("Registration Failed!")
+          }
+        })
     } else {
-      // TODO: replace with your real sign-in call
-      console.log("Login:", { email: form.email });
+      axios.post("http://localhost:3001/users/login", {email: form.email, password: form.password})
+        .then((res) => {
+          const data = res.data;
+          console.log(data);
+          if(data.status) {
+            sessionStorage.setItem("auth_role", "user");
+            sessionStorage.setItem("user", JSON.stringify({ user_id: data.id }));
+            setUser({user_id: data.id});
+            nav("/")
+            // To remove
+            alert("Login Success!")
+          } else {
+            alert("Login Failed!")
+          }
+        })
     }
-    // e.g., navigate("/dashboard") after success
   };
 
   return (
@@ -68,21 +100,21 @@ const AuthPage = () => {
                 <form onSubmit={handleSubmit} noValidate>
                   {isSignup && (
                     <div className="mb-3">
-                      <label className="form-label" htmlFor="fullName">
-                        Full name
+                      <label className="form-label" htmlFor="username">
+                        Username
                       </label>
                       <input
-                        id="fullName"
-                        name="fullName"
+                        id="username"
+                        name="username"
                         type="text"
-                        className={`form-control ${errors.fullName ? "is-invalid" : ""}`}
-                        value={form.fullName}
+                        className={`form-control ${errors.username ? "is-invalid" : ""}`}
+                        value={form.username}
                         onChange={handleChange}
                         placeholder="e.g. Alex Tan"
                         autoComplete="name"
                       />
-                      {errors.fullName && (
-                        <div className="invalid-feedback">{errors.fullName}</div>
+                      {errors.username && (
+                        <div className="invalid-feedback">{errors.username}</div>
                       )}
                     </div>
                   )}
