@@ -1,31 +1,16 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import "../styles/Navbar.css";
 
 function Navbar() {
   const navigate = useNavigate();
-  
-  const profile_get_started = () => {
-    navigate("/profile")
-  }
-  const notification_get_started = () => {
-    navigate("notifications")
-  }
 
-  const handle_get_started = () => {
-    navigate("/signup")
-  }
-  const handleMapButton = () => {
-    navigate("/maps");
-  };
-
-  const handleHome = () => {
-    navigate("/");
-  };
+  const location = useLocation();
+  const isActive = (path) => location.pathname === path;
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4">
-      {/* Brand */}
-      <a className="navbar-brand fw-bold text-primary d-flex align-items-center" href="/" onClick={(e) => { e.preventDefault(); handleHome(); }}>
+      <a className="navbar-brand fw-bold text-primary d-flex align-items-center" href="/">
         <i className="bi bi-heart-fill text-success me-2"></i>
         VolunteerConnect
       </a>
@@ -44,18 +29,18 @@ function Navbar() {
       <div className="collapse navbar-collapse justify-content-center" id="navbarNav">
         <ul className="navbar-nav gap-3">
           <li className="nav-item">
-            <a className="nav-link active fw-semibold" href="/">
+            <a className={`navbar_item nav-link fw-semibold ${isActive("/") ? "active" : ""}`} href="/">
               AI Chat
             </a>
           </li>
           <li className="nav-item">
-            <a className="nav-link" href="/maps" onClick={(e) => { e.preventDefault(); handleMapButton(); }}>Map</a>
+            <a className={`navbar_item nav-link fw-semibold ${isActive("/maps") ? "active" : ""}`} href="/maps">Map</a>
           </li>
           <li className="nav-item">
-            <a className="nav-link" href="/">Opportunities</a>
+            <a className={`navbar_item nav-link fw-semibold ${isActive("/opportunities") ? "active" : ""}`} href="/opportunities">Opportunities</a>
           </li>
           <li className="nav-item">
-            <a className="nav-link" href="/">Community</a>
+            <a className={`navbar_item nav-link fw-semibold ${isActive("/community") ? "active" : ""}`} href="/community">Community</a>
           </li>
           {/* <li className="nav-item dropdown">
             <a className="nav-link dropdown-toggle" href="#more" role="button" data-bs-toggle="dropdown">
@@ -70,9 +55,9 @@ function Navbar() {
 
       {/* Right Side */}
       <div className="d-flex align-items-center gap-3">
-          <i className="bi bi-bell fs-5" onClick={notification_get_started}></i>
-          <i className="bi bi-person-circle fs-5" onClick={profile_get_started}></i>
-          <button className="btn btn-primary" onClick={handle_get_started}>Get Started</button>
+          <i className="bi bi-bell fs-5" onClick={() => navigate("/notifications")}></i>
+          <i className="bi bi-person-circle fs-5" onClick={() => navigate("/profile")}></i>
+          <button className="btn btn-primary" onClick={() => navigate("/signup")}>Get Started</button>
       </div>
     </nav>
   );
