@@ -24,7 +24,7 @@ function VolunteerConnect() {
       <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4">
         {/* Brand */}
         <a className="navbar-brand fw-bold text-primary d-flex align-items-center" href="/">
-            <i className="bi bi-heart-fill text-success me-2"></i>
+            <i className="bi bi-heart-fill text-danger me-2"></i>
             VolunteerConnect
         </a>
 
