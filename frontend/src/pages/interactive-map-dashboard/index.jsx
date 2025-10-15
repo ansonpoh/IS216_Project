@@ -67,14 +67,14 @@ const InteractiveMapDashboard = () => {
     const initMap = () => {
       if (window.google && mapRef.current) {
         const map = new window.google.maps.Map(mapRef.current, {
-          center: { lat: 40.7128, lng: -74.0060 }, // Default to New York
-          zoom: 12,
+          center: { lat: 1.3521, lng: 103.8198 }, // Default to Singapore
+          zoom: 11,
           styles: [
             {
-              "featureType": "poi",
-              "elementType": "labels",
-              "stylers": [
-                { "visibility": "off" }
+              featureType: "poi",
+              elementType: "labels",
+              stylers: [
+                { visibility: "off" }
               ]
             }
           ]
@@ -84,24 +84,43 @@ const InteractiveMapDashboard = () => {
       }
     };
 
-    // Load Google Maps script if not already loaded
-    if (!window.google) {
+    // Read API key from environment
+    const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY || '';
+
+    if (!apiKey) {
+      console.warn('REACT_APP_GOOGLE_MAPS_API_KEY is not set. Map will not load.');
+      return;
+    }
+
+    // Helper to check if script already exists
+    const scriptId = 'google-maps-script';
+    const existing = document.getElementById(scriptId);
+
+    if (!existing) {
       const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places&callback=initMap`;
+      script.id = scriptId;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initMap`;
       script.async = true;
       script.defer = true;
-      document.head.appendChild(script);
-
+      // Attach initMap to window so the callback can find it
       window.initMap = initMap;
+      script.onerror = () => {
+        console.error('Failed to load Google Maps script. Check your API key and network.');
+      };
+      document.head.appendChild(script);
     } else {
-      initMap();
+      // If google is already available, just init
+      if (window.google) initMap();
+      else {
+        // If script exists but google not ready, ensure initMap is set
+        window.initMap = initMap;
+      }
     }
 
     // Cleanup function
     return () => {
-      if (window.initMap) {
-        delete window.initMap;
-      }
+      if (window.initMap) delete window.initMap;
+      // We intentionally don't remove the script tag because other pages might rely on it
     };
   }, []);
 
