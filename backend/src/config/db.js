@@ -11,13 +11,6 @@ const pool = new Pool({
 }); 
 
 // tests connection
-try {
-    const query = `select * from users`;
-    let res = await pool.query(query);
-    console.log(res.rows)
-} catch (err) {
-    console.log(err); 
-}
 // try {
 //     const query = `select * from users`;
 //     let res = await pool.query(query);

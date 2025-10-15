@@ -1,4 +1,4 @@
-import { get_event_by_id, get_all_categories, get_all_events, get_all_published_events, get_events_of_org } from "../services/eventServices.js";
+import { get_event_by_id, get_all_categories, get_all_events, get_all_published_events, get_events_of_org, get_events_by_category } from "../services/eventServices.js";
 
 export async function get_all_events_handler (req, res) {
     try {
@@ -44,6 +44,17 @@ export async function get_events_of_org_handler (req, res) {
     try {
         const {org_id} = req.query;
         const result = await get_events_of_org(org_id);
+        return res.json({result});
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
+export async function get_events_by_category_handler (req, res) {
+    try {
+        const {category} = req.query;
+        const result = await get_events_by_category(category);
         return res.json({result});
     } catch (err) {
         console.error(err);
