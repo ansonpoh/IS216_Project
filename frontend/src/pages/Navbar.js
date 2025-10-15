@@ -2,11 +2,13 @@ import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "../styles/Navbar.css";
 
+
 function Navbar() {
   const navigate = useNavigate();
 
   const location = useLocation();
   const isActive = (path) => location.pathname === path;
+
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4">

@@ -1,12 +1,12 @@
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import axios from "axios";
-import { useUser } from "../contexts/UserContext";
+import { useAuth } from "../contexts/AuthProvider";
 import { useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 
 const AuthPage = () => {
 
-  const {setUser} = useUser();
+  const {setAuth} = useAuth();
   const nav = useNavigate();
 
   const [mode, setMode] = useState("login"); // 'login' | 'signup'
@@ -47,9 +47,7 @@ const AuthPage = () => {
         .then((res) => {
           const data = res.data;
           if(data.status) {
-            sessionStorage.setItem("auth_role", "user");
-            sessionStorage.setItem("user", JSON.stringify({ user_id: data.id }));
-            setUser({user_id: data.id});
+            setAuth({role: "user", id: data.id});
             nav("/")
             // To remove
             alert("Registration Success!")
@@ -63,9 +61,7 @@ const AuthPage = () => {
           const data = res.data;
           console.log(data);
           if(data.status) {
-            sessionStorage.setItem("auth_role", "user");
-            sessionStorage.setItem("user", JSON.stringify({ user_id: data.id }));
-            setUser({user_id: data.id});
+            setAuth({role: "user", id: data.id});
             nav("/")
             // To remove
             alert("Login Success!")

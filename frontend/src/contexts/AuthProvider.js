@@ -1,41 +1,42 @@
-import React, { useState, useEffect } from "react";
-import { UserProvider } from "./UserContext";
-import { OrgProvider } from "./OrgContext";
+import React, { useState, useEffect, createContext, useMemo, useContext } from "react";
+
+const DEFAULT_AUTH = {role: "", id: ""};
+
+const AuthContext = createContext({
+  auth: DEFAULT_AUTH,
+  setAuth: () => {},
+  logout: () => {},
+})
 
 export const AuthProvider = ({ children }) => {
-  const [role, setRole] = useState(() => sessionStorage.getItem("auth_role"));
+
+  const [auth, setAuth] = useState(() => {
+    try {
+      const stored = sessionStorage.getItem("auth");
+      return stored ? JSON.parse(stored) : DEFAULT_AUTH;
+    } catch {
+      return DEFAULT_AUTH;
+    }
+  });
 
   useEffect(() => {
-    const handleStorageChange = () => {
-      const newRole = sessionStorage.getItem("auth_role");
-      setRole(newRole);
-    };
+    sessionStorage.setItem("auth", JSON.stringify(auth));
+  }, [auth]);
 
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
-  }, []);
-
-  useEffect(() => {
-    setRole(sessionStorage.getItem("auth_role"));
-  }, []);
-
-  // When role is not yet determined (e.g., before login)
-  if (!role) {
-    return <>{children}</>;
+  const logout = () => {
+    setAuth(DEFAULT_AUTH);
+    sessionStorage.removeItem("auth");
   }
 
-  // Render appropriate provider
-  if (role === "org") {
-    return (
-      <OrgProvider>
-        {children}
-      </OrgProvider>
-    );
-  }
+  const value = useMemo(() => ({auth, setAuth, logout}), [auth]);
 
-  return (
-    <UserProvider>
-      {children}
-    </UserProvider>
-  );
+  return <AuthContext.Provider value={value}>
+    {children}
+  </AuthContext.Provider>
 };
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if(!context) throw new Error ("useAuth must be used within AuthProvider");
+  return context;
+}
