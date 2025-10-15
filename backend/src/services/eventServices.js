@@ -24,6 +24,18 @@ export async function test_inesrt(org_id, title, location) {
     }
 }
 
+export async function test_retrieve(title) {
+    try {
+        const query = `select * from events where title = $1`;
+        const values = [title];
+        const result = await pool.query(query, values);
+        return result.rows;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
 export async function delete_event(event_id) {
     try {
         const query = `delete from events where event_id = $1`;
