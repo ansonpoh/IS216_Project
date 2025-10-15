@@ -1,4 +1,20 @@
-import { get_event_by_id, get_all_categories, get_all_events, get_all_published_events, get_events_of_org, get_events_by_category } from "../services/eventServices.js";
+import { get_event_by_id, get_all_categories, get_all_events, get_all_published_events, get_events_of_org, get_events_by_category, test_inesrt } from "../services/eventServices.js";
+
+export async function test_inesrt_handler(req, res) {
+    try {
+        const {title, location} = req.body;
+        const org_id = "05736d7e-8d62-486f-b720-1736caf5255a";
+        const result = await test_inesrt(org_id, title, location);
+        if(result) {
+            return res.json({staus: true});
+        } else {
+            return res.json({status: false});
+        }
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
 
 export async function get_all_events_handler (req, res) {
     try {

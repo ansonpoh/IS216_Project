@@ -12,6 +12,18 @@ export async function create_event(org_id, title, description, location, capacit
     }
 }
 
+export async function test_inesrt(org_id, title, location) {
+    try {
+        const query = `insert into events (org_id, title, location) values ($1, $2, $3)`;
+        const values = [org_id, title, location];
+        const result = await pool.query(query,values);
+        return result.rowCount > 0;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
 export async function delete_event(event_id) {
     try {
         const query = `delete from events where event_id = $1`;
