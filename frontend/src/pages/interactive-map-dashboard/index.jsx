@@ -92,9 +92,9 @@ const InteractiveMapDashboard = () => {
     const fetchAndPlaceMarkers = async () => {
       if (!window.google || !mapInstanceRef.current) return;
 
-      // Configurable API base. Set REACT_APP_API_URL in your frontend/.env if needed.
-      const apiBase = process.env.REACT_APP_API_URL || '';
-      const endpoint = apiBase ? `${apiBase}/opportunities` : '/api/opportunities';
+      // Backend base URL. Set REACT_APP_API_URL in your frontend/.env if needed.
+      const backendBase = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+      const endpoint = `${backendBase}/api/opportunities`;
 
       try {
         const res = await fetch(endpoint);
@@ -160,38 +160,52 @@ const InteractiveMapDashboard = () => {
       }
     };
 
-    // Read API key from environment
-    const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY || '';
+    // Fetch the API key from backend configuration endpoint
+    const loadScriptWithKey = async () => {
+      try {
+        const backendBase = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+        const cfgRes = await fetch(`${backendBase}/config/google-maps-key`);
+        if (!cfgRes.ok) {
+          console.error('Failed to fetch Google Maps key from backend');
+          return;
+        }
+        const json = await cfgRes.json();
+        const apiKey = (json && json.key) ? json.key.trim() : '';
+        if (!apiKey) {
+          console.warn('No Google Maps API key returned from backend');
+          return;
+        }
 
-    if (!apiKey) {
-      console.warn('REACT_APP_GOOGLE_MAPS_API_KEY is not set. Map will not load.');
-      return;
-    }
+        // Helper to check if script already exists
+        const scriptId = 'google-maps-script';
+        const existing = document.getElementById(scriptId);
 
-    // Helper to check if script already exists
-    const scriptId = 'google-maps-script';
-    const existing = document.getElementById(scriptId);
-
-    if (!existing) {
-      const script = document.createElement('script');
-      script.id = scriptId;
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initMap`;
-      script.async = true;
-      script.defer = true;
-      // Attach initMap to window so the callback can find it
-      window.initMap = initMap;
-      script.onerror = () => {
-        console.error('Failed to load Google Maps script. Check your API key and network.');
-      };
-      document.head.appendChild(script);
-    } else {
-      // If google is already available, just init
-      if (window.google) initMap();
-      else {
-        // If script exists but google not ready, ensure initMap is set
-        window.initMap = initMap;
+        if (!existing) {
+          const script = document.createElement('script');
+          script.id = scriptId;
+          script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initMap`;
+          script.async = true;
+          script.defer = true;
+          // Attach initMap to window so the callback can find it
+          window.initMap = initMap;
+          script.onerror = () => {
+            console.error('Failed to load Google Maps script. Check your API key and network.');
+          };
+          document.head.appendChild(script);
+        } else {
+          // If google is already available, just init
+          if (window.google) initMap();
+          else {
+            // If script exists but google not ready, ensure initMap is set
+            window.initMap = initMap;
+          }
+        }
+      } catch (err) {
+        console.error('Error loading Google Maps key:', err);
       }
-    }
+    };
+
+    loadScriptWithKey();
 
     // Cleanup function
     return () => {

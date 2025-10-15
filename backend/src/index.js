@@ -7,6 +7,7 @@ import userRoutes from "./routes/userRoutes.js";
 import orgsRoutes from "./routes/orgRoutes.js";
 import eventRoutes from "./routes/eventRoutes.js"
 import chatRoutes from "./routes/chatRoutes.js";
+import { get_all_events } from "./services/eventServices.js";
 
 
 const app = express();
@@ -47,3 +48,58 @@ app.use("/api/chat", chatRoutes);
 
 
 
+// Return config values needed by frontend. Keep this minimal and secure.
+app.get('/config/google-maps-key', (req, res) => {
+    // Prefer a non-REACT_APP env var on the backend
+    let key = process.env.GOOGLE_MAPS_API_KEY || process.env.REACT_APP_GOOGLE_MAPS_API_KEY || '';
+    if (typeof key === 'string') {
+        // Trim surrounding quotes/whitespace if present
+        key = key.replace(/^\s*"|"\s*$/g, '').trim();
+    }
+    res.json({ key });
+});
+
+// Server-side geocoding: return opportunities with lat/lng
+app.get('/api/opportunities', async (req, res) => {
+    try {
+        const events = await get_all_events();
+
+        // Read API key from env
+        let key = process.env.GOOGLE_MAPS_API_KEY || process.env.REACT_APP_GOOGLE_MAPS_API_KEY || '';
+        if (typeof key === 'string') {
+            key = key.replace(/^\s*"|"\s*$/g, '').trim();
+        }
+
+        if (!key) {
+            // If no key available, return events without lat/lng (frontend can decide what to do)
+            const fallback = events.map(e => ({ title: e.title || null, postalcode: e.postalcode || e.postal || e.postal_code || e.location || null }));
+            return res.json(fallback);
+        }
+
+        const geocodeUrl = (postal) => `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(postal)}&components=country:SG&key=${key}`;
+
+        const promises = events.map(async (e) => {
+            const postal = e.postalcode || e.postal || e.postal_code || e.location || null;
+            if (!postal) return null;
+
+            try {
+                const geoRes = await axios.get(geocodeUrl(postal));
+                if (geoRes.data && geoRes.data.status === 'OK' && geoRes.data.results && geoRes.data.results.length) {
+                    const loc = geoRes.data.results[0].geometry.location;
+                    return { title: e.title || null, postalcode: postal, lat: loc.lat, lng: loc.lng };
+                } else {
+                    return { title: e.title || null, postalcode: postal, lat: null, lng: null, geocodeStatus: geoRes.data && geoRes.data.status };
+                }
+            } catch (err) {
+                console.error('Geocode error for', postal, err.message || err);
+                return { title: e.title || null, postalcode: postal, lat: null, lng: null, geocodeError: true };
+            }
+        });
+
+        const results = await Promise.all(promises);
+        res.json(results.filter(Boolean));
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Failed to get opportunities' });
+    }
+});
