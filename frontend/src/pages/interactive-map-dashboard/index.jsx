@@ -5,6 +5,7 @@ const InteractiveMapDashboard = () => {
   const [activeFilters, setActiveFilters] = useState(["Cafés"]);
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
+  const markersRef = useRef([]);
 
   // Filter categories
   const categories = [
@@ -67,40 +68,139 @@ const InteractiveMapDashboard = () => {
     const initMap = () => {
       if (window.google && mapRef.current) {
         const map = new window.google.maps.Map(mapRef.current, {
-          center: { lat: 40.7128, lng: -74.0060 }, // Default to New York
-          zoom: 12,
+          center: { lat: 1.3521, lng: 103.8198 }, // Default to Singapore
+          zoom: 11,
           styles: [
             {
-              "featureType": "poi",
-              "elementType": "labels",
-              "stylers": [
-                { "visibility": "off" }
+              featureType: "poi",
+              elementType: "labels",
+              stylers: [
+                { visibility: "off" }
               ]
             }
           ]
         });
 
         mapInstanceRef.current = map;
+
+        // After map is ready, fetch backend data and place markers
+        fetchAndPlaceMarkers();
       }
     };
 
-    // Load Google Maps script if not already loaded
-    if (!window.google) {
+    // Fetch items from backend and place markers using postal codes
+    const fetchAndPlaceMarkers = async () => {
+      if (!window.google || !mapInstanceRef.current) return;
+
+      // Configurable API base. Set REACT_APP_API_URL in your frontend/.env if needed.
+      const apiBase = process.env.REACT_APP_API_URL || '';
+      const endpoint = apiBase ? `${apiBase}/opportunities` : '/api/opportunities';
+
+      try {
+        const res = await fetch(endpoint);
+        if (!res.ok) {
+          console.warn(`Failed to fetch opportunities: ${res.status}`);
+          return;
+        }
+
+        const data = await res.json();
+        if (!Array.isArray(data)) {
+          console.warn('Expected an array from the opportunities endpoint');
+          return;
+        }
+
+        // Clear existing markers
+        markersRef.current.forEach(m => m.setMap(null));
+        markersRef.current = [];
+
+        const geocoder = new window.google.maps.Geocoder();
+        const bounds = new window.google.maps.LatLngBounds();
+
+        data.forEach((item) => {
+          // Backend returns `title` and `postalcode`
+          const postal = item.postalcode;
+          if (!postal) return;
+
+          // Geocode the postal code in Singapore
+          geocoder.geocode({ address: postal, componentRestrictions: { country: 'SG' } }, (results, status) => {
+            if (status === 'OK' && results && results[0]) {
+              const loc = results[0].geometry.location;
+              const marker = new window.google.maps.Marker({
+                position: loc,
+                map: mapInstanceRef.current,
+                title: item.title || postal
+              });
+
+              // Create (or reuse) an info window for marker
+              const infoWindow = new window.google.maps.InfoWindow({
+                content: `<div class="fw-semibold">${(item.title || postal)}</div>`
+              });
+
+              marker.addListener('click', () => {
+                infoWindow.open({ anchor: marker, map: mapInstanceRef.current });
+              });
+
+              markersRef.current.push(marker);
+              bounds.extend(loc);
+
+              // If there is only one marker, center and zoom in
+              if (markersRef.current.length === 1) {
+                mapInstanceRef.current.setCenter(loc);
+                mapInstanceRef.current.setZoom(14);
+              } else {
+                mapInstanceRef.current.fitBounds(bounds);
+              }
+            } else {
+              console.warn(`Geocode failed for postal ${postal}: ${status}`);
+            }
+          });
+        });
+      } catch (err) {
+        console.error('Error fetching opportunities:', err);
+      }
+    };
+
+    // Read API key from environment
+    const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY || '';
+
+    if (!apiKey) {
+      console.warn('REACT_APP_GOOGLE_MAPS_API_KEY is not set. Map will not load.');
+      return;
+    }
+
+    // Helper to check if script already exists
+    const scriptId = 'google-maps-script';
+    const existing = document.getElementById(scriptId);
+
+    if (!existing) {
       const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places&callback=initMap`;
+      script.id = scriptId;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initMap`;
       script.async = true;
       script.defer = true;
-      document.head.appendChild(script);
-
+      // Attach initMap to window so the callback can find it
       window.initMap = initMap;
+      script.onerror = () => {
+        console.error('Failed to load Google Maps script. Check your API key and network.');
+      };
+      document.head.appendChild(script);
     } else {
-      initMap();
+      // If google is already available, just init
+      if (window.google) initMap();
+      else {
+        // If script exists but google not ready, ensure initMap is set
+        window.initMap = initMap;
+      }
     }
 
     // Cleanup function
     return () => {
-      if (window.initMap) {
-        delete window.initMap;
+      if (window.initMap) delete window.initMap;
+      // We intentionally don't remove the script tag because other pages might rely on it
+      // Clear markers
+      if (markersRef.current && markersRef.current.length) {
+        markersRef.current.forEach(m => m.setMap(null));
+        markersRef.current = [];
       }
     };
   }, []);
