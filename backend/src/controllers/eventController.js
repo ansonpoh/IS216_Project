@@ -3,7 +3,7 @@ import { get_event_by_id, get_all_categories, get_all_events, get_all_published_
 export async function test_inesrt_handler(req, res) {
     try {
         const {title, location} = req.body;
-        const org_id = "05736d7e-8d62-486f-b720-1736caf5255a";
+        const org_id = "1d7d876d-62ff-476d-80dd-bd3844afd4fe";
         const result = await test_inesrt(org_id, title, location);
         if(result) {
             return res.json({staus: true});

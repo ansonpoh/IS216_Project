@@ -10,7 +10,6 @@ router.get("/get_events_of_org", get_events_of_org_handler);
 router.get("/get_events_by_category", get_events_by_category_handler);
 
 router.get("/test_retreive", test_retrieve_handler);
-
 router.post("/test_insert", test_inesrt_handler);
 export default router;
 
