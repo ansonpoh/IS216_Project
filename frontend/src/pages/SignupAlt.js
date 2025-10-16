@@ -98,13 +98,14 @@ export default function LoginSignup() {
                 <button type="submit" className="signup_btn">
                     Login
                 </button>
-                <p>or login with social platforms</p>
+                
+                {/* <p>or login with social platforms</p>
                 <div className="social-icons">
                     <a href="#"><i className="bx bxl-google"></i></a>
                     <a href="#"><i className="bx bxl-facebook"></i></a>
                     <a href="#"><i className="bx bxl-github"></i></a>
                     <a href="#"><i className="bx bxl-linkedin"></i></a>
-                </div>
+                </div> */}
                 </form>
             </div>
 
