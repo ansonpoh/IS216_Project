@@ -89,10 +89,10 @@ export async function get_all_events() {
     }    
 }
 
-export async function get_events_by_category(category_id) {
+export async function get_events_by_category(category) {
     try {
-        const query = `select event_id from event_category_map where category_id = $1`;
-        const values = [category_id];
+        const query = `select * from events where category = $1`;
+        const values = [category];
         const result = await pool.query(query, values);
         return result.rows;
     } catch (err) {

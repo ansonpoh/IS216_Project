@@ -2,7 +2,7 @@
   "dependencies": {
     "@ai-sdk/openai": "^2.0.52",
     "@supabase/supabase-js": "^2.75.0",
-    "ai": "^5.0.72",
+    "ai": "^5.0.75",
     "axios": "^1.12.2",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
