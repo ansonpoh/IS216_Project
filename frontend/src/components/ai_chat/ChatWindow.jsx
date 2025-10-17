@@ -5,88 +5,66 @@ import ChatInput from "./ChatInput";
 import "../../styles/ChatWindow.css";
 
 export default function ChatWindow() {
-    const [messages, setMessages] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [showSuggestions, setShowSuggestions] = useState(true);
-    const [events, setEvents] = useState();
-    const [categories, setCategories] = useState();
+  const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(true);
 
-    const chatBoxRef = useRef(null);
+  const chatBoxRef = useRef(null);
 
-    useEffect(() => {
-      if (chatBoxRef.current) {
-        chatBoxRef.current.scrollTo({
-          top: chatBoxRef.current.scrollHeight,
-          behavior: "smooth",
-        });
-      }
-    }, [messages, loading]);
+  useEffect(() => {
+    if (chatBoxRef.current) {
+      chatBoxRef.current.scrollTo({
+        top: chatBoxRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [messages, loading]);
 
-    useEffect(() => {
-      const get_categories = async () => {
-        try {
-          const result = await axios.get("http://localhost:3001/events/get_all_categories");
-          const data = result.data.result;
-          setCategories(data);
-        } catch (err) {
-          console.error(err);
-          throw err;
-        }
-      }
+  const sendMessage = async (userMessage) => {
+    if(!userMessage.trim()) return;
 
-      const get_all_events = async () => {
-        try {
-          const result = await axios.get("http://localhost:3001/events/get_all_events");
-          const data = result.data.result;
-          setEvents(data);
-        } catch (err) {
-          console.error(err);
-          throw err;
-        }
-      }
+    const newMessages = [...messages, {role: "user", content: userMessage}];
+    setMessages(newMessages);
+    setLoading(true);
+    setShowSuggestions(false);
 
-      get_categories();
-      get_all_events();
-    }, [])
+    try {
+      const res = await axios.post("http://localhost:3001/api/chat", {
+        userMessage: userMessage,
+        history: messages,
+      });
 
-    // handle sending message
-    const sendMessage = async (userMessage) => {
-        const newMessages = [...messages, { role: "user", content: userMessage }];
-        setMessages(newMessages);
-        setLoading(true);
-        setShowSuggestions(false); // hide quick cards after first interaction
-
-        console.log("Payload sent to API:", {
-          message: userMessage,
-          events,
-          categories
-        });
-        
-        try {
-
-          const payload = {
-            message: userMessage,
-            events: events || [],
+      const data = res.data;
+      if(data.success) {
+        const cleanedReply = data.reply.trim().replace(/\n{3,}/g, "\n\n");
+        setMessages([
+          ...newMessages,
+          {
+            role: "assistant",
+            content: cleanedReply,
           }
+        ])
+      } else {
+        setMessages([
+          ...newMessages,
+          {role: "assistant", content: `Error: ${data.error}`}
+        ])
+      }
+    } catch (err) {
+      console.error(err);
+      setMessages([
+        ...newMessages,
+        { role: "assistant", content: "Error connecting to AI server." },
+      ]);
+    } finally {
+      setTimeout(() => setLoading(false), 300);
+    }
+  }
 
-          const response = await axios.post("http://localhost:3001/api/chat", payload);
-          const aiReply = response.data.reply || "(No response)";
-          setMessages([...newMessages, { role: "assistant", content: aiReply }]);
-        } catch (error) {
-            console.error(error);
-            setMessages([
-                ...newMessages,
-                { role: "assistant", content: "Sorry, something went wrong." },
-            ]);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // handle clicking one of the cards
-    const handleSuggestionClick = (text) => {
-        sendMessage(text);
-    };
+  // handle clicking one of the cards
+  const handleSuggestionClick = (text) => {
+      sendMessage(text);
+  };
 
   return (
     <div className="chat-container mx-auto mt-4">

@@ -1,38 +1,33 @@
-import express from "express";
+import { createOpenAI } from '@ai-sdk/openai';
+import {streamText, tool } from 'ai';
+import 'dotenv/config';
+import { z } from 'zod';
 import axios from "axios";
-import dotenv from "dotenv";
-
-dotenv.config();
+import express from "express";
 
 const router = express.Router();
 
-const OPENROUTER_API = "https://openrouter.ai/api/v1/chat/completions";
-const MODEL = process.env.OR_MODEL;
-const API_KEY = process.env.OR_API;
+const openai = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+})
 
-router.post("/", async (req, res) => {
-  const {message, events} = req.body;
+const BASE = "http://localhost:3001";
 
-  if (!message) {
-    return res.status(400).json({ error: "Missing 'message' in request body." });
-  }
-
-  try {
-    console.log("Sending message to OpenRouter...");
-
-    const system = `
+const system = `
       Role: 
-      You are an intelligent volunteering opportunity recommendation engine that connects individuals with meaningful volunteer events and projects that align with their interests, skills, and availability. 
+        You are an intelligent volunteering opportunity recommendation engine that connects individuals with meaningful volunteer events and projects that align with their interests, skills, and availability. 
 
-      Goal: Recommend volunteer opportunities that best match the user’s preferences, schedule, and causes they care about.
+      Goal: 
+        Recommend volunteer opportunities that best match the user’s preferences, schedule, and causes they care about.
 
-      Instructions: Interpret the user’s input to identify: 
-        Causes they care about (e.g., environment, education, health, animal welfare, community development).
-        Relevant skills or roles (e.g., teaching, organizing, mentoring, manual work, logistics).
-        Availability (specific dates, weekends, ongoing commitments).
-        Location and preferred proximity (in-person or remote).
-        Motivation or goals (e.g., giving back, meeting people, skill-building).
-        Search the available volunteering event data and select opportunities that best align with those factors.
+      Instructions: 
+        Interpret the user’s input to identify: 
+          Causes they care about (e.g., environment, education, health, animal welfare, community development).
+          Relevant skills or roles (e.g., teaching, organizing, mentoring, manual work, logistics).
+          Availability (specific dates, weekends, ongoing commitments).
+          Location and preferred proximity (in-person or remote).
+          Motivation or goals (e.g., giving back, meeting people, skill-building).
+          Search the available volunteering event data and select opportunities that best align with those factors.
 
       For each recommendation, include: 
         title: name of the volunteer event or program
@@ -48,41 +43,94 @@ router.post("/", async (req, res) => {
         “Would you like to volunteer locally or remotely?”
 
       Tone and Style: 
-      Empathetic, purposeful, and informative. Focus on relevance, impact, and personal connection to the cause. Avoid sales-like or generic phrasing.
+        Empathetic, purposeful, and informative. Focus on relevance, impact, and personal connection to the cause. Avoid sales-like or generic phrasing.
     `
 
-    const response = await axios.post(
-      OPENROUTER_API,
-      {
-        model: MODEL,
-        system: system,
-        messages: [{ role: "user", content: message }],
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-          "Content-Type": "application/json",
-          "HTTP-Referer": "http://localhost:3001",
-          "X-Title": "VolunteerConnect Backend",
-        },
-      }
-    );
+// Tools
+const getAllEventsTool = tool({
+  description: "Retreives a list of all volunteering events from the backend api.",
+  inputSchema: z.object({}),
+  execute: async () => {
+    const res = await axios.get(`${BASE}/events/get_all_events`);
+    return res.data;
+  }
+})
 
-    const reply =
-      response.data?.choices?.[0]?.message?.content ||
-      response.data?.output_text ||
-      "(No response text found.)";
+const getEventsByCategoryTool = tool({
+  description: "Retreives a list of volunteering events that belong to a specific category from the backend api.",
+  inputSchema: z.object({
+    category: z.string().describe("The event category to filter by")
+  }),
+  execute: async ({category}) => {
+    try {
+      const res = await axios.get(`${BASE}/events/get_events_by_category?category=${encodeURIComponent(category.toLowerCase())}`);
 
-    console.log("✅ OpenRouter replied:", reply);
-    res.json({ reply });
-  } catch (error) {
-    console.error("❌ Error calling OpenRouter API:");
-    console.error(error.response?.data || error.message);
-    res.status(500).json({
-      error: "Failed to get response from OpenRouter",
-      details: error.response?.data || error.message,
+      const data = res.data.result || res.data || [];
+      if (Array.isArray(data) && data.length > 0) return data;
+
+      const similar = res.data.result.filter(event => {
+        event.category.toLowerCase().includes(category.toLowerCase);
+      })
+      
+      return similar.length > 0 ? similar : [];
+    } catch (err) {
+      console.error("GetEventsByCategoryTool Error: ", err);
+      return {error: err};
+    }
+  }
+})
+
+async function runAgent(messages) {
+  const response = streamText({
+    model: openai('gpt-4o-mini'),
+    messages,
+    tools: {
+      getAllEvents: getAllEventsTool,
+      getEventByCategory: getEventsByCategoryTool,
+    },
+  });
+
+  let fullResponse = '';
+  for await (const delta of response.textStream) {
+    fullResponse += delta;
+  }
+
+  const toolCalls = await response.toolCalls;
+  const toolResults = await response.toolResults;
+
+  if (toolCalls.length === 0 || toolResults.length === 0) {
+    messages.push({ role: 'assistant', content: fullResponse });
+    return fullResponse;
+  }
+
+  for (const tool of toolResults) {
+    const data = tool.output?.result ?? tool.output ?? [];
+    messages.push({
+      role: 'assistant',
+      content: `Tool "${toolResults[0].toolName}" returned the following data: \n${JSON.stringify(data, null, 2)}`,
     });
   }
-});
+  return await runAgent(messages);
+}
+
+router.post("/", async (req,res) => {
+  try {
+    const {userMessage, history = []} = req.body;
+
+    const messages = [
+      {
+        role: "system",
+        content: system,
+      },
+      ...history,
+      {role: "user", content: userMessage},
+    ];
+    const finalResponse = await runAgent(messages);
+
+    return res.json({ success: true, reply: finalResponse });
+  } catch (err) {
+    console.error(err);
+  }
+})
 
 export default router;
