@@ -1,24 +1,25 @@
 import React, { useState, useEffect, useRef } from "react";
 import Navbar from "../Navbar.js";
 import MapContainer from "./components/MapContainer";
+import "./styles.css";
 
 const InteractiveMapDashboard = () => {
   const [activeFilters, setActiveFilters] = useState([]);
   const mapRef = useRef(null);
 
   const categories = [
-    { name: "North", icon: "bi-cup-hot" },
-    { name: "South", icon: "bi-bag" },
-    { name: "East", icon: "bi-egg-fried" },
-    { name: "West", icon: "bi-p-square" },
-    { name: "Central", icon: "bi-p-square" }
+    { name: "North", icon: "fa-solid fa-arrow-up" },
+    { name: "South", icon: "fa-solid fa-arrow-down" },
+    { name: "East", icon: "fa-solid fa-arrow-right" },
+    { name: "West", icon: "fa-solid fa-arrow-left" },
+    { name: "Central", icon: "fa-solid fa-asterisk" }
   ];
 
   const features = [
-    { name: "Children", icon: "bi-emoji-smile" },
+    { name: "Children", icon: "bi-balloon-fill" },
     { name: "Elderly", icon: "bi-person-walking" },
-    { name: "Animal", icon: "bi-paw" },
-    { name: "Environment", icon: "bi-flower1" }
+    { name: "Animal", icon: "fa-solid fa-paw" }, 
+    { name: "Environment", icon: "bi-tree-fill" }
   ];
 
   const toggleFilter = (filterName) => {
@@ -77,10 +78,8 @@ const InteractiveMapDashboard = () => {
                   {categories.map((category) => (
                     <button
                       key={category.name}
-                      className={`btn btn-sm d-flex align-items-center ${
-                        activeFilters.includes(category.name)
-                          ? 'btn-info'
-                          : 'btn-outline-secondary'
+                      className={`btn btn-sm d-flex align-items-center btn-region-${category.name.toLowerCase()} ${
+                        activeFilters.includes(category.name) ? 'active' : ''
                       }`}
                       onClick={() => toggleFilter(category.name)}
                     >

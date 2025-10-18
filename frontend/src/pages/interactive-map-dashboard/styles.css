@@ -1,0 +1,49 @@
+.btn-region-north {
+    background-color: #ff4444 !important;
+    color: white !important;
+    opacity: 0.5;
+}
+.btn-region-north.active, .btn-region-north:hover {
+    opacity: 1;
+    background-color: #cc0000 !important;
+}
+
+.btn-region-south {
+    background-color: #8B4513 !important;
+    color: white !important;
+    opacity: 0.5;
+}
+.btn-region-south.active, .btn-region-south:hover {
+    opacity: 1;
+    background-color: #5c2d0d !important;
+}
+
+.btn-region-east {
+    background-color: #4CAF50 !important;
+    color: white !important;
+    opacity: 0.5;
+}
+.btn-region-east.active, .btn-region-east:hover {
+    opacity: 1;
+    background-color: #388E3C !important;
+}
+
+.btn-region-west {
+    background-color: #2196F3 !important;
+    color: white !important;
+    opacity: 0.5;
+}
+.btn-region-west.active, .btn-region-west:hover {
+    opacity: 1;
+    background-color: #1976D2 !important;
+}
+
+.btn-region-central {
+    background-color: #FFD700 !important;
+    color: black !important;
+    opacity: 0.5;
+}
+.btn-region-central.active, .btn-region-central:hover {
+    opacity: 1;
+    background-color: #FFC107 !important;
+}

@@ -8,41 +8,43 @@ const MapContainer = React.forwardRef(({ activeFilters = [] }, ref) => {
   const [loading, setLoading] = useState(true);
 
   // Map filter names to opportunity categories
+// In MapContainer.jsx - Replace the filteredOpportunities useMemo
+
   const categoryMap = {
-    'North': ['education', 'community', 'literacy'],
-    'South': ['healthcare', 'wellness', 'medical'],
-    'East': ['youth', 'children', 'education'],
-    'West': ['animals', 'pets', 'environment'],
-    'Central': ['food', 'disaster', 'emergency', 'relief']
+    'North': ['education', 'community', 'literacy', 'youth'],
+    'South': ['healthcare', 'wellness', 'medical', 'seniors'],
+    'East': ['youth', 'children', 'education', 'animals'],
+    'West': ['animals', 'pets', 'environment', 'conservation'],
+    'Central': ['food', 'disaster', 'emergency', 'relief', 'housing']
   };
 
   const featureMap = {
-    'Children': 'youth',
-    'Elderly': 'seniors',
-    'Animal': 'animals',
-    'Environment': 'environment'
+    'Children': ['youth', 'children', 'education'],
+    'Elderly': ['seniors', 'healthcare'],
+    'Animal': ['animals', 'pets'],
+    'Environment': ['environment', 'conservation', 'disaster']
   };
 
-  // Filter opportunities based on active filters
   const filteredOpportunities = useMemo(() => {
     if (activeFilters.length === 0) return opportunities;
 
     return opportunities.filter(opp => {
       const category = (opp.category || '').toLowerCase();
 
-      // Check region filters
-      const matchesRegion = activeFilters.some(filter => {
-        const relatedCategories = categoryMap[filter] || [];
-        return relatedCategories.some(cat => category.includes(cat));
-      });
+      // Check if this opportunity matches ANY of the active filters
+      return activeFilters.some(filter => {
+        // Check region filters
+        const regionMatches = categoryMap[filter]?.some(cat => 
+          category.includes(cat.toLowerCase())
+        ) || false;
 
-      // Check feature filters
-      const matchesFeature = activeFilters.some(filter => {
-        const featureType = featureMap[filter];
-        return featureType && category.includes(featureType.toLowerCase());
-      });
+        // Check feature filters
+        const featureMatches = featureMap[filter]?.some(cat => 
+          category.includes(cat.toLowerCase())
+        ) || false;
 
-      return matchesRegion || matchesFeature;
+        return regionMatches || featureMatches;
+      });
     });
   }, [opportunities, activeFilters]);
 
