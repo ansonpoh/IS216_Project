@@ -39,7 +39,7 @@ export default function LoginSignup() {
             .then((res) => {
                 const data = res.data;
                 if(data.status) {
-                    setAuth({role: "user", id: data.id});
+                    setAuth({role: "organiser", id: data.id});
                     nav("/")
                     // To remove
                     alert("Registration Success!")
@@ -55,7 +55,7 @@ export default function LoginSignup() {
             .then((res) => {
                 const data = res.data;
                 if(data.status) {
-                setAuth({role: "user", id: data.id});
+                setAuth({role: "organiser", id: data.id});
                 nav("/")
                 // To remove
                 alert("Login Success!")
@@ -73,7 +73,7 @@ export default function LoginSignup() {
             {/* LOGIN FORM */}
             <div className="form-box login">
                 <form onSubmit={handle_login}>
-                <h1>Login</h1>
+                <h1>Login for Organiser</h1>
 
                 <div className="input-box">
                     <input type="email" placeholder="Email" className={`form-control ${errors.email ? "is-invalid" : ""}`} value={loginData.email} onChange={(e) => setLoginData({...loginData, email: e.target.value})} required />
@@ -112,7 +112,7 @@ export default function LoginSignup() {
             {/* REGISTER FORM */}
             <div className="form-box register">
                 <form onSubmit={handle_register}>
-                <h1>Registration</h1>
+                <h1>Registration for Organiser</h1>
 
                 <div className="input-box">
                     <input type="text" placeholder="Username" className={`form-control ${errors.username ? "is-invalid" : ""}`} value={registerData.username} onChange={(e) => setRegisterData({...registerData, username: e.target.value
