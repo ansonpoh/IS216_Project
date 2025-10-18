@@ -20,6 +20,21 @@ export default function ChatWindow() {
     }
   }, [messages, loading]);
 
+  useEffect(() => {
+    if(messages.length === 0) {
+      setLoading(true);
+      setTimeout(() => {
+        setMessages([
+          {
+            role: "assistant",
+            content: "Hello! I'm VolunteerConnect AI, your personal assistant to discover meaningful volunteering opportunities. How can I help you get started today?",
+          }
+        ])
+        setLoading(false)
+      }, 1000);
+    }
+  },[])
+
   const sendMessage = async (userMessage) => {
     if(!userMessage.trim()) return;
 
@@ -92,7 +107,7 @@ export default function ChatWindow() {
         {/* 🔹 Quick-response cards */}
         {showSuggestions && (
           <div className="suggestion-section text-center mt-4">
-            <h4 className="fw-semibold">Welcome to VolunteerConnect AI</h4>
+            {/* <h4 className="fw-semibold">Welcome to VolunteerConnect AI</h4>
             <p className="text-muted">
               I'm here to help you discover meaningful volunteer opportunities
               that match your interests, skills, and schedule.
@@ -103,7 +118,7 @@ export default function ChatWindow() {
             <p className="text-secondary mb-4">
               Choose a starting point below or ask me anything about
               volunteering
-            </p>
+            </p> */}
 
             <div className="d-grid gap-3">
               <button

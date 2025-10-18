@@ -1,5 +1,6 @@
 import express from "express";
 import { get_all_categories_handler, get_all_events_handler, get_event_by_id_handler, get_events_by_category_handler, get_events_of_org_handler, test_inesrt_handler, test_retrieve_handler } from "../controllers/eventController.js";
+import { requireAuth } from "../config/auth.js";
 
 const router = express.Router();
 

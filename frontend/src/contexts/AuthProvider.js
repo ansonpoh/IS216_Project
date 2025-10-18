@@ -1,6 +1,6 @@
 import React, { useState, useEffect, createContext, useMemo, useContext } from "react";
 
-const DEFAULT_AUTH = {role: "", id: ""};
+const DEFAULT_AUTH = {role: "", id: "", token: ""};
 
 const AuthContext = createContext({
   auth: DEFAULT_AUTH,
