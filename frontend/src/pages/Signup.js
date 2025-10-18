@@ -61,7 +61,7 @@ const AuthPage = () => {
           const data = res.data;
           console.log(data);
           if(data.status) {
-            setAuth({role: "user", id: data.id});
+            setAuth({role: "user", id: data.id, token: data.token});
             nav("/")
             // To remove
             alert("Login Success!")

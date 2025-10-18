@@ -55,7 +55,7 @@ export default function LoginSignup() {
             .then((res) => {
                 const data = res.data;
                 if(data.status) {
-                setAuth({role: "organiser", id: data.id});
+                setAuth({role: "organiser", id: data.id, token: data.token});
                 nav("/")
                 // To remove
                 alert("Login Success!")
