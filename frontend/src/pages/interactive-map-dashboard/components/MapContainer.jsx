@@ -1,244 +1,291 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import Icon from '../../../components/AppIcon';
-import Button from '../../../components/ui/Button';
 
-const MapContainer = ({ 
-  opportunities, 
-  selectedOpportunity, 
-  onOpportunitySelect, 
-  filters,
-  routeMode,
-  selectedOpportunities,
-  onRouteOptimize 
-}) => {
+const MapContainer = React.forwardRef(({ activeFilters = [] }, ref) => {
   const mapRef = useRef(null);
-  const [mapLoaded, setMapLoaded] = useState(false);
-  const [userLocation, setUserLocation] = useState(null);
-  const [zoom, setZoom] = useState(12);
-  const [center, setCenter] = useState({ lat: 40.7128, lng: -74.0060 }); // NYC default
+  const mapInstanceRef = useRef(null);
+  const markersRef = useRef([]);
+  const [opportunities, setOpportunities] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Mock map initialization
+  // Map filter names to opportunity categories
+  const categoryMap = {
+    'North': ['education', 'community', 'literacy'],
+    'South': ['healthcare', 'wellness', 'medical'],
+    'East': ['youth', 'children', 'education'],
+    'West': ['animals', 'pets', 'environment'],
+    'Central': ['food', 'disaster', 'emergency', 'relief']
+  };
+
+  const featureMap = {
+    'Children': 'youth',
+    'Elderly': 'seniors',
+    'Animal': 'animals',
+    'Environment': 'environment'
+  };
+
+  // Filter opportunities based on active filters
+  const filteredOpportunities = useMemo(() => {
+    if (activeFilters.length === 0) return opportunities;
+
+    return opportunities.filter(opp => {
+      const category = (opp.category || '').toLowerCase();
+
+      // Check region filters
+      const matchesRegion = activeFilters.some(filter => {
+        const relatedCategories = categoryMap[filter] || [];
+        return relatedCategories.some(cat => category.includes(cat));
+      });
+
+      // Check feature filters
+      const matchesFeature = activeFilters.some(filter => {
+        const featureType = featureMap[filter];
+        return featureType && category.includes(featureType.toLowerCase());
+      });
+
+      return matchesRegion || matchesFeature;
+    });
+  }, [opportunities, activeFilters]);
+
+  // Fetch opportunities from backend
+  const fetchOpportunities = async () => {
+    try {
+      const backendBase = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+      const res = await fetch(`${backendBase}/api/opportunities`);
+      
+      if (!res.ok) {
+        console.error(`Failed to fetch opportunities: ${res.status}`);
+        return;
+      }
+
+      const data = await res.json();
+      setOpportunities(Array.isArray(data) ? data : []);
+      setLoading(false);
+    } catch (err) {
+      console.error('Error fetching opportunities:', err);
+      setLoading(false);
+    }
+  };
+
+  // Update markers when filtered opportunities change
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setMapLoaded(true);
-    }, 1000);
+    if (!mapInstanceRef.current || !window.google) return;
 
-    // Get user location
-    if (navigator.geolocation) {
-      navigator.geolocation?.getCurrentPosition(
-        (position) => {
-          setUserLocation({
-            lat: position?.coords?.latitude,
-            lng: position?.coords?.longitude
-          });
-          setCenter({
-            lat: position?.coords?.latitude,
-            lng: position?.coords?.longitude
-          });
-        },
-        () => {
-          console.log('Location access denied');
+    // Clear existing markers
+    markersRef.current.forEach(m => m.setMap(null));
+    markersRef.current = [];
+
+    if (filteredOpportunities.length === 0) {
+      return;
+    }
+
+    const geocoder = new window.google.maps.Geocoder();
+    const bounds = new window.google.maps.LatLngBounds();
+    let gecodedCount = 0;
+
+    filteredOpportunities.forEach((item) => {
+      const postal = item.postalcode || item.postal || item.postal_code;
+      
+      if (!postal) {
+        console.warn('No postal code for item:', item.title);
+        return;
+      }
+
+      geocoder.geocode(
+        { address: postal, componentRestrictions: { country: 'SG' } },
+        (results, status) => {
+          if (status === 'OK' && results?.[0]) {
+            const loc = results[0].geometry.location;
+            
+            const marker = new window.google.maps.Marker({
+              position: loc,
+              map: mapInstanceRef.current,
+              title: item.title || postal,
+              animation: window.google.maps.Animation.DROP
+            });
+
+            const infoWindow = new window.google.maps.InfoWindow({
+              content: `
+                <div style="padding: 8px; max-width: 250px;">
+                  <div style="font-weight: bold; margin-bottom: 4px;">${item.title || postal}</div>
+                  ${item.description ? `<div style="font-size: 12px; margin-bottom: 4px;">${item.description.substring(0, 100)}...</div>` : ''}
+                  <div style="font-size: 12px; color: #666;">📍 ${postal}</div>
+                </div>
+              `
+            });
+
+            marker.addListener('click', () => {
+              // Close all other info windows by creating a new one
+              infoWindow.open({ anchor: marker, map: mapInstanceRef.current });
+            });
+
+            markersRef.current.push(marker);
+            bounds.extend(loc);
+            gecodedCount++;
+
+            // When all markers are geocoded, fit bounds
+            if (gecodedCount === filteredOpportunities.length) {
+              if (gecodedCount === 1) {
+                mapInstanceRef.current.setCenter(bounds.getCenter());
+                mapInstanceRef.current.setZoom(14);
+              } else {
+                mapInstanceRef.current.fitBounds(bounds);
+              }
+            }
+          } else {
+            console.warn(`Geocode failed for postal ${postal}: ${status}`);
+            gecodedCount++;
+          }
         }
       );
-    }
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  const handleZoomIn = () => {
-    setZoom(prev => Math.min(prev + 1, 18));
-  };
-
-  const handleZoomOut = () => {
-    setZoom(prev => Math.max(prev - 1, 1));
-  };
-
-  const handleCenterLocation = () => {
-    if (userLocation) {
-      setCenter(userLocation);
-      setZoom(14);
-    }
-  };
-
-  const filteredOpportunities = opportunities?.filter(opp => {
-    if (filters?.categories?.length > 0 && !filters?.categories?.includes(opp?.category)) return false;
-    if (filters?.timeCommitment && opp?.timeCommitment !== filters?.timeCommitment) return false;
-    if (filters?.skills?.length > 0 && !filters?.skills?.some(skill => opp?.skills?.includes(skill))) return false;
-    if (filters?.remote !== null && opp?.remote !== filters?.remote) return false;
-    return true;
-  });
-
-  const getClusterColor = (count) => {
-    if (count >= 10) return 'bg-red-500';
-    if (count >= 5) return 'bg-orange-500';
-    return 'bg-blue-500';
-  };
-
-  const clusters = React.useMemo(() => {
-    const clusterMap = new Map();
-    
-    filteredOpportunities?.forEach(opp => {
-      const key = `${Math.floor(opp?.coordinates?.lat * 100)}_${Math.floor(opp?.coordinates?.lng * 100)}`;
-      if (!clusterMap?.has(key)) {
-        clusterMap?.set(key, {
-          id: key,
-          coordinates: opp?.coordinates,
-          opportunities: [],
-          count: 0
-        });
-      }
-      clusterMap?.get(key)?.opportunities?.push(opp);
-      clusterMap.get(key).count++;
     });
-
-    return Array.from(clusterMap?.values());
   }, [filteredOpportunities]);
 
-  return (
-    <div className="relative w-full h-full bg-gray-100 rounded-lg overflow-hidden">
-      {/* Map Loading State */}
-      {!mapLoaded && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-50 z-10">
-          <div className="text-center">
-            <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading interactive map...</p>
-          </div>
-        </div>
-      )}
-      {/* Google Maps Iframe */}
-      <iframe
-        ref={mapRef}
-        width="100%"
-        height="100%"
-        loading="lazy"
-        title="Volunteer Opportunities Map"
-        referrerPolicy="no-referrer-when-downgrade"
-        src={`https://www.google.com/maps?q=${center?.lat},${center?.lng}&z=${zoom}&output=embed`}
-        className={`transition-opacity duration-500 ${mapLoaded ? 'opacity-100' : 'opacity-0'}`}
-      />
-      {/* Map Overlay with Opportunity Markers */}
-      {mapLoaded && (
-        <div className="absolute inset-0 pointer-events-none">
-          {clusters?.map((cluster) => (
-            <div
-              key={cluster?.id}
-              className="absolute transform -translate-x-1/2 -translate-y-1/2 pointer-events-auto cursor-pointer"
-              style={{
-                left: `${((cluster?.coordinates?.lng - center?.lng + 0.1) / 0.2) * 100}%`,
-                top: `${((center?.lat - cluster?.coordinates?.lat + 0.1) / 0.2) * 100}%`,
-              }}
-              onClick={() => {
-                if (cluster?.count === 1) {
-                  onOpportunitySelect(cluster?.opportunities?.[0]);
-                } else {
-                  // Zoom in to expand cluster
-                  setCenter(cluster?.coordinates);
-                  setZoom(prev => prev + 2);
-                }
-              }}
-            >
-              {cluster?.count === 1 ? (
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-lg transition-transform hover:scale-110 ${
-                  selectedOpportunity?.id === cluster?.opportunities?.[0]?.id ? 'bg-primary ring-4 ring-primary/30' : 'bg-secondary'
-                }`}>
-                  <Icon name="MapPin" size={16} />
-                </div>
-              ) : (
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-lg transition-transform hover:scale-110 ${getClusterColor(cluster?.count)}`}>
-                  {cluster?.count}
-                </div>
-              )}
-            </div>
-          ))}
+  // Initialize map once on component mount
+  useEffect(() => {
+    const initMap = () => {
+      if (window.google && mapRef.current) {
+        mapInstanceRef.current = new window.google.maps.Map(mapRef.current, {
+          center: { lat: 1.3521, lng: 103.8198 },
+          zoom: 11,
+          styles: [
+            {
+              featureType: 'poi',
+              elementType: 'labels',
+              stylers: [{ visibility: 'off' }]
+            }
+          ]
+        });
 
-          {/* User Location Marker */}
-          {userLocation && (
+        // Store map instance globally for access in parent component
+        window.mapInstance = mapInstanceRef.current;
+
+        fetchOpportunities();
+      }
+    };
+
+    const loadScriptWithKey = async () => {
+      try {
+        const backendBase = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+        const cfgRes = await fetch(`${backendBase}/config/google-maps-key`);
+        
+        if (!cfgRes.ok) {
+          console.error('Failed to fetch Google Maps key from backend');
+          setLoading(false);
+          return;
+        }
+
+        const json = await cfgRes.json();
+        const apiKey = json?.key?.trim();
+
+        if (!apiKey) {
+          console.error('No Google Maps API key returned from backend');
+          setLoading(false);
+          return;
+        }
+
+        const scriptId = 'google-maps-script';
+        const existing = document.getElementById(scriptId);
+
+        if (!existing) {
+          const script = document.createElement('script');
+          script.id = scriptId;
+          script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
+          script.async = true;
+          script.defer = true;
+          script.onload = initMap;
+          script.onerror = () => {
+            console.error('Failed to load Google Maps script');
+            setLoading(false);
+          };
+          document.head.appendChild(script);
+        } else if (window.google) {
+          initMap();
+        }
+      } catch (err) {
+        console.error('Error loading Google Maps:', err);
+        setLoading(false);
+      }
+    };
+
+    loadScriptWithKey();
+
+    return () => {
+      markersRef.current.forEach(m => m.setMap(null));
+      markersRef.current = [];
+    };
+  }, []);
+
+  return (
+    <div className="position-relative flex-grow-1">
+      <div
+        ref={mapRef}
+        id="map"
+        className="rounded"
+        style={{
+          height: '100%',
+          width: '100%',
+          position: 'absolute',
+          top: 0,
+          left: 0
+        }}
+      />
+      
+      {loading && (
+        <div
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 50,
+            backgroundColor: 'white',
+            padding: '24px',
+            borderRadius: '12px',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+          }}
+        >
+          <div className="text-center">
             <div
-              className="absolute transform -translate-x-1/2 -translate-y-1/2 pointer-events-none"
-              style={{
-                left: `${((userLocation?.lng - center?.lng + 0.1) / 0.2) * 100}%`,
-                top: `${((center?.lat - userLocation?.lat + 0.1) / 0.2) * 100}%`,
-              }}
+              className="spinner-border text-primary"
+              role="status"
+              style={{ marginBottom: '12px' }}
             >
-              <div className="w-4 h-4 bg-blue-600 rounded-full border-2 border-white shadow-lg animate-pulse"></div>
+              <span className="visually-hidden">Loading...</span>
             </div>
-          )}
+            <p className="text-muted">Loading map...</p>
+          </div>
         </div>
       )}
-      {/* Map Controls */}
-      <div className="absolute top-4 right-4 flex flex-col space-y-2 z-20">
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={handleZoomIn}
-          className="bg-white shadow-lg"
+
+      {/* No results message */}
+      {!loading && filteredOpportunities.length === 0 && activeFilters.length > 0 && (
+        <div
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 50,
+            backgroundColor: 'white',
+            padding: '24px',
+            borderRadius: '12px',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+            maxWidth: '300px',
+            textAlign: 'center'
+          }}
         >
-          <Icon name="Plus" size={16} />
-        </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={handleZoomOut}
-          className="bg-white shadow-lg"
-        >
-          <Icon name="Minus" size={16} />
-        </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={handleCenterLocation}
-          className="bg-white shadow-lg"
-          disabled={!userLocation}
-        >
-          <Icon name="Navigation" size={16} />
-        </Button>
-      </div>
-      {/* Route Planning Controls */}
-      {routeMode && selectedOpportunities?.length > 1 && (
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20">
-          <Button
-            variant="default"
-            onClick={onRouteOptimize}
-            iconName="Route"
-            iconPosition="left"
-            className="shadow-lg"
-          >
-            Optimize Route ({selectedOpportunities?.length} stops)
-          </Button>
+          <p style={{ marginBottom: '8px', fontSize: '14px' }}>
+            No opportunities found for selected filters.
+          </p>
+          <p style={{ marginBottom: 0, fontSize: '12px', color: '#666' }}>
+            Try selecting different regions or features.
+          </p>
         </div>
       )}
-      {/* Map Legend */}
-      <div className="absolute bottom-4 left-4 bg-white rounded-lg shadow-lg p-3 z-20">
-        <h4 className="text-sm font-semibold mb-2">Legend</h4>
-        <div className="space-y-1 text-xs">
-          <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-secondary rounded-full"></div>
-            <span>Single Opportunity</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-            <span>2-4 Opportunities</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
-            <span>5-9 Opportunities</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-            <span>10+ Opportunities</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-blue-600 rounded-full border border-white"></div>
-            <span>Your Location</span>
-          </div>
-        </div>
-      </div>
-      {/* Zoom Level Indicator */}
-      <div className="absolute top-4 left-4 bg-white rounded px-2 py-1 text-xs font-mono shadow-lg z-20">
-        Zoom: {zoom}
-      </div>
     </div>
   );
-};
+});
+
+MapContainer.displayName = 'MapContainer';
 
 export default MapContainer;
