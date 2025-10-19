@@ -82,7 +82,7 @@ function Navbar() {
         )}
 
         {/* Auth buttons */}
-        {auth? (
+        {auth.id.length > 0 ?(
           <button className="btn btn-outline-danger btn-sm" onClick={handleLogout}>
             Logout
           </button>
