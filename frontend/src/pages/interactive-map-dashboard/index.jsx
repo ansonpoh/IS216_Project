@@ -1,5 +1,7 @@
-// In frontend/src/pages/interactive-map-dashboard/index.jsx
-// Update the categories and features arrays:
+// Updated Regional Filters and Recategorization for Singapore
+
+// FILE: frontend/src/pages/interactive-map-dashboard/index.jsx
+// UPDATE: regions array and category mapping
 
 import React, { useState, useEffect, useRef } from "react";
 import Navbar from "../Navbar.js";
@@ -10,16 +12,18 @@ const InteractiveMapDashboard = () => {
   const [activeFilters, setActiveFilters] = useState([]);
   const mapRef = useRef(null);
 
-  // REGIONS
+  // UPDATED REGIONS - Singapore regions
   const regions = [
-    { name: "North", icon: "fa-solid fa-arrow-up" },
-    { name: "South", icon: "fa-solid fa-arrow-down" },
-    { name: "East", icon: "fa-solid fa-arrow-right" },
-    { name: "West", icon: "fa-solid fa-arrow-left" },
-    { name: "Central", icon: "fa-solid fa-asterisk" }
+    { name: "Central", icon: "bi-compass" },
+    { name: "North", icon: "bi-arrow-up" },
+    { name: "North-East", icon: "bi-arrow-up-right" },
+    { name: "East", icon: "bi-arrow-right" },
+    { name: "West", icon: "bi-arrow-left" }
   ];
 
-  // CATEGORIES - ARRANGED ALPHABETICALLY
+
+
+  // CATEGORIES
   const categories = [
     { name: "Animal", icon: "fa-solid fa-paw" },
     { name: "Children", icon: "bi-balloon-fill" },
@@ -86,7 +90,7 @@ const InteractiveMapDashboard = () => {
                   {regions.map((region) => (
                     <button
                       key={region.name}
-                      className={`btn btn-sm d-flex align-items-center btn-region-${region.name.toLowerCase()} ${
+                      className={`btn btn-sm d-flex align-items-center btn-region-${region.name.toLowerCase().replace('-', '-')} ${
                         activeFilters.includes(region.name) ? 'active' : ''
                       }`}
                       onClick={() => toggleFilter(region.name)}
