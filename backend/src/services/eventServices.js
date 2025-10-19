@@ -12,63 +12,6 @@ export async function create_event(org_id, title, description, location, capacit
     }
 }
 
-<<<<<<< HEAD
-export async function test_insert(org_id, title, location) {
-    try {
-        const query = `insert into events (org_id, title, location) values ($1, $2, $3)`;
-        const values = [org_id, title, location];
-        const result = await pool.query(query,values);
-        return result.rowCount > 0;
-    } catch (err) {
-        console.error(err);
-        throw err;
-    }
-}
-
-export async function test_retrieve(title) {
-    try {
-        const query = `select * from events where title = $1`;
-        const values = [title];
-        const result = await pool.query(query, values);
-        return result.rows;
-    } catch (err) {
-        console.error(err);
-        throw err;
-    }
-}
-
-export async function delete_event(event_id) {
-    try {
-        const query = `delete from events where event_id = $1`;
-        const values = [event_id];
-        const result = await pool.query(query, values);
-        return result.rowCount > 0;
-    } catch (err) {
-        console.error(err);
-        throw err;
-    }
-}
-
-export async function update_event() {
-    try {
-
-    } catch (err) {
-        console.error(err);
-        throw err;
-    }
-}
-
-export async function publish_event() {
-    try {
-
-    } catch (err) {
-        console.error(err);
-        throw err;
-    }
-}
-
-=======
->>>>>>> fa0a33d01622f3328239b12735683a196cab0f9e
 export async function get_event_by_id(event_id) {
     try {
         const query = `select e.*, o.org_name from events e join organisations o on e.org_id = o.org_id where e.event_id = $1`;
