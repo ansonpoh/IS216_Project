@@ -8,10 +8,10 @@ function Navbar() {
   const location = useLocation();
   const isActive = (path) => location.pathname === path;
 
-  const { auth, setAuth } = useAuth(); // { role: 'volunteer' | 'organiser', id: ... } or null
+  const { auth, logout } = useAuth(); // { role: 'volunteer' | 'organiser', id: ... } or null
 
   const handleLogout = () => {
-    setAuth(null);
+    logout();
     navigate("/");
   };
 
@@ -82,7 +82,7 @@ function Navbar() {
         )}
 
         {/* Auth buttons */}
-        {auth ? (
+        {auth.token.length > 0 ? (
           <button className="btn btn-outline-danger btn-sm" onClick={handleLogout}>
             Logout
           </button>
