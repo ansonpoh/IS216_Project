@@ -92,7 +92,7 @@ const InteractiveMapDashboard = () => {
 
               {/* Feature Filters */}
               <div className="col-md-6">
-                <h6 className="fw-semibold text-dark mb-3">Features</h6>
+                <h6 className="fw-semibold text-dark mb-3">Category</h6>
                 <div className="d-flex flex-wrap gap-2">
                   {features.map((feature) => (
                     <button

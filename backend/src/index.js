@@ -60,6 +60,9 @@ app.get('/config/google-maps-key', (req, res) => {
 });
 
 // Server-side geocoding: return opportunities with lat/lng
+// In backend/src/index.js
+// Replace the /api/opportunities endpoint with this:
+
 app.get('/api/opportunities', async (req, res) => {
     try {
         const events = await get_all_events();
@@ -71,8 +74,16 @@ app.get('/api/opportunities', async (req, res) => {
         }
 
         if (!key) {
-            // If no key available, return events without lat/lng (frontend can decide what to do)
-            const fallback = events.map(e => ({ title: e.title || null, postalcode: e.postalcode || e.postal || e.postal_code || e.location || null }));
+            const fallback = events.map(e => ({ 
+                title: e.title || null, 
+                postalcode: e.postalcode || e.postal || e.postal_code || e.location || null,
+                location: e.location || null,
+                region: e.region || null,  
+                category: e.category || null,  
+                organization: e.org_name || null,  
+                description: e.description || null,  
+                event_id: e.event_id || null  
+            }));
             return res.json(fallback);
         }
 
@@ -86,13 +97,48 @@ app.get('/api/opportunities', async (req, res) => {
                 const geoRes = await axios.get(geocodeUrl(postal));
                 if (geoRes.data && geoRes.data.status === 'OK' && geoRes.data.results && geoRes.data.results.length) {
                     const loc = geoRes.data.results[0].geometry.location;
-                    return { title: e.title || null, postalcode: postal, lat: loc.lat, lng: loc.lng };
+                    return { 
+                        title: e.title || null, 
+                        postalcode: postal, 
+                        location: e.location || null,
+                        region: e.region || null,  
+                        category: e.category || null,  
+                        organization: e.org_name || null,  
+                        description: e.description || null,  
+                        event_id: e.event_id || null,  
+                        lat: loc.lat, 
+                        lng: loc.lng 
+                    };
                 } else {
-                    return { title: e.title || null, postalcode: postal, lat: null, lng: null, geocodeStatus: geoRes.data && geoRes.data.status };
+                    return { 
+                        title: e.title || null, 
+                        postalcode: postal, 
+                        location: e.location || null,
+                        region: e.region || null,  
+                        category: e.category || null,  
+                        organization: e.org_name || null,  
+                        description: e.description || null,  
+                        event_id: e.event_id || null,  
+                        lat: null, 
+                        lng: null, 
+                        geocodeStatus: geoRes.data && geoRes.data.status 
+                    };
                 }
             } catch (err) {
                 console.error('Geocode error for', postal, err.message || err);
-                return { title: e.title || null, postalcode: postal, lat: null, lng: null, geocodeError: true };
+                return { 
+                    title: e.title || null, 
+                    postalcode: postal, 
+                    location: e.location || null,
+                    region: e.region || null,  
+                    category: e.category || null,  
+                    organization: e.org_name || null,  
+                    description: e.description || null,  
+                    event_id: e.event_id || null,  
+                    lat: null, 
+                    lng: null, 
+                    geocodeError: true 
+                };
             }
         });
 
