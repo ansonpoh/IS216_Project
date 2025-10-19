@@ -13,7 +13,7 @@ import RoleSelect from './pages/RoleSelect';
 import OrganiserAuth from './pages/OrganiserAuth';
 import VolunteerAuth from './pages/VolunteerAuth';
 import OrganiserDashboard from './pages/OrganiserDashboard';
-import Form from './pages/form'
+import OrganiserCreateForm from "./pages/OrganiserCreateForm"
 
 
 function App() {
@@ -35,7 +35,7 @@ function App() {
         <Route path="/organiser/auth" element={<OrganiserAuth />} />
         <Route path="/volunteer/auth" element={<VolunteerAuth />} />
         <Route path="/organiser/dashboard" element={<OrganiserDashboard />} />
-        <Route path="/organiser/opportunities/new" element={<Form />} />
+        <Route path="/organiser/opportunities/new" element={<OrganiserCreateForm/>} />
 
 
       </Routes>

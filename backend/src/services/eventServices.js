@@ -1,9 +1,9 @@
 import pool from "../config/db.js";
 
-export async function create_event(org_id, title, description, location, capacity, date, start_time, end_time, hours) {
+export async function create_event(org_id, title, description, location, capacity, date, start_time, end_time, hours, region, category) {
     try {
-        const query = `insert into events (org_id, title, description, location, capacity, date, start_time, end_time) values ($1, $2, $3, $4, $5, $6, $7, $8)`;
-        const values = [org_id, title, description, location, capacity, date, start_time, end_time];
+        const query = `insert into events (org_id, title, description, location, capacity, date, start_time, end_time, region, category) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`;
+        const values = [org_id, title, description, location, capacity, date, start_time, end_time, region, category];
         const result = await pool.query(query, values);
         return result.rowCount > 0;
     } catch (err) {
@@ -12,6 +12,7 @@ export async function create_event(org_id, title, description, location, capacit
     }
 }
 
+<<<<<<< HEAD
 export async function test_insert(org_id, title, location) {
     try {
         const query = `insert into events (org_id, title, location) values ($1, $2, $3)`;
@@ -66,10 +67,12 @@ export async function publish_event() {
     }
 }
 
+=======
+>>>>>>> fa0a33d01622f3328239b12735683a196cab0f9e
 export async function get_event_by_id(event_id) {
     try {
-        const query = `select * from events where event_id = $1`;
-        const values = event_id;
+        const query = `select e.*, o.org_name from events e join organisations o on e.org_id = o.org_id where e.event_id = $1`;
+        const values = [event_id];
         const result = await pool.query(query, values);
         return result.rows;
     } catch (err) {
@@ -80,7 +83,7 @@ export async function get_event_by_id(event_id) {
 
 export async function get_all_events() {
     try {
-        const query = `select * from events`;
+        const query = `select e.*, o.org_name from events e join organisations o on e.org_id = o.org_id`;
         const result = await pool.query(query);
         return result.rows;
     } catch (err) {
@@ -91,7 +94,7 @@ export async function get_all_events() {
 
 export async function get_events_by_category(category) {
     try {
-        const query = `select * from events where category = $1`;
+        const query = `select e.*, o.org_name from events e join organisations o on e.org_id = o.org_id where LOWER(e.category) = LOWER($1)`;
         const values = [category];
         const result = await pool.query(query, values);
         return result.rows;
@@ -101,9 +104,32 @@ export async function get_events_by_category(category) {
     }    
 }
 
+export async function get_events_by_region(region) {
+    try {
+        const query = `select e.*, o.org_name from events e join organisations o on e.org_id = o.org_id where LOWER(e.region) = LOWER($1)`;
+        const values = [region];
+        const result = await pool.query(query, values);
+        return result.rows;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }   
+}
+
 export async function get_all_categories() {
     try {
-        const query = `select * from event_categories`;
+        const query = `select distinct category from events where category is not null order by category`;
+        const result = await pool.query(query);
+        return result.rows;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
+export async function get_all_regions() {
+    try {
+        const query = `select distinct region from events where region is not null order by region`;
         const result = await pool.query(query);
         return result.rows;
     } catch (err) {
@@ -136,6 +162,18 @@ export async function get_events_of_org(org_id) {
     }
 }
 
+export async function delete_event(event_id) {
+    try {
+        const query = `delete from events where event_id = $1`;
+        const values = [event_id];
+        const result = await pool.query(query, values);
+        return result.rowCount > 0;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
 export async function user_register_for_event(user_id, event_id) {
     try {
         const query = `insert into event_registration (user_id, event_id) values ($1, $2)`;
@@ -146,15 +184,6 @@ export async function user_register_for_event(user_id, event_id) {
         console.error(err);
         throw err;
     }
-}
-
-export async function user_withdraw_from_event() {
-    try {
-
-    } catch (err) {
-        console.error(err);
-        throw err;
-    }    
 }
 
 export async function get_all_registered_users_for_event(event_id) {

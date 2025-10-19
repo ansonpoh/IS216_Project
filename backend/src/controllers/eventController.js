@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { get_event_by_id, get_all_categories, get_all_events, get_all_published_events, get_events_of_org, get_events_by_category, test_insert, test_retrieve } from "../services/eventServices.js";
 
 export async function test_insert_handler(req, res) {
@@ -26,6 +27,9 @@ export async function test_retrieve_handler(req,res) {
         throw err;
     }
 }
+=======
+import { get_event_by_id, get_all_categories, get_all_events, get_all_published_events, get_events_of_org, get_events_by_category, get_events_by_region } from "../services/eventServices.js";
+>>>>>>> fa0a33d01622f3328239b12735683a196cab0f9e
 
 export async function get_all_events_handler (req, res) {
     try {
@@ -60,7 +64,8 @@ export async function get_all_categories_handler (req, res) {
 
 export async function get_all_published_events_handler (req, res) {
     try {
-
+        const result = await get_all_published_events();
+        return res.json({result});
     } catch (err) {
         console.error(err);
         throw err;
@@ -82,6 +87,17 @@ export async function get_events_by_category_handler (req, res) {
     try {
         const {category} = req.query;
         const result = await get_events_by_category(category);
+        return res.json({result});
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
+export async function get_events_by_region_handler (req, res) {
+    try {
+        const {region} = req.query;
+        const result = await get_events_by_region(region);
         return res.json({result});
     } catch (err) {
         console.error(err);

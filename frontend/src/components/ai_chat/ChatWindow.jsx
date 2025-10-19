@@ -51,12 +51,24 @@ export default function ChatWindow() {
 
       const data = res.data;
       if(data.success) {
-        const cleanedReply = data.reply.trim().replace(/\n{3,}/g, "\n\n");
+        const raw = data.reply.trim();
+        const match = raw.match(/\[[\s\S]*\]/);
+        let events = [];
+        if  (match) {
+          try {
+            events = JSON.parse(match[0]);
+          } catch (e) {
+            console.error("Failed to parse events JSON: ", e);
+          }
+        }
+
+        const cleanedReply = raw.replace(match?.[0] || '', '').trim();
         setMessages([
           ...newMessages,
           {
             role: "assistant",
             content: cleanedReply,
+            events: events.length > 0 ? events: null,
           }
         ])
       } else {
