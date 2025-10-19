@@ -80,7 +80,7 @@ export async function get_event_by_id(event_id) {
 
 export async function get_all_events() {
     try {
-        const query = `select * from events`;
+        const query = `select e.*, o.org_name from events e join organisations o on e.org_id = o.org_id`;
         const result = await pool.query(query);
         return result.rows;
     } catch (err) {
@@ -91,7 +91,7 @@ export async function get_all_events() {
 
 export async function get_events_by_category(category) {
     try {
-        const query = `select * from events where category = $1`;
+        const query = `select e.*, o.org_name from events e join organisations o on e.org_id = o.org_id where category = $1`;
         const values = [category];
         const result = await pool.query(query, values);
         return result.rows;
@@ -99,6 +99,18 @@ export async function get_events_by_category(category) {
         console.error(err);
         throw err;
     }    
+}
+
+export async function get_events_by_region(region) {
+    try {
+        const query = `select e.*, o.org_name from events e join organisations o on e.org_id = o.org_id where region = $1`;
+        const values = [region];
+        const result = await pool.query(query, values);
+        return result.rows;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }   
 }
 
 export async function get_all_categories() {

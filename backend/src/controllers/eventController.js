@@ -1,4 +1,4 @@
-import { get_event_by_id, get_all_categories, get_all_events, get_all_published_events, get_events_of_org, get_events_by_category, test_inesrt, test_retrieve } from "../services/eventServices.js";
+import { get_event_by_id, get_all_categories, get_all_events, get_all_published_events, get_events_of_org, get_events_by_category, test_inesrt, test_retrieve, get_events_by_region } from "../services/eventServices.js";
 
 export async function test_inesrt_handler(req, res) {
     try {
@@ -82,6 +82,17 @@ export async function get_events_by_category_handler (req, res) {
     try {
         const {category} = req.query;
         const result = await get_events_by_category(category);
+        return res.json({result});
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
+export async function get_events_by_region_handler (req, res) {
+    try {
+        const {region} = req.query;
+        const result = await get_events_by_region(region);
         return res.json({result});
     } catch (err) {
         console.error(err);

@@ -13,7 +13,7 @@ const openai = createOpenAI({
 
 const BASE = "http://localhost:3001";
 
-const system = `
+const og_system = `
       Role: 
         You are an intelligent volunteering opportunity recommendation engine that connects individuals with meaningful volunteer events and projects that align with their interests, skills, and availability. 
 
@@ -44,6 +44,52 @@ const system = `
 
       Tone and Style: 
         Empathetic, purposeful, and informative. Focus on relevance, impact, and personal connection to the cause. Avoid sales-like or generic phrasing.
+    `
+
+const system = `
+      Role: 
+        You are an intelligent volunteering opportunity recommendation engine that connects individuals with meaningful volunteer events and projects that align with their interests, skills, and availability. 
+
+      Goal: 
+        Recommend volunteer opportunities that best match the user’s preferences, schedule, and causes they care about.
+
+      Instructions: 
+        Interpret the user’s input to identify: 
+          Causes they care about (e.g., environment, education, health, animal welfare, community development).
+          Relevant skills or roles (e.g., teaching, organizing, mentoring, manual work, logistics).
+          Availability (specific dates, weekends, ongoing commitments).
+          Motivation or goals (e.g., giving back, meeting people, skill-building).
+          Search the available volunteering event data and select opportunities that best align with those factors.
+
+      If the user’s information is incomplete, ask clarifying questions such as:
+        “Which causes are you most passionate about?”
+        “Do you prefer one-time events or ongoing volunteer roles?”
+
+      Tone and Style: 
+        Empathetic, purposeful, and informative. Focus on relevance, impact, and personal connection to the cause. Avoid sales-like or generic phrasing.
+
+      When you recommend opportunities:
+        - First, write a short friendly paragraph explaining why you chose them.
+        - No need to output a text version of the recommendations.
+        - For time, return the start time to the end time and include either AM or PM.
+        - Return the data in 'Day Month, Year'
+        - Ensure proper capitalisation.
+        - Then output a JSON array called "events" in the format:
+        [
+          {
+            "title": "string",
+            "date": "string",
+            "time": "string",
+            "location": "string",
+            "organization": "string",
+            "description": "string",
+            "image_url": "string",
+            "skills": "string",
+          },
+          ...
+        ]
+
+      Do not wrap the JSON in code blocks or additional text.
     `
 
 // Tools
@@ -80,13 +126,38 @@ const getEventsByCategoryTool = tool({
   }
 })
 
+const getEventsByRegionTool = tool({
+  description: "Retreive a list of volunteering events that are located in a specific region from backend api.",
+  inputSchema: z.object({
+    region: z.string().describe("The region to filter by")
+  }),
+  execute: async ({region}) => {
+    try {
+      const res = await axios.get(`${BASE}/events/get_events_by_region?region=${encodeURIComponent(region.toLowerCase())}`);
+      
+      const data = res.data.result || res.data || [];
+      if (Array.isArray(data) && data.length > 0) return data;
+
+      const similar = res.data.result.filter(event => {
+        event.category.toLowerCase().includes(category.toLowerCase);
+      })
+      
+      return similar.length > 0 ? similar : [];
+    } catch (err) {
+      console.error("GetEventsByRegionTool Error: ", err);
+      return {error: err};
+    }
+  }
+})
+
 async function runAgent(messages) {
   const response = streamText({
     model: openai('gpt-4o-mini'),
     messages,
     tools: {
       getAllEvents: getAllEventsTool,
-      getEventByCategory: getEventsByCategoryTool,
+      getEventsByCategory: getEventsByCategoryTool,
+      getEventsByRegion: getEventsByRegionTool,
     },
   });
 
