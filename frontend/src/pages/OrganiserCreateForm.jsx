@@ -1,122 +1,312 @@
-import React, { useState, useMemo } from "react";
-import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import Navbar from "./Navbar";
+import { useAuth } from "../contexts/AuthProvider";
 
-// CRA -> REACT_APP_*  |  Vite -> import.meta.env.VITE_*
-const API_KEY = process.env.REACT_APP_MAPS_API_KEY;
+export default function OrganiserCreateForm() {
+  const nav = useNavigate();
+  const { auth } = useAuth?.() || {};
 
-export default function MapForm({
-  defaultCenter = { lat: 1.3521, lng: 103.8198 }, // SG default; override if you want
-  defaultZoom = 11,
-}) {
-  const [formData, setFormData] = useState({ title: "", postalCode: "" });
-  const [coordinates, setCoordinates] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [err, setErr] = useState("");
+  const [preview, setPreview] = useState(null);
 
-  const mapContainerStyle = useMemo(
-    () => ({ width: "100%", height: "400px" }),
-    []
-  );
+  const [form, setForm] = useState({
+    title: "",
+    description: "",
+    location: "",
+    capacity: "",
+    start_date: "",
+    end_date: "",
+    start_time: "",
+    end_time: "",
+    is_published: false,
+    hours: "",
+    status: "draft",
+    category: "",
+    longitude: "",
+    latitude: "",
+    region: "",
+    image: null, // optional image file
+  });
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((p) => ({ ...p, [name]: value }));
+  const onChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setForm((f) => ({
+      ...f,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   };
 
-  const geocodePostalCode = async (postalCode) => {
-    if (!window.google?.maps) throw new Error("Google Maps not loaded yet");
-    const geocoder = new window.google.maps.Geocoder();
-    return new Promise((resolve, reject) => {
-      geocoder.geocode({ address: postalCode }, (results, status) => {
-        if (status === "OK" && results?.[0]?.geometry?.location) {
-          const loc = results[0].geometry.location;
-          resolve({ lat: loc.lat(), lng: loc.lng(), address: results[0].formatted_address });
-        } else {
-          reject(new Error("Geocode failed: " + status));
-        }
-      });
-    });
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setForm((f) => ({ ...f, image: file }));
+      setPreview(URL.createObjectURL(file));
+    }
   };
 
-  const handleSubmit = async (e) => {
+  const validate = () => {
+    if (!form.title.trim()) return "Title is required.";
+    if (!form.start_date || !form.end_date)
+      return "Start and end dates are required.";
+    if (new Date(form.end_date) < new Date(form.start_date))
+      return "End date cannot be earlier than start date.";
+    if (!form.start_time || !form.end_time)
+      return "Start and end times are required.";
+    return "";
+  };
+
+  const submit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError("");
+    const v = validate();
+    if (v) return setErr(v);
+    setErr("");
+    setSaving(true);
+
     try {
-      const loc = await geocodePostalCode(formData.postalCode.trim());
-      setCoordinates(loc);
+      const data = new FormData();
+      data.append("org_id", auth?.id || "");
+      Object.entries(form).forEach(([key, value]) => {
+        if (key === "image" && value) data.append("image", value);
+        else if (key !== "image") data.append(key, value);
+      });
 
-      // TODO: send to your backend
-      // await axios.post('/organisers/events', { ...formData, location: loc })
+      await axios.post("http://localhost:3001/organisers/events", data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
-      console.log("Saved payload:", { ...formData, location: loc });
-    } catch (err) {
-      setError("Could not find location for this postal code.");
-      console.error(err);
+      nav("/organiser/dashboard");
+    } catch (e2) {
+      setErr(e2?.response?.data?.message || "Failed to create event.");
     } finally {
-      setIsLoading(false);
+      setSaving(false);
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Add Location</h1>
+    <>
+      <Navbar />
+      <div className="container py-4">
+        <h2 className="mb-3">Create Event</h2>
+        {err && <div className="alert alert-danger">{err}</div>}
 
-      <form onSubmit={handleSubmit} className="mb-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <div>
-            <label className="block text-sm font-medium mb-2">Title *</label>
-            <input
-              name="title"
-              value={formData.title}
-              onChange={handleInputChange}
-              required
-              className="w-full px-3 py-2 border rounded-md"
-              placeholder="Beach Cleanup"
-            />
+        <form className="card p-3" onSubmit={submit}>
+          <div className="row g-3">
+            <div className="col-md-8">
+              <label className="form-label">Title *</label>
+              <input
+                name="title"
+                value={form.title}
+                onChange={onChange}
+                className="form-control"
+                required
+              />
+            </div>
+
+            <div className="col-md-4">
+              <label className="form-label">Category</label>
+              <input
+                name="category"
+                value={form.category}
+                onChange={onChange}
+                className="form-control"
+              />
+            </div>
+
+            <div className="col-12">
+              <label className="form-label">Description</label>
+              <textarea
+                name="description"
+                value={form.description}
+                onChange={onChange}
+                className="form-control"
+                rows={4}
+              />
+            </div>
+
+            <div className="col-md-8">
+              <label className="form-label">Location</label>
+              <input
+                name="location"
+                value={form.location}
+                onChange={onChange}
+                className="form-control"
+              />
+            </div>
+
+            <div className="col-md-4">
+              <label className="form-label">Region</label>
+              <input
+                name="region"
+                value={form.region}
+                onChange={onChange}
+                className="form-control"
+              />
+            </div>
+
+            {/* DATES */}
+            <div className="col-md-6">
+              <label className="form-label">Start Date *</label>
+              <input
+                type="date"
+                name="start_date"
+                value={form.start_date}
+                onChange={onChange}
+                className="form-control"
+                required
+              />
+            </div>
+
+            <div className="col-md-6">
+              <label className="form-label">End Date *</label>
+              <input
+                type="date"
+                name="end_date"
+                value={form.end_date}
+                onChange={onChange}
+                className="form-control"
+                required
+              />
+            </div>
+
+            {/* TIMES */}
+            <div className="col-md-6">
+              <label className="form-label">Start Time *</label>
+              <input
+                type="time"
+                name="start_time"
+                value={form.start_time}
+                onChange={onChange}
+                className="form-control"
+                required
+              />
+            </div>
+
+            <div className="col-md-6">
+              <label className="form-label">End Time *</label>
+              <input
+                type="time"
+                name="end_time"
+                value={form.end_time}
+                onChange={onChange}
+                className="form-control"
+                required
+              />
+            </div>
+
+            {/* OTHER DETAILS */}
+            <div className="col-md-4">
+              <label className="form-label">Capacity</label>
+              <input
+                type="number"
+                min="0"
+                name="capacity"
+                value={form.capacity}
+                onChange={onChange}
+                className="form-control"
+              />
+            </div>
+
+            <div className="col-md-4">
+              <label className="form-label">Hours</label>
+              <input
+                type="number"
+                min="0"
+                name="hours"
+                value={form.hours}
+                onChange={onChange}
+                className="form-control"
+              />
+            </div>
+
+            <div className="col-md-4">
+              <label className="form-label">Status</label>
+              <select
+                name="status"
+                value={form.status}
+                onChange={onChange}
+                className="form-select"
+              >
+                <option value="draft">Draft</option>
+                <option value="published">Published</option>
+                <option value="closed">Closed</option>
+              </select>
+            </div>
+
+            <div className="col-12">
+              <div className="form-check">
+                <input
+                  id="is_published"
+                  className="form-check-input"
+                  type="checkbox"
+                  name="is_published"
+                  checked={form.is_published}
+                  onChange={onChange}
+                />
+                <label className="form-check-label" htmlFor="is_published">
+                  Publish immediately
+                </label>
+              </div>
+            </div>
+
+            <div className="col-md-6">
+              <label className="form-label">Latitude</label>
+              <input
+                name="latitude"
+                value={form.latitude}
+                onChange={onChange}
+                className="form-control"
+              />
+            </div>
+
+            <div className="col-md-6">
+              <label className="form-label">Longitude</label>
+              <input
+                name="longitude"
+                value={form.longitude}
+                onChange={onChange}
+                className="form-control"
+              />
+            </div>
+
+            <div className="col-12">
+              <label className="form-label">Upload Event Image (optional)</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="form-control"
+              />
+              {preview && (
+                <div className="mt-2">
+                  <img
+                    src={preview}
+                    alt="Preview"
+                    style={{ maxHeight: "200px", borderRadius: "8px" }}
+                  />
+                </div>
+              )}
+            </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium mb-2">Postal Code *</label>
-            <input
-              name="postalCode"
-              value={formData.postalCode}
-              onChange={handleInputChange}
-              required
-              className="w-full px-3 py-2 border rounded-md"
-              placeholder="e.g., 460106"
-            />
+
+          <div className="mt-3 d-flex gap-2">
+            <button type="submit" className="btn btn-success" disabled={saving}>
+              {saving ? "Saving..." : "Create Event"}
+            </button>
+            <button
+              type="button"
+              className="btn btn-outline-secondary"
+              onClick={() => nav("/organiser/dashboard")}
+              disabled={saving}
+            >
+              Back to Dashboard
+            </button>
           </div>
-        </div>
-
-        {error && <div className="mb-4 p-3 bg-red-100 border text-red-700 rounded">{error}</div>}
-
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="px-6 py-2 bg-blue-600 text-white rounded-md disabled:opacity-50"
-        >
-          {isLoading ? "Finding Location..." : "Add Location"}
-        </button>
-      </form>
-
-      <div className="border rounded-lg overflow-hidden">
-        <LoadScript googleMapsApiKey={API_KEY} libraries={["places"]}>
-          <GoogleMap
-            mapContainerStyle={mapContainerStyle}
-            center={coordinates || defaultCenter}
-            zoom={coordinates ? 15 : defaultZoom}
-          >
-            {coordinates && <Marker position={coordinates} title={formData.title} />}
-          </GoogleMap>
-        </LoadScript>
+        </form>
       </div>
-
-      {coordinates && (
-        <div className="mt-4 p-3 bg-gray-100 rounded-md text-sm">
-          Location: {coordinates.lat.toFixed(6)}, {coordinates.lng.toFixed(6)}
-          {coordinates.address ? ` • ${coordinates.address}` : ""}
-        </div>
-      )}
-    </div>
+    </>
   );
 }
+
