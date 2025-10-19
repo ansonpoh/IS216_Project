@@ -6,6 +6,15 @@ export default function Opportunities() {
   const [opportunities, setOpportunities] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const [categories, setCategories] = useState([]);
+  const [regions, setRegions] = useState([]);
+
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const [regionFilter, setRegionFilter] = useState("");
+  const [dateFromFilter, setDateFromFilter] = useState("");
+  const [dateToFilter, setDateToFilter] = useState("");
+
+  // Fetch events on mount
   useEffect(() => {
     const url = `http://localhost:3001/events/get_all_events`;
     setLoading(true);
@@ -64,6 +73,25 @@ export default function Opportunities() {
       .finally(() => setLoading(false));
   }, []);
 
+  // Fetch categories and regions on mount
+  useEffect(() => {
+    // Fetch categories
+    fetch(`http://localhost:3001/events/get_all_categories`)
+      .then((res) => res.json())
+      .then((json) => {
+        setCategories(Array.isArray(json.result) ? json.result : []);
+      })
+      .catch((err) => console.error("Error loading categories", err));
+
+    // Fetch regions
+    fetch(`http://localhost:3001/events/get_all_regions`)
+      .then((res) => res.json())
+      .then((json) => {
+        setRegions(Array.isArray(json.result) ? json.result : []);
+      })
+      .catch((err) => console.error("Error loading regions", err));
+  }, []);
+
   if (loading) {
     return (
       <>
@@ -86,47 +114,117 @@ export default function Opportunities() {
     <>
       <Navbar />
       <h1>Opportunities</h1>
-      <div className="card-grid">
-        {opportunities.map((op) => (
-          <div className="event-card" key={op.event_id}>
-            <div className="card-image">
-              {op.image_url && <img src={op.image_url} alt={op.title} />}
-              <span className={`status-badge ${op.status}`}>{op.status}</span>
-            </div>
 
-            <div className="card-content">
-              <h2 className="event-title">{op.title}</h2>
-              <p>{op.description}</p>
-              <div className="card-info">
-                {/* TODO: possibly change the emojis to icons for cleaner look? */}
-                <p>
-                  📍 <span className="info-text">{op.location || "N/A"}</span>
-                </p>
-                <p>
-                  🗓️{" "}
-                  <span className="info-text">
-                    {formatDate(op.start_date)} {formatTime(op.start_time)} -{" "}
-                    {formatTime(op.end_time)}
-                  </span>
-                </p>
-                <p>
-                  👥Capacity: {op.capacity ?? "N/A"}
-                </p>
+      {/* Filters - add dropdowns here using categories and regions */}
+      <div className="filters">
+        <select
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value)}
+        >
+          <option value="">All Categories</option>
+          {categories.map((catObj) => (
+            <option key={catObj.category} value={catObj.category}>
+              {catObj.category}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={regionFilter}
+          onChange={(e) => setRegionFilter(e.target.value)}
+        >
+          <option value="">All Regions</option>
+          {regions.map((regObj) => (
+            <option key={regObj.region} value={regObj.region}>
+              {regObj.region}
+            </option>
+          ))}
+        </select>
+
+        {/* TODO: add placeholder text? to show that it's for date range  */}
+
+        <input
+          type="date"
+          value={dateFromFilter}
+          onChange={(e) => setDateFromFilter(e.target.value)}
+          placeholder="From date"
+        />
+
+        <input
+          type="date"
+          value={dateToFilter}
+          onChange={(e) => setDateToFilter(e.target.value)}
+          placeholder="To date"
+        />
+      </div>
+
+      {/* Filtered opportunities */}
+      <div className="card-grid">
+        {opportunities
+          .filter((op) =>
+            categoryFilter ? op.category === categoryFilter : true
+          )
+          .filter((op) => (regionFilter ? op.region === regionFilter : true))
+          .filter((op) => {
+            if (dateFromFilter) {
+              return new Date(op.start_date) >= new Date(dateFromFilter);
+            }
+            return true;
+          })
+          .filter((op) => {
+            if (dateToFilter) {
+              return new Date(op.start_date) <= new Date(dateToFilter);
+            }
+            return true;
+          })
+          .map((op) => (
+            <div className="event-card" key={op.event_id}>
+              <div className="card-image">
+                {op.image_url && <img src={op.image_url} alt={op.title} />}
+                <span className={`status-badge ${op.status}`}>{op.status}</span>
+              </div>
+
+              <div className="card-content">
+                <h2 className="event-title">{op.title}</h2>
+                <p>{op.description}</p>
+                <div className="card-info">
+                  <p>
+                    <i
+                      className="bi bi-geo-alt-fill"
+                      style={{ marginRight: "5px" }}
+                    ></i>
+                    <span className="info-text">{op.location || "N/A"}</span>
+                  </p>
+                  <p>
+                    <i
+                      className="bi bi-calendar-event"
+                      style={{ marginRight: "5px" }}
+                    ></i>
+                    <span className="info-text">
+                      {formatDate(op.start_date)} - {formatTime(op.start_time)}{" "}
+                      - {formatTime(op.end_time)}
+                    </span>
+                  </p>
+                  <p>
+                    <i
+                      className="bi bi-people-fill"
+                      style={{ marginRight: "5px" }}
+                    ></i>
+                    Capacity: {op.capacity ?? "N/A"}
+                  </p>
+                </div>
+              </div>
+
+              <hr className="card-divider" />
+
+              <div className="card-footer">
+                <span className="category-tag">
+                  {op.category ?? "Uncategorized"}
+                </span>
+                <button className="signup-btn">Sign Up</button>
               </div>
             </div>
-
-            <hr className="card-divider" />
-
-            {/* FIXME: ensure the category tag and sign up button are properly aligned, also need to link to the sign-up page for each opportunity */}
-
-            <div className="card-footer">
-              <span className="category-tag">
-                {op.category ?? "Uncategorized"}
-              </span>
-              <button className="signup-btn">Sign Up</button>
-            </div>
-          </div>
-        ))}
+          ))}
       </div>
     </>
   );
