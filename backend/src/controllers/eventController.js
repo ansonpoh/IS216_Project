@@ -1,75 +1,94 @@
-import { get_event_by_id, get_all_categories, get_all_events, get_all_published_events, get_events_of_org, get_events_by_category, get_events_by_region } from "../services/eventServices.js";
+import {
+  get_event_by_id,
+  get_all_categories,
+  get_all_events,
+  get_all_published_events,
+  get_events_of_org,
+  get_events_by_category,
+  get_events_by_region,
+  get_all_regions,
+} from "../services/eventServices.js";
 
-export async function get_all_events_handler (req, res) {
-    try {
-        const result = await get_all_events();
-        return res.json({result});
-    } catch (err) {
-        console.error(err);
-        throw err;
-    }
+export async function get_all_events_handler(req, res) {
+  try {
+    const result = await get_all_events();
+    return res.json({ result });
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
 }
 
-export async function get_event_by_id_handler (req, res) {
-    try {
-        const {event_id} = req.query;
-        const result = await get_event_by_id(event_id);
-        return res.json({result});
-    } catch (err) {
-        console.error(err);
-        throw err;
-    }
+export async function get_event_by_id_handler(req, res) {
+  try {
+    const { event_id } = req.query;
+    const result = await get_event_by_id(event_id);
+    return res.json({ result });
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
 }
 
-export async function get_all_categories_handler (req, res) {
-    try {
-        const result = await get_all_categories();
-        return res.json({result});
-    } catch (err) {
-        console.error(err);
-        throw err;
-    }
+export async function get_all_categories_handler(req, res) {
+  try {
+    const result = await get_all_categories();
+    return res.json({ result });
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
 }
 
-export async function get_all_published_events_handler (req, res) {
-    try {
-        const result = await get_all_published_events();
-        return res.json({result});
-    } catch (err) {
-        console.error(err);
-        throw err;
-    }
+export async function get_all_regions_handler(req, res) {
+  try {
+    const result = await get_all_regions();
+    return res.json({ result });
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
 }
 
-export async function get_events_of_org_handler (req, res) {
-    try {
-        const {org_id} = req.query;
-        const result = await get_events_of_org(org_id);
-        return res.json({result});
-    } catch (err) {
-        console.error(err);
-        throw err;
-    }
+export async function get_all_published_events_handler(req, res) {
+  try {
+    const result = await get_all_published_events();
+    return res.json({ result });
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
 }
 
-export async function get_events_by_category_handler (req, res) {
-    try {
-        const {category} = req.query;
-        const result = await get_events_by_category(category);
-        return res.json({result});
-    } catch (err) {
-        console.error(err);
-        throw err;
-    }
+export async function get_events_of_org_handler(req, res) {
+  try {
+    const { org_id } = req.query;
+    const result = await get_events_of_org(org_id);
+    return res.json({ result });
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
 }
 
-export async function get_events_by_region_handler (req, res) {
-    try {
-        const {region} = req.query;
-        const result = await get_events_by_region(region);
-        return res.json({result});
-    } catch (err) {
-        console.error(err);
-        throw err;
-    }
+export async function get_events_by_category_handler(req, res) {
+  try {
+    const { category } = req.query;
+    const result = await get_events_by_category(category);
+    return res.json({ result });
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+}
+
+export async function get_events_by_region_handler(req, res) {
+  try {
+    const { region } = req.query;
+    const result = await get_events_by_region(region);
+    return res.json({ result });
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
 }
