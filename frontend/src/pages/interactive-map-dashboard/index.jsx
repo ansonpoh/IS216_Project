@@ -1,3 +1,8 @@
+// Updated Regional Filters and Recategorization for Singapore
+
+// FILE: frontend/src/pages/interactive-map-dashboard/index.jsx
+// UPDATE: regions array and category mapping
+
 import React, { useState, useEffect, useRef } from "react";
 import Navbar from "../Navbar.js";
 import MapContainer from "./components/MapContainer";
@@ -7,19 +12,26 @@ const InteractiveMapDashboard = () => {
   const [activeFilters, setActiveFilters] = useState([]);
   const mapRef = useRef(null);
 
-  const categories = [
-    { name: "North", icon: "fa-solid fa-arrow-up" },
-    { name: "South", icon: "fa-solid fa-arrow-down" },
-    { name: "East", icon: "fa-solid fa-arrow-right" },
-    { name: "West", icon: "fa-solid fa-arrow-left" },
-    { name: "Central", icon: "fa-solid fa-asterisk" }
+  // UPDATED REGIONS - Singapore regions
+  const regions = [
+    { name: "Central", icon: "bi-compass" },
+    { name: "North", icon: "bi-arrow-up" },
+    { name: "North-East", icon: "bi-arrow-up-right" },
+    { name: "East", icon: "bi-arrow-right" },
+    { name: "West", icon: "bi-arrow-left" }
   ];
 
-  const features = [
+
+
+  // CATEGORIES
+  const categories = [
+    { name: "Animal", icon: "fa-solid fa-paw" },
     { name: "Children", icon: "bi-balloon-fill" },
     { name: "Elderly", icon: "bi-person-walking" },
-    { name: "Animal", icon: "fa-solid fa-paw" }, 
-    { name: "Environment", icon: "bi-tree-fill" }
+    { name: "Environment", icon: "bi-tree-fill" },
+    { name: "Event Support", icon: "bi-calendar-event" },
+    { name: "Mental Health", icon: "bi-heart-pulse" },
+    { name: "PWDs", icon: "bi-universal-access" }
   ];
 
   const toggleFilter = (filterName) => {
@@ -71,41 +83,41 @@ const InteractiveMapDashboard = () => {
         <div className="card shadow-sm mb-4 border-0">
           <div className="card-body">
             <div className="row">
-              {/* Category Filters */}
+              {/* Region Filters */}
               <div className="col-md-6 mb-3 mb-md-0">
                 <h6 className="fw-semibold text-dark mb-3">Region</h6>
                 <div className="d-flex flex-wrap gap-2">
-                  {categories.map((category) => (
+                  {regions.map((region) => (
                     <button
-                      key={category.name}
-                      className={`btn btn-sm d-flex align-items-center btn-region-${category.name.toLowerCase()} ${
-                        activeFilters.includes(category.name) ? 'active' : ''
+                      key={region.name}
+                      className={`btn btn-sm d-flex align-items-center btn-region-${region.name.toLowerCase().replace('-', '-')} ${
+                        activeFilters.includes(region.name) ? 'active' : ''
                       }`}
-                      onClick={() => toggleFilter(category.name)}
+                      onClick={() => toggleFilter(region.name)}
                     >
-                      <i className={`${category.icon} me-1`}></i>
-                      {category.name}
+                      <i className={`${region.icon} me-1`}></i>
+                      {region.name}
                     </button>
                   ))}
                 </div>
               </div>
 
-              {/* Feature Filters */}
+              {/* Category Filters */}
               <div className="col-md-6">
-                <h6 className="fw-semibold text-dark mb-3">Category</h6>
+                <h6 className="fw-semibold text-dark mb-3">Categories</h6>
                 <div className="d-flex flex-wrap gap-2">
-                  {features.map((feature) => (
+                  {categories.map((category) => (
                     <button
-                      key={feature.name}
+                      key={category.name}
                       className={`btn btn-sm d-flex align-items-center ${
-                        activeFilters.includes(feature.name)
+                        activeFilters.includes(category.name)
                           ? 'btn-info'
                           : 'btn-outline-secondary'
                       }`}
-                      onClick={() => toggleFilter(feature.name)}
+                      onClick={() => toggleFilter(category.name)}
                     >
-                      <i className={`${feature.icon} me-1`}></i>
-                      {feature.name}
+                      <i className={`${category.icon} me-1`}></i>
+                      {category.name}
                     </button>
                   ))}
                 </div>
