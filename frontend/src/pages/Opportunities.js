@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "./Navbar";
+import "../styles/Opportunities.css";
 
 export default function Opportunities() {
   const [opportunities, setOpportunities] = useState([]);
-  const [filter, setFilter] = useState("all");
-  const [sortBy, setSortBy] = useState("date");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const url = `http://localhost:3001/events/get_all_events`;
     setLoading(true);
-    console.log("Fetching opportunities from:", url);
 
     fetch(url)
       .then(async (res) => {
@@ -22,9 +20,6 @@ export default function Opportunities() {
           console.error("Failed to parse JSON:", text);
           throw new Error("Invalid JSON response");
         }
-
-        console.log("Opportunities response:", res.status, json);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
         const data = Array.isArray(json.result) ? json.result : [];
 
@@ -42,35 +37,24 @@ export default function Opportunities() {
             return Number.isNaN(n) ? null : n;
           };
 
-          const lat = toNumber(get("latitude", "lat"));
-          const lng = toNumber(get("longitude", "lng"));
-
           return {
             event_id: get("event_id", "id"),
-            title: get("title", "name") || "Untitled opportunity",
-            description: get("description", "summary", "details", "desc") || "",
-            location: get("location", "postalcode", "address") || "",
-            capacity: toNumber(get("capacity", "volunteersNeeded")) || null,
-            date: get("date", "event_date", "created_at") || null,
-            start_time: get("start_time", "start") || null,
-            end_time: get("end_time", "end") || null,
+            title: get("title") || "Untitled opportunity",
+            description: get("description") || "",
+            location: get("location") || "",
+            capacity: toNumber(get("capacity")) || null,
+            start_date: get("start_date", "date") || null,
+            end_date: get("end_date", "date") || null,
+            start_time: get("start_time") || null,
+            end_time: get("end_time") || null,
             hours: toNumber(get("hours")) || null,
-            status: get("status") || null,
-            category: get("category") || null,
-            latitude: lat,
-            longitude: lng,
-            image_url: get("image_url", "image", "imageUrl") || null,
-            skills:
-              Array.isArray(it.skills)
-                ? it.skills
-                : typeof it.skills === "string" && it.skills.length
-                ? it.skills.split(",").map((s) => s.trim())
-                : [],
-            raw: it,
+            status: get("status") || "pending",
+            category: get("category") || "general",
+            region: get("region") || null,
+            image_url: get("image_url") || null,
           };
         });
 
-        console.log("Normalized opportunities sample:", normalized[0]);
         setOpportunities(normalized);
       })
       .catch((err) => {
@@ -80,7 +64,6 @@ export default function Opportunities() {
       .finally(() => setLoading(false));
   }, []);
 
-  // --- Render starts here ---
   if (loading) {
     return (
       <>
@@ -100,49 +83,54 @@ export default function Opportunities() {
   }
 
   return (
-    
     <>
       <Navbar />
       <h1>Opportunities</h1>
-      <ul style={{ listStyle: "none", padding: 0 }}>
+      <div className="card-grid">
         {opportunities.map((op) => (
-          <li
-            key={op.event_id}
-            style={{
-              border: "1px solid #ccc",
-              marginBottom: "1rem",
-              padding: "1rem",
-              borderRadius: "8px",
-            }}
-          >
-            <h2>{op.title}</h2>
-            <p>{op.description}</p>
-            <p>
-              <strong>Location:</strong> {op.location} <br />
-              <strong>Capacity:</strong> {op.capacity ?? "N/A"} <br />
-              {/* <strong>Event Date:</strong>{" "} */}
-              {/* {op.date ? new Date(op.date).toLocaleDateString() : "N/A"} <br /> */}
-            <strong>Time:</strong> {formatTime(op.start_time)} - {formatTime(op.end_time)}<br/>
-              {/* TO FIX: not sure what the null values are, and how to show which events are recurring/one-time? */}
-              <strong>Date:</strong> {formatDate(op.date)} <br/>
-              <strong>Category:</strong> {op.category ?? "N/A"} <br/>
-              <strong>Status:</strong> {op.status}<br/>
-              {/*TO EDIT: status to be added as a tag on listing */}
-            </p>
-            {op.image_url && (
-              <img
-                src={op.image_url}
-                alt={op.title}
-                style={{ maxWidth: "100%", borderRadius: "8px" }}
-              />
-            )}
-          </li>
+          <div className="event-card" key={op.event_id}>
+            <div className="card-image">
+              {op.image_url && <img src={op.image_url} alt={op.title} />}
+              <span className={`status-badge ${op.status}`}>{op.status}</span>
+            </div>
+
+            <div className="card-content">
+              <h2 className="event-title">{op.title}</h2>
+              <p>{op.description}</p>
+              <div className="card-info">
+                {/* TODO: possibly change the emojis to icons for cleaner look? */}
+                <p>
+                  📍 <span className="info-text">{op.location || "N/A"}</span>
+                </p>
+                <p>
+                  🗓️{" "}
+                  <span className="info-text">
+                    {formatDate(op.start_date)} {formatTime(op.start_time)} -{" "}
+                    {formatTime(op.end_time)}
+                  </span>
+                </p>
+                <p>
+                  👥Capacity: {op.capacity ?? "N/A"}
+                </p>
+              </div>
+            </div>
+
+            <hr className="card-divider" />
+
+            {/* FIXME: ensure the category tag and sign up button are properly aligned, also need to link to the sign-up page for each opportunity */}
+
+            <div className="card-footer">
+              <span className="category-tag">
+                {op.category ?? "Uncategorized"}
+              </span>
+              <button className="signup-btn">Sign Up</button>
+            </div>
+          </div>
         ))}
-      </ul>
+      </div>
     </>
   );
 }
-
 
 const formatDate = (dateStr) => {
   if (!dateStr) return "";
