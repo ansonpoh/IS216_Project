@@ -189,16 +189,29 @@ export default function Opportunities() {
                 <p>{op.description}</p>
                 <div className="card-info">
                   <p>
-                    📍 <span className="info-text">{op.location || "N/A"}</span>
+                    <i
+                      className="bi bi-geo-alt-fill"
+                      style={{ marginRight: "5px" }}
+                    ></i>
+                    <span className="info-text">{op.location || "N/A"}</span>
                   </p>
                   <p>
-                    🗓️{" "}
+                    <i
+                      className="bi bi-calendar-event"
+                      style={{ marginRight: "5px" }}
+                    ></i>
                     <span className="info-text">
                       {formatDate(op.start_date)} - {formatTime(op.start_time)}{" "}
                       - {formatTime(op.end_time)}
                     </span>
                   </p>
-                  <p>👥Capacity: {op.capacity ?? "N/A"}</p>
+                  <p>
+                    <i
+                      className="bi bi-people-fill"
+                      style={{ marginRight: "5px" }}
+                    ></i>
+                    Capacity: {op.capacity ?? "N/A"}
+                  </p>
                 </div>
               </div>
 
