@@ -100,6 +100,7 @@ export default function Opportunities() {
   }
 
   return (
+    
     <>
       <Navbar />
       <h1>Opportunities</h1>
@@ -119,11 +120,14 @@ export default function Opportunities() {
             <p>
               <strong>Location:</strong> {op.location} <br />
               <strong>Capacity:</strong> {op.capacity ?? "N/A"} <br />
-              <strong>Date:</strong>{" "}
-              {op.date ? new Date(op.date).toLocaleDateString() : "N/A"} <br />
-              <strong>Category:</strong> {op.category ?? "N/A"} <br />
-              <strong>Skills:</strong>{" "}
-              {op.skills.length > 0 ? op.skills.join(", ") : "None"}
+              {/* <strong>Event Date:</strong>{" "} */}
+              {/* {op.date ? new Date(op.date).toLocaleDateString() : "N/A"} <br /> */}
+            <strong>Time:</strong> {formatTime(op.start_time)} - {formatTime(op.end_time)}<br/>
+              {/* TO FIX: not sure what the null values are, and how to show which events are recurring/one-time? */}
+              <strong>Date:</strong> {formatDate(op.date)} <br/>
+              <strong>Category:</strong> {op.category ?? "N/A"} <br/>
+              <strong>Status:</strong> {op.status}<br/>
+              {/*TO EDIT: status to be added as a tag on listing */}
             </p>
             {op.image_url && (
               <img
@@ -138,3 +142,26 @@ export default function Opportunities() {
     </>
   );
 }
+
+
+const formatDate = (dateStr) => {
+  if (!dateStr) return "";
+  return new Date(dateStr).toLocaleDateString("en-SG", {
+    weekday: "short",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+};
+
+const formatTime = (timeStr) => {
+  if (!timeStr) return "";
+  const [hours, minutes] = timeStr.split(":");
+  const date = new Date();
+  date.setHours(Number(hours), Number(minutes));
+  return date.toLocaleTimeString("en-SG", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+};
