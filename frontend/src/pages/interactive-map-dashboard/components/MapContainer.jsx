@@ -52,6 +52,34 @@ const MapContainer = React.forwardRef(({ activeFilters = [] }, ref) => {
 
         // Feature-based filtering
         switch (filterLower) {
+          case 'pwds':
+            return category.includes('pwd') || 
+                   category.includes('disability') || 
+                   category.includes('disabled') ||
+                   title.includes('pwd') ||
+                   title.includes('disability') ||
+                   description.includes('pwd') ||
+                   description.includes('disability');
+
+          case 'mental health':
+            return category.includes('mental') || 
+                   category.includes('mental health') || 
+                   category.includes('psychology') ||
+                   category.includes('wellbeing') ||
+                   title.includes('mental') ||
+                   description.includes('mental health');
+
+          case 'event support':
+            return category.includes('event support') || 
+                   category.includes('carnival') ||
+                   category.includes('fair') ||
+                   category.includes('support') ||
+                   title.includes('carnival') ||
+                   title.includes('fair') ||
+                   title.includes('booth') ||
+                   description.includes('carnival') ||
+                   description.includes('booth');
+
           case 'children':
             return category.includes('youth') || 
                    category.includes('children') || 
@@ -199,15 +227,28 @@ const MapContainer = React.forwardRef(({ activeFilters = [] }, ref) => {
         animation: window.google.maps.Animation.DROP
       });
 
+      // Capitalize category properly
+      const capitalizeCategory = (cat) => {
+        if (!cat) return '';
+        // Handle special cases
+        if (cat.toLowerCase() === 'pwds') return 'PWDs';
+        if (cat.toLowerCase() === 'mental health') return 'Mental Health';
+        // Capitalize first letter of each word
+        return cat
+          .toLowerCase()
+          .split(' ')
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ');
+      };
+
       const infoWindow = new window.google.maps.InfoWindow({
         content: `
           <div style="padding: 8px; max-width: 250px;">
             <div style="font-weight: bold; margin-bottom: 4px;">${item.title || 'Opportunity'}</div>
             ${item.organization ? `<div style="font-size: 12px; margin-bottom: 4px; color: #666;">${item.organization}</div>` : ''}
             ${item.description ? `<div style="font-size: 12px; margin-bottom: 4px;">${item.description.substring(0, 100)}...</div>` : ''}
-            ${item.category ? `<div style="font-size: 11px; color: #0066cc; margin-bottom: 4px;">📁 ${item.category}</div>` : ''}
-            ${item.region ? `<div style="font-size: 11px; color: #0066cc; margin-bottom: 4px;">📍 ${item.region}</div>` : ''}
-            <div style="font-size: 12px; color: #666;">${item.location}</div>
+            ${item.category ? `<div style="font-size: 11px; color: #0066cc; margin-bottom: 4px;">📁 ${capitalizeCategory(item.category)}</div>` : ''}
+            <div style="font-size: 12px; color: #666;"><strong>📍 Location:</strong> ${item.location}</div>
           </div>
         `
       });
