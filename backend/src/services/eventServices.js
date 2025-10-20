@@ -91,7 +91,7 @@ export async function get_all_events() {
 
 export async function get_events_by_category(category) {
     try {
-        const query = `select e.*, o.org_name from events e join organisations o on e.org_id = o.org_id where category = $1`;
+        const query = `select e.*, o.org_name from events e join organisations o on e.org_id = o.org_id where category ilike $1`;
         const values = [category];
         const result = await pool.query(query, values);
         return result.rows;
@@ -103,7 +103,7 @@ export async function get_events_by_category(category) {
 
 export async function get_events_by_region(region) {
     try {
-        const query = `select e.*, o.org_name from events e join organisations o on e.org_id = o.org_id where region = $1`;
+        const query = `select e.*, o.org_name from events e join organisations o on e.org_id = o.org_id where region ilike $1`;
         const values = [region];
         const result = await pool.query(query, values);
         return result.rows;

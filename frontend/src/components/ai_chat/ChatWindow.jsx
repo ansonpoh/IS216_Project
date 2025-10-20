@@ -50,27 +50,20 @@ export default function ChatWindow() {
       });
 
       const data = res.data;
+      console.log(data)
       if(data.success) {
-        const raw = data.reply.trim();
-        const match = raw.match(/\[[\s\S]*\]/);
-        let events = [];
-        if  (match) {
-          try {
-            events = JSON.parse(match[0]);
-          } catch (e) {
-            console.error("Failed to parse events JSON: ", e);
-          }
-        }
+        const reply = data.reply || {};
+        const paragraph = reply.paragraph?.trim() || "I'm not sure how to respond.";
+        const events = Array.isArray(reply.events) ? reply.events : [];
 
-        const cleanedReply = raw.replace(match?.[0] || '', '').trim();
         setMessages([
           ...newMessages,
           {
             role: "assistant",
-            content: cleanedReply,
-            events: events.length > 0 ? events: null,
-          }
-        ])
+            content: paragraph,
+            events: events.length > 0 ? events : null,
+          },
+        ]);
       } else {
         setMessages([
           ...newMessages,
