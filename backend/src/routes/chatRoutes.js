@@ -132,7 +132,6 @@ const format_reminder = `
             "time": "string",
             "location": "string",
             "organization": "string",
-            "description": "string",
             "image_url": "string",
             "skills": "string",
           },

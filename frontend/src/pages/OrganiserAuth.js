@@ -35,33 +35,35 @@ export default function LoginSignup() {
 
     const handle_register = (e) => {
         e.preventDefault();
-        axios.post("http://localhost:3001/users/register", {username: registerData.username, email: registerData.email, password: registerData.password})
+        axios.post("http://localhost:3001/orgs/register", {org_name: registerData.username, email: registerData.email, password: registerData.password})
             .then((res) => {
                 const data = res.data;
                 if(data.status) {
-                    setAuth({role: "organiser", id: data.id});
-                    nav("/")
+                    // setAuth({role: "organiser", id: data.id});
+                    nav("/organiser/auth")
+                    window.location.reload();
                     // To remove
-                    alert("Registration Success!")
+                    alert("Registration Success! Please login.")
                 } else {
-                    alert("Registration Failed!")
+                    alert(`Registration Failed! ${data.message}`)
                 }
             })
     }
 
     const handle_login = (e) => {
         e.preventDefault();
-        axios.post("http://localhost:3001/users/login", {email: loginData.email, password: loginData.password})
+        axios.post("http://localhost:3001/orgs/login", {email: loginData.email, password: loginData.password})
             .then((res) => {
                 const data = res.data;
                 if(data.status) {
-                setAuth({role: "organiser", id: data.id, token: data.token});
-                nav("/")
-                // To remove
-                alert("Login Success!")
-            } else {
-                alert("Login Failed!")
-            }
+                    console.log(data)
+                    setAuth({role: "organiser", id: data.id, token: data.token});
+                    nav("/")
+                    // To remove
+                    alert("Login Success!")
+                } else {
+                    alert(`Login Failed! ${data.message}`)
+                }
         })
     }
   
@@ -115,7 +117,7 @@ export default function LoginSignup() {
                 <h1>Registration for Organiser</h1>
 
                 <div className="input-box">
-                    <input type="text" placeholder="Username" className={`form-control ${errors.username ? "is-invalid" : ""}`} value={registerData.username} onChange={(e) => setRegisterData({...registerData, username: e.target.value
+                    <input type="text" placeholder="Organisation Name" className={`form-control ${errors.username ? "is-invalid" : ""}`} value={registerData.username} onChange={(e) => setRegisterData({...registerData, username: e.target.value
                     })} required />
                     <i className="bx bxs-user"></i> 
                 </div>

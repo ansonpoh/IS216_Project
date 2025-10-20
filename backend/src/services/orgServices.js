@@ -1,19 +1,45 @@
 import pool from "../config/db.js";
-import bcrypt from "bcrypt";
+import { supabase } from "../config/supabase.js";
 
-const salt_rounds = 10;
 export async function register_org(org_name, email, password) {
-    try {
-        const salt = await bcrypt.genSalt(salt_rounds);
-        const hashed_password = await bcrypt.hash(password, salt);
-        const query = `insert into organisations (org_name, email, password_hash) values ($1, $2, $3)`;
-        const values = [org_name, email, hashed_password];
-        const result = await pool.query(query, values);
-        return result.rowCount > 0;
-    } catch (err) {
-        console.error(err);
-        throw err;
-    }
+  try {
+    const { data, error } = await supabase.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+      user_metadata: { org_name },
+    });
+
+    if (error) throw new Error(`Supabase error: ${error.message}`);
+
+    const supabase_id = data.user.id;
+
+    const query = `
+      INSERT INTO organisations (org_name, email, supabase_id)
+      VALUES ($1, $2, $3)
+      RETURNING org_id, org_name, email, supabase_id
+    `;
+    const values = [org_name, email, supabase_id];
+    const result = await pool.query(query, values);
+
+    return {
+      status: true,
+      id: result.rows[0].org_id,
+      supabase_id,
+    };
+  } catch (err) {
+    console.error("Register org error:", err.message);
+    return { status: false, error: err.message };
+  }
+}
+
+export async function login_org(email, password) {
+    const {data, error} = await supabase.auth.signInWithPassword({email, password});
+    if(error) {
+        console.log(error);
+        return {status: false}
+    };
+    return {token: data.session.access_token, org:data.user};
 }
 
 export async function check_if_org_email_in_use(email) {

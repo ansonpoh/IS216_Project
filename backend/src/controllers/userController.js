@@ -22,7 +22,7 @@ export async function register_user_handler (req,res) {
         const {username, email, password} = req.body;
         const email_in_use = await check_if_user_email_in_use(email);
         if(email_in_use) {
-            return res.json({status: false})
+            return res.json({status: false, message:"Email in use"})
         }
 
         const result = await register_user(username, email, password);
@@ -50,22 +50,6 @@ export async function login_user_handler (req, res) {
                 id: user[0].user_id,
                 message: "Login successful",
             });
-        // const email_in_use = await check_if_user_email_in_use(email);
-        // if(!email_in_use) {
-        //     return res.json({status: false, message: "Email not registered!"});
-        // }
-        
-        // const user = await get_user_by_email(email);
-        // const data = user[0];
-        // const hashed_password = data.password_hash;
-        // const user_id = data.user_id;
-        // const bcryptCompare = util.promisify(bcrypt.compare);
-        // const passwords_match = await bcryptCompare(password, hashed_password);
-        // if(passwords_match) {
-        //     return res.json({status: true, id: user_id});
-        // } else {
-        //     return res.json({status: false});
-        // }
 
     } catch (err) {
         console.error(err);

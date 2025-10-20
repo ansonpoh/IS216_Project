@@ -39,12 +39,13 @@ export default function LoginSignup() {
             .then((res) => {
                 const data = res.data;
                 if(data.status) {
-                    setAuth({role: "volunteer", id: data.id});
-                    nav("/")
+                    // setAuth({role: "volunteer", id: data.id});
+                    nav("/volunteer/auth")
                     // To remove
-                    alert("Registration Success!")
+                    window.location.reload();
+                    alert("Registration Success! Please login")
                 } else {
-                    alert("Registration Failed!")
+                    alert(`Registration Failed! ${data.message}`)
                 }
             })
     }
@@ -55,15 +56,15 @@ export default function LoginSignup() {
             .then((res) => {
                 const data = res.data;
                 if(data.status) {
-                setAuth({role: "volunteer", id: data.id, token: data.token});
-                nav("/")
-                // To remove
-                alert("Login Success!")
-            } else {
-                alert("Login Failed!")
-            }
-        })
-    }
+                    setAuth({role: "volunteer", id: data.id, token: data.token});
+                    nav("/")
+                    // To remove
+                    alert("Login Success!")
+                } else {
+                    alert("Login Failed!")
+                }
+            })
+        }
   
   return (
     <>
@@ -99,8 +100,8 @@ export default function LoginSignup() {
                     Login
                 </button>
                 
-                {/* <p>or login with social platforms</p>
-                <div className="social-icons">
+                <p>or login with social platforms</p>
+                {/* <div className="social-icons">
                     <a href="#"><i className="bx bxl-google"></i></a>
                     <a href="#"><i className="bx bxl-facebook"></i></a>
                     <a href="#"><i className="bx bxl-github"></i></a>
