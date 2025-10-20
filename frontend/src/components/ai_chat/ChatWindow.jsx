@@ -27,7 +27,7 @@ export default function ChatWindow() {
         setMessages([
           {
             role: "assistant",
-            content: "Hello! I'm VolunteerConnect AI, your personal assistant to discover meaningful volunteering opportunities. How can I help you get started today?",
+            content: "Hello! I'm Vera, your personal assistant to discover meaningful volunteering opportunities. How can I help you get started today?",
           }
         ])
         setLoading(false)
@@ -156,16 +156,6 @@ export default function ChatWindow() {
                 <strong>Use my professional skills</strong>
                 <br />
                 <small>Match my expertise with meaningful causes</small>
-              </button>
-
-              <button
-                className="btn btn-outline-secondary text-start suggestion-card"
-                onClick={() => handleSuggestionClick("Make local impact")}
-              >
-                <i className="bi bi-geo-alt text-primary me-2"></i>
-                <strong>Make local impact</strong>
-                <br />
-                <small>Find ways to help my immediate community</small>
               </button>
             </div>
           </div>
