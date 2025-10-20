@@ -1,49 +1,72 @@
-.btn-region-north {
-    background-color: #ff4444 !important;
-    color: white !important;
-    opacity: 0.5;
-}
-.btn-region-north.active, .btn-region-north:hover {
-    opacity: 1;
-    background-color: #cc0000 !important;
-}
+/* Updated styles for Singapore regions */
+/* FILE: frontend/src/pages/interactive-map-dashboard/styles.css */
 
-.btn-region-south {
-    background-color: #8B4513 !important;
-    color: white !important;
-    opacity: 0.5;
-}
-.btn-region-south.active, .btn-region-south:hover {
-    opacity: 1;
-    background-color: #5c2d0d !important;
-}
-
-.btn-region-east {
-    background-color: #4CAF50 !important;
-    color: white !important;
-    opacity: 0.5;
-}
-.btn-region-east.active, .btn-region-east:hover {
-    opacity: 1;
-    background-color: #388E3C !important;
-}
-
-.btn-region-west {
-    background-color: #2196F3 !important;
-    color: white !important;
-    opacity: 0.5;
-}
-.btn-region-west.active, .btn-region-west:hover {
-    opacity: 1;
-    background-color: #1976D2 !important;
-}
-
+/* CENTRAL - Yellow */
 .btn-region-central {
     background-color: #FFD700 !important;
-    color: black !important;
+    color: #333 !important;
     opacity: 0.5;
+    border: none;
 }
-.btn-region-central.active, .btn-region-central:hover {
+.btn-region-central.active, 
+.btn-region-central:hover {
     opacity: 1;
     background-color: #FFC107 !important;
+    box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
+}
+
+/* NORTH - Red */
+.btn-region-north {
+    background-color: #DC3545 !important;
+    color: white !important;
+    opacity: 0.5;
+    border: none;
+}
+.btn-region-north.active, 
+.btn-region-north:hover {
+    opacity: 1;
+    background-color: #C82333 !important;
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+}
+
+/* NORTH-EAST - Purple */
+.btn-region-north-east {
+    background-color: #9C27B0 !important;
+    color: white !important;
+    opacity: 0.5;
+    border: none;
+}
+.btn-region-north-east.active, 
+.btn-region-north-east:hover {
+    opacity: 1;
+    background-color: #7B1FA2 !important;
+    box-shadow: 0 2px 8px rgba(156, 39, 176, 0.3);
+}
+
+/* EAST - Green */
+.btn-region-east {
+    background-color: #28A745 !important;
+    color: white !important;
+    opacity: 0.5;
+    border: none;
+}
+.btn-region-east.active, 
+.btn-region-east:hover {
+    opacity: 1;
+    background-color: #218838 !important;
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+}
+
+/* WEST - Blue */
+.btn-region-west {
+    background-color: #007BFF !important;
+    color: white !important;
+    opacity: 0.5;
+    border: none;
+}
+.btn-region-west.active, 
+.btn-region-west:hover {
+    opacity: 1;
+    background-color: #0056B3 !important;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
 }
