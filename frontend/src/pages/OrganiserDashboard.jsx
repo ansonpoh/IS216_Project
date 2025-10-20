@@ -2,13 +2,13 @@ import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
-import { useAuth } from "../contexts/AuthProvider"; // optional if you guard by role
+import { AuthProvider, useAuth } from "../contexts/AuthProvider"; // optional if you guard by role
 
 export default function OrganiserDashboard() {
   const nav = useNavigate();
   const { auth } = useAuth?.() || {}; // safe in case hook shape differs
+  const org_id = auth.id;
 
-  // ---- STATE ---------------------------------------------------------------
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
@@ -16,13 +16,6 @@ export default function OrganiserDashboard() {
   const [status, setStatus] = useState("all"); // all | draft | published | closed
   const [sort, setSort] = useState("startAt"); // startAt | createdAt | capacity
 
-  // ---- CONFIG (adjust to your backend) -------------------------------------
-  const API = axios.create({
-    baseURL: "http://localhost:3001",
-    // withCredentials: true, // uncomment if you use cookies/sessions
-  });
-
-  // ---- HELPERS -------------------------------------------------------------
   const fmtDate = (iso) => {
     if (!iso) return "-";
     try {
@@ -42,18 +35,14 @@ export default function OrganiserDashboard() {
     return Math.min(100, Math.round((filled / cap) * 100));
   };
 
-  // ---- DATA FETCH ----------------------------------------------------------
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
         setLoading(true);
         setErr("");
-
-        // Adjust endpoint to your API
-        // Expected shape (example):
-        // [{ id, title, location, startAt, endAt, capacity, approvedCount, status, slug }]
-        const res = await API.get("/organisers/events");
+        const res = await axios.get("http://localhost:3001/events/get_events_of_org", {params: {org_id}});
+        console.log(res);
         if (!cancelled) {
           setEvents(Array.isArray(res.data) ? res.data : res.data?.events || []);
         }
@@ -68,7 +57,6 @@ export default function OrganiserDashboard() {
     };
   }, []);
 
-  // ---- ACTIONS -------------------------------------------------------------
   const goCreate = () => nav("/organiser/opportunities/new"); // <-- point this to your actual form route
 
   const togglePublish = async (ev) => {
@@ -77,7 +65,7 @@ export default function OrganiserDashboard() {
     // optimistic UI
     setEvents((arr) => arr.map((e) => (e.id === id ? { ...e, status: next } : e)));
     try {
-      await API.post(`/organisers/events/${id}/${next === "published" ? "publish" : "unpublish"}`);
+      await axios.post(`/organisers/events/${id}/${next === "published" ? "publish" : "unpublish"}`);
     } catch {
       // revert on error
       setEvents((arr) => arr.map((e) => (e.id === id ? { ...e, status: ev.status } : e)));
@@ -87,7 +75,7 @@ export default function OrganiserDashboard() {
 
   const duplicate = async (ev) => {
     try {
-      const res = await API.post(`/organisers/events/${ev.id}/duplicate`);
+      const res = await axios.post(`/organisers/events/${ev.id}/duplicate`);
       const newEvent = res.data?.event || { ...ev, id: `${ev.id}-copy`, title: ev.title + " (Copy)", status: "draft" };
       setEvents((arr) => [newEvent, ...arr]);
     } catch {
@@ -109,7 +97,6 @@ export default function OrganiserDashboard() {
     }
   };
 
-  // ---- DERIVED VIEW --------------------------------------------------------
   const filtered = useMemo(() => {
     let list = [...events];
 

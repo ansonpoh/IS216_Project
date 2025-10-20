@@ -1,9 +1,11 @@
 import pool from "../config/db.js";
 
-export async function create_event(org_id, title, description, location, capacity, date, start_time, end_time, hours, region, category) {
+export async function create_event(org_id, title, category, description, location, region, start_date, end_date, start_time, end_time, capacity, hours, status, longitude, latitude) {
     try {
-        const query = `insert into events (org_id, title, description, location, capacity, date, start_time, end_time, region, category) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`;
-        const values = [org_id, title, description, location, capacity, date, start_time, end_time, region, category];
+        const query = `insert into events (org_id, title, category, description, location, region, start_date, end_date, start_time, end_time, capacity, hours, status, longitude, latitude) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`;
+
+        const values = [org_id, title, category, description, location, region, start_date, end_date, start_time, end_time, capacity, hours, status, longitude, latitude];
+
         const result = await pool.query(query, values);
         return result.rowCount > 0;
     } catch (err) {
@@ -95,7 +97,7 @@ export async function get_all_published_events() {
 
 export async function get_events_of_org(org_id) {
     try {
-        const query = `select * from events where org_id = $1`;
+        const query = `select * from events where org_id=$1::uuid`;
         const values = [org_id];
         const result = await pool.query(query, values);
         return result.rows;

@@ -12,22 +12,25 @@ export default function OrganiserCreateForm() {
   const [err, setErr] = useState("");
   const [preview, setPreview] = useState(null);
 
+  const org_id = auth.id;
+
   const [form, setForm] = useState({
+    org_id: org_id,
     title: "",
+    category: "",
     description: "",
     location: "",
-    capacity: "",
+    region: "",
     start_date: "",
     end_date: "",
     start_time: "",
     end_time: "",
-    is_published: false,
+    capacity: "",
     hours: "",
     status: "draft",
-    category: "",
     longitude: "",
     latitude: "",
-    region: "",
+    is_published: false,
     image: null, // optional image file
   });
 
@@ -66,18 +69,17 @@ export default function OrganiserCreateForm() {
     setSaving(true);
 
     try {
-      const data = new FormData();
-      data.append("org_id", auth?.id || "");
-      Object.entries(form).forEach(([key, value]) => {
-        if (key === "image" && value) data.append("image", value);
-        else if (key !== "image") data.append(key, value);
-      });
-
-      await axios.post("http://localhost:3001/organisers/events", data, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-
-      nav("/organiser/dashboard");
+      await axios.post("http://localhost:3001/events/create_event", form)
+        .then((res) => {
+          const data = res.data;
+          if(data.status) {
+            alert("Event created successfully!")
+            nav("/organiser/dashboard")
+          } else {
+            alert("Event creation failed!")
+            window.location.reload();
+          }
+        });
     } catch (e2) {
       setErr(e2?.response?.data?.message || "Failed to create event.");
     } finally {
@@ -106,12 +108,13 @@ export default function OrganiserCreateForm() {
             </div>
 
             <div className="col-md-4">
-              <label className="form-label">Category</label>
+              <label className="form-label">Category *</label>
               <input
                 name="category"
                 value={form.category}
                 onChange={onChange}
                 className="form-control"
+                required
               />
             </div>
 
@@ -127,22 +130,24 @@ export default function OrganiserCreateForm() {
             </div>
 
             <div className="col-md-8">
-              <label className="form-label">Location</label>
+              <label className="form-label">Location (Postal Code) *</label>
               <input
                 name="location"
                 value={form.location}
                 onChange={onChange}
                 className="form-control"
+                required
               />
             </div>
 
             <div className="col-md-4">
-              <label className="form-label">Region</label>
+              <label className="form-label">Region *</label>
               <input
                 name="region"
                 value={form.region}
                 onChange={onChange}
                 className="form-control"
+                required
               />
             </div>
 

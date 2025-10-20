@@ -7,7 +7,26 @@ import {
   get_events_by_category,
   get_events_by_region,
   get_all_regions,
+  create_event,
 } from "../services/eventServices.js";
+
+export async function create_event_handler (req, res) {
+  try {
+    const {org_id, title, category, description, location, region, start_date, end_date, start_time, end_time, capacity, hours, status, longitude, latitude} = req.body
+
+    const result = await create_event(org_id, title, category, description, location, region, start_date, end_date, start_time, end_time, capacity, hours, status, longitude, latitude);
+
+    if(result) {
+      return res.json({status: true});
+    } else {
+      return res.json({status: false})
+    }
+
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+}
 
 export async function get_all_events_handler(req, res) {
   try {
