@@ -30,6 +30,7 @@ const MapContainer = React.forwardRef(({ activeFilters = [] }, ref) => {
   }, [activeFilters, opportunities]);
 
   // Filter opportunities based on active filters
+  // Filter opportunities based on active filters
   const filteredOpportunities = useMemo(() => {
     if (activeFilters.length === 0) return opportunities;
 
@@ -40,111 +41,123 @@ const MapContainer = React.forwardRef(({ activeFilters = [] }, ref) => {
       const title = (opp.title || '').toLowerCase().trim();
       const description = (opp.description || '').toLowerCase().trim();
 
-      // Check if this opportunity matches ANY of the active filters
-      return activeFilters.some(filter => {
+      // Check if this opportunity matches ALL of the active filters (AND logic)
+      return activeFilters.every(filter => {
         const filterLower = filter.toLowerCase().trim();
 
-        // Direct category match
-        if (category === filterLower) return true;
+        // Helper function to check if filter matches opportunity
+        const matchesFilter = () => {
+          // Direct category match
+          if (category === filterLower) return true;
 
-        // Direct region match (North, South, East, West, Central)
-        if (region === filterLower) return true;
+          // Direct region match (North, South, East, West, Central)
+          if (region === filterLower) return true;
 
-        // Feature-based filtering
-        switch (filterLower) {
-          case 'pwds':
-            return category.includes('pwd') || 
-                   category.includes('disability') || 
-                   category.includes('disabled') ||
-                   title.includes('pwd') ||
-                   title.includes('disability') ||
-                   description.includes('pwd') ||
-                   description.includes('disability');
+          // Feature-based filtering
+          switch (filterLower) {
+            case 'north-east':
+              return region === 'north-east' || 
+                     region.includes('north-east') ||
+                     title.includes('north-east') ||
+                     title.includes('northeast') ||
+                     description.includes('north-east') ||
+                     description.includes('northeast');
 
-          case 'mental health':
-            return category.includes('mental') || 
-                   category.includes('mental health') || 
-                   category.includes('psychology') ||
-                   category.includes('wellbeing') ||
-                   title.includes('mental') ||
-                   description.includes('mental health');
+            case 'pwds':
+              return category.includes('pwd') || 
+                     category.includes('disability') || 
+                     category.includes('disabled') ||
+                     title.includes('pwd') ||
+                     title.includes('disability') ||
+                     description.includes('pwd') ||
+                     description.includes('disability');
 
-          case 'event support':
-            return category.includes('event support') || 
-                   category.includes('carnival') ||
-                   category.includes('fair') ||
-                   category.includes('support') ||
-                   title.includes('carnival') ||
-                   title.includes('fair') ||
-                   title.includes('booth') ||
-                   description.includes('carnival') ||
-                   description.includes('booth');
+            case 'mental health':
+              return category.includes('mental') || 
+                     category.includes('mental health') || 
+                     category.includes('psychology') ||
+                     category.includes('wellbeing') ||
+                     title.includes('mental') ||
+                     description.includes('mental health');
 
-          case 'children':
-            return category.includes('youth') || 
-                   category.includes('children') || 
-                   category.includes('education') ||
-                   title.includes('children') ||
-                   description.includes('children');
+            case 'event support':
+              return category.includes('event support') || 
+                     category.includes('carnival') ||
+                     category.includes('fair') ||
+                     category.includes('support') ||
+                     title.includes('carnival') ||
+                     title.includes('fair') ||
+                     title.includes('booth') ||
+                     description.includes('carnival') ||
+                     description.includes('booth');
 
-          case 'elderly':
-          case 'seniors':
-            return category.includes('senior') || 
-                   category.includes('elderly') ||
-                   category.includes('healthcare') ||
-                   title.includes('elderly') ||
-                   description.includes('elderly');
+            case 'children':
+              return category.includes('youth') || 
+                     category.includes('children') || 
+                     category.includes('education') ||
+                     title.includes('children') ||
+                     description.includes('children');
 
-          case 'animal':
-          case 'animals':
-            return category.includes('animal') || 
-                   category.includes('pet') ||
-                   title.includes('animal') ||
-                   description.includes('animal');
+            case 'elderly':
+            case 'seniors':
+              return category.includes('senior') || 
+                     category.includes('elderly') ||
+                     category.includes('healthcare') ||
+                     title.includes('elderly') ||
+                     description.includes('elderly');
 
-          case 'environment':
-            return category.includes('environment') || 
-                   category.includes('conservation') ||
-                   category.includes('green') ||
-                   title.includes('environment') ||
-                   description.includes('environment');
+            case 'animal':
+            case 'animals':
+              return category.includes('animal') || 
+                     category.includes('pet') ||
+                     title.includes('animal') ||
+                     description.includes('animal');
 
-          // Region filters
-          case 'north':
-            return region === 'north' || 
-                   title.includes('north') ||
-                   description.includes('north');
+            case 'environment':
+              return category.includes('environment') || 
+                     category.includes('conservation') ||
+                     category.includes('green') ||
+                     title.includes('environment') ||
+                     description.includes('environment');
 
-          case 'south':
-            return region === 'south' || 
-                   title.includes('south') ||
-                   description.includes('south');
+            // Region filters
+            case 'north':
+              return region === 'north' || 
+                     title.includes('north') ||
+                     description.includes('north');
 
-          case 'east':
-            return region === 'east' || 
-                   title.includes('east') ||
-                   description.includes('east');
+            case 'south':
+              return region === 'south' || 
+                     title.includes('south') ||
+                     description.includes('south');
 
-          case 'west':
-            return region === 'west' || 
-                   title.includes('west') ||
-                   description.includes('west');
+            case 'east':
+              return region === 'east' || 
+                     title.includes('east') ||
+                     description.includes('east');
 
-          case 'central':
-            return region === 'central' || 
-                   title.includes('central') ||
-                   description.includes('central');
+            case 'west':
+              return region === 'west' || 
+                     title.includes('west') ||
+                     description.includes('west');
 
-          default:
-            // Generic text search in category, title, description
-            return category.includes(filterLower) || 
-                   title.includes(filterLower) || 
-                   description.includes(filterLower);
-        }
+            case 'central':
+              return region === 'central' || 
+                     title.includes('central') ||
+                     description.includes('central');
+
+            default:
+              // Generic text search in category, title, description
+              return category.includes(filterLower) || 
+                     title.includes(filterLower) || 
+                     description.includes(filterLower);
+          }
+        };
+
+        return matchesFilter();
       });
     });
   }, [opportunities, activeFilters]);
-
   // Fetch opportunities from backend
   const fetchOpportunities = async () => {
     try {
