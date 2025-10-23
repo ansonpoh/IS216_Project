@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "./Navbar";
 import "../styles/Opportunities.css";
+import axios from 'axios';
 
 export default function Opportunities() {
   const [opportunities, setOpportunities] = useState([]);
@@ -14,24 +15,16 @@ export default function Opportunities() {
   const [dateFromFilter, setDateFromFilter] = useState("");
   const [dateToFilter, setDateToFilter] = useState("");
 
-  // Fetch events on mount
+  // ✅ Fetch opportunities on mount
   useEffect(() => {
-    const url = `http://localhost:3001/events/get_all_events`;
-    setLoading(true);
+    const fetchOpportunities = async () => {
+      try {
+        setLoading(true);
+        const res = await axios.get("http://localhost:3001/events/get_all_events");
 
-    fetch(url)
-      .then(async (res) => {
-        const text = await res.text();
-        let json;
-        try {
-          json = JSON.parse(text);
-        } catch {
-          console.error("Failed to parse JSON:", text);
-          throw new Error("Invalid JSON response");
-        }
+        const data = Array.isArray(res.data.result) ? res.data.result : [];
 
-        const data = Array.isArray(json.result) ? json.result : [];
-
+        // Normalize data (same as your original)
         const normalized = data.map((it) => {
           const get = (...keys) => {
             for (const k of keys) {
@@ -65,33 +58,41 @@ export default function Opportunities() {
         });
 
         setOpportunities(normalized);
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error("❌ Failed to load opportunities", err);
         setOpportunities([]);
-      })
-      .finally(() => setLoading(false));
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOpportunities();
   }, []);
 
-  // Fetch categories and regions on mount
+  // ✅ Fetch categories and regions
   useEffect(() => {
-    // Fetch categories
-    fetch(`http://localhost:3001/events/get_all_categories`)
-      .then((res) => res.json())
-      .then((json) => {
-        setCategories(Array.isArray(json.result) ? json.result : []);
-      })
-      .catch((err) => console.error("Error loading categories", err));
+    const fetchCategories = async () => {
+      try {
+        const res = await axios.get("http://localhost:3001/events/get_all_categories");
+        setCategories(Array.isArray(res.data.result) ? res.data.result : []);
+      } catch (err) {
+        console.error("Error loading categories", err);
+      }
+    };
 
-    // Fetch regions
-    fetch(`http://localhost:3001/events/get_all_regions`)
-      .then((res) => res.json())
-      .then((json) => {
-        setRegions(Array.isArray(json.result) ? json.result : []);
-      })
-      .catch((err) => console.error("Error loading regions", err));
+    const fetchRegions = async () => {
+      try {
+        const res = await axios.get("http://localhost:3001/events/get_all_regions");
+        setRegions(Array.isArray(res.data.result) ? res.data.result : []);
+      } catch (err) {
+        console.error("Error loading regions", err);
+      }
+    };
+
+    fetchCategories();
+    fetchRegions();
   }, []);
-
+  
   const resetFilters = () => {
     setCategoryFilter("");
     setRegionFilter("");
