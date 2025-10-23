@@ -4,6 +4,7 @@ const MapContainer = React.forwardRef(({ activeFilters = [] }, ref) => {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markersRef = useRef([]);
+  const currentInfoWindowRef = useRef(null); // Track currently open InfoWindow
   const [opportunities, setOpportunities] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -29,7 +30,6 @@ const MapContainer = React.forwardRef(({ activeFilters = [] }, ref) => {
     }
   }, [activeFilters, opportunities]);
 
-  // Filter opportunities based on active filters
   // Filter opportunities based on active filters
   const filteredOpportunities = useMemo(() => {
     if (activeFilters.length === 0) return opportunities;
@@ -158,6 +158,7 @@ const MapContainer = React.forwardRef(({ activeFilters = [] }, ref) => {
       });
     });
   }, [opportunities, activeFilters]);
+
   // Fetch opportunities from backend
   const fetchOpportunities = async () => {
     try {
@@ -182,6 +183,12 @@ const MapContainer = React.forwardRef(({ activeFilters = [] }, ref) => {
   // Update markers when filtered opportunities change
   useEffect(() => {
     if (!mapInstanceRef.current || !window.google) return;
+
+    // Close any open InfoWindow when filters change
+    if (currentInfoWindowRef.current) {
+      currentInfoWindowRef.current.close();
+      currentInfoWindowRef.current = null;
+    }
 
     // Clear existing markers
     markersRef.current.forEach(m => m.setMap(null));
@@ -267,7 +274,14 @@ const MapContainer = React.forwardRef(({ activeFilters = [] }, ref) => {
       });
 
       marker.addListener('click', () => {
+        // Close previously opened InfoWindow
+        if (currentInfoWindowRef.current) {
+          currentInfoWindowRef.current.close();
+        }
+        
+        // Open new InfoWindow and store reference
         infoWindow.open({ anchor: marker, map: mapInstanceRef.current });
+        currentInfoWindowRef.current = infoWindow;
       });
 
       markersRef.current.push(marker);
