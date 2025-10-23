@@ -7,7 +7,7 @@ import NotificationsPage from './pages/NotificationPage';
 import {Routes, Route} from "react-router-dom";
 import { AuthProvider } from './contexts/AuthProvider';
 import Opportunities from './pages/Opportunities';
-import Community from './pages/Community';
+import Community from './pages/Forum/ForumPage';
 // import LoginSignup from './pages/SignupAlt';
 import RoleSelect from './pages/RoleSelect';
 import OrganiserAuth from './pages/OrganiserAuth';
