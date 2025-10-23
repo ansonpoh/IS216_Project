@@ -8,31 +8,20 @@ const MapContainer = React.forwardRef(({ activeFilters = [] }, ref) => {
   const [opportunities, setOpportunities] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // DEBUG: Log filter changes
-  useEffect(() => {
-    console.log('=== FILTER DEBUG ===');
-    console.log('Active Filters:', activeFilters);
-    console.log('Total Opportunities:', opportunities.length);
-    console.log('Filtered Opportunities:', filteredOpportunities.length);
-    
-    if (opportunities.length > 0) {
-      console.log('First opportunity:', {
-        title: opportunities[0].title,
-        region: opportunities[0].region,
-        region_type: typeof opportunities[0].region
-      });
-    }
-    
-    if (activeFilters.length > 0 && filteredOpportunities.length === 0) {
-      console.log('❌ NO MATCHES FOUND');
-      console.log('Looking for filters:', activeFilters.map(f => f.toLowerCase()));
-      console.log('Available regions in data:', [...new Set(opportunities.map(o => (o.region || '').toLowerCase()))]);
-    }
-  }, [activeFilters, opportunities]);
-
   // Filter opportunities based on active filters
   const filteredOpportunities = useMemo(() => {
     if (activeFilters.length === 0) return opportunities;
+
+    // Separate filters into regions and categories
+    const regions = ['central', 'north', 'north-east', 'east', 'west', 'south'];
+    const categories = ['animal', 'children', 'elderly', 'environment', 'event support', 'mental health', 'pwds'];
+    
+    const regionFilters = activeFilters.filter(f => 
+      regions.includes(f.toLowerCase())
+    );
+    const categoryFilters = activeFilters.filter(f => 
+      categories.includes(f.toLowerCase())
+    );
 
     return opportunities.filter(opp => {
       // Normalize opportunity data
@@ -41,19 +30,12 @@ const MapContainer = React.forwardRef(({ activeFilters = [] }, ref) => {
       const title = (opp.title || '').toLowerCase().trim();
       const description = (opp.description || '').toLowerCase().trim();
 
-      // Check if this opportunity matches ALL of the active filters (AND logic)
-      return activeFilters.every(filter => {
-        const filterLower = filter.toLowerCase().trim();
-
-        // Helper function to check if filter matches opportunity
-        const matchesFilter = () => {
-          // Direct category match
-          if (category === filterLower) return true;
-
-          // Direct region match (North, South, East, West, Central)
-          if (region === filterLower) return true;
-
-          // Feature-based filtering
+      // Check region match (OR logic within regions)
+      let regionMatch = regionFilters.length === 0; // If no region filter, pass by default
+      if (regionFilters.length > 0) {
+        regionMatch = regionFilters.some(filter => {
+          const filterLower = filter.toLowerCase().trim();
+          
           switch (filterLower) {
             case 'north-east':
               return region === 'north-east' || 
@@ -62,7 +44,45 @@ const MapContainer = React.forwardRef(({ activeFilters = [] }, ref) => {
                      title.includes('northeast') ||
                      description.includes('north-east') ||
                      description.includes('northeast');
+            
+            case 'north':
+              return region === 'north' || 
+                     title.includes('north') ||
+                     description.includes('north');
 
+            case 'south':
+              return region === 'south' || 
+                     title.includes('south') ||
+                     description.includes('south');
+
+            case 'east':
+              return region === 'east' || 
+                     title.includes('east') ||
+                     description.includes('east');
+
+            case 'west':
+              return region === 'west' || 
+                     title.includes('west') ||
+                     description.includes('west');
+
+            case 'central':
+              return region === 'central' || 
+                     title.includes('central') ||
+                     description.includes('central');
+
+            default:
+              return region === filterLower;
+          }
+        });
+      }
+
+      // Check category match (OR logic within categories)
+      let categoryMatch = categoryFilters.length === 0; // If no category filter, pass by default
+      if (categoryFilters.length > 0) {
+        categoryMatch = categoryFilters.some(filter => {
+          const filterLower = filter.toLowerCase().trim();
+
+          switch (filterLower) {
             case 'pwds':
               return category.includes('pwd') || 
                      category.includes('disability') || 
@@ -120,44 +140,51 @@ const MapContainer = React.forwardRef(({ activeFilters = [] }, ref) => {
                      title.includes('environment') ||
                      description.includes('environment');
 
-            // Region filters
-            case 'north':
-              return region === 'north' || 
-                     title.includes('north') ||
-                     description.includes('north');
-
-            case 'south':
-              return region === 'south' || 
-                     title.includes('south') ||
-                     description.includes('south');
-
-            case 'east':
-              return region === 'east' || 
-                     title.includes('east') ||
-                     description.includes('east');
-
-            case 'west':
-              return region === 'west' || 
-                     title.includes('west') ||
-                     description.includes('west');
-
-            case 'central':
-              return region === 'central' || 
-                     title.includes('central') ||
-                     description.includes('central');
-
             default:
-              // Generic text search in category, title, description
               return category.includes(filterLower) || 
                      title.includes(filterLower) || 
                      description.includes(filterLower);
           }
-        };
+        });
+      }
 
-        return matchesFilter();
-      });
+      // Return true only if BOTH region and category conditions are satisfied (AND logic across filter types)
+      return regionMatch && categoryMatch;
     });
   }, [opportunities, activeFilters]);
+
+  // DEBUG: Log filter changes
+  useEffect(() => {
+    console.log('=== FILTER DEBUG ===');
+    console.log('Active Filters:', activeFilters);
+    console.log('Total Opportunities:', opportunities.length);
+    console.log('Filtered Opportunities:', filteredOpportunities.length);
+    
+    // Separate filters for debugging
+    const regions = ['central', 'north', 'north-east', 'east', 'west', 'south'];
+    const categories = ['animal', 'children', 'elderly', 'environment', 'event support', 'mental health', 'pwds'];
+    
+    const regionFilters = activeFilters.filter(f => regions.includes(f.toLowerCase()));
+    const categoryFilters = activeFilters.filter(f => categories.includes(f.toLowerCase()));
+    
+    console.log('Region Filters (OR):', regionFilters);
+    console.log('Category Filters (OR):', categoryFilters);
+    console.log('Logic: Region filters use OR, Category filters use OR, Between types use AND');
+    
+    if (opportunities.length > 0) {
+      console.log('First opportunity:', {
+        title: opportunities[0].title,
+        region: opportunities[0].region,
+        category: opportunities[0].category
+      });
+    }
+    
+    if (activeFilters.length > 0 && filteredOpportunities.length === 0) {
+      console.log('❌ NO MATCHES FOUND');
+      console.log('Available regions in data:', [...new Set(opportunities.map(o => (o.region || '').toLowerCase()))]);
+      console.log('Available categories in data:', [...new Set(opportunities.map(o => (o.category || '').toLowerCase()))]);
+    }
+  }, [activeFilters, opportunities, filteredOpportunities]);
 
   // Fetch opportunities from backend
   const fetchOpportunities = async () => {
