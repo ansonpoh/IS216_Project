@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 
-const MapContainer = React.forwardRef(({ activeFilters = [] }, ref) => {
+const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters }, ref) => {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markersRef = useRef([]);
@@ -414,6 +414,25 @@ const MapContainer = React.forwardRef(({ activeFilters = [] }, ref) => {
         }}
       />
       
+      {/* Add Reset Button - only show when filters are active */}
+      {activeFilters.length > 0 && (
+        <button
+          onClick={onResetFilters}
+          className="btn btn-sm btn-light position-absolute m-2"
+          style={{
+            top: '2px',
+            right: '52px',
+            zIndex: 1000,
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+            backgroundColor: 'white',
+            border: '1px solid #dee2e6'
+          }}
+        >
+          <i className="bi bi-x-circle me-1"></i>
+          Reset Filters
+        </button>
+      )}
+
       {loading && (
         <div
           style={{
