@@ -92,6 +92,13 @@ export default function Opportunities() {
       .catch((err) => console.error("Error loading regions", err));
   }, []);
 
+  const resetFilters = () => {
+    setCategoryFilter("");
+    setRegionFilter("");
+    setDateFromFilter("");
+    setDateToFilter("");
+  };
+
   if (loading) {
     return (
       <>
@@ -141,8 +148,6 @@ export default function Opportunities() {
           ))}
         </select>
 
-        {/* TODO: add placeholder text? to show that it's for date range  */}
-
         <input
           type="date"
           value={dateFromFilter}
@@ -156,6 +161,10 @@ export default function Opportunities() {
           onChange={(e) => setDateToFilter(e.target.value)}
           placeholder="To date"
         />
+
+        <button className="reset-btn" onClick={resetFilters}>
+          Reset Filters
+        </button>
       </div>
 
       {/* Filtered opportunities */}
