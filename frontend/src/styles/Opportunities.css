@@ -1,4 +1,10 @@
-   /* TODO: ADD CSS CODE TO MAKE RESPONSIVE, BEAUTIFY CARDS AND FILTERS*/
+   /* /* TODO: ADD CSS CODE TO MAKE RESPONSIVE, BEAUTIFY CARDS AND FIX CATEGORY AND SIGNUP BTN /* */
+
+.opportunities-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+}
 
 .card-grid {
   display: grid;
@@ -78,26 +84,29 @@
   align-items: center;
   padding: 0.8rem 1rem;
   border-top: 1px solid #eee;
-  background: #f9f9f9;
+  border-bottom-left-radius: 8px;  
+  border-bottom-right-radius: 8px; 
+  background-color: #fafafa;
 }
 
 .category-tag {
   background-color: #007bff;
   color: white;
-  padding: 0.3em 0.7em;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  text-transform: capitalize;
+  padding: 0.25rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  /* font-weight: 500; */
 }
 
 .signup-btn {
   background-color: #28a745;
   color: white;
   border: none;
-  padding: 0.4em 0.9em;
-  border-radius: 5px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.875rem;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 0.85rem;
+  transition: background-color 0.2s;
 }
 
 .signup-btn:hover {
@@ -107,6 +116,37 @@
 .event-title {
   font-weight: bold;
   margin-bottom: 0.5rem;
+}
+
+.card-image {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+}
+
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-grid {
+  animation: fadeIn 0.25s ease-in;
+}
+
+.empty-state-card {
+  /* Style for "No opportunities found" or "No filtered results" */
+  grid-column: 1 / -1; /* Span full width of the grid */
+  text-align: center;
+  font-size: 1.2rem;
+  color: #555;
+  background-color: #f8f9fa;
+  border: 2px solid #ccc;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 1rem 0;
+  transition: all 0.3s ease;
 }
 
 .card-info .info-line {
@@ -132,47 +172,81 @@
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
-  padding: 1rem 0;
+  padding: 1rem 1.5rem;
   justify-content: center;
   align-items: center;
-  background-color: #f5f5f5;
-  border-radius: 8px;
+  background-color: #f9fafb; /* lighter, modern bg */
+  border-radius: 12px;
   margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* subtle shadow */
 }
 
 .filters select,
 .filters input[type="date"] {
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
-  border-radius: 6px;
+  padding: 0.6rem 1rem;
+  font-size: 0.95rem;
+  border-radius: 8px;
   border: 1px solid #ccc;
-  background-color: white;
+  background-color: #fff;
   color: #333;
-  transition: border-color 0.3s ease;
+  min-width: 150px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.filters select:hover,
+.filters input[type="date"]:hover {
+  border-color: #007bff;
 }
 
 .filters select:focus,
 .filters input[type="date"]:focus {
   outline: none;
   border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
 }
 
 .reset-btn {
-  background-color: white;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  padding: 0.5rem 1rem;
-  font-weight: 600;
-
+  padding: 0.55rem 1.2rem;
+  font-size: 0.95rem;
+  border-radius: 8px;
+  border: none;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
+
+.reset-btn:hover {
+  background-color: #0056b3;
+  transform: translateY(-1px);
+}
+
 @media (max-width: 600px) {
   .filters {
     flex-direction: column;
-    align-items: stretch;
+    gap: 0.8rem;
+    padding: 1rem;
   }
 
   .filters select,
-  .filters input[type="date"] {
+  .filters input[type="date"],
+  .filters .reset-btn {
     width: 100%;
+    min-width: unset;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

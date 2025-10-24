@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "./Navbar";
 import "../styles/Opportunities.css";
+import axios from 'axios';
 
 export default function Opportunities() {
   const [opportunities, setOpportunities] = useState([]);
@@ -14,24 +15,16 @@ export default function Opportunities() {
   const [dateFromFilter, setDateFromFilter] = useState("");
   const [dateToFilter, setDateToFilter] = useState("");
 
-  // Fetch events on mount
+  // ✅ Fetch opportunities on mount
   useEffect(() => {
-    const url = `http://localhost:3001/events/get_all_events`;
-    setLoading(true);
+    const fetchOpportunities = async () => {
+      try {
+        setLoading(true);
+        const res = await axios.get("http://localhost:3001/events/get_all_events");
 
-    fetch(url)
-      .then(async (res) => {
-        const text = await res.text();
-        let json;
-        try {
-          json = JSON.parse(text);
-        } catch {
-          console.error("Failed to parse JSON:", text);
-          throw new Error("Invalid JSON response");
-        }
+        const data = Array.isArray(res.data.result) ? res.data.result : [];
 
-        const data = Array.isArray(json.result) ? json.result : [];
-
+        // Normalize data (same as your original)
         const normalized = data.map((it) => {
           const get = (...keys) => {
             for (const k of keys) {
@@ -65,31 +58,39 @@ export default function Opportunities() {
         });
 
         setOpportunities(normalized);
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error("❌ Failed to load opportunities", err);
         setOpportunities([]);
-      })
-      .finally(() => setLoading(false));
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOpportunities();
   }, []);
 
-  // Fetch categories and regions on mount
+  // ✅ Fetch categories and regions
   useEffect(() => {
-    // Fetch categories
-    fetch(`http://localhost:3001/events/get_all_categories`)
-      .then((res) => res.json())
-      .then((json) => {
-        setCategories(Array.isArray(json.result) ? json.result : []);
-      })
-      .catch((err) => console.error("Error loading categories", err));
+    const fetchCategories = async () => {
+      try {
+        const res = await axios.get("http://localhost:3001/events/get_all_categories");
+        setCategories(Array.isArray(res.data.result) ? res.data.result : []);
+      } catch (err) {
+        console.error("Error loading categories", err);
+      }
+    };
 
-    // Fetch regions
-    fetch(`http://localhost:3001/events/get_all_regions`)
-      .then((res) => res.json())
-      .then((json) => {
-        setRegions(Array.isArray(json.result) ? json.result : []);
-      })
-      .catch((err) => console.error("Error loading regions", err));
+    const fetchRegions = async () => {
+      try {
+        const res = await axios.get("http://localhost:3001/events/get_all_regions");
+        setRegions(Array.isArray(res.data.result) ? res.data.result : []);
+      } catch (err) {
+        console.error("Error loading regions", err);
+      }
+    };
+
+    fetchCategories();
+    fetchRegions();
   }, []);
 
   const resetFilters = () => {
@@ -109,20 +110,29 @@ export default function Opportunities() {
   }
 
   if (opportunities.length === 0) {
-    return (
-      <>
-        <Navbar />
+  return (
+    <>
+      <Navbar />
+      <div className="no-opportunities-message">
         <p>No opportunities found.</p>
-      </>
-    );
-  }
+      </div>
+    </>
+  );
+}
+
+
+   const filteredOpportunities = opportunities
+    .filter((op) => (categoryFilter ? op.category === categoryFilter : true))
+    .filter((op) => (regionFilter ? op.region === regionFilter : true))
+    .filter((op) => (dateFromFilter ? new Date(op.start_date) >= new Date(dateFromFilter) : true))
+    .filter((op) => (dateToFilter ? new Date(op.start_date) <= new Date(dateToFilter) : true));
 
   return (
     <>
       <Navbar />
+      <div className='opportunities-container'>
       <h1>Opportunities</h1>
 
-      {/* Filters - add dropdowns here using categories and regions */}
       <div className="filters">
         <select
           value={categoryFilter}
@@ -163,77 +173,59 @@ export default function Opportunities() {
         />
 
         <button className="reset-btn" onClick={resetFilters}>
-          Reset Filters
+        <i className="bi bi-arrow-counterclockwise" style={{ marginRight: "5px" }}></i>
+        Reset Filters
         </button>
+
       </div>
 
-      {/* Filtered opportunities */}
-      <div className="card-grid">
-        {opportunities
-          .filter((op) =>
-            categoryFilter ? op.category === categoryFilter : true
-          )
-          .filter((op) => (regionFilter ? op.region === regionFilter : true))
-          .filter((op) => {
-            if (dateFromFilter) {
-              return new Date(op.start_date) >= new Date(dateFromFilter);
-            }
-            return true;
-          })
-          .filter((op) => {
-            if (dateToFilter) {
-              return new Date(op.start_date) <= new Date(dateToFilter);
-            }
-            return true;
-          })
-          .map((op) => (
-            <div className="event-card" key={op.event_id}>
-              <div className="card-image">
-                {op.image_url && <img src={op.image_url} alt={op.title} />}
-                <span className={`status-badge ${op.status}`}>{op.status}</span>
-              </div>
+       {/* Filtered opportunities */}
+        <div className="card-grid">
+          {filteredOpportunities.length === 0 ? (
+        <div className="empty-state-card">
+          <div className="empty-icon"></div>
+          <h3>No opportunities found</h3>
+          <p>Try adjusting your filters or reset to see all available opportunities.</p>
+        </div>
+)  : (
+            filteredOpportunities.map((op) => (
+              <div className="event-card" key={op.event_id}>
+                <div className="card-image">
+                  {op.image_url && <img src={op.image_url} alt={op.title} />}
+                  <span className={`status-badge ${op.status}`}>{op.status}</span>
+                </div>
 
-              <div className="card-content">
-                <h2 className="event-title">{op.title}</h2>
-                <p>{op.description}</p>
-                <div className="card-info">
-                  <p>
-                    <i
-                      className="bi bi-geo-alt-fill"
-                      style={{ marginRight: "5px" }}
-                    ></i>
-                    <span className="info-text">{op.location || "N/A"}</span>
-                  </p>
-                  <p>
-                    <i
-                      className="bi bi-calendar-event"
-                      style={{ marginRight: "5px" }}
-                    ></i>
-                    <span className="info-text">
-                      {formatDate(op.start_date)} - {formatTime(op.start_time)}{" "}
-                      - {formatTime(op.end_time)}
-                    </span>
-                  </p>
-                  <p>
-                    <i
-                      className="bi bi-people-fill"
-                      style={{ marginRight: "5px" }}
-                    ></i>
-                    Capacity: {op.capacity ?? "N/A"}
-                  </p>
+                <div className="card-content">
+                  <h2 className="event-title">{op.title}</h2>
+                  <p>{op.description}</p>
+                  <div className="card-info">
+                    <p>
+                      <i className="bi bi-geo-alt-fill" style={{ marginRight: "5px" }}></i>
+                      <span className="info-text">{op.location || "N/A"}</span>
+                    </p>
+                    <p>
+                      <i className="bi bi-calendar-event" style={{ marginRight: "5px" }}></i>
+                      <span className="info-text">
+                        {formatDate(op.start_date)} - {formatTime(op.start_time)} - {formatTime(op.end_time)}
+                      </span>
+                    </p>
+                    <p>
+                      <i className="bi bi-people-fill" style={{ marginRight: "5px" }}></i>
+                      Capacity: {op.capacity ?? "N/A"}
+                    </p>
+                  </div>
+                </div>
+
+                <hr className="card-divider" />
+
+                <div className="card-footer">
+                  <span className="category-tag">{op.category ?? "Uncategorized"}</span>
+                  <button className="signup-btn">Sign Up</button>
                 </div>
               </div>
-
-              <hr className="card-divider" />
-
-              <div className="card-footer">
-                <span className="category-tag">
-                  {op.category ?? "Uncategorized"}
-                </span>
-                <button className="signup-btn">Sign Up</button>
-              </div>
-            </div>
-          ))}
+            ))
+          )}
+        </div>
       </div>
     </>
   );
