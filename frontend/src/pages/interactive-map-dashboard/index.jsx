@@ -74,6 +74,10 @@ const InteractiveMapDashboard = () => {
     }
   };
 
+  const handleResetFilters = () => {
+    setActiveFilters([]);
+  };
+
   return (
     <div className="container-fluid vh-100 d-flex flex-column bg-light col-12">
       <Navbar />
@@ -127,7 +131,11 @@ const InteractiveMapDashboard = () => {
         </div>
 
         {/* Map Container */}
-        <MapContainer ref={mapRef} activeFilters={activeFilters} />
+        <MapContainer 
+          ref={mapRef}
+          activeFilters={activeFilters}
+          onResetFilters={handleResetFilters}
+        />
 
         {/* Current Location Button */}
         <div className="position-fixed bottom-0 end-0 m-5" style={{ zIndex: 10 }}>
