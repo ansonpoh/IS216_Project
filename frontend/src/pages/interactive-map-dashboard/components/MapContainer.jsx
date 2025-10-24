@@ -424,8 +424,8 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters }, r
             right: '52px',
             zIndex: 1000,
             boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-            backgroundColor: 'white',
-            border: '1px solid #dee2e6'
+            backgroundColor: '#ffd2d2ff',
+            border: '1px solid #000000ff'
           }}
         >
           <i className="bi bi-x-circle me-1"></i>
