@@ -8,7 +8,9 @@ import {Routes, Route} from "react-router-dom";
 import { AuthProvider } from './contexts/AuthProvider';
 import Opportunities from './pages/Opportunities';
 import Community from './pages/Forum/ForumPage';
-import NewDiscussion from './pages/Forum/component/NewDiscussion'; // changed code
+import NewDiscussion from './pages/Forum/component/NewDiscussion'; 
+import ImageUploadTest from './components/ImageUploadTest';
+// changed code
 // import LoginSignup from './pages/SignupAlt';
 import RoleSelect from './pages/RoleSelect';
 import OrganiserAuth from './pages/OrganiserAuth';
@@ -18,7 +20,6 @@ import OrganiserCreateForm from "./pages/OrganiserCreateForm"
 
 
 function App() {
-
 
   return (
     <>
@@ -32,7 +33,8 @@ function App() {
         <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/opportunities" element={<Opportunities/>} />
         <Route path="/community" element={<Community />} />
-        <Route path="/community/new-discussion" element={<NewDiscussion />} /> // changed code
+        <Route path="/community/new-discussion" element={<NewDiscussion />} /> 
+        <Route path="/image-test-upload" element={<ImageUploadTest />} />
         <Route path='/choose-role' element={<RoleSelect />} />
         <Route path="/organiser/auth" element={<OrganiserAuth />} />
         <Route path="/volunteer/auth" element={<VolunteerAuth />} />

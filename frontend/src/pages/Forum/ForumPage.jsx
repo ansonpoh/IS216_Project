@@ -1,6 +1,6 @@
 // src/pages/ForumPage.jsx
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";   //  
 import Navbar from "../Navbar";
 import FeaturedCard from "./component/FeaturedCard";
 import CommunitySpotlight from "./component/CommunitySpotlight";
