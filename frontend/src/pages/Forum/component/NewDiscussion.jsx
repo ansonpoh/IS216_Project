@@ -2,7 +2,17 @@
 import React, { useState, useRef } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./community.css";
-import { supabase } from "../../../config/supabaseClient"; // adjust path if needed
+import { supabase } from "../../../config/supabaseClient"; 
+
+/**
+ * NewDiscussion page with single-image upload (drag/drop/paste/choose).
+ *
+ * Server expectations (example):
+ * - POST /api/upload (multipart/form-data) -> { url: "https://cdn.example.com/..." }
+ * - POST /api/discussions (application/json) -> create discussion
+ *
+ * Replace /api/* with your real endpoints or adapt handlePost to your API client (axios).
+ */
 
 export default function NewDiscussion({ initialBoard = "" }) {
   const [subject, setSubject] = useState("");
@@ -14,7 +24,10 @@ export default function NewDiscussion({ initialBoard = "" }) {
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
 
+  // refs
   const fileInputRef = useRef(null);
+
+  // validation constants
   const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5MB
   const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
@@ -26,6 +39,7 @@ export default function NewDiscussion({ initialBoard = "" }) {
     return Object.keys(e).length === 0;
   }
 
+  /* ========== Image helpers ========== */
   function clearImage() {
     setImageFile(null);
     setImagePreview(null);
@@ -48,7 +62,7 @@ export default function NewDiscussion({ initialBoard = "" }) {
 
     setImageFile(file);
 
-    // preview
+    // create preview
     const reader = new FileReader();
     reader.onload = (e) => setImagePreview(e.target.result);
     reader.readAsDataURL(file);
@@ -84,116 +98,109 @@ export default function NewDiscussion({ initialBoard = "" }) {
     }
   }
 
-  // Upload helper: uploads to 'feedback-images' bucket and returns public URL
   async function uploadToSupabaseStorage(file, userId) {
-    if (!file) return null;
-    // safe filename
-    const path = `${userId}/${Date.now()}-${file.name.replace(/\s+/g, "-")}`;
+  if (!file) return null;
+  const path = `${userId}/${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
 
-    // 1) upload
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from("feedback-images")
-      .upload(path, file);
+  // upload to bucket 'feedback-images'
+  const { data: uploadData, error: uploadError } = await supabase.storage
+    .from('feedback_images')
+    .upload(path, file);
 
-    if (uploadError) {
-      console.error("Storage upload error", uploadError);
-      throw uploadError;
-    }
-
-    // 2) get public URL (for public bucket)
-    const { data: urlData, error: urlErr } = supabase.storage
-      .from("feedback-images")
-      .getPublicUrl(path);
-
-    if (urlErr) {
-      console.error("getPublicUrl error", urlErr);
-      throw urlErr;
-    }
-
-    // v2 shape: urlData.publicUrl
-    const publicUrl = urlData?.publicUrl || urlData?.publicURL || null;
-    if (!publicUrl) throw new Error("Could not retrieve public URL after upload.");
-    return publicUrl;
+  if (uploadError) {
+    console.error('Storage upload error', uploadError);
+    throw uploadError;
   }
 
-  async function handlePost(e) {
-    e.preventDefault();
-    if (!validate()) return;
+  // get public URL (public bucket)
+  const { data: urlData, error: urlErr } = supabase.storage
+    .from('feedback_images')
+    .getPublicUrl(path);
 
-    setSubmitting(true);
-    setImageError("");
-    setUploading(false);
+  if (urlErr) {
+    console.error('getPublicUrl error', urlErr);
+    throw urlErr;
+  }
 
-    try {
-      // require user to be logged in (recommended)
-      const { data: userData, error: userErr } = await supabase.auth.getUser();
-      if (userErr) {
-        console.error("getUser error:", userErr);
-      }
-      const user = userData?.user;
-      if (!user) throw new Error("You must be signed in to post.");
+  // v2 return shape: urlData.publicUrl (or data.publicUrl)
+  // adapt if your version differs, but below covers typical shape:
+  return urlData?.publicUrl || urlData?.publicURL || null;
+}
 
-      const userId = user.id;
-      let imageUrl = null;
+  /* ========== Submit ========== */
+async function handlePost(e) {
+  e.preventDefault();
+  if (!validate()) return;
 
-      if (imageFile) {
-        setUploading(true);
-        try {
-          imageUrl = await uploadToSupabaseStorage(imageFile, userId);
-          console.log("Uploaded image URL:", imageUrl);
-        } catch (upErr) {
-          console.error("Upload failed:", upErr);
-          setImageError("Image upload failed. See console.");
-          throw upErr;
-        } finally {
-          setUploading(false);
-        }
-      }
+  setSubmitting(true);
+  setImageError("");
+  setUploading(false);
 
-      // insert into feedback
-      const payload = {
-        user_id: userId,
-        subject: subject.trim(),
-        body: body.trim(),
-        img: imageUrl,
-      };
+  try {
+    // Get auth data from session storage instead of Supabase auth
+    const authData = sessionStorage.getItem("auth");
+    if (!authData) {
+      throw new Error("You must be signed in to post.");
+    }
+    const { id: userId } = JSON.parse(authData);
+    if (!userId) {
+      throw new Error("Invalid authentication data.");
+    }
 
-      console.log("Inserting payload:", payload);
-      const { data: inserted, error: insertError } = await supabase
-        .from("feedback")
-        .insert([payload])
-        .select()
-        .single();
-
-      if (insertError) {
-        console.error("Insert error:", insertError);
-        throw insertError;
-      }
-
-      console.log("Inserted post:", inserted);
-      // success: reset
-      clearImage();
-      setSubject("");
-      setBody("");
-      setErrors({});
-      alert("Posted successfully!");
-    } catch (err) {
-      console.error("handlePost error:", err);
-      const msg = err?.message || "Failed to post. Check console.";
-      setImageError(msg);
-      // keep user input so they can retry
-    } finally {
+    let imageUrl = null;
+    if (imageFile) {
+      setUploading(true);
+      // Use userId from session storage for the file path
+      imageUrl = await uploadToSupabaseStorage(imageFile, userId);
       setUploading(false);
-      setSubmitting(false);
     }
-  }
 
+    const insertPayload = {
+      user_id: userId,
+      subject: subject.trim(),
+      body: body.trim(),
+      img: imageUrl,
+      created_at: new Date().toISOString(),
+      liked_count: 0
+      // event_id and org_id can be added here if needed
+    };
+
+    const { data: inserted, error: insertError } = await supabase
+      .from("feedback")
+      .insert([insertPayload])
+      .select()
+      .single();
+
+    if (insertError) {
+      console.error("Insert feedback error", insertError);
+      throw insertError;
+    }
+
+    // success: reset form
+    clearImage();
+    setSubject("");
+    setBody("");
+    setErrors({});
+    window.alert("Posted successfully!");
+    // Navigate back to forum page
+    window.history.back();
+    
+  } catch (err) {
+    console.error(err);
+    const msg = err?.message || "Failed to post. Check console.";
+    setImageError(msg);
+    window.alert(msg);
+  } finally {
+    setUploading(false);
+    setSubmitting(false);
+  }
+}
   function handleCancel() {
     window.history.back();
   }
 
   return (
-    <div className="container py-5">
+      <div className="container py-5">
       <h1 className="display-6 mb-3">New Discussion</h1>
 
       <nav className="small text-muted mb-4">Welcome to the Community &nbsp;/&nbsp; New Discussion</nav>
@@ -203,6 +210,7 @@ export default function NewDiscussion({ initialBoard = "" }) {
           <p className="text-muted small mb-3">Remember that posts are subject to the Community Policy.</p>
 
           <form onSubmit={handlePost}>
+            {/* Subject */}
             <div className="mb-3">
               <label htmlFor="subjectInput" className="form-label">Subject</label>
               <input
@@ -216,12 +224,13 @@ export default function NewDiscussion({ initialBoard = "" }) {
               {errors.subject && <div className="invalid-feedback">{errors.subject}</div>}
             </div>
 
+            {/* Body */}
             <div className="mb-3" onPaste={onPaste}>
               <label htmlFor="body" className="form-label mb-2">Body</label>
               <textarea
                 id="body"
                 className={`form-control ${errors.body ? "is-invalid" : ""}`}
-                rows={8}
+                rows={10}
                 placeholder="Write your post here..."
                 value={body}
                 onChange={(e) => setBody(e.target.value)}
@@ -235,6 +244,7 @@ export default function NewDiscussion({ initialBoard = "" }) {
               )}
             </div>
 
+            {/* Image upload area */}
             <div
               className="border rounded p-2 mb-3"
               onDrop={onDrop}
@@ -283,6 +293,7 @@ export default function NewDiscussion({ initialBoard = "" }) {
               )}
             </div>
 
+            {/* Actions */}
             <div className="d-flex justify-content-end gap-2 mt-3">
               <button
                 type="button"
