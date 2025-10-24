@@ -1,47 +1,66 @@
-// component/FeaturedCard.jsx
+// src/components/component/FeaturedCard.jsx
 import React from "react";
-// import a default image if you want:
-// import defaultImg from "../../assets/default-featured.png";
+import { Link } from "react-router-dom";
 
+/**
+ * Reusable card for both "featured" and "discussion" items.
+ *
+ * Props:
+ *  - id
+ *  - image (url) optional
+ *  - title (string)
+ *  - excerpt (string)  // body snippet
+ *  - author (string)
+ *  - timeAgo (string)
+ *  - likes (number)
+ *  - comments (number)
+ *  - to (string) optional override link (defaults to `/community/${id}`)
+ */
 export default function FeaturedCard({
   id,
   image = null,
   title = "Untitled",
   excerpt = "",
-  author = "Unknown",
+  author = "Someone",
+  timeAgo = "",
   likes = 0,
   comments = 0,
+  to,
 }) {
-  // If you want to use the provided image at /mnt/data during dev preview,
-  // import it into your project public or src/assets and pass its path in `image`.
-  // Example: <FeaturedCard image="/assets/548abcb1-0c72-48fd-8e44-e0fcabff7db5.png" ... />
+  const href = to || (id ? `/community/${id}` : "#");
 
   return (
-    <div className="card h-100">
-      {image ? (
-        <img src={image} className="card-img-top" alt={title} style={{ objectFit: "cover", height: 150 }} />
-      ) : (
-        <div
-          className="d-flex align-items-center justify-content-center bg-secondary text-white"
-          style={{ height: 150 }}
-        >
-          <span className="small">Image</span>
+    <article className="card mb-3 discussion-card">
+      {image && (
+        <div className="card-img-top-wrapper">
+          <img
+            src={image}
+            alt={title}
+            className="card-img-top"
+            style={{ width: "100%", height: 160, objectFit: "cover" }}
+          />
         </div>
       )}
 
-      <div className="card-body d-flex flex-column">
-        <h6 className="card-title">{title}</h6>
-        <p className="card-text small text-muted" style={{ flexGrow: 1 }}>{excerpt}</p>
+      <div className="card-body">
+        <h5 className="card-title mb-1">
+          <Link to={href} className="stretched-link text-dark text-decoration-none">
+            {title}
+          </Link>
+        </h5>
 
-        <div className="d-flex justify-content-between align-items-center mt-2">
-          <small className="text-muted">by {author}</small>
+        {excerpt && <p className="card-text text-muted small mb-2">{excerpt}</p>}
 
+        <div className="d-flex justify-content-between align-items-center">
           <div className="small text-muted">
-            <span className="me-2">👍 {likes}</span>
-            <span>💬 {comments}</span>
+            {author} {timeAgo ? <>· {timeAgo}</> : null}
+          </div>
+
+          <div className="text-muted small">
+            <span className="me-3">👍 {likes ?? 0}</span>
           </div>
         </div>
       </div>
-    </div>
+    </article>
   );
 }

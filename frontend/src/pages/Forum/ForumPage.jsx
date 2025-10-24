@@ -1,11 +1,10 @@
-// forumPage.jsx
+// src/pages/ForumPage.jsx
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom"; // changed code
-import Navbar from ".././Navbar"; // your navbar component
-import FeaturedCard from "./component/FeaturedCard"; // the separate small card component
-import "./component/community.css"; // optional custom CSS for small helpers
-// If you use react-router, you can swap the <a> to <Link> from 'react-router-dom'
+import { Link } from "react-router-dom";
+import Navbar from "../Navbar";
+import FeaturedCard from "./component/FeaturedCard";
 import CommunitySpotlight from "./component/CommunitySpotlight";
+import "./component/community.css"; // adjust path if your CSS lives elsewhere
 
 const slides = [
   { image: "https://picsum.photos/seed/1/800/480", caption: "Member review: Love this!", alt: "review 1" },
@@ -14,29 +13,22 @@ const slides = [
 ];
 
 export default function ForumPage() {
-  const [posts, setPosts] = useState([]); // popular discussions list (from backend)
-  const [featured, setFeatured] = useState([]); // featured cards on top (from backend)
+  const [posts, setPosts] = useState([]); // discussion posts
+  const [featured, setFeatured] = useState([]); // featured tiles
   const [category, setCategory] = useState("All Categories");
   const [query, setQuery] = useState("");
 
   useEffect(() => {
-    // TODO: replace with your real backend calls (axios / fetch)
-    // Example (uncomment and adapt):
-    // fetch("/api/forums/featured")
-    //   .then((res) => res.json())
-    //   .then((data) => setFeatured(data))
-    //   .catch((err) => console.error(err));
-    //
-    // fetch("/api/forums/popular")
-    //   .then((res) => res.json())
-    //   .then((data) => setPosts(data))
-    //   .catch((err) => console.error(err));
+    // TODO: replace with real backend calls (supabase / fetch / axios)
+    // Example:
+    // fetch("/api/forums/featured").then(r => r.json()).then(setFeatured)
+    // fetch("/api/forums/popular").then(r => r.json()).then(setPosts)
 
-    // Temporary placeholder sample data so layout renders:
+    // placeholder featured data (renders nicely)
     setFeatured([
       {
-        id: 1,
-        image: null,
+        id: "f1",
+        image: "https://picsum.photos/seed/featured1/800/480",
         title: "Coming soon: A brand new seller Community Hub",
         excerpt: "Hello, everyone! I'm Vero and I have the joy of leading Etsy's Community En...",
         author: "VeroCraftsCommunity",
@@ -44,17 +36,18 @@ export default function ForumPage() {
         comments: 1,
       },
       {
-        id: 2,
-        image: null,
+        id: "f2",
+        image: "https://picsum.photos/seed/featured2/800/480",
         title: "Community Newsletter: October 9, 2025",
-        excerpt: "Discover Upcoming Seller",
+        excerpt: "Discover Upcoming Seller highlights and community events.",
+        author: "Community Team",
         likes: 168,
         comments: 0,
       },
       {
-        id: 3,
-        image: null,
-        title: "Etsy Up: Watch the replay and see what's next.",
+        id: "f3",
+        image: "https://picsum.photos/seed/featured3/800/480",
+        title: "Etsy Up: Watch the replay and see what's next",
         excerpt: "Thanks for tuning in to Etsy Up! We hope you enjoyed this year's event...",
         author: "Iridesent",
         likes: 38,
@@ -62,9 +55,11 @@ export default function ForumPage() {
       },
     ]);
 
+    // placeholder discussion posts
     setPosts([
       {
-        id: 101,
+        id: "101",
+        image: null,
         title: "$47 Dollar Offsite Fee?",
         snippet: "Question about offsite fee billing and how it's applied to my orders...",
         author: "TechUpCycle",
@@ -73,7 +68,8 @@ export default function ForumPage() {
         timeAgo: "a week ago",
       },
       {
-        id: 102,
+        id: "102",
+        image: null,
         title: "Etsy has deactivated my PDF product",
         snippet: "I uploaded a PDF but it says deactivated. Anyone else had this?",
         author: "SellerOneEmporium",
@@ -81,21 +77,51 @@ export default function ForumPage() {
         comments: 5,
         timeAgo: "a week ago",
       },
-      // ...more placeholders
+      {
+        id: "103",
+        image: null,
+        title: "How to photograph shiny objects?",
+        snippet: "My photos have reflections. How do you photograph metal pieces cleanly?",
+        author: "PhotoGuru",
+        likes: 8,
+        comments: 3,
+        timeAgo: "3 days ago",
+      },
     ]);
   }, []);
 
   return (
-    <div className="container-fluid vh-100 d-flex flex-column bg-light col-12">
+    <div className="container-fluid vh-100 d-flex flex-column bg-light">
       <Navbar />
+
+      <div className="col-lg-12 pt-4">
+        <div className="spotlight-wrapper">
+          <CommunitySpotlight slides={slides} interval={4500} />
+        </div>
+
+      </div>
 
       <div className="container py-4 flex-grow-1">
         {/* Top controls */}
         <div className="d-flex align-items-center justify-content-between mb-3">
-          <h3 className="mb-0">Community Forum</h3>
+          <h3 className="mb-0">Share the Joy </h3>
+
+          <div className="d-flex gap-2">
+            <input
+              type="search"
+              className="form-control form-control-sm"
+              placeholder="Search discussions..."
+              style={{ width: 220 }}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+            <Link to="/community/new-discussion" className="btn btn-primary btn-sm">
+              Me Too +
+            </Link>
+          </div>
         </div>
 
-        {/* Featured cards */}
+        {/* Featured cards (top row) */}
         <div className="row mb-4">
           {featured.map((f) => (
             <div key={f.id} className="col-lg-4 col-md-6 mb-3">
@@ -104,77 +130,6 @@ export default function ForumPage() {
           ))}
         </div>
 
-        {/* Main content: Popular discussions + sidebar */}
-        <div className="container py-4">
-          {/* ROW containing left (discussions) and right (sidebar) */}
-          <div className="row gx-4">
-            {/* LEFT: header + controls above posts */}
-            <div className="col-lg-8">
-              {/* Title + controls (placed here so they appear above the posts) */}
-              <div className="d-flex align-items-center justify-content-between mb-3">
-                <h1 className="h4 mb-0">Popular Discussions</h1>
-
-                {/* controls block:
-                - stays inline on lg and up
-                - on smaller screens you can let these wrap (they will naturally stack)
-            */}
-                <div className="d-flex gap-2">
-                  <select
-                    className="form-select form-select-sm d-none d-lg-block"
-                    style={{ width: 180 }}
-                    aria-label="Sort discussions"
-                  >
-                    <option>Latest activity</option>
-                    <option>Most replied</option>
-                    <option>Most liked</option>
-                  </select>
-
-                  <a href="/new-discussion" className="btn btn-primary btn-sm">
-                    Start a discussion
-                  </a>
-                </div>
-              </div>
-
-              {/* Discussion list card */}
-              <div className="card mb-3">
-                <div className="card-body p-0">
-                  <ul className="list-group list-group-flush">
-                    {posts.map((p) => (
-                      <li
-                        key={p.id}
-                        className="list-group-item d-flex justify-content-between align-items-start"
-                      >
-                        <div>
-                          <div className="fw-bold">{p.title}</div>
-                          <div className="text-muted small">{p.snippet}</div>
-                          <div className="text-muted small mt-1">
-                            by {p.author} · {p.timeAgo}
-                          </div>
-                        </div>
-
-                        <div className="text-end">
-                          <div className="small">👍 {p.likes}</div>
-                          <div className="small">💬 {p.comments}</div>
-                        </div>
-                      </li>
-                    ))}
-
-                    {posts.length === 0 && (
-                      <li className="list-group-item text-center text-muted">
-                        No discussions yet — be the first to start one.
-                      </li>
-                    )}
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            {/* RIGHT: sidebar */}
-            <div className="col-lg-4">
-              <CommunitySpotlight slides={slides} interval={4500} />
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

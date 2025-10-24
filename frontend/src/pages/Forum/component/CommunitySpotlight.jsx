@@ -13,9 +13,9 @@ export default function CommunitySpotlight({ slides = [], interval = 4000 }) {
   return (
     <div className="card mb-3 h-100">
       <div className="card-body d-flex flex-column">
-        <h6 className="mb-2">Community Spotlight</h6>
-        <p className="small text-muted">
-          Got a recent review that warmed your heart? Pass on the good feels by sharing your most cherished feedback with the community.
+        <h6 className="mb-2 text-center fs-2">Community Spotlight</h6>
+        <p className="small text-muted text-center mb-3">
+          Share the joy! Highlight memorable moments from your volunteering experiences.
         </p>
 
         {/* Carousel */}
@@ -73,25 +73,6 @@ export default function CommunitySpotlight({ slides = [], interval = 4000 }) {
                   <span className="visually-hidden">Next</span>
                 </button>
               </>
-            )}
-
-            {/* Indicators (static below carousel so they don't overlap) */}
-            {slides.length > 1 && (
-              <div className="mt-2 d-flex justify-content-center">
-                <div className="carousel-indicators position-static">
-                  {slides.map((_, idx) => (
-                    <button
-                      key={idx}
-                      type="button"
-                      data-bs-target={`#${id}`}
-                      data-bs-slide-to={idx}
-                      className={idx === 0 ? "active" : ""}
-                      aria-current={idx === 0 ? "true" : undefined}
-                      aria-label={`Slide ${idx + 1}`}
-                    />
-                  ))}
-                </div>
-              </div>
             )}
           </div>
         </div>
