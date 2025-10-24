@@ -107,8 +107,65 @@ export async function get_events_of_org(org_id) {
     }
 }
 
-export async function delete_event(event_id) {
+export async function get_events_by_time(filter, start_date, end_date) {
     try {
+        let query;
+        if(filter === "weekday") {
+            query = `select * from events where extract(isodow from start_date) between 1 and 5`;
+        } else if(filter === "weekend") {
+            query = `select * from events where extract(isodow from start_date) in (6, 7)`;
+        }else if (filter === "range" && start_date && end_date) {
+            query = `SELECT * FROM events WHERE start_date BETWEEN $1 AND $2`;
+        } else {
+            return null;
+        }
+
+        const values = filter === "range" ? [start_date, end_date] : [];
+        const result = await pool.query(query, values);
+        return result.rows;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
+export async function get_filtered_events({category, region, filter, start_date, end_date}) {
+    try {
+        let conditions = [];
+        let values = [];
+        let i = 1;
+
+        if(category) {
+            conditions.push(`lower(category) = lower($${i++})`)
+            values.push(category);
+        }
+        if(region) {
+            conditions.push(`lower(region) = lower($${i++})`)
+            values.push(region);
+        }
+
+        if(filter === "weekday") {
+            conditions.push(`extract(isdow from start_date) between 1 and 5`);
+        } else if (filter === "weekend") {
+            conditions.push(`extract(isdow from start_date) in (6,7)`);
+        } else if (filter === "range" && start_date && end_date) {
+            conditions.push(`start_date between $${i++} and $${i++}`);
+            values.push(start_date, end_date);
+        }
+
+        const where_clause = conditions.length > 0 ? `where ${conditions.join(" AND ")}` : "";
+        const query = `select * from events ${where_clause}`;
+
+        const result = await pool.query(query, values);
+        return result.rows;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
+export async function delete_event(event_id) {
+    try { 
         const query = `delete from events where event_id = $1`;
         const values = [event_id];
         const result = await pool.query(query, values);
