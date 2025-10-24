@@ -71,12 +71,7 @@ export default function ChatBubble({ message }) {
                     )}
                   </div>
 
-                  <p className="text-success small mb-2 align-items-start">
-                    <i className="bi bi-graph-up-arrow me-2 mt-1"></i>
-                    {event.description}
-                  </p>
-
-                  <div className="d-flex gap-2 mt-2">
+                  <div className="d-flex gap-2 mt-4">
                     <button className="btn btn-primary flex-grow-1">
                       Apply Now
                     </button>
