@@ -1,8 +1,8 @@
 // src/components/NewDiscussion.jsx
 import React, { useState, useRef } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
 import "./community.css";
-import { supabase } from "../../../config/supabaseClient"; 
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 /**
  * NewDiscussion page with single-image upload (drag/drop/paste/choose).
@@ -14,64 +14,60 @@ import { supabase } from "../../../config/supabaseClient";
  * Replace /api/* with your real endpoints or adapt handlePost to your API client (axios).
  */
 
+// validation constants
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5MB
+const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+
 export default function NewDiscussion({ initialBoard = "" }) {
-  const [subject, setSubject] = useState("");
-  const [body, setBody] = useState("");
-  const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [imageError, setImageError] = useState("");
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
+  const [status, setStatus] = useState("");
+
+  const auth = JSON.parse(sessionStorage.getItem("auth"));
+  const [formData, setFormData] = useState({
+    user_id: auth.id,
+    subject: "",
+    body: "",
+    image_file: null,
+  });
 
   // refs
   const fileInputRef = useRef(null);
-
-  // validation constants
-  const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5MB
-  const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
-
-  function validate() {
-    const e = {};
-    if (!subject.trim()) e.subject = "Subject is required.";
-    if (!body.trim()) e.body = "Post body cannot be empty.";
-    setErrors(e);
-    return Object.keys(e).length === 0;
-  }
+  const nav = useNavigate();
 
   /* ========== Image helpers ========== */
   function clearImage() {
-    setImageFile(null);
+    if (imagePreview) URL.revokeObjectURL(imagePreview);
     setImagePreview(null);
-    setImageError("");
+    setFormData((prev) => ({ ...prev, image_file: null }));
     if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
-  function handleImageFile(file) {
-    setImageError("");
+  const handleImageFile = (file) => {
     if (!file) return clearImage();
 
     if (!ALLOWED_TYPES.includes(file.type)) {
-      setImageError("Only JPG, PNG, WEBP or GIF allowed.");
+      setStatus("Only JPG, PNG, WEBP or GIF allowed.");
       return;
     }
     if (file.size > MAX_IMAGE_BYTES) {
-      setImageError("Image is too large (max 5MB).");
+      setStatus("Image is too large (max 5MB).");
       return;
     }
 
-    setImageFile(file);
+    setFormData((prev) => ({ ...prev, image_file: file }));
 
-    // create preview
-    const reader = new FileReader();
-    reader.onload = (e) => setImagePreview(e.target.result);
-    reader.readAsDataURL(file);
-  }
+    const previewUrl = URL.createObjectURL(file);
+    setImagePreview(previewUrl);
+  };
 
-  function onImageChange(e) {
+  const onImageChange = (e) => {
     const file = e.target.files?.[0];
     handleImageFile(file);
-  }
+  };
 
   function onDrop(e) {
     e.preventDefault();
@@ -98,103 +94,40 @@ export default function NewDiscussion({ initialBoard = "" }) {
     }
   }
 
-  async function uploadToSupabaseStorage(file, userId) {
-  if (!file) return null;
-  const path = `${userId}/${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
-
-  // upload to bucket 'feedback-images'
-  const { data: uploadData, error: uploadError } = await supabase.storage
-    .from('feedback_images')
-    .upload(path, file);
-
-  if (uploadError) {
-    console.error('Storage upload error', uploadError);
-    throw uploadError;
-  }
-
-  // get public URL (public bucket)
-  const { data: urlData, error: urlErr } = supabase.storage
-    .from('feedback_images')
-    .getPublicUrl(path);
-
-  if (urlErr) {
-    console.error('getPublicUrl error', urlErr);
-    throw urlErr;
-  }
-
-  // v2 return shape: urlData.publicUrl (or data.publicUrl)
-  // adapt if your version differs, but below covers typical shape:
-  return urlData?.publicUrl || urlData?.publicURL || null;
-}
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   /* ========== Submit ========== */
-async function handlePost(e) {
-  e.preventDefault();
-  if (!validate()) return;
+  async function handlePost(e) {
+    e.preventDefault();
 
-  setSubmitting(true);
-  setImageError("");
-  setUploading(false);
+    setSubmitting(true);
+    setStatus("");
 
-  try {
-    // Get auth data from session storage instead of Supabase auth
-    const authData = sessionStorage.getItem("auth");
-    if (!authData) {
-      throw new Error("You must be signed in to post.");
-    }
-    const { id: userId } = JSON.parse(authData);
-    if (!userId) {
-      throw new Error("Invalid authentication data.");
-    }
-
-    let imageUrl = null;
-    if (imageFile) {
-      setUploading(true);
-      // Use userId from session storage for the file path
-      imageUrl = await uploadToSupabaseStorage(imageFile, userId);
+    try {
+      if(auth.id.length < 1) throw new Error("You must be signed in to post.")
+      console.log(formData)
+      axios.post("http://localhost:3001/community/create_post", formData, {headers: {"Content-Type": "multipart/form-data"}})
+        .then((res) => {
+          const data = res.data;
+          if(data.status) {
+            alert("Post Created!")
+            nav("/community");
+          } else {
+            alert("Failed to create post!")
+          }
+        })
+    } catch (err) {
+      console.error(err);
+    } finally {
       setUploading(false);
+      setSubmitting(false);
     }
-
-    const insertPayload = {
-      user_id: userId,
-      subject: subject.trim(),
-      body: body.trim(),
-      img: imageUrl,
-      created_at: new Date().toISOString(),
-      liked_count: 0
-      // event_id and org_id can be added here if needed
-    };
-
-    const { data: inserted, error: insertError } = await supabase
-      .from("feedback")
-      .insert([insertPayload])
-      .select()
-      .single();
-
-    if (insertError) {
-      console.error("Insert feedback error", insertError);
-      throw insertError;
-    }
-
-    // success: reset form
-    clearImage();
-    setSubject("");
-    setBody("");
-    setErrors({});
-    window.alert("Posted successfully!");
-    // Navigate back to forum page
-    window.history.back();
-    
-  } catch (err) {
-    console.error(err);
-    const msg = err?.message || "Failed to post. Check console.";
-    setImageError(msg);
-    window.alert(msg);
-  } finally {
-    setUploading(false);
-    setSubmitting(false);
   }
-}
+
+
   function handleCancel() {
     window.history.back();
   }
@@ -215,11 +148,15 @@ async function handlePost(e) {
               <label htmlFor="subjectInput" className="form-label">Subject</label>
               <input
                 id="subjectInput"
+                name="subject"
                 type="text"
                 className={`form-control ${errors.subject ? "is-invalid" : ""} subject-highlight`}
                 placeholder="Enter a subject"
-                value={subject}
-                onChange={(e) => setSubject(e.target.value)}
+                value={formData.subject}
+                onChange={handleChange}
+                autoComplete="off"
+                required
+
               />
               {errors.subject && <div className="invalid-feedback">{errors.subject}</div>}
             </div>
@@ -229,11 +166,13 @@ async function handlePost(e) {
               <label htmlFor="body" className="form-label mb-2">Body</label>
               <textarea
                 id="body"
+                name="body"
                 className={`form-control ${errors.body ? "is-invalid" : ""}`}
                 rows={10}
                 placeholder="Write your post here..."
-                value={body}
-                onChange={(e) => setBody(e.target.value)}
+                value={formData.body}
+                onChange={handleChange}
+                required
                 aria-invalid={errors.body ? "true" : "false"}
                 aria-describedby={errors.body ? "body-error" : undefined}
               />
@@ -266,7 +205,7 @@ async function handlePost(e) {
                     />
                   </label>
 
-                  {imageFile && (
+                  {formData.image_file && (
                     <button
                       type="button"
                       className="btn btn-sm btn-outline-danger ms-2"

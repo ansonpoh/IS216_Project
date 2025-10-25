@@ -8,6 +8,7 @@ import orgsRoutes from "./routes/orgRoutes.js";
 import eventRoutes from "./routes/eventRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
 import feedbackRoutes from "./routes/feedbackRoutes.js";
+import communityRoutes from "./routes/communityRoutes.js";
 import { get_all_events } from "./services/eventServices.js";
 
 const app = express();
@@ -30,7 +31,7 @@ app.use("/users", userRoutes);
 app.use("/orgs", orgsRoutes);
 app.use("/events", eventRoutes);
 app.use("/api/chat", chatRoutes);
-app.use("/api/feedback", feedbackRoutes);
+app.use("/community", communityRoutes);
 
 // Return config values needed by frontend
 app.get('/config/google-maps-key', (req, res) => {

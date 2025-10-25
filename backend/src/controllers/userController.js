@@ -1,6 +1,4 @@
 import { register_user, check_if_user_email_in_use, get_user_by_id, get_all_users, get_user_by_email, login_user } from "../services/userServices.js";
-import util from "util";
-import bcrypt from "bcrypt";
 
 export async function check_if_user_email_in_use_handler (req, res) {
     try {
