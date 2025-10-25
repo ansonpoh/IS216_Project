@@ -9,7 +9,6 @@ import { AuthProvider } from './contexts/AuthProvider';
 import Opportunities from './pages/Opportunities';
 import Community from './pages/Forum/ForumPage';
 import NewDiscussion from './pages/Forum/component/NewDiscussion'; 
-import ImageUploadTest from './components/ImageUploadTest';
 // changed code
 // import LoginSignup from './pages/SignupAlt';
 import RoleSelect from './pages/RoleSelect';
@@ -34,7 +33,6 @@ function App() {
         <Route path="/opportunities" element={<Opportunities/>} />
         <Route path="/community" element={<Community />} />
         <Route path="/community/new-discussion" element={<NewDiscussion />} /> 
-        <Route path="/image-test-upload" element={<ImageUploadTest />} />
         <Route path='/choose-role' element={<RoleSelect />} />
         <Route path="/organiser/auth" element={<OrganiserAuth />} />
         <Route path="/volunteer/auth" element={<VolunteerAuth />} />
