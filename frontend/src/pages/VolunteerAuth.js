@@ -56,6 +56,7 @@ export default function LoginSignup() {
             .then((res) => {
                 const data = res.data;
                 if(data.status) {
+                    console.log(data)
                     setAuth({role: "volunteer", id: data.id, token: data.token});
                     nav("/")
                     // To remove
@@ -63,6 +64,8 @@ export default function LoginSignup() {
                 } else {
                     alert("Login Failed!")
                 }
+            }).catch((err) => {
+                alert("Invalid credentials")
             })
         }
   

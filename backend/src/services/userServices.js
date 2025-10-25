@@ -34,7 +34,7 @@ export async function login_user(email, password) {
     const {data, error} = await supabase.auth.signInWithPassword({email, password});
     if(error) {
         console.log(error);
-        return {status: false};
+        throw error;
     }
     return {token: data.session.access_token, user:data.user};
 }

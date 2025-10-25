@@ -43,7 +43,7 @@ export async function login_user_handler (req, res) {
         const {email, password} = req.body;
         const result = await login_user(email, password);
         const user = await get_user_by_email(email);
-
+        
         return res.json({ 
                 status: true, 
                 token: result.token,

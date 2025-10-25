@@ -1,12 +1,25 @@
-import React from "react";
+import React, {useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import "../../styles/ChatBubble.css";
 import {useNavigate} from "react-router-dom"
+import { useAuth } from "../../contexts/AuthProvider";
+import axios from "axios";
 
 export default function ChatBubble({ message }) {
   const isUser = message.role === "user";
   const nav = useNavigate();
+  const [image, setImage] = useState(null);
+
+  const {auth} = useAuth();
+  if(auth.id.length > 0) {
+    const fetch_user = async () => {
+      const user = await axios.get("http://localhost:3001/users/get_user_by_id", {params: {id: auth.id}})
+      const data = user.data.result[0];
+      setImage(data.profile_image);
+    }
+    fetch_user();
+  }
 
   return (
     <div className={`d-flex mb-3 ${isUser ? "justify-content-end" : "justify-content-start"}`}>
@@ -93,8 +106,16 @@ export default function ChatBubble({ message }) {
 
       </div>
       {isUser && (
-        <div className="avatar ms-2 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center">
-          <i className="bi bi-person"></i>
+        <div className="avatar ms-2 rounded-circle overflow-hidden d-flex align-items-center justify-content-center">
+          {image ? (
+            <img
+              src={image}
+              alt="User"
+              className="avatar-img"
+            />
+          ) : (
+            <i className="bi bi-person"></i>
+          )}
         </div>
       )}
     </div>
