@@ -6,7 +6,7 @@ import {useNavigate} from "react-router-dom"
 import { useAuth } from "../../contexts/AuthProvider";
 import axios from "axios";
 
-export default function ChatBubble({ message }) {
+export default function ChatBubble({ message, onOptionClick }) {
   const isUser = message.role === "user";
   const nav = useNavigate();
   const [image, setImage] = useState(null);
@@ -37,6 +37,16 @@ export default function ChatBubble({ message }) {
           {message.content}
         </ReactMarkdown>
 
+        {message.options && message.options.length > 0 && (
+          <div className="options-container">
+            {message.options.map((option, index) => (
+              <button key={index} className="option-button" onClick={() => onOptionClick("I want " + option + " events")}>
+                {option}
+              </button>
+            ))}
+          </div>
+        )}
+
         {message.events && message.events.length > 0 && (
           <div className="event-card-grid mt-3">
             {message.events.map((event, i) => (
@@ -44,25 +54,10 @@ export default function ChatBubble({ message }) {
 
                 <div className="p-3">
                   <div className="d-flex justify-content-between align-items-start mb-1">
-
                     <div>
                       <h5 className="fw-semibold mb-2">{event.title}</h5>
                       <div className="text-secondary mb-1">{event.organization}</div>
                     </div>
-
-                    {event.priority && (
-                      <span
-                        className={`badge ${
-                          event.priority === "high"
-                            ? "bg-danger-subtle text-danger"
-                            : event.priority === "medium"
-                            ? "bg-warning-subtle text-warning"
-                            : "bg-success-subtle text-success"
-                        }`}
-                      >
-                        {event.priority} priority
-                      </span>
-                    )}
                   </div>
 
                   {event.image_url && (

@@ -129,25 +129,25 @@ export async function get_events_by_time(filter, start_date, end_date) {
     }
 }
 
-export async function get_filtered_events({category, region, filter, start_date, end_date}) {
+export async function get_filtered_events(category, region, filter, start_date, end_date) {
     try {
         let conditions = [];
         let values = [];
         let i = 1;
-
+        console.log(category, region, filter)
         if(category) {
-            conditions.push(`lower(category) = lower($${i++})`)
+            conditions.push(`lower(category) ilike lower($${i++})`)
             values.push(category);
         }
         if(region) {
-            conditions.push(`lower(region) = lower($${i++})`)
+            conditions.push(`lower(region) ilike lower($${i++})`)
             values.push(region);
         }
 
         if(filter === "weekday") {
-            conditions.push(`extract(isdow from start_date) between 1 and 5`);
+            conditions.push(`extract(isodow from start_date) between 1 and 5`);
         } else if (filter === "weekend") {
-            conditions.push(`extract(isdow from start_date) in (6,7)`);
+            conditions.push(`extract(isodow from start_date) in (6,7)`);
         } else if (filter === "range" && start_date && end_date) {
             conditions.push(`start_date between $${i++} and $${i++}`);
             values.push(start_date, end_date);
@@ -155,7 +155,7 @@ export async function get_filtered_events({category, region, filter, start_date,
 
         const where_clause = conditions.length > 0 ? `where ${conditions.join(" AND ")}` : "";
         const query = `select * from events ${where_clause}`;
-
+        console.log("Query:", query, "WHERE:", where_clause);
         const result = await pool.query(query, values);
         return result.rows;
     } catch (err) {
@@ -194,6 +194,18 @@ export async function get_all_registered_users_for_event(event_id) {
         const values = [event_id];
         const result = await pool.query(query, values);
         return result.rows;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
+export async function get_selectable_options() {
+    try {
+        const regions = (await get_all_regions()).map(r => r.region + " region");
+        const categories = (await get_all_categories()).map(c => c.category);
+        const availability = ["Weekday", "Weekend", "Any Dates"]
+        return {regions, categories, availability}
     } catch (err) {
         console.error(err);
         throw err;

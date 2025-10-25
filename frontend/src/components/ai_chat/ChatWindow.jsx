@@ -55,13 +55,14 @@ export default function ChatWindow() {
         const reply = data.reply || {};
         const paragraph = reply.paragraph?.trim() || "I'm not sure how to respond.";
         const events = Array.isArray(reply.events) ? reply.events : [];
-
+        const options = Array.isArray(reply.options) ? reply.options : [];
         setMessages([
           ...newMessages,
           {
             role: "assistant",
             content: paragraph,
             events: events.length > 0 ? events : null,
+            options: options.length > 0 ? options : null,
           },
         ]);
       } else {
@@ -86,11 +87,27 @@ export default function ChatWindow() {
       sendMessage(text);
   };
 
+  const handleOptionClick = (option) => {
+    setMessages((prev) => {
+      const updated = [...prev];
+      for (let i = updated.length - 1; i >= 0; i--) {
+        if (updated[i].role === "assistant" && updated[i].options) {
+          updated[i] = { ...updated[i], options: null };
+          break;
+        }
+      }
+      return updated;
+    });
+    sendMessage(option);
+  };
+
+  console.log(messages)
+
   return (
     <div className="chat-container mx-auto mt-4">
         <div className="chat-box p-3" ref={chatBoxRef}>
         {messages.map((msg, i) => (
-            <ChatBubble key={i} message={msg} />
+            <ChatBubble key={i} message={msg} onOptionClick={handleOptionClick}/>
         ))}
 
         {/* typing animation */}
