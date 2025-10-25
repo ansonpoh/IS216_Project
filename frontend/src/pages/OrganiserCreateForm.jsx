@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Navbar from "./Navbar";
@@ -11,6 +11,33 @@ export default function OrganiserCreateForm() {
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState("");
   const [preview, setPreview] = useState(null);
+  const [regions, setRegions] = useState([]);
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const fetch_regions = async () => {
+      try {
+        const res = await axios.get("http://localhost:3001/events/get_all_regions");
+        const data = Array.isArray(res.data.result) ? res.data.result : [];
+        setRegions(data);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    const fetch_categories = async () => {
+      try {
+        const res = await axios.get("http://localhost:3001/events/get_all_categories");
+        const data = Array.isArray(res.data.result) ? res.data.result : [];
+        setCategories(data);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    fetch_regions();
+    fetch_categories();
+  }, [])
 
   const org_id = auth.id;
 
@@ -86,7 +113,7 @@ export default function OrganiserCreateForm() {
       setSaving(false);
     }
   };
-
+  
   return (
     <>
       <Navbar />
@@ -109,13 +136,13 @@ export default function OrganiserCreateForm() {
 
             <div className="col-md-4">
               <label className="form-label">Category *</label>
-              <input
-                name="category"
-                value={form.category}
-                onChange={onChange}
-                className="form-control"
-                required
-              />
+              <select name="category" value={form.category} 
+              className="form-control" onChange={onChange} required>
+                <option value="">Select Category</option>
+                {categories.map((c) => (
+                  <option key={c.category} value={c.category}>{c.category}</option>
+                ))}
+              </select>
             </div>
 
             <div className="col-12">
@@ -142,13 +169,12 @@ export default function OrganiserCreateForm() {
 
             <div className="col-md-4">
               <label className="form-label">Region *</label>
-              <input
-                name="region"
-                value={form.region}
-                onChange={onChange}
-                className="form-control"
-                required
-              />
+              <select name="region" className="form-control" value={form.region} onChange={onChange} required>
+                <option value="">Select Region</option>
+                {regions.map((r) => (
+                  <option key={r.region} value={r.region}>{r.region}</option>
+                ))}
+              </select>
             </div>
 
             {/* DATES */}
@@ -203,7 +229,7 @@ export default function OrganiserCreateForm() {
 
             {/* OTHER DETAILS */}
             <div className="col-md-4">
-              <label className="form-label">Capacity</label>
+              <label className="form-label">Capacity *</label>
               <input
                 type="number"
                 min="0"
@@ -211,11 +237,12 @@ export default function OrganiserCreateForm() {
                 value={form.capacity}
                 onChange={onChange}
                 className="form-control"
+                required
               />
             </div>
 
             <div className="col-md-4">
-              <label className="form-label">Hours</label>
+              <label className="form-label">Hours *</label>
               <input
                 type="number"
                 min="0"
@@ -223,6 +250,7 @@ export default function OrganiserCreateForm() {
                 value={form.hours}
                 onChange={onChange}
                 className="form-control"
+                required
               />
             </div>
 
