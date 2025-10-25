@@ -5,11 +5,10 @@ import axios from "axios";
 
 import userRoutes from "./routes/userRoutes.js";
 import orgsRoutes from "./routes/orgRoutes.js";
-import eventRoutes from "./routes/eventRoutes.js"
+import eventRoutes from "./routes/eventRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
+import feedbackRoutes from "./routes/feedbackRoutes.js";
 import { get_all_events } from "./services/eventServices.js";
-
-
 
 const app = express();
 dotenv.config();
@@ -21,54 +20,32 @@ app.use(
         methods: ["GET", "POST", "PUT", "DELETE"],
         credentials: true,
     })
-)
+);
 
 app.listen(3001, async () => {
-    console.log(3001)
-
-    // try {
-    //     const res = await axios.get("http://localhost:3001/users/get_user_by_id", {params : {id: "b3d7a372-1311-42da-ae22-0edf3a24546e"}})
-    //     console.log(res.data);
-    // } catch (err) {
-    //     console.log(err);
-    // }
-
-    // try {
-    //     const res = await axios.get("http://localhost:3001/orgs/get_all_orgs")
-    //     console.log(res.data);
-    // } catch (err) {
-    //     console.log(err);
-    // }
-
+    console.log("Server running on port 3001");
 });
 
 app.use("/users", userRoutes);
 app.use("/orgs", orgsRoutes);
 app.use("/events", eventRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/feedback", feedbackRoutes);
 
-
-
-// Return config values needed by frontend. Keep this minimal and secure.
+// Return config values needed by frontend
 app.get('/config/google-maps-key', (req, res) => {
-    // Prefer a non-REACT_APP env var on the backend
     let key = process.env.GOOGLE_MAPS_API_KEY || process.env.REACT_APP_GOOGLE_MAPS_API_KEY || '';
     if (typeof key === 'string') {
-        // Trim surrounding quotes/whitespace if present
         key = key.replace(/^\s*"|"\s*$/g, '').trim();
     }
     res.json({ key });
 });
 
 // Server-side geocoding: return opportunities with lat/lng
-// In backend/src/index.js
-// Replace the /api/opportunities endpoint with this:
-
 app.get('/api/opportunities', async (req, res) => {
     try {
         const events = await get_all_events();
 
-        // Read API key from env
         let key = process.env.GOOGLE_MAPS_API_KEY || process.env.REACT_APP_GOOGLE_MAPS_API_KEY || '';
         if (typeof key === 'string') {
             key = key.replace(/^\s*"|"\s*$/g, '').trim();
