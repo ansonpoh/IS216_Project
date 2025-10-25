@@ -26,7 +26,7 @@ export default function ChatBubble({ message, onOptionClick }) {
     <div className={`d-flex mb-3 ${isUser ? "justify-content-end" : "justify-content-start"}`}>
       {!isUser && (
         <div className="avatar me-2 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center">
-          <i className="bi bi-robot"></i>
+          <i className="bi bi-person-hearts"></i>
         </div>
       )}
       <div
