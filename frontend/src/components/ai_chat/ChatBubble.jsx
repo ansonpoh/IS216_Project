@@ -10,6 +10,7 @@ export default function ChatBubble({ message, onOptionClick }) {
   const isUser = message.role === "user";
   const nav = useNavigate();
   const [image, setImage] = useState(null);
+  const events = message.events
 
   const {auth} = useAuth();
   if(auth.id.length > 0) {
@@ -92,7 +93,7 @@ export default function ChatBubble({ message, onOptionClick }) {
               </div>
             ))}
             <div className="view-all-container text-center mt-3">
-              <button className="btn-outline-secondary view-all-btn" onClick={() => nav("/maps")}>
+              <button className="btn-outline-secondary view-all-btn" onClick={() => nav("/maps", {state: {events}})}>
                 <i className="bi bi-map me-2"></i>View All on Map
               </button>
             </div>

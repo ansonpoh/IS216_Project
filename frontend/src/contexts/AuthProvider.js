@@ -6,6 +6,8 @@ const AuthContext = createContext({
   auth: DEFAULT_AUTH,
   setAuth: () => {},
   logout: () => {},
+  messages: [],
+  setMessages: () => {},
 })
 
 export const AuthProvider = ({ children }) => {
@@ -28,7 +30,20 @@ export const AuthProvider = ({ children }) => {
     sessionStorage.removeItem("auth");
   }
 
-  const value = useMemo(() => ({auth, setAuth, logout}), [auth]);
+  const [messages, setMessages] = useState(() => {
+    try {
+      const stored = sessionStorage.getItem("chatMessages");
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  })
+
+  useEffect(() => {
+    sessionStorage.setItem("chatMessages", JSON.stringify(messages));
+  }, [messages]);
+
+  const value = useMemo(() => ({auth, setAuth, logout, messages, setMessages}), [auth, messages]);
 
   return <AuthContext.Provider value={value}>
     {children}

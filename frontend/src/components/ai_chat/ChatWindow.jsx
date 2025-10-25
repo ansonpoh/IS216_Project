@@ -3,9 +3,10 @@ import axios from "axios";
 import ChatBubble from "./ChatBubble";
 import ChatInput from "./ChatInput";
 import "../../styles/ChatWindow.css";
+import { useAuth } from "../../contexts/AuthProvider";
 
 export default function ChatWindow() {
-  const [messages, setMessages] = useState([]);
+  const { messages, setMessages } = useAuth();
   const [loading, setLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(true);
 
@@ -50,7 +51,6 @@ export default function ChatWindow() {
       });
 
       const data = res.data;
-      console.log(data)
       if(data.success) {
         const reply = data.reply || {};
         const paragraph = reply.paragraph?.trim() || "I'm not sure how to respond.";
@@ -101,8 +101,6 @@ export default function ChatWindow() {
     sendMessage(option);
   };
 
-  console.log(messages)
-
   return (
     <div className="chat-container mx-auto mt-4">
         <div className="chat-box p-3" ref={chatBoxRef}>
@@ -127,7 +125,7 @@ export default function ChatWindow() {
         )}
 
         {/* 🔹 Quick-response cards */}
-        {showSuggestions && (
+        {messages.length < 2 && (
           <div className="suggestion-section text-center mt-4">
             {/* <h4 className="fw-semibold">Welcome to VolunteerConnect AI</h4>
             <p className="text-muted">
