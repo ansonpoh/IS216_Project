@@ -1,7 +1,8 @@
 import pool from "../config/db.js";
 import { supabase } from "../config/supabase.js";
+import path from "path";
 
-export async function register_user(username, email, password) {
+export async function register_user(username, email, password, profile_image) {
     try {
         const {data, error} = await supabase.auth.admin.createUser({
             email,
@@ -13,9 +14,30 @@ export async function register_user(username, email, password) {
         if(error) throw new Error(`Supabase error: ${error.message}`);
 
         const supabase_id = data.user.id;
+        let profile_image_url = null;
 
-        const query = `insert into users (username, email, supabase_id) values ($1, $2, $3) returning user_id, username, email, supabase_id`;
-        const values = [username, email, supabase_id];
+        if (profile_image) {
+            const fileExt = path.extname(profile_image.originalname);
+            const fileName = `${supabase_id}_${Date.now()}${fileExt}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from("profile_images") // bucket name
+                .upload(fileName, profile_image.buffer, {
+                contentType: profile_image.mimetype,
+                upsert: true,
+                });
+
+            if (uploadError) throw new Error(`Image upload failed: ${uploadError.message}`);
+
+            const { data: publicData } = supabase.storage
+                .from("profile_images")
+                .getPublicUrl(fileName);
+
+            profile_image_url = publicData.publicUrl;
+        }
+
+        const query = `insert into users (username, email, supabase_id, profile_image) values ($1, $2, $3, $4) returning user_id, username, email, supabase_id, profile_image`;
+        const values = [username, email, supabase_id, profile_image_url];
         const result = await pool.query(query, values);
         return {
             status: true,
@@ -24,7 +46,7 @@ export async function register_user(username, email, password) {
         };
 
     } catch (err) {
-        console.error("Register user error: ", err.mssage);
+        console.error("Register user error: ", err.message);
         return {status: false, error: err.message};
     }
 }

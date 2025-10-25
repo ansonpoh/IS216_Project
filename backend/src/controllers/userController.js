@@ -20,12 +20,13 @@ export async function check_if_user_email_in_use_handler (req, res) {
 export async function register_user_handler (req,res) {
     try {
         const {username, email, password} = req.body;
+        const profile_image = req.file;
         const email_in_use = await check_if_user_email_in_use(email);
         if(email_in_use) {
             return res.json({status: false, message:"Email in use"})
         }
 
-        const result = await register_user(username, email, password);
+        const result = await register_user(username, email, password, profile_image);
         if(result) {
             return res.json({status: true, id: result.id, supabase_id: result.supabase_id });
         } else {
