@@ -1,10 +1,138 @@
+import { mdiPaw, mdiBalloon, mdiHumanCane, mdiTree, mdiCalendar, mdiHuman, mdiHeartPulse, } from '@mdi/js';
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+
+// Helper function to create custom marker icons based on category
+const getCategoryMarkerIcon = (category) => {
+  // Normalize category name
+  const cat = (category || '').toLowerCase().trim();
+  
+  // Define colors and icons for each category with simpler, more visible icons
+  const categoryConfig = {
+    'animal': { 
+      color: '#f59e0b', 
+      icon: mdiPaw,
+      viewBox: '0 0 24 24'
+    },
+    'children': { 
+      color: '#ec4899', 
+      icon: mdiBalloon,
+      viewBox: '0 0 24 24'
+    },
+    'youth': { 
+      color: '#ec4899', 
+      icon: mdiBalloon,
+      viewBox: '0 0 24 24'
+    },
+    'elderly': { 
+      color: '#8b5cf6', 
+      icon: mdiHumanCane,
+      viewBox: '0 0 24 24'
+    },
+    'senior': { 
+      color: '#8b5cf6', 
+      icon: mdiHumanCane,
+      viewBox: '0 0 24 24'
+    },
+    'environment': { 
+      color: '#10b981', 
+      icon: mdiTree,
+      viewBox: '0 0 24 24'
+    },
+    'event support': { 
+      color: '#3b82f6', 
+      icon: mdiCalendar,
+      viewBox: '0 0 24 24'
+    },
+    'carnival': { 
+      color: '#3b82f6', 
+      icon: mdiCalendar,
+      viewBox: '0 0 24 24'
+    },
+    'mental health': { 
+      color: '#ef4444', 
+      icon: mdiHeartPulse,
+      viewBox: '0 0 24 24'
+    },
+    'pwds': { 
+      color: '#6366f1', 
+      icon: mdiHuman,
+      viewBox: '0 0 24 24'
+    },
+    'disability': { 
+      color: '#6366f1', 
+      icon: mdiHuman,
+      viewBox: '0 0 24 24'
+    },
+    'healthcare': { 
+      color: '#ef4444', 
+      icon: mdiHeartPulse,
+      viewBox: '0 0 24 24'
+    },
+    'education': { 
+      color: '#3b82f6', 
+      icon: mdiCalendar,
+      viewBox: '0 0 24 24'
+    }
+  };
+
+  // More precise category matching
+  let config = categoryConfig['education']; // default
+  
+  // Check for exact matches first, then partial matches
+  if (categoryConfig[cat]) {
+    config = categoryConfig[cat];
+  } else {
+    // Check for partial matches with priority order
+    const matchPriority = [
+      'mental health',
+      'event support',
+      'pwds',
+      'disability',
+      'animal',
+      'children',
+      'youth',
+      'elderly',
+      'senior',
+      'environment',
+      'carnival',
+      'healthcare',
+      'education'
+    ];
+    
+    for (const key of matchPriority) {
+      if (cat.includes(key) || key.includes(cat)) {
+        config = categoryConfig[key];
+        break;
+      }
+    }
+  }
+
+  // Create larger SVG marker with icon
+  const svg = `
+  <svg width="40" height="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60">
+    <circle cx="30" cy="30" r="26" fill="${config.color}" fill-opacity="0.8" stroke="white" stroke-width="4"/>
+    <g transform="translate(12, 12)">
+      <svg width="36" height="36" viewBox="${config.viewBox}">
+        <path d="${config.icon}" fill="white"/>
+      </svg>
+    </g>
+  </svg>
+`;
+
+
+
+  return {
+    url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg),
+    scaledSize: new window.google.maps.Size(40, 40),
+    anchor: new window.google.maps.Point(30, 30)
+  };
+};
 
 const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters }, ref) => {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markersRef = useRef([]);
-  const currentInfoWindowRef = useRef(null); // Track currently open InfoWindow
+  const currentInfoWindowRef = useRef(null);
   const [opportunities, setOpportunities] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -12,7 +140,6 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters }, r
   const filteredOpportunities = useMemo(() => {
     if (activeFilters.length === 0) return opportunities;
 
-    // Separate filters into regions and categories
     const regions = ['central', 'north', 'north-east', 'east', 'west', 'south'];
     const categories = ['animal', 'children', 'elderly', 'environment', 'event support', 'mental health', 'pwds'];
     
@@ -24,14 +151,12 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters }, r
     );
 
     return opportunities.filter(opp => {
-      // Normalize opportunity data
       const category = (opp.category || '').toLowerCase().trim();
       const region = (opp.region || '').toLowerCase().trim();
       const title = (opp.title || '').toLowerCase().trim();
       const description = (opp.description || '').toLowerCase().trim();
 
-      // Check region match (OR logic within regions)
-      let regionMatch = regionFilters.length === 0; // If no region filter, pass by default
+      let regionMatch = regionFilters.length === 0;
       if (regionFilters.length > 0) {
         regionMatch = regionFilters.some(filter => {
           const filterLower = filter.toLowerCase().trim();
@@ -44,147 +169,80 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters }, r
                      title.includes('northeast') ||
                      description.includes('north-east') ||
                      description.includes('northeast');
-            
             case 'north':
               return region === 'north' || 
                      title.includes('north') ||
                      description.includes('north');
-
             case 'south':
               return region === 'south' || 
                      title.includes('south') ||
                      description.includes('south');
-
             case 'east':
               return region === 'east' || 
                      title.includes('east') ||
                      description.includes('east');
-
             case 'west':
               return region === 'west' || 
                      title.includes('west') ||
                      description.includes('west');
-
             case 'central':
               return region === 'central' || 
                      title.includes('central') ||
                      description.includes('central');
-
             default:
               return region === filterLower;
           }
         });
       }
 
-      // Check category match (OR logic within categories)
-      let categoryMatch = categoryFilters.length === 0; // If no category filter, pass by default
+      let categoryMatch = categoryFilters.length === 0;
       if (categoryFilters.length > 0) {
         categoryMatch = categoryFilters.some(filter => {
           const filterLower = filter.toLowerCase().trim();
 
+          // PRIORITY: Match category field first (most reliable)
           switch (filterLower) {
             case 'pwds':
               return category.includes('pwd') || 
                      category.includes('disability') || 
-                     category.includes('disabled') ||
-                     title.includes('pwd') ||
-                     title.includes('disability') ||
-                     description.includes('pwd') ||
-                     description.includes('disability');
-
+                     category.includes('disabled');
             case 'mental health':
               return category.includes('mental') || 
                      category.includes('mental health') || 
                      category.includes('psychology') ||
-                     category.includes('wellbeing') ||
-                     title.includes('mental') ||
-                     description.includes('mental health');
-
+                     category.includes('wellbeing');
             case 'event support':
+              // Only match if category explicitly contains these keywords
               return category.includes('event support') || 
-                     category.includes('carnival') ||
-                     category.includes('fair') ||
-                     category.includes('support') ||
-                     title.includes('carnival') ||
-                     title.includes('fair') ||
-                     title.includes('booth') ||
-                     description.includes('carnival') ||
-                     description.includes('booth');
-
+                     category.includes('event') ||
+                     (category.includes('carnival') && !category.includes('children')) ||
+                     (category.includes('fair') && !category.includes('environment'));
             case 'children':
               return category.includes('youth') || 
                      category.includes('children') || 
-                     category.includes('education') ||
-                     title.includes('children') ||
-                     description.includes('children');
-
+                     category.includes('child');
             case 'elderly':
             case 'seniors':
               return category.includes('senior') || 
-                     category.includes('elderly') ||
-                     category.includes('healthcare') ||
-                     title.includes('elderly') ||
-                     description.includes('elderly');
-
+                     category.includes('elderly');
             case 'animal':
             case 'animals':
               return category.includes('animal') || 
-                     category.includes('pet') ||
-                     title.includes('animal') ||
-                     description.includes('animal');
-
+                     category.includes('pet');
             case 'environment':
               return category.includes('environment') || 
                      category.includes('conservation') ||
                      category.includes('green') ||
-                     title.includes('environment') ||
-                     description.includes('environment');
-
+                     category.includes('nature');
             default:
-              return category.includes(filterLower) || 
-                     title.includes(filterLower) || 
-                     description.includes(filterLower);
+              return category.includes(filterLower);
           }
         });
       }
 
-      // Return true only if BOTH region and category conditions are satisfied (AND logic across filter types)
       return regionMatch && categoryMatch;
     });
   }, [opportunities, activeFilters]);
-
-  // DEBUG: Log filter changes
-  useEffect(() => {
-    console.log('=== FILTER DEBUG ===');
-    console.log('Active Filters:', activeFilters);
-    console.log('Total Opportunities:', opportunities.length);
-    console.log('Filtered Opportunities:', filteredOpportunities.length);
-    
-    // Separate filters for debugging
-    const regions = ['central', 'north', 'north-east', 'east', 'west', 'south'];
-    const categories = ['animal', 'children', 'elderly', 'environment', 'event support', 'mental health', 'pwds'];
-    
-    const regionFilters = activeFilters.filter(f => regions.includes(f.toLowerCase()));
-    const categoryFilters = activeFilters.filter(f => categories.includes(f.toLowerCase()));
-    
-    console.log('Region Filters (OR):', regionFilters);
-    console.log('Category Filters (OR):', categoryFilters);
-    console.log('Logic: Region filters use OR, Category filters use OR, Between types use AND');
-    
-    if (opportunities.length > 0) {
-      console.log('First opportunity:', {
-        title: opportunities[0].title,
-        region: opportunities[0].region,
-        category: opportunities[0].category
-      });
-    }
-    
-    if (activeFilters.length > 0 && filteredOpportunities.length === 0) {
-      console.log('❌ NO MATCHES FOUND');
-      console.log('Available regions in data:', [...new Set(opportunities.map(o => (o.region || '').toLowerCase()))]);
-      console.log('Available categories in data:', [...new Set(opportunities.map(o => (o.category || '').toLowerCase()))]);
-    }
-  }, [activeFilters, opportunities, filteredOpportunities]);
 
   // Fetch opportunities from backend
   const fetchOpportunities = async () => {
@@ -211,13 +269,11 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters }, r
   useEffect(() => {
     if (!mapInstanceRef.current || !window.google) return;
 
-    // Close any open InfoWindow when filters change
     if (currentInfoWindowRef.current) {
       currentInfoWindowRef.current.close();
       currentInfoWindowRef.current = null;
     }
 
-    // Clear existing markers
     markersRef.current.forEach(m => m.setMap(null));
     markersRef.current = [];
 
@@ -230,7 +286,6 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters }, r
     let geocodedCount = 0;
 
     filteredOpportunities.forEach((item) => {
-      // Check for existing lat/lng first
       if (item.lat && item.lng) {
         const loc = new window.google.maps.LatLng(item.lat, item.lng);
         addMarker(loc, item);
@@ -267,20 +322,24 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters }, r
     });
 
     function addMarker(loc, item) {
+      // Get custom icon based on category
+      const customIcon = getCategoryMarkerIcon(item.category);
+      
+      // Debug: Log category to icon mapping
+      console.log(`Marker created - Category: "${item.category}" | Title: "${item.title}"`);
+      
       const marker = new window.google.maps.Marker({
         position: loc,
         map: mapInstanceRef.current,
         title: item.title || item.postalcode,
+        icon: customIcon,
         animation: window.google.maps.Animation.DROP
       });
 
-      // Capitalize category properly
       const capitalizeCategory = (cat) => {
         if (!cat) return '';
-        // Handle special cases
         if (cat.toLowerCase() === 'pwds') return 'PWDs';
         if (cat.toLowerCase() === 'mental health') return 'Mental Health';
-        // Capitalize first letter of each word
         return cat
           .toLowerCase()
           .split(' ')
@@ -288,25 +347,67 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters }, r
           .join(' ');
       };
 
+      // Enhanced InfoWindow content with image
+      // Check multiple possible image field names from backend
+      const imageUrl = item.image_url || item.image || item.imageUrl || item.img;
+      const hasImage = imageUrl && imageUrl.trim() !== '';
+      
       const infoWindow = new window.google.maps.InfoWindow({
         content: `
-          <div style="padding: 8px; max-width: 250px;">
-            <div style="font-weight: bold; margin-bottom: 4px;">${item.title || 'Opportunity'}</div>
-            ${item.organization ? `<div style="font-size: 12px; margin-bottom: 4px; color: #666;">${item.organization}</div>` : ''}
-            ${item.description ? `<div style="font-size: 12px; margin-bottom: 4px;">${item.description.substring(0, 100)}...</div>` : ''}
-            ${item.category ? `<div style="font-size: 11px; color: #0066cc; margin-bottom: 4px;">📁 ${capitalizeCategory(item.category)}</div>` : ''}
-            <div style="font-size: 12px; color: #666;"><strong>📍 Location:</strong> ${item.location}</div>
+          <div style="padding: 8px; max-width: 300px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+            ${hasImage ? `
+              <div style="margin: -8px -8px 12px -8px; overflow: hidden; border-radius: 8px 8px 0 0;">
+                <img 
+                  src="${imageUrl}" 
+                  alt="${item.title || 'Opportunity'}" 
+                  style="width: 100%; height: 180px; object-fit: cover; display: block;"
+                  onerror="this.style.display='none'; this.parentElement.style.display='none';"
+                />
+              </div>
+            ` : ''}
+            <div style="font-weight: 600; font-size: 17px; margin-bottom: 8px; color: #1a1a1a; line-height: 1.3;">
+              ${item.title || 'Opportunity'}
+            </div>
+            ${item.organization ? `
+              <div style="font-size: 13px; margin-bottom: 10px; color: #666; display: flex; align-items: center;">
+                <span style="margin-right: 6px;">🏢</span>
+                <span style="font-weight: 500;">${item.organization}</span>
+              </div>
+            ` : ''}
+            ${item.description ? `
+              <div style="font-size: 13px; margin-bottom: 12px; color: #444; line-height: 1.5;">
+                ${item.description.substring(0, 150)}${item.description.length > 150 ? '...' : ''}
+              </div>
+            ` : ''}
+            ${item.category ? `
+              <div style="font-size: 11px; color: #0066cc; margin-bottom: 10px; display: inline-block; background: #e6f2ff; padding: 5px 12px; border-radius: 14px; font-weight: 600;">
+                📁 ${capitalizeCategory(item.category)}
+              </div>
+            ` : ''}
+            <div style="font-size: 13px; color: #555; margin-top: 10px; display: flex; align-items: flex-start; padding: 8px 0; border-top: 1px solid #eee;">
+              <strong style="margin-right: 6px; font-size: 16px;">📍</strong>
+              <span style="line-height: 1.4;">${item.location}</span>
+            </div>
+            ${item.event_id ? `
+              <a 
+                href="/opportunities" 
+                style="display: block; margin-top: 12px; padding: 10px 16px; background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 600; text-align: center; box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3); transition: transform 0.2s;"
+                onmouseover="this.style.transform='translateY(-2px)'"
+                onmouseout="this.style.transform='translateY(0)'"
+              >
+                Learn More →
+              </a>
+            ` : ''}
           </div>
-        `
+        `,
+        maxWidth: 320
       });
 
       marker.addListener('click', () => {
-        // Close previously opened InfoWindow
         if (currentInfoWindowRef.current) {
           currentInfoWindowRef.current.close();
         }
         
-        // Open new InfoWindow and store reference
         infoWindow.open({ anchor: marker, map: mapInstanceRef.current });
         currentInfoWindowRef.current = infoWindow;
       });
@@ -326,7 +427,7 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters }, r
     }
   }, [filteredOpportunities]);
 
-  // Initialize map once on component mount
+  // Initialize map
   useEffect(() => {
     const initMap = () => {
       if (window.google && mapRef.current) {
@@ -414,7 +515,6 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters }, r
         }}
       />
       
-      {/* Add Reset Button - only show when filters are active */}
       {activeFilters.length > 0 && (
         <button
           onClick={onResetFilters}
