@@ -22,6 +22,7 @@ export default function LoginSignup() {
     email: "",
     password: "",
     confimPassword: "",
+    profile_image: "",
     agree: false,
   })
 
@@ -35,7 +36,7 @@ export default function LoginSignup() {
 
     const handle_register = (e) => {
         e.preventDefault();
-        axios.post("http://localhost:3001/users/register", {username: registerData.username, email: registerData.email, password: registerData.password})
+        axios.post("http://localhost:3001/users/register", {username: registerData.username, email: registerData.email, password: registerData.password, profile_image: registerData.profile_image}, {headers: {"Content-Type" : "multipart/form-data"}})
             .then((res) => {
                 const data = res.data;
                 if(data.status) {
@@ -56,6 +57,7 @@ export default function LoginSignup() {
             .then((res) => {
                 const data = res.data;
                 if(data.status) {
+                    console.log(data)
                     setAuth({role: "volunteer", id: data.id, token: data.token});
                     nav("/")
                     // To remove
@@ -63,6 +65,8 @@ export default function LoginSignup() {
                 } else {
                     alert("Login Failed!")
                 }
+            }).catch((err) => {
+                alert("Invalid credentials")
             })
         }
   
@@ -135,6 +139,17 @@ export default function LoginSignup() {
                 <div className="input-box">
                     <input type="password" placeholder="Confirm Password" className={`form-control ${errors.password ? "is-invalid" : ""}`}value={registerData.confimPassword} onChange={(e) => setRegisterData({...registerData, confimPassword: e.target.value})}required />
                     <i className="bx bxs-lock-alt"></i>
+                </div>
+
+                <div className="input-box">
+                <input
+                    className="form-control"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) =>
+                    setRegisterData({ ...registerData, profile_image: e.target.files[0] })
+                    }
+                />
                 </div>
                 
                 <div className="form-check mb-3">

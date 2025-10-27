@@ -1,18 +1,32 @@
-import React from "react";
+import React, {useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import "../../styles/ChatBubble.css";
 import {useNavigate} from "react-router-dom"
+import { useAuth } from "../../contexts/AuthProvider";
+import axios from "axios";
 
-export default function ChatBubble({ message }) {
+export default function ChatBubble({ message, onOptionClick }) {
   const isUser = message.role === "user";
   const nav = useNavigate();
+  const [image, setImage] = useState(null);
+  const events = message.events
+
+  const {auth} = useAuth();
+  if(auth.id.length > 0) {
+    const fetch_user = async () => {
+      const user = await axios.get("http://localhost:3001/users/get_user_by_id", {params: {id: auth.id}})
+      const data = user.data.result[0];
+      setImage(data.profile_image);
+    }
+    fetch_user();
+  }
 
   return (
     <div className={`d-flex mb-3 ${isUser ? "justify-content-end" : "justify-content-start"}`}>
       {!isUser && (
         <div className="avatar me-2 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center">
-          <i className="bi bi-robot"></i>
+          <i className="bi bi-person-hearts"></i>
         </div>
       )}
       <div
@@ -24,6 +38,16 @@ export default function ChatBubble({ message }) {
           {message.content}
         </ReactMarkdown>
 
+        {message.options && message.options.length > 0 && (
+          <div className="options-container">
+            {message.options.map((option, index) => (
+              <button key={index} className="option-button" onClick={() => onOptionClick("I want " + option + " events")}>
+                {option}
+              </button>
+            ))}
+          </div>
+        )}
+
         {message.events && message.events.length > 0 && (
           <div className="event-card-grid mt-3">
             {message.events.map((event, i) => (
@@ -31,25 +55,10 @@ export default function ChatBubble({ message }) {
 
                 <div className="p-3">
                   <div className="d-flex justify-content-between align-items-start mb-1">
-
                     <div>
                       <h5 className="fw-semibold mb-2">{event.title}</h5>
                       <div className="text-secondary mb-1">{event.organization}</div>
                     </div>
-
-                    {event.priority && (
-                      <span
-                        className={`badge ${
-                          event.priority === "high"
-                            ? "bg-danger-subtle text-danger"
-                            : event.priority === "medium"
-                            ? "bg-warning-subtle text-warning"
-                            : "bg-success-subtle text-success"
-                        }`}
-                      >
-                        {event.priority} priority
-                      </span>
-                    )}
                   </div>
 
                   {event.image_url && (
@@ -84,7 +93,7 @@ export default function ChatBubble({ message }) {
               </div>
             ))}
             <div className="view-all-container text-center mt-3">
-              <button className="btn-outline-secondary view-all-btn" onClick={() => nav("/maps")}>
+              <button className="btn-outline-secondary view-all-btn" onClick={() => nav("/maps", {state: {events}})}>
                 <i className="bi bi-map me-2"></i>View All on Map
               </button>
             </div>
@@ -93,8 +102,16 @@ export default function ChatBubble({ message }) {
 
       </div>
       {isUser && (
-        <div className="avatar ms-2 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center">
-          <i className="bi bi-person"></i>
+        <div className="avatar ms-2 rounded-circle overflow-hidden d-flex align-items-center justify-content-center">
+          {image ? (
+            <img
+              src={image}
+              alt="User"
+              className="avatar-img"
+            />
+          ) : (
+            <i className="bi bi-person"></i>
+          )}
         </div>
       )}
     </div>

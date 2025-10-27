@@ -10,6 +10,7 @@ import {
   create_event,
   get_events_by_time,
   get_filtered_events,
+  get_selectable_options,
 } from "../services/eventServices.js";
 
 export async function create_event_handler (req, res) {
@@ -129,6 +130,16 @@ export async function get_filtered_events_handler(req, res) {
   try {
     const {category, region, filter, start_date, end_date} = req.query;
     const result = await get_filtered_events(category, region, filter, start_date, end_date);
+    return res.json({result});
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+}
+
+export async function get_selectable_options_handler(req, res) {
+  try {
+    const result = await get_selectable_options();
     return res.json({result});
   } catch (err) {
     console.error(err);
