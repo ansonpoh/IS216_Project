@@ -1,6 +1,6 @@
 // src/components/NewDiscussion.jsx
 import React, { useState, useRef } from "react";
-import "./community.css";
+import "../../../styles/Community.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -102,28 +102,66 @@ export default function NewDiscussion({ initialBoard = "" }) {
   /* ========== Submit ========== */
   async function handlePost(e) {
     e.preventDefault();
-
     setSubmitting(true);
     setStatus("");
 
     try {
-      if(auth.id.length < 1) throw new Error("You must be signed in to post.")
-      console.log(formData)
-      axios.post("http://localhost:3001/community/create_post", formData, {headers: {"Content-Type": "multipart/form-data"}})
-        .then((res) => {
-          const data = res.data;
-          if(data.status) {
-            alert("Post Created!")
-            nav("/community");
-          } else {
-            alert("Failed to create post!")
-          }
-        })
+      // Auth check
+      if (!auth?.id) {
+        setStatus("Please sign in to post");
+        alert("Please sign in to create a post");
+        nav("/volunteer/auth");
+        return;
+      }
+
+      // Validate subject is unique
+      if (!formData.subject.trim()) {
+        setStatus("Subject is required");
+        return;
+      }
+
+      const fd = new FormData();
+      fd.append("user_id", auth.id);
+      fd.append("subject", formData.subject.trim());
+      fd.append("body", formData.body.trim());
+      
+      if (formData.image_file) {
+        fd.append("image_file", formData.image_file);
+      }
+
+      const response = await axios.post(
+        "http://localhost:3001/community/create_post",
+        fd,
+        {
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'multipart/form-data'
+          },
+          withCredentials: true
+        }
+      );
+
+      if (response.data.status) {
+        alert("Post Created Successfully!");
+        nav("/community");
+      }
+
     } catch (err) {
-      console.error(err);
+      console.error("Error creating post:", err);
+      
+      // Handle duplicate subject error
+      if (err.response?.data?.includes('feedback_subject_key')) {
+        setStatus("A post with this subject already exists. Please choose a different subject.");
+        setErrors(prev => ({
+          ...prev,
+          subject: "This subject is already taken. Please choose a different one."
+        }));
+      } else {
+        setStatus(err.message || "Failed to create post");
+      }
     } finally {
-      setUploading(false);
       setSubmitting(false);
+      setUploading(false);
     }
   }
 
@@ -133,7 +171,7 @@ export default function NewDiscussion({ initialBoard = "" }) {
   }
 
   return (
-      <div className="container py-5">
+    <div className="container py-5">
       <h1 className="display-6 mb-3">New Discussion</h1>
 
       <nav className="small text-muted mb-4">Welcome to the Community &nbsp;/&nbsp; New Discussion</nav>

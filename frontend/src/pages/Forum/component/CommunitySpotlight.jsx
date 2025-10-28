@@ -7,7 +7,7 @@ import React from "react";
  *  - interval: number (ms) carousel auto-advance interval (default 4000)
  */
 export default function CommunitySpotlight({ slides = [], interval = 4000 }) {
-  // create a unique id for the carousel so multiple instances won't clash
+
   const id = "communityCarousel-" + Math.random().toString(36).slice(2, 9);
 
   return (
@@ -17,8 +17,6 @@ export default function CommunitySpotlight({ slides = [], interval = 4000 }) {
         <p className="small text-muted text-center mb-3">
           Share the joy! Highlight memorable moments from your volunteering experiences.
         </p>
-
-        {/* Carousel */}
         <div className="mb-3">
           <div
             id={id}
@@ -29,18 +27,18 @@ export default function CommunitySpotlight({ slides = [], interval = 4000 }) {
             <div className="carousel-inner">
               {slides.length === 0 && (
                 <div className="carousel-item active">
-                  <div className="d-flex align-items-center justify-content-center spotlight-placeholder">
+                  <div className="d-flex align-items-center justify-content-center" style={{ height: "300px", background: "#f0f0f0" }}>
                     <small className="text-muted">No spotlight images yet</small>
                   </div>
                 </div>
               )}
-
               {slides.map((s, i) => (
                 <div key={i} className={`carousel-item ${i === 0 ? "active" : ""}`}>
                   <img
                     src={s.image}
-                    className="d-block w-100 spotlight-img"
+                    className="d-block w-100"
                     alt={s.alt || `slide-${i + 1}`}
+                    style={{ height: "300px", objectFit: "cover" }}
                   />
                   {s.caption && (
                     <div className="carousel-caption d-none d-md-block">
@@ -50,25 +48,13 @@ export default function CommunitySpotlight({ slides = [], interval = 4000 }) {
                 </div>
               ))}
             </div>
-
-            {/* Controls (only if more than 1 slide) */}
             {slides.length > 1 && (
               <>
-                <button
-                  className="carousel-control-prev"
-                  type="button"
-                  data-bs-target={`#${id}`}
-                  data-bs-slide="prev"
-                >
+                <button className="carousel-control-prev" type="button" data-bs-target={`#${id}`} data-bs-slide="prev">
                   <span className="carousel-control-prev-icon" aria-hidden="true" />
                   <span className="visually-hidden">Previous</span>
                 </button>
-                <button
-                  className="carousel-control-next"
-                  type="button"
-                  data-bs-target={`#${id}`}
-                  data-bs-slide="next"
-                >
+                <button className="carousel-control-next" type="button" data-bs-target={`#${id}`} data-bs-slide="next">
                   <span className="carousel-control-next-icon" aria-hidden="true" />
                   <span className="visually-hidden">Next</span>
                 </button>
@@ -80,3 +66,4 @@ export default function CommunitySpotlight({ slides = [], interval = 4000 }) {
     </div>
   );
 }
+

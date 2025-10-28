@@ -1,71 +1,16 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../Navbar";
+import FeaturedCard from "./component/FeaturedCard";
+import CommunitySpotlight from "./component/CommunitySpotlight";
+import axios from 'axios';
+import { useNavigate } from "react-router-dom";
+
 
 const slides = [
   { image: "https://picsum.photos/seed/1/800/480", caption: "Member review: Love this!", alt: "review 1" },
   { image: "https://picsum.photos/seed/2/800/480", caption: "New product spotlight", alt: "spotlight 2" },
   { image: "https://picsum.photos/seed/3/800/480", caption: "Community event highlights", alt: "event 3" },
 ];
-
-const CommunitySpotlight = ({ slides = [], interval = 4000 }) => {
-  const id = "communityCarousel-" + Math.random().toString(36).slice(2, 9);
-
-  return (
-    <div className="card mb-3 h-100">
-      <div className="card-body d-flex flex-column">
-        <h6 className="mb-2 text-center fs-2">Community Spotlight</h6>
-        <p className="small text-muted text-center mb-3">
-          Share the joy! Highlight memorable moments from your volunteering experiences.
-        </p>
-        <div className="mb-3">
-          <div
-            id={id}
-            className="carousel slide"
-            data-bs-ride={slides.length > 1 ? "carousel" : undefined}
-            data-bs-interval={interval}
-          >
-            <div className="carousel-inner">
-              {slides.length === 0 && (
-                <div className="carousel-item active">
-                  <div className="d-flex align-items-center justify-content-center" style={{ height: "300px", background: "#f0f0f0" }}>
-                    <small className="text-muted">No spotlight images yet</small>
-                  </div>
-                </div>
-              )}
-              {slides.map((s, i) => (
-                <div key={i} className={`carousel-item ${i === 0 ? "active" : ""}`}>
-                  <img
-                    src={s.image}
-                    className="d-block w-100"
-                    alt={s.alt || `slide-${i + 1}`}
-                    style={{ height: "300px", objectFit: "cover" }}
-                  />
-                  {s.caption && (
-                    <div className="carousel-caption d-none d-md-block">
-                      <small>{s.caption}</small>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-            {slides.length > 1 && (
-              <>
-                <button className="carousel-control-prev" type="button" data-bs-target={`#${id}`} data-bs-slide="prev">
-                  <span className="carousel-control-prev-icon" aria-hidden="true" />
-                  <span className="visually-hidden">Previous</span>
-                </button>
-                <button className="carousel-control-next" type="button" data-bs-target={`#${id}`} data-bs-slide="next">
-                  <span className="carousel-control-next-icon" aria-hidden="true" />
-                  <span className="visually-hidden">Next</span>
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const PostModal = ({ post, onClose, onLike }) => {
   if (!post) return null;
@@ -148,66 +93,17 @@ const PostModal = ({ post, onClose, onLike }) => {
 };
 
 export default function ForumPage() {
-  // Example posts for testing
-  const examplePosts = [
-    {
-      feedback_id: "test-1",
-      subject: "Amazing Beach Cleanup Experience!",
-      body: "Had an incredible time volunteering at East Coast Park today. Our team collected over 50kg of trash and met so many wonderful people. The sunrise was breathtaking and made the early morning wake-up totally worth it!",
-      img: "https://picsum.photos/seed/beach1/800/600",
-      user_id: "volunteer_sarah",
-      created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-      liked_count: 24,
-      isLiked: false
-    },
-    {
-      feedback_id: "test-2",
-      subject: "Teaching Kids at Community Center",
-      body: "Spent my Saturday teaching art to underprivileged children at Yishun Community Center. Their creativity and enthusiasm were so inspiring! One kid made the most beautiful painting of her family. These moments remind me why I volunteer.",
-      img: "https://picsum.photos/seed/kids1/800/600",
-      user_id: "volunteer_marcus",
-      created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-      liked_count: 18,
-      isLiked: false
-    },
-    {
-      feedback_id: "test-3",
-      subject: "Senior Care Home Visit",
-      body: "Visited Sunshine Senior Care Home and played board games with the elderly residents. Mr. Tan shared stories from his childhood in kampong days. Such precious memories and wisdom to learn from our seniors!",
-      img: "https://picsum.photos/seed/seniors1/800/600",
-      user_id: "volunteer_priya",
-      created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-      liked_count: 31,
-      isLiked: false
-    },
-    {
-      feedback_id: "test-4",
-      subject: "Animal Shelter Volunteering",
-      body: "Spent the day at Happy Paws Animal Shelter helping to bathe and walk the rescue dogs. These furry friends deserve so much love! If you're looking for a new companion, please consider adoption. They're all angels waiting for their forever homes.",
-      img: "https://picsum.photos/seed/dogs1/800/600",
-      user_id: "volunteer_alex",
-      created_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-      liked_count: 42,
-      isLiked: false
-    },
-    {
-      feedback_id: "test-5",
-      subject: "Food Bank Distribution Day",
-      body: "Helped pack and distribute food supplies to 150 families today at the community food bank. Every smile and thank you made the hard work worthwhile. Together we can fight food insecurity in our community!",
-      img: "https://picsum.photos/seed/food1/800/600",
-      user_id: "volunteer_jenny",
-      created_at: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
-      liked_count: 27,
-      isLiked: false
-    }
-  ];
 
-  const [posts, setPosts] = useState(examplePosts);
-  const [filteredPosts, setFilteredPosts] = useState(examplePosts);
-  const [loading, setLoading] = useState(false);
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const [filteredPosts, setFilteredPosts] = useState([]);
   const [query, setQuery] = useState("");
   const [sortBy, setSortBy] = useState("date"); // date, likes
   const [selectedPost, setSelectedPost] = useState(null);
+
+  const nav = useNavigate();
+  
 
   // Get current user ID from session storage
   const getCurrentUserId = () => {
@@ -222,45 +118,51 @@ export default function ForumPage() {
     }
     return null;
   };
+  
 
   // Fetch posts from backend API (commented out for testing with example posts)
-  useEffect(() => {
-    // Uncomment this when backend is ready
-    // fetchPosts();
-  }, []);
 
-  const fetchPosts = async () => {
+  useEffect(() => {
+        const fetchPosts = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3001/api/feedback');
-      const data = await response.json();
+      const response = await fetch('http://localhost:3001/community/get_all_posts');
+      const responseData = await response.json();
 
-      if (!response.ok) throw new Error('Failed to fetch posts');
+      // Extract posts array from result property
+      const data = responseData.result || [];
+      console.log("Posts data:", data);
 
-      // Check which posts the current user has liked
-      const userId = getCurrentUserId();
-      const postsWithLikes = data.map(post => ({
-        ...post,
-        isLiked: false
+      const normalised = data.map(item => ({
+        feedback_id: item.feedback_id,
+        user_id: item.user_id,
+        subject: item.subject,
+        body: item.body,
+        img: item.image, // Map 'image' field to 'img'
+        created_at: item.created_at,
+        liked_count: 0
       }));
 
-      if (userId) {
-        await checkUserLikes(postsWithLikes, userId);
-      } else {
-        setPosts(postsWithLikes);
-        setFilteredPosts(postsWithLikes);
-      }
+      setPosts(normalised);
+      setFilteredPosts(normalised);
       
-      setLoading(false);
     } catch (err) {
       console.error("Error fetching posts:", err);
+      setPosts([]);
+      setFilteredPosts([]);
+    } finally {
       setLoading(false);
     }
   };
 
+  fetchPosts();
+}, []);
+  
+  
+
   const checkUserLikes = async (posts, userId) => {
     try {
-      const response = await fetch(`http://localhost:3001/api/feedback/likes/${userId}`);
+      const response = await fetch(`http://localhost:3001/community/get_post_likes/${userId}`);
       const data = await response.json();
 
       if (!response.ok) throw new Error('Failed to fetch likes');
@@ -287,6 +189,7 @@ export default function ForumPage() {
     
     if (!userId) {
       alert("Please sign in to like posts");
+      nav("/volunteer/auth");
       return;
     }
 
@@ -422,46 +325,19 @@ export default function ForumPage() {
             </p>
           </div>
         ) : (
-          <div className="row g-4">
+          <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
             {filteredPosts.map((post) => (
-              <div key={post.feedback_id} className="col-lg-4 col-md-6">
-                <div 
-                  className="card h-100 shadow-sm"
-                  style={{ cursor: "pointer" }}
+              <div key={post.feedback_id} className="col">
+                <FeaturedCard
+                  feedback_id={post.feedback_id}
+                  user_id={post.user_id}
+                  subject={post.subject}
+                  body={post.body}
+                  created_at={post.created_at}
+                  image={post.img}
+                  likes={post.liked_count || 0}
                   onClick={() => setSelectedPost(post)}
-                >
-                  {post.img && (
-                    <img 
-                      src={post.img} 
-                      className="card-img-top" 
-                      alt={post.subject}
-                      style={{ height: "200px", objectFit: "cover" }}
-                    />
-                  )}
-                  <div className="card-body">
-                    <h5 className="card-title">{post.subject}</h5>
-                    <p className="card-text text-muted small">
-                      {post.body?.substring(0, 100)}
-                      {post.body?.length > 100 && "..."}
-                    </p>
-                    
-                    <div className="d-flex justify-content-between align-items-center">
-                      <small className="text-muted">
-                        {new Date(post.created_at).toLocaleDateString()}
-                      </small>
-                      <button 
-                        className={`btn btn-sm ${post.isLiked ? 'btn-primary' : 'btn-outline-primary'}`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleLike(post.feedback_id);
-                        }}
-                      >
-                        <i className={`bi ${post.isLiked ? 'bi-heart-fill' : 'bi-heart'} me-1`}></i>
-                        {post.liked_count || 0}
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                />
               </div>
             ))}
           </div>

@@ -1,66 +1,56 @@
 // src/components/component/FeaturedCard.jsx
 import React from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-/**
- * Reusable card for both "featured" and "discussion" items.
- *
- * Props:
- *  - id
- *  - image (url) optional
- *  - title (string)
- *  - excerpt (string)  // body snippet
- *  - author (string)
- *  - timeAgo (string)
- *  - likes (number)
- *  - comments (number)
- *  - to (string) optional override link (defaults to `/community/${id}`)
- */
 export default function FeaturedCard({
-  id,
+  feedback_id,
+  user_id,
+  subject = "",
+  body = "",
+  created_at = "",
   image = null,
-  title = "Untitled",
-  excerpt = "",
-  author = "Someone",
-  timeAgo = "",
   likes = 0,
-  comments = 0,
-  to,
+  onClick
 }) {
-  const href = to || (id ? `/community/${id}` : "#");
+  const navigate = useNavigate();
+
+  const handleClick = (e) => {
+    e.preventDefault();
+    if (onClick) {
+      onClick();
+    } else if (feedback_id) {
+      console.log("Navigating to:", `/community/${feedback_id}`);
+      navigate(`/community/${feedback_id}`);
+    }
+  };
 
   return (
-    <article className="card mb-3 discussion-card">
+    <div className="card h-100 shadow-sm" onClick={handleClick} style={{ cursor: "pointer" }}>
       {image && (
-        <div className="card-img-top-wrapper">
-          <img
-            src={image}
-            alt={title}
-            className="card-img-top"
-            style={{ width: "100%", height: 160, objectFit: "cover" }}
-          />
-        </div>
+        <img
+          src={image}
+          className="card-img-top"
+          alt={subject}
+          style={{ height: "200px", objectFit: "cover" }}
+        />
       )}
-
       <div className="card-body">
-        <h5 className="card-title mb-1">
-          <Link to={href} className="stretched-link text-dark text-decoration-none">
-            {title}
-          </Link>
-        </h5>
-
-        {excerpt && <p className="card-text text-muted small mb-2">{excerpt}</p>}
-
-        <div className="d-flex justify-content-between align-items-center">
-          <div className="small text-muted">
-            {author} {timeAgo ? <>· {timeAgo}</> : null}
-          </div>
-
-          <div className="text-muted small">
-            <span className="me-3">👍 {likes ?? 0}</span>
-          </div>
+        <h5 className="card-title">{subject}</h5>
+        <p className="card-text text-muted small">
+          {body.substring(0, 100)}...
+        </p>
+      </div>
+      <div className="card-footer bg-transparent d-flex justify-content-between align-items-center">
+        <small className="text-muted">
+          {new Date(created_at).toLocaleDateString()}
+        </small>
+        <div className="d-flex align-items-center">
+          <i className="bi bi-heart me-1"></i>
+          <small>{likes}</small>
         </div>
       </div>
-    </article>
+    </div>
   );
 }
+
+
