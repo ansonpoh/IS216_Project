@@ -42,6 +42,12 @@ export async function login_user_handler (req, res) {
         const {email, password} = req.body;
         const result = await login_user(email, password);
         const user = await get_user_by_email(email);
+
+        if(user.length < 1) {
+            return res.json({status: false, message:"Invalid email"})
+        } else if(result.status === false) {
+            return res.json({status: false, message:"Invalid credentials"})
+        }
         
         return res.json({ 
                 status: true, 
@@ -52,7 +58,7 @@ export async function login_user_handler (req, res) {
 
     } catch (err) {
         console.error(err);
-        throw err;
+        return res.json({status: false, message: "Invalid credentials"})
     }
 }
 

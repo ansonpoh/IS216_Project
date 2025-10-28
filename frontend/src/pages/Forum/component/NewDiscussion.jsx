@@ -1,6 +1,7 @@
 // src/components/NewDiscussion.jsx
 import React, { useState, useRef } from "react";
-import "./community.css";
+// import "./community.css";
+import "../../../styles/community.css"
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
