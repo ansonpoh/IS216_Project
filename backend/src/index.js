@@ -32,6 +32,7 @@ app.use("/orgs", orgsRoutes);
 app.use("/events", eventRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/community", communityRoutes);
+app.use("/feedback", feedbackRoutes);
 
 // Return config values needed by frontend
 app.get('/config/google-maps-key', (req, res) => {
