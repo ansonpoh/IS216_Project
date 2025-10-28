@@ -1,4 +1,4 @@
-import { register_user, check_if_user_email_in_use, get_user_by_id, get_all_users, get_user_by_email, login_user } from "../services/userServices.js";
+import { register_user, check_if_user_email_in_use, get_user_by_id, get_all_users, get_user_by_email, login_user, complete_registration } from "../services/userServices.js";
 
 export async function check_if_user_email_in_use_handler (req, res) {
     try {
@@ -34,6 +34,22 @@ export async function register_user_handler (req,res) {
     } catch (err) {
         console.error(err);
         throw err;
+    }
+}
+
+export async function complete_registration_handler(req, res) {
+    try {
+        const {supabase_id, username, email} = req.body;
+        const profile_image = req.file;
+        const email_in_use = await check_if_user_email_in_use(email);
+        if(email_in_use) {
+            return res.json({status: false, message:"Email in use"})
+        }
+
+        const result = await complete_registration(supabase_id, username, email, profile_image);
+        return res.json({status: true, user: result});
+    } catch (err) {
+        console.error(err);
     }
 }
 

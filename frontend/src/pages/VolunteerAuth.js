@@ -5,8 +5,7 @@ import { useNavigate } from "react-router-dom";
 import "../styles/Signup.css";
 import "boxicons/css/boxicons.min.css";
 import Navbar from "./Navbar";
-import {ToastContainer, toast} from "react-toastify";
-
+import { supabase } from "../config/supabaseClient";
 
 export default function LoginSignup() {
   const [active, setActive] = useState(false);
@@ -35,38 +34,133 @@ export default function LoginSignup() {
   }, [active, loginErrors, registerErrors]);
 
 
-    const handle_register = (e) => {
+    const handle_register = async (e) => {
         e.preventDefault();
-        axios.post("http://localhost:3001/users/register", {username: registerData.username, email: registerData.email, password: registerData.password, profile_image: registerData.profile_image}, {headers: {"Content-Type" : "multipart/form-data"}})
-            .then((res) => {
-                const data = res.data;
-                if(data.status) {
-                    // setAuth({role: "volunteer", id: data.id});
-                    nav("/volunteer/auth")
-                    // To remove
-                    window.location.reload();
-                    alert("Registration Success! Please login")
-                } else {
-                    // alert(`Registration Failed! ${data.message}`)
-                    setRegisterErrors(data.message);
-                }
-            })
-    }
+        setRegisterErrors("");
+        if(!registerData.agree) {
+            setRegisterErrors("Please agree to Terms and Privacy to continue");
+            return;
+        }
 
-    const handle_login = (e) => {
-        e.preventDefault();
-        axios.post("http://localhost:3001/users/login", {email: loginData.email, password: loginData.password})
-            .then((res) => {
-                const data = res.data;
-                if(data.status) {
-                    setAuth({role: "volunteer", id: data.id, token: data.token});
-                    nav("/")
-                    // To remove
-                    alert("Login Success!")
-                } else {
-                    setLoginErrors(data.message);
+        if(registerData.password !== registerData.confimPassword) {
+            setRegisterData("Passwords do not match");
+            return
+        }
+
+        try {
+            const {data, error} = await supabase.auth.signUp({
+                email: registerData.email,
+                password: registerData.password,
+                options: {
+                    emailRedirectTo: `${window.location.origin}/volunteer/auth`,
+                    data: {username: registerData.username},
                 }
             })
+
+            if(error) {
+                setRegisterErrors(error.message);
+                return;
+            }
+
+            alert("Verification link sent to email!")
+            setActive(false);
+        } catch (err) {
+            console.error(err);
+            setRegisterErrors("Unexpected error during registration.");
+        }
+        // axios.post("http:// localhost:3001/users/register", {username: registerData.username, email: registerData.email, password: registerData.password, profile_image: registerData.profile_image}, {headers: {"Content-Type" : "multipart/form-data"}})
+        //     .then((res) => {
+        //         const data = res.data;
+        //         if(data.status) {
+        //             nav("/volunteer/auth")
+        //             // To remove
+        //             window.location.reload();
+        //             alert("Registration Success! Please login")
+        //         } else {
+        //             // alert(`Registration Failed! ${data.message}`)
+        //             setRegisterErrors(data.message);
+        //         }
+        //     })
+        
+        }
+
+    const handle_login = async (e) => {
+        e.preventDefault();
+        setLoginErrors("");
+
+        try {
+            const {data, error} = await supabase.auth.signInWithPassword({
+                email: loginData.email,
+                password: loginData.password,
+            })
+
+            if(error) {
+                if(error.message?.toLowerCase().includes("email not confirmed")) {
+                    setLoginErrors("Please verify email before logging in")
+                } else {
+                    setLoginErrors(error.message || "Login failed");
+                }
+                return
+            }
+
+            const {user} = data;
+            const {data: sessionData} = await supabase.auth.getSession();
+            const accessToken = sessionData?.session?.access_token || "";
+
+            if(!user) {
+                setLoginErrors("Unable to retreieve user after login");
+                return;
+            }
+
+            if(!user.email_confirmed_at) {
+                setLoginErrors("Your email is not yet verified");
+                return
+            }
+
+            try {
+                const formData = new FormData();
+                formData.append("supabase_id", user.id);
+                formData.append("username", user.user_metadata?.username || "");
+                formData.append("email", user.email || "");
+                if(registerData.profile_image instanceof File) {
+                    formData.append("profile_image", registerData.profile_image)
+                }
+                const res = await axios.post("http://localhost:3001/users/complete_registration", formData, {headers: {"Content-Type" : "multipart/form-data"}});
+
+                setAuth({
+                    role:"volunteer",
+                    id: user.id,
+                    token: accessToken || "",
+                })
+
+                if(res?.data?.status) {
+                    alert("Login success")
+                } else {
+                    console.log(res?.data);
+                }
+                nav("/")
+            } catch (err){
+                console.log(err);
+            }
+
+        } catch (err) {
+            console.error(err);
+            setLoginErrors("Unexpected error during login");
+
+        }
+
+        // axios.post("http://localhost:3001/users/login", {email: loginData.email, password: loginData.password})
+        //     .then((res) => {
+        //         const data = res.data;
+        //         if(data.status) {
+        //             setAuth({role: "volunteer", id: data.id, token: data.token});
+        //             nav("/")
+        //             // To remove
+        //             alert("Login Success!")
+        //         } else {
+        //             setLoginErrors(data.message);
+        //         }
+        //     })
         }
   
   return (
