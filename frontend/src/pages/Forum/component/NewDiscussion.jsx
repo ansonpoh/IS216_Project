@@ -105,11 +105,19 @@ export default function NewDiscussion({ initialBoard = "" }) {
         return;
       }
 
-      // Validate subject is unique
-      if (!formData.subject.trim()) {
-        setStatus("Subject is required");
+      // Form validation
+      if (!formData.subject.trim() || !formData.body.trim()) {
+        setStatus("Subject and body are required");
         return;
       }
+
+      // Debug log
+      console.log("Sending data:", {
+        user_id: auth.id,
+        subject: formData.subject,
+        body: formData.body,
+        hasImage: !!formData.image_file
+      });
 
       const fd = new FormData();
       fd.append("user_id", auth.id);
@@ -118,37 +126,54 @@ export default function NewDiscussion({ initialBoard = "" }) {
       
       if (formData.image_file) {
         fd.append("image_file", formData.image_file);
+        console.log("Image file type:", formData.image_file.type);
+        console.log("Image file size:", formData.image_file.size);
       }
 
-      const response = await axios.post(
-        "http://localhost:3001/community/create_post",
-        fd,
-        {
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'multipart/form-data'
-          },
-          withCredentials: true
-        }
-      );
+      // Make the API call with detailed error logging
+      try {
+        const response = await axios.post(
+          "http://localhost:3001/community/create_post",
+          fd,
+          {
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'multipart/form-data'
+            },
+            withCredentials: true
+          }
+        );
 
-      if (response.data.status) {
-        alert("Post Created Successfully!");
-        nav("/community");
+        console.log("Server response:", response.data);
+
+        if (response.data.status) {
+          alert("Post Created Successfully!");
+          nav("/community");
+        }
+      } catch (axiosError) {
+        console.error("Axios error details:", {
+          message: axiosError.message,
+          status: axiosError.response?.status,
+          statusText: axiosError.response?.statusText,
+          responseData: axiosError.response?.data
+        });
+        throw axiosError;
       }
 
     } catch (err) {
-      console.error("Error creating post:", err);
+      console.error("Full error object:", err);
       
-      // Handle duplicate subject error
-      if (err.response?.data?.includes('feedback_subject_key')) {
-        setStatus("A post with this subject already exists. Please choose a different subject.");
-        setErrors(prev => ({
-          ...prev,
-          subject: "This subject is already taken. Please choose a different one."
-        }));
-      } else {
-        setStatus(err.message || "Failed to create post");
+      const errorMessage = err.response?.data?.message 
+        || err.message 
+        || "Failed to create post";
+      
+      setStatus(errorMessage);
+      alert(`Error: ${errorMessage}`);
+      
+      if (err.response?.status === 413) {
+        setStatus("Image file is too large");
+      } else if (err.response?.status === 415) {
+        setStatus("Unsupported image format");
       }
     } finally {
       setSubmitting(false);
