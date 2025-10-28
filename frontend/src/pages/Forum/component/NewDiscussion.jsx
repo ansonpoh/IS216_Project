@@ -4,15 +4,6 @@ import "../../../styles/Community.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-/**
- * NewDiscussion page with single-image upload (drag/drop/paste/choose).
- *
- * Server expectations (example):
- * - POST /api/upload (multipart/form-data) -> { url: "https://cdn.example.com/..." }
- * - POST /api/discussions (application/json) -> create discussion
- *
- * Replace /api/* with your real endpoints or adapt handlePost to your API client (axios).
- */
 
 // validation constants
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5MB

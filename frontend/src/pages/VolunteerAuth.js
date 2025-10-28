@@ -5,10 +5,13 @@ import { useNavigate } from "react-router-dom";
 import "../styles/Signup.css";
 import "boxicons/css/boxicons.min.css";
 import Navbar from "./Navbar";
+import {ToastContainer, toast} from "react-toastify";
 
 
 export default function LoginSignup() {
   const [active, setActive] = useState(false);
+  const [loginErrors, setLoginErrors] = useState(false);
+  const [registerErrors, setRegisterErrors] = useState(false);
   const {setAuth} = useAuth();
   const nav = useNavigate();
 
@@ -29,9 +32,7 @@ export default function LoginSignup() {
   useEffect(() => {
     setLoginData({ email: "", password: "" });
     setRegisterData({ username: "", email: "", password: "", confimPassword: "" });
-  }, [active]);
-
-  const [errors, setErrors] = useState({});
+  }, [active, loginErrors, registerErrors]);
 
 
     const handle_register = (e) => {
@@ -46,7 +47,8 @@ export default function LoginSignup() {
                     window.location.reload();
                     alert("Registration Success! Please login")
                 } else {
-                    alert(`Registration Failed! ${data.message}`)
+                    // alert(`Registration Failed! ${data.message}`)
+                    setRegisterErrors(data.message);
                 }
             })
     }
@@ -57,16 +59,13 @@ export default function LoginSignup() {
             .then((res) => {
                 const data = res.data;
                 if(data.status) {
-                    console.log(data)
                     setAuth({role: "volunteer", id: data.id, token: data.token});
                     nav("/")
                     // To remove
                     alert("Login Success!")
                 } else {
-                    alert("Login Failed!")
+                    setLoginErrors(data.message);
                 }
-            }).catch((err) => {
-                alert("Invalid credentials")
             })
         }
   
@@ -79,14 +78,20 @@ export default function LoginSignup() {
             <div className="form-box login">
                 <form onSubmit={handle_login}>
                 <h1>Login for Volunteer</h1>
+                {loginErrors && (
+                    <div className="form-alert mt-3" style={{color: "red", }}>
+                        <i className="bx bx-error-circle"></i>
+                        {loginErrors}
+                    </div>
+                )}
 
                 <div className="input-box">
-                    <input type="email" placeholder="Email" className={`form-control ${errors.email ? "is-invalid" : ""}`} value={loginData.email} onChange={(e) => setLoginData({...loginData, email: e.target.value})} required />
+                    <input type="email" placeholder="Email" className={`form-control`} value={loginData.email} onChange={(e) => setLoginData({...loginData, email: e.target.value})} required />
                     <i className="bx bxs-user"></i>
                 </div>
 
                 <div className="input-box">
-                    <input type="password" placeholder="Password" required className={`form-control ${errors.password ? "is-invalid" : ""}`} value={loginData.password} onChange={(e) => setLoginData({...loginData, password: e.target.value})} />
+                    <input type="password" placeholder="Password" required className={`form-control`} value={loginData.password} onChange={(e) => setLoginData({...loginData, password: e.target.value})} />
                     <i className="bx bxs-lock-alt"></i>
                 </div>
 
@@ -118,26 +123,31 @@ export default function LoginSignup() {
             <div className="form-box register">
                 <form onSubmit={handle_register}>
                 <h1>Registration for Volunteer</h1>
-
+                {registerErrors && (
+                    <div className="form-alert mt-3" style={{color: "red", }}>
+                        <i className="bx bx-error-circle"></i>
+                        {registerErrors}
+                    </div>
+                )}
                 <div className="input-box">
-                    <input type="text" placeholder="Username" className={`form-control ${errors.username ? "is-invalid" : ""}`} value={registerData.username} onChange={(e) => setRegisterData({...registerData, username: e.target.value
+                    <input type="text" placeholder="Username" className={`form-control`} value={registerData.username} onChange={(e) => setRegisterData({...registerData, username: e.target.value
                     })} required />
                     <i className="bx bxs-user"></i> 
                 </div>
 
                 <div className="input-box">
-                    <input type="email" placeholder="Email" className={`form-control ${errors.email ? "is-invalid" : ""}`}
+                    <input type="email" placeholder="Email" className={`form-control`}
                       value={registerData.email} onChange={(e) => setRegisterData({...registerData, email: e.target.value})} required />
                     <i className="bx bxs-envelope"></i>
                 </div>
 
                 <div className="input-box">
-                    <input type="password" placeholder="Password" className={`form-control ${errors.password ? "is-invalid" : ""}`}value={registerData.password} onChange={(e) => setRegisterData({...registerData, password: e.target.value})}required />
+                    <input type="password" placeholder="Password" className={`form-control`}value={registerData.password} onChange={(e) => setRegisterData({...registerData, password: e.target.value})}required />
                     <i className="bx bxs-lock-alt"></i>
                 </div>
 
                 <div className="input-box">
-                    <input type="password" placeholder="Confirm Password" className={`form-control ${errors.password ? "is-invalid" : ""}`}value={registerData.confimPassword} onChange={(e) => setRegisterData({...registerData, confimPassword: e.target.value})}required />
+                    <input type="password" placeholder="Confirm Password" className={`form-control`}value={registerData.confimPassword} onChange={(e) => setRegisterData({...registerData, confimPassword: e.target.value})}required />
                     <i className="bx bxs-lock-alt"></i>
                 </div>
 
@@ -153,15 +163,12 @@ export default function LoginSignup() {
                 </div>
                 
                 <div className="form-check mb-3">
-                      <input className={`form-check-input ${errors.agree ? "is-invalid" : ""}`} type="checkbox" checked={registerData.agree} onChange={(e) => setRegisterData({...registerData, agree: e.target.checked})}
+                      <input className={`form-check-input`} type="checkbox" checked={registerData.agree} onChange={(e) => setRegisterData({...registerData, agree: e.target.checked})}
                       />
 
                       <label className="form-check-label" htmlFor="agree">
                         I agree to the <a href="#">Terms</a> and <a href="#">Privacy</a>.
                       </label>
-                      {errors.agree && (
-                        <div className="invalid-feedback d-block">{errors.agree}</div>
-                      )}
                 </div>
                 <button type="submit" className="signup_btn">
                     Register
