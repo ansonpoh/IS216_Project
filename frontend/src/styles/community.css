@@ -33,7 +33,6 @@
 .row.gx-4 { gap: var(--gutter); }
 
 /* Left / right columns used in ForumPage */
-.col-left { /* optional helper if you use it elsewhere */ }
 .col-right { max-width: var(--right-col); }
 
 /* Top small controls (search + button) */

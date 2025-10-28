@@ -1,19 +1,9 @@
 // src/components/NewDiscussion.jsx
 import React, { useState, useRef } from "react";
-// import "./community.css";
-import "../../../styles/community.css"
+import "../../../styles/Community.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-/**
- * NewDiscussion page with single-image upload (drag/drop/paste/choose).
- *
- * Server expectations (example):
- * - POST /api/upload (multipart/form-data) -> { url: "https://cdn.example.com/..." }
- * - POST /api/discussions (application/json) -> create discussion
- *
- * Replace /api/* with your real endpoints or adapt handlePost to your API client (axios).
- */
 
 // validation constants
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5MB
@@ -103,28 +93,91 @@ export default function NewDiscussion({ initialBoard = "" }) {
   /* ========== Submit ========== */
   async function handlePost(e) {
     e.preventDefault();
-
     setSubmitting(true);
     setStatus("");
 
     try {
-      if(auth.id.length < 1) throw new Error("You must be signed in to post.")
-      console.log(formData)
-      axios.post("http://localhost:3001/community/create_post", formData, {headers: {"Content-Type": "multipart/form-data"}})
-        .then((res) => {
-          const data = res.data;
-          if(data.status) {
-            alert("Post Created!")
-            nav("/community");
-          } else {
-            alert("Failed to create post!")
+      // Auth check
+      if (!auth?.id) {
+        setStatus("Please sign in to post");
+        alert("Please sign in to create a post");
+        nav("/volunteer/auth");
+        return;
+      }
+
+      // Form validation
+      if (!formData.subject.trim() || !formData.body.trim()) {
+        setStatus("Subject and body are required");
+        return;
+      }
+
+      // Debug log
+      console.log("Sending data:", {
+        user_id: auth.id,
+        subject: formData.subject,
+        body: formData.body,
+        hasImage: !!formData.image_file
+      });
+
+      const fd = new FormData();
+      fd.append("user_id", auth.id);
+      fd.append("subject", formData.subject.trim());
+      fd.append("body", formData.body.trim());
+      
+      if (formData.image_file) {
+        fd.append("image_file", formData.image_file);
+        console.log("Image file type:", formData.image_file.type);
+        console.log("Image file size:", formData.image_file.size);
+      }
+
+      // Make the API call with detailed error logging
+      try {
+        const response = await axios.post(
+          "http://localhost:3001/community/create_post",
+          fd,
+          {
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'multipart/form-data'
+            },
+            withCredentials: true
           }
-        })
+        );
+
+        console.log("Server response:", response.data);
+
+        if (response.data.status) {
+          alert("Post Created Successfully!");
+          nav("/community");
+        }
+      } catch (axiosError) {
+        console.error("Axios error details:", {
+          message: axiosError.message,
+          status: axiosError.response?.status,
+          statusText: axiosError.response?.statusText,
+          responseData: axiosError.response?.data
+        });
+        throw axiosError;
+      }
+
     } catch (err) {
-      console.error(err);
+      console.error("Full error object:", err);
+      
+      const errorMessage = err.response?.data?.message 
+        || err.message 
+        || "Failed to create post";
+      
+      setStatus(errorMessage);
+      alert(`Error: ${errorMessage}`);
+      
+      if (err.response?.status === 413) {
+        setStatus("Image file is too large");
+      } else if (err.response?.status === 415) {
+        setStatus("Unsupported image format");
+      }
     } finally {
-      setUploading(false);
       setSubmitting(false);
+      setUploading(false);
     }
   }
 
@@ -134,7 +187,7 @@ export default function NewDiscussion({ initialBoard = "" }) {
   }
 
   return (
-      <div className="container py-5">
+    <div className="container py-5">
       <h1 className="display-6 mb-3">New Discussion</h1>
 
       <nav className="small text-muted mb-4">Welcome to the Community &nbsp;/&nbsp; New Discussion</nav>
