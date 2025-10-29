@@ -3,8 +3,8 @@ import axios from "axios";
 import { useAuth } from "../contexts/AuthProvider";
 import { useNavigate } from "react-router-dom";
 import "../styles/Signup.css";
-import "boxicons/css/boxicons.min.css";
 import Navbar from "./Navbar";
+import { supabase } from "../config/supabaseClient";
 
 
 export default function LoginSignup() {
@@ -20,53 +20,122 @@ export default function LoginSignup() {
   })
 
   const [registerData, setRegisterData] = useState({
-    username: "",
+    org_name: "",
     email: "",
     password: "",
     confimPassword: "",
+    profile_image: "",
     agree: false,
   })
 
   useEffect(() => {
     setLoginData({ email: "", password: "" });
-    setRegisterData({ username: "", email: "", password: "", confimPassword: "" });
-  }, [active]);
+    setRegisterData({ org_name: "", email: "", password: "", confimPassword: "" });
+  }, [active, loginErrors, registerErrors]);
 
 
 
-    const handle_register = (e) => {
+    const handle_register = async (e) => {
         e.preventDefault();
-        axios.post("http://localhost:3001/orgs/register", {org_name: registerData.username, email: registerData.email, password: registerData.password})
-            .then((res) => {
-                const data = res.data;
-                if(data.status) {
-                    // setAuth({role: "organiser", id: data.id});
-                    nav("/organiser/auth")
-                    window.location.reload();
-                    // To remove
-                    alert("Registration Success! Please login.")
-                } else {
-                    // alert(`Registration Failed! ${data.message}`)
-                    setRegisterErrors(data.message);
-                }
-            })
-    }
-
-    const handle_login = (e) => {
-        e.preventDefault();
-        axios.post("http://localhost:3001/orgs/login", {email: loginData.email, password: loginData.password})
-            .then((res) => {
-                const data = res.data;
-                if(data.status) {
-                    setAuth({role: "organiser", id: data.id, token: data.token});
-                    nav("/")
-                    // To remove
-                    alert("Login Success!")
-                } else {
-                    setLoginErrors(data.message);
-                }
-            })
+        setRegisterErrors("");
+        if(!registerData.agree) {
+            setRegisterErrors("Please agree to Terms and Privacy to continue");
+            return;
         }
+
+        if(registerData.password !== registerData.confimPassword) {
+            setRegisterData("Passwords do not match");
+            return
+        }
+
+        try {
+            const {data, error} = await supabase.auth.signUp({
+                email: registerData.email,
+                password: registerData.password,
+                options: {
+                    emailRedirectTo: `${window.location.origin}/organiser/auth`,
+                    data: {org_name: registerData.org_name},
+                }
+            })
+
+            if(error) {
+                setRegisterErrors(error.message);
+                return;
+            }
+
+            alert("Verification link sent to email!")
+            setActive(false);
+        } catch (err) {
+            console.error(err);
+            setRegisterErrors("Unexpected error during registration.");
+        }
+        }
+
+    const handle_login = async (e) => {
+        e.preventDefault();
+        setLoginErrors("");
+        try {
+            const {data, error} = await supabase.auth.signInWithPassword({
+                email: loginData.email,
+                password: loginData.password,
+            })
+
+            if(error) {
+                console.log(error)
+                if(error.message?.toLowerCase().includes("email not confirmed")) {
+                    setLoginErrors("Please verify email before logging in")
+                } else {
+                    setLoginErrors(error.message || "Login failed");
+                }
+                return
+            }
+
+            const org = data.user;
+            const {data: sessionData} = await supabase.auth.getSession();
+            const accessToken = sessionData?.session?.access_token || "";
+
+            if(!org) {
+                setLoginErrors("Unable to retreieve org after login");
+                return;
+            }
+
+            if(!org.email_confirmed_at) {
+                setLoginErrors("Your email is not yet verified");
+                return
+            }
+
+            try {
+                const formData = new FormData();
+                formData.append("supabase_id", org.id);
+                formData.append("org_name", org.user_metadata?.org_name || "");
+                formData.append("email", org.email || "");
+                if(registerData.profile_image instanceof File) {
+                    formData.append("profile_image", registerData.profile_image)
+                }
+                const res = await axios.post("http://localhost:3001/orgs/complete_registration", formData, {headers: {"Content-Type" : "multipart/form-data"}});
+
+                setAuth({
+                    role:"organiser",
+                    id: org.id,
+                    token: accessToken || "",
+                })
+
+                if(res?.data?.status) {
+                    alert("Login success")
+                } else {
+                    console.log(res?.data);
+                }
+                nav("/")
+            } catch (err){
+                console.log(err);
+            }
+
+        } catch (err) {
+            console.error(err);
+            setLoginErrors("Unexpected error during login");
+
+        }
+    }
   
   return (
     <>
@@ -80,7 +149,7 @@ export default function LoginSignup() {
                 {loginErrors && (
                     <div className="form-alert mt-3" style={{color: "red", }}>
                         <i className="bx bx-error-circle"></i>
-                        Invalid Credentials. Try again.
+                        {loginErrors}
                     </div>
                 )}
                 <div className="input-box">
@@ -128,7 +197,7 @@ export default function LoginSignup() {
                     </div>
                 )}
                 <div className="input-box">
-                    <input type="text" placeholder="Organisation Name" className={`form-control`} value={registerData.username} onChange={(e) => setRegisterData({...registerData, username: e.target.value
+                    <input type="text" placeholder="Organisation Name" className={`form-control`} value={registerData.org_name} onChange={(e) => setRegisterData({...registerData, org_name: e.target.value
                     })} required />
                     <i className="bx bxs-user"></i> 
                 </div>
@@ -147,6 +216,17 @@ export default function LoginSignup() {
                 <div className="input-box">
                     <input type="password" placeholder="Confirm Password" className={`form-control`}value={registerData.confimPassword} onChange={(e) => setRegisterData({...registerData, confimPassword: e.target.value})}required />
                     <i className="bx bxs-lock-alt"></i>
+                </div>
+
+                <div className="input-box">
+                <input
+                    className="form-control"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) =>
+                    setRegisterData({ ...registerData, profile_image: e.target.files[0] })
+                    }
+                />
                 </div>
                 
                 <div className="form-check mb-3">
