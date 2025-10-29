@@ -1,252 +1,265 @@
-   /* /* TODO: ADD CSS CODE TO MAKE RESPONSIVE, BEAUTIFY CARDS AND FIX CATEGORY AND SIGNUP BTN /* */
+/* Opportunities.css (replace/merge) */
 
+/* Container */
 .opportunities-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 1rem 2rem;
+  padding: 1rem 1.25rem;
 }
 
-.card-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 1.5rem;
-  padding: 1rem;
-}
-
-.event-card {
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  overflow: hidden;
-  background: white;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-}
-
-.card-image {
-  position: relative;
-  width: 100%;
-  height: 200px;
-  overflow: hidden;
-}
-
-.card-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.status-badge {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: gray;
-  color: white;
-  padding: 0.3em 0.6em;
-  border-radius: 6px;
-  font-size: 0.8rem;
-  text-transform: capitalize;
-}
-
-.status-badge.active {
-  background-color: #28a745; /* green */
-}
-
-.status-badge.pending {
-  background-color: #ffc107; /* yellow */
-  color: #333;
-}
-
-.status-badge.inactive {
-  background-color: #dc3545; /* red */
-}
-
-.card-content {
-  padding: 1rem;
-  flex-grow: 1;
-}
-
-.card-content h2 {
-  margin-top: 0;
-  font-size: 1.2rem;
-  margin-bottom: 0.5rem;
-}
-
-.card-info p {
-  margin: 0.3rem 0;
-  font-size: 0.95rem;
-}
-
-.card-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.8rem 1rem;
-  border-top: 1px solid #eee;
-  border-bottom-left-radius: 8px;  
-  border-bottom-right-radius: 8px; 
-  background-color: #fafafa;
-}
-
-.category-tag {
-  background-color: #007bff;
-  color: white;
-  padding: 0.25rem 0.75rem;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  /* font-weight: 500; */
-}
-
-.signup-btn {
-  background-color: #28a745;
-  color: white;
-  border: none;
-  padding: 0.4rem 0.8rem;
-  font-size: 0.875rem;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.signup-btn:hover {
-  background-color: #218838;
-}
-
-.event-title {
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-}
-
-.card-image {
-  position: relative;
-  width: 100%;
-  height: 180px;
-  overflow: hidden;
-}
-
-.card-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.card-grid {
-  animation: fadeIn 0.25s ease-in;
-}
-
-.empty-state-card {
-  /* Style for "No opportunities found" or "No filtered results" */
-  grid-column: 1 / -1; /* Span full width of the grid */
-  text-align: center;
-  font-size: 1.2rem;
-  color: #555;
-  background-color: #f8f9fa;
-  border: 2px solid #ccc;
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin: 1rem 0;
-  transition: all 0.3s ease;
-}
-
-.card-info .info-line {
-  display: flex;
-  align-items: center;
-  margin: 0.3rem 0;
-}
-
-.card-info .icon {
-  margin-right: 0.5rem;
-  color: #555;
-  /* optional: size change */
-  font-size: 1rem;
-}
-
-.card-info .info-text {
-  font-weight: normal;  /* ensures normal weight */
-  color: #444;
-}
-
-/* --- Filter styles --- */
+/* Filters area */
 .filters {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
-  padding: 1rem 1.5rem;
-  justify-content: center;
+  padding: 1rem;
+  justify-content: space-between;
   align-items: center;
-  background-color: #f9fafb; /* lighter, modern bg */
+  background-color: #f9fafb;
   border-radius: 12px;
-  margin-bottom: 2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* subtle shadow */
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(18, 18, 18, 0.04);
 }
 
+/* Left group (category + region + search if added) */
+.filters .group-left {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Right group (dates + reset) */
+.filters .group-right {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Standard controls */
 .filters select,
 .filters input[type="date"] {
-  padding: 0.6rem 1rem;
+  padding: 0.55rem 0.9rem;
   font-size: 0.95rem;
   border-radius: 8px;
-  border: 1px solid #ccc;
+  border: 1px solid #d0d7de;
   background-color: #fff;
-  color: #333;
+  color: #222;
   min-width: 150px;
-  transition: all 0.3s ease;
+  transition: border-color .18s ease, box-shadow .18s ease, transform .08s ease;
   cursor: pointer;
+  box-sizing: border-box;
 }
 
-.filters select:hover,
-.filters input[type="date"]:hover {
-  border-color: #007bff;
+/* Date label tiny helper */
+.date-filter {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+.date-filter label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: #555;
+}
+.date-filter .date-label {
+  font-size: 0.75rem;
+  color: #444;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .03em;
 }
 
-.filters select:focus,
-.filters input[type="date"]:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
-}
-
+/* Reset button */
 .reset-btn {
-  padding: 0.55rem 1.2rem;
-  font-size: 0.95rem;
+  padding: 0.5rem 0.9rem;
+  font-size: 0.92rem;
   border-radius: 8px;
   border: none;
   background-color: #007bff;
   color: #fff;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  transition: transform .12s ease, background-color .12s ease, box-shadow .12s ease;
+}
+.reset-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(3,102,214,0.15); }
+.reset-btn:active { transform: translateY(0); }
+
+/* Grid + cards */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+  padding: 0.25rem;
+  animation: fadeIn .22s ease;
+}
+
+/* Card visual - stronger shadow & nicer radius */
+.event-card {
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border: 1px solid rgba(15, 23, 42, 0.04);
+  box-shadow: 0 6px 18px rgba(7, 12, 20, 0.06);
+  transition: transform .16s ease, box-shadow .16s ease;
+  min-height: 260px;
+}
+.event-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 40px rgba(7, 12, 20, 0.12);
+}
+
+/* Image area */
+.card-image {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  background: linear-gradient(180deg, #eee, #f7f7f7);
+}
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Status */
+.status-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background-color: gray;
+  color: white;
+  padding: 0.28em 0.6em;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  text-transform: capitalize;
+  box-shadow: 0 6px 14px rgba(2,6,23,0.08);
+}
+
+/* Content */
+.card-content {
+  padding: 1rem;
+  flex: 1 1 auto;
+}
+.event-title {
+  font-weight: 700;
+  margin: 0;
+  font-size: 1.05rem;
+  margin-bottom: 0.5rem;
+  color: #0f172a;
+}
+.card-content p {
+  color: #334155;
+  margin: 0 0 0.6rem 0;
+  line-height: 1.35;
+}
+
+/* Info lines */
+.card-info {
+  margin-top: 0.45rem;
+}
+.card-info .info-line {
   display: flex;
   align-items: center;
-  gap: 0.3rem;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  gap: 0.5rem;
+  margin: 0.3rem 0;
+  color: #475569;
+  font-size: 0.95rem;
+}
+.card-info .icon { font-size: 1rem; color: #64748b; }
+
+/* Divider */
+.card-divider { margin: 0; border: none; border-top: 1px solid #f1f5f9; }
+
+/* Footer: nicer spacing + alignment */
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  background-color: #fcfdff;
 }
 
-.reset-btn:hover {
-  background-color: #0056b3;
-  transform: translateY(-1px);
+/* Category tag as pill on left */
+.category-tag {
+  display: inline-block;
+  background: linear-gradient(180deg, #2563eb, #1d4ed8);
+  color: #fff;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  box-shadow: 0 6px 14px rgba(29,78,216,0.12);
+  white-space: nowrap;
 }
 
-@media (max-width: 600px) {
+/* Sign up btn aligned right with slight elevation */
+.signup-btn {
+  background-color: #10b981;
+  color: #fff;
+  border: none;
+  padding: 0.45rem 0.95rem;
+  font-size: 0.92rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform .12s ease, box-shadow .12s ease, background-color .12s ease;
+  box-shadow: 0 8px 22px rgba(16,185,129,0.12);
+}
+.signup-btn:hover {
+  transform: translateY(-3px);
+  background-color: #0ea46c;
+  box-shadow: 0 18px 38px rgba(16,185,129,0.14);
+}
+
+/* Responsive footer: stack on very small widths */
+@media (max-width: 420px) {
+  .card-footer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+  }
+  .category-tag { align-self: flex-start; }
+  .signup-btn { width: 100%; }
+}
+
+/* Filters mobile stack */
+@media (max-width: 720px) {
   .filters {
     flex-direction: column;
-    gap: 0.8rem;
-    padding: 1rem;
+    align-items: stretch;
   }
-
-  .filters select,
-  .filters input[type="date"],
-  .filters .reset-btn {
+  .filters .group-left, .filters .group-right {
     width: 100%;
-    min-width: unset;
+    justify-content: space-between;
   }
+  .filters select, .filters input[type="date"] { min-width: 140px; flex: 1 1 auto; }
 }
 
+/* Empty state card */
+.empty-state-card {
+  grid-column: 1 / -1;
+  text-align: center;
+  font-size: 1.05rem;
+  color: #555;
+  background-color: #f8f9fa;
+  border: 1px dashed #e6eefc;
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+/* small animation */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
