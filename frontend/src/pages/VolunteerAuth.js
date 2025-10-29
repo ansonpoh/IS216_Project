@@ -22,15 +22,18 @@ export default function LoginSignup() {
     username: "",
     email: "",
     password: "",
-    confimPassword: "",
+    confirmPassword: "",
     profile_image: "",
     agree: false,
   })
 
   useEffect(() => {
+  if (active) {
     setLoginData({ email: "", password: "" });
+  } else {
     setRegisterData({ username: "", email: "", password: "", confimPassword: "" });
-  }, [active, loginErrors, registerErrors]);
+  }
+}, [active]);
 
 
     const handle_register = async (e) => {
@@ -41,7 +44,7 @@ export default function LoginSignup() {
             return;
         }
 
-        if(registerData.password !== registerData.confimPassword) {
+        if(registerData.password !== registerData.confirmPassword) {
             setRegisterData("Passwords do not match");
             return
         }
@@ -213,7 +216,7 @@ export default function LoginSignup() {
                 </div>
 
                 <div className="input-box">
-                    <input type="password" placeholder="Confirm Password" className={`form-control`}value={registerData.confimPassword} onChange={(e) => setRegisterData({...registerData, confimPassword: e.target.value})}required />
+                    <input type="password" placeholder="Confirm Password" className={`form-control`}value={registerData.confirmPassword} onChange={(e) => setRegisterData({...registerData, confirmPassword: e.target.value})}required />
                     <i className="bx bxs-lock-alt"></i>
                 </div>
 

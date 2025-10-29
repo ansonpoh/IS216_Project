@@ -133,51 +133,65 @@ export default function Opportunities() {
       <div className='opportunities-container'>
       <h1>Opportunities</h1>
 
-      <div className="filters">
-        <select
-          value={categoryFilter}
-          onChange={(e) => setCategoryFilter(e.target.value)}
-        >
-          <option value="">All Categories</option>
-          {categories.map((catObj) => (
-            <option key={catObj.category} value={catObj.category}>
-              {catObj.category}
-            </option>
-          ))}
-        </select>
+<div className="filters">
+  <div className="group-left">
+    <select
+      value={categoryFilter}
+      onChange={(e) => setCategoryFilter(e.target.value)}
+      aria-label="Filter by category"
+    >
+      <option value="">All Categories</option>
+      {categories.map((catObj, idx) => (
+        <option key={catObj.id ?? catObj.category ?? idx} value={catObj.category ?? catObj.name ?? ""}>
+          {catObj.category ?? catObj.name ?? "Unknown"}
+        </option>
+      ))}
+    </select>
 
-        <select
-          value={regionFilter}
-          onChange={(e) => setRegionFilter(e.target.value)}
-        >
-          <option value="">All Regions</option>
-          {regions.map((regObj) => (
-            <option key={regObj.region} value={regObj.region}>
-              {regObj.region}
-            </option>
-          ))}
-        </select>
+    <select
+      value={regionFilter}
+      onChange={(e) => setRegionFilter(e.target.value)}
+      aria-label="Filter by region"
+    >
+      <option value="">All Regions</option>
+      {regions.map((regObj, idx) => (
+        <option key={regObj.id ?? regObj.region ?? idx} value={regObj.region ?? regObj.name ?? ""}>
+          {regObj.region ?? regObj.name ?? "Unknown"}
+        </option>
+      ))}
+    </select>
+  </div>
 
+  <div className="group-right">
+    <div className="date-filter" aria-hidden={false}>
+      <label>
+        <span className="date-label">Start</span>
         <input
           type="date"
           value={dateFromFilter}
           onChange={(e) => setDateFromFilter(e.target.value)}
-          placeholder="From date"
+          aria-label="Start date"
         />
+      </label>
 
+      <label>
+        <span className="date-label">End</span>
         <input
           type="date"
           value={dateToFilter}
           onChange={(e) => setDateToFilter(e.target.value)}
-          placeholder="To date"
+          aria-label="End date"
         />
+      </label>
+    </div>
 
-        <button className="reset-btn" onClick={resetFilters}>
-        <i className="bi bi-arrow-counterclockwise" style={{ marginRight: "5px" }}></i>
-        Reset Filters
-        </button>
+    <button className="reset-btn" onClick={resetFilters} aria-label="Reset filters">
+      <i className="bi bi-arrow-counterclockwise" style={{ marginRight: "6px" }}></i>
+      Reset
+    </button>
+  </div>
+</div>
 
-      </div>
 
        {/* Filtered opportunities */}
         <div className="card-grid">
