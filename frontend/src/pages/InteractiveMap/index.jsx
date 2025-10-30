@@ -105,20 +105,20 @@ const InteractiveMapDashboard = () => {
               <div className="col-md-6">
                 <h6 className="fw-semibold text-dark mb-3">Categories</h6>
                 <div className="d-flex flex-wrap gap-2">
-                  {categories.map((category) => (
-                    <button
-                      key={category.name}
-                      className={`btn btn-sm d-flex align-items-center ${
-                        activeFilters.includes(category.name)
-                          ? 'btn-info'
-                          : 'btn-outline-secondary'
-                      }`}
-                      onClick={() => toggleFilter(category.name)}
-                    >
-                      <i className={`${category.icon} me-1`}></i>
-                      {category.name}
-                    </button>
-                  ))}
+                  {categories.map((category) => {
+                    const categoryClass = styles[`btn-category-${category.name.toLowerCase().replace(' ', '-')}`];
+                    const isActive = activeFilters.includes(category.name);
+                    return (
+                      <button
+                        key={category.name}
+                        className={`${categoryClass} ${isActive ? styles.active : ''} btn btn-sm d-flex align-items-center`}
+                        onClick={() => toggleFilter(category.name)}
+                      >
+                        <i className={`${category.icon} me-1`}></i>
+                        {category.name}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>

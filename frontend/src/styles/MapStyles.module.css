@@ -1,92 +1,248 @@
-/* Updated styles for Singapore regions */
-/* FILE: frontend/src/pages/interactive-map-dashboard/styles.css */
+/* Updated styles for Singapore regions and categories */
+
+/* ===== REGION BUTTONS ===== */
+/* Plain white when inactive, faint color when active/hover */
 
 /* CENTRAL - Yellow */
 .btn-region-central {
-    background-color: #FFD700 !important;
+    background-color: white !important;
     color: #333 !important;
-    opacity: 0.5;
-    border: none;
+    border: 2px solid #e0e0e0 !important;
     transition: all 0.3s ease;
 }
 .btn-region-central.active, 
-.btn-region-central:hover,
-.btn-region-central.selected,
-.btn-region-central[aria-pressed="true"] {
-    opacity: 1 !important;
-    background-color: #FFC107 !important;
+.btn-region-central:hover {
+    background-color: rgba(255, 215, 0, 0.2) !important;
+    border-color: #FFD700 !important;
     box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
-    color: white !important;
+    color: #333 !important;
 }
 
 /* NORTH - Red */
 .btn-region-north {
-    background-color: #DC3545 !important;
-    color: white !important;
-    opacity: 0.5;
-    border: none;
+    background-color: white !important;
+    color: #333 !important;
+    border: 2px solid #e0e0e0 !important;
     transition: all 0.3s ease;
 }
 .btn-region-north.active, 
-.btn-region-north:hover,
-.btn-region-north.selected,
-.btn-region-north[aria-pressed="true"] {
-    opacity: 1 !important;
-    background-color: #C82333 !important;
+.btn-region-north:hover {
+    background-color: rgba(220, 53, 69, 0.2) !important;
+    border-color: #DC3545 !important;
     box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
-    color: white !important;
+    color: #333 !important;
 }
 
 /* NORTH-EAST - Purple */
 .btn-region-north-east {
-    background-color: #9C27B0 !important;
-    color: white !important;
-    opacity: 0.5;
-    border: none;
+    background-color: white !important;
+    color: #333 !important;
+    border: 2px solid #e0e0e0 !important;
     transition: all 0.3s ease;
 }
 .btn-region-north-east.active, 
-.btn-region-north-east:hover,
-.btn-region-north-east.selected,
-.btn-region-north-east[aria-pressed="true"] {
-    opacity: 1 !important;
-    background-color: #7B1FA2 !important;
+.btn-region-north-east:hover {
+    background-color: rgba(156, 39, 176, 0.2) !important;
+    border-color: #9C27B0 !important;
     box-shadow: 0 2px 8px rgba(156, 39, 176, 0.3);
-    color: white !important;
+    color: #333 !important;
 }
 
 /* EAST - Green */
 .btn-region-east {
-    background-color: #28A745 !important;
-    color: white !important;
-    opacity: 0.5;
-    border: none;
+    background-color: white !important;
+    color: #333 !important;
+    border: 2px solid #e0e0e0 !important;
     transition: all 0.3s ease;
 }
 .btn-region-east.active, 
-.btn-region-east:hover,
-.btn-region-east.selected,
-.btn-region-east[aria-pressed="true"] {
-    opacity: 1 !important;
-    background-color: #218838 !important;
+.btn-region-east:hover {
+    background-color: rgba(40, 167, 69, 0.2) !important;
+    border-color: #28A745 !important;
     box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
-    color: white !important;
+    color: #333 !important;
 }
 
 /* WEST - Blue */
 .btn-region-west {
-    background-color: #007BFF !important;
-    color: white !important;
-    opacity: 0.5;
-    border: none;
+    background-color: white !important;
+    color: #333 !important;
+    border: 2px solid #e0e0e0 !important;
     transition: all 0.3s ease;
 }
 .btn-region-west.active, 
-.btn-region-west:hover,
-.btn-region-west.selected,
-.btn-region-west[aria-pressed="true"] {
-    opacity: 1 !important;
-    background-color: #0056B3 !important;
+.btn-region-west:hover {
+    background-color: rgba(0, 123, 255, 0.2) !important;
+    border-color: #007BFF !important;
     box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+    color: #333 !important;
+}
+
+/* ===== CATEGORY BUTTONS ===== */
+/* Faint color when inactive, darker opaque with white text when active/hover */
+
+/* Animal - Orange (#f59e0b) */
+.btn-category-animal {
+    background-color: rgba(245, 158, 11, 0.2) !important;
+    color: #333 !important;
+    border: 2px solid rgba(245, 158, 11, 0.3) !important;
+    transition: all 0.3s ease;
+}
+.btn-category-animal.active,
+.btn-category-animal:hover {
+    background-color: #d97706 !important;
+    border-color: #d97706 !important;
     color: white !important;
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+}
+
+/* Children - Pink (#ec4899) */
+.btn-category-children {
+    background-color: rgba(236, 72, 153, 0.2) !important;
+    color: #333 !important;
+    border: 2px solid rgba(236, 72, 153, 0.3) !important;
+    transition: all 0.3s ease;
+}
+.btn-category-children.active,
+.btn-category-children:hover {
+    background-color: #db2777 !important;
+    border-color: #db2777 !important;
+    color: white !important;
+    box-shadow: 0 2px 8px rgba(236, 72, 153, 0.4);
+}
+
+/* Elderly - Orange (#ff6b35) */
+.btn-category-elderly {
+    background-color: rgba(255, 107, 53, 0.2) !important;
+    color: #333 !important;
+    border: 2px solid rgba(255, 107, 53, 0.3) !important;
+    transition: all 0.3s ease;
+}
+.btn-category-elderly.active,
+.btn-category-elderly:hover {
+    background-color: #ff6b35 !important;
+    border-color: #ff6b35 !important;
+    color: white !important;
+    box-shadow: 0 2px 8px rgba(255, 107, 53, 0.4);
+}
+
+/* Environment - Green (#10b981) */
+.btn-category-environment {
+    background-color: rgba(16, 185, 129, 0.2) !important;
+    color: #333 !important;
+    border: 2px solid rgba(16, 185, 129, 0.3) !important;
+    transition: all 0.3s ease;
+}
+.btn-category-environment.active,
+.btn-category-environment:hover {
+    background-color: #059669 !important;
+    border-color: #059669 !important;
+    color: white !important;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+}
+
+/* Event Support - Blue (#3b82f6) */
+.btn-category-event-support {
+    background-color: rgba(59, 130, 246, 0.2) !important;
+    color: #333 !important;
+    border: 2px solid rgba(59, 130, 246, 0.3) !important;
+    transition: all 0.3s ease;
+}
+.btn-category-event-support.active,
+.btn-category-event-support:hover {
+    background-color: #2563eb !important;
+    border-color: #2563eb !important;
+    color: white !important;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+}
+
+/* Mental Health - Red (#ef4444) */
+.btn-category-mental-health {
+    background-color: rgba(239, 68, 68, 0.2) !important;
+    color: #333 !important;
+    border: 2px solid rgba(239, 68, 68, 0.3) !important;
+    transition: all 0.3s ease;
+}
+.btn-category-mental-health.active,
+.btn-category-mental-health:hover {
+    background-color: #dc2626 !important;
+    border-color: #dc2626 !important;
+    color: white !important;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+}
+
+/* PWDs - Indigo (#6366f1) */
+.btn-category-pwds {
+    background-color: rgba(99, 102, 241, 0.2) !important;
+    color: #333 !important;
+    border: 2px solid rgba(99, 102, 241, 0.3) !important;
+    transition: all 0.3s ease;
+}
+.btn-category-pwds.active,
+.btn-category-pwds:hover {
+    background-color: #4f46e5 !important;
+    border-color: #4f46e5 !important;
+    color: white !important;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+}
+
+/* ===== GOOGLE MAPS CONTROLS STYLING ===== */
+/* Style Map Type Control (Map/Satellite buttons) */
+:global(.gm-style .gm-style-mtc) {
+    margin-top: 0px !important;
+}
+
+:global(.gm-style .gm-style-mtc button) {
+    background-color: #4891ff !important;
+    color: white !important;
+    border: 2px solid #0066ff !important;
+    box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 4px -1px !important;
+    font-family: Roboto, Arial, sans-serif !important;
+    font-size: 18px !important;
+    padding: 0 16px !important;
+}
+
+:global(.gm-style .gm-style-mtc button:hover) {
+    background-color: #3a7de8 !important;
+}
+
+/* Style for active/selected map type button */
+:global(.gm-style .gm-style-mtc button[aria-pressed="true"]) {
+    background-color: #2563eb !important;
+    font-weight: 500 !important;
+}
+
+/* Style Fullscreen Control */
+:global(.gm-style .gm-fullscreen-control) {
+    background-color: #4891ff !important;
+    border: 2px solid #0066ff !important;
+    border-radius: 2px !important;
+    box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 4px -1px !important;
+    width: 40px !important;
+    height: 32px !important;
+    margin: 10px 10px 0 0 !important;
+}
+
+:global(.gm-style .gm-fullscreen-control:hover) {
+    background-color: #3a7de8 !important;
+}
+
+:global(.gm-style .gm-fullscreen-control img) {
+    filter: brightness(0) invert(1) !important;
+}
+
+/* Style Zoom Controls */
+:global(.gm-style .gm-bundled-control .gmnoprint) {
+    background-color: #4891ff !important;
+    border: 2px solid #0066ff !important;
+    border-radius: 2px !important;
+    box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 4px -1px !important;
+}
+
+:global(.gm-style .gm-bundled-control .gmnoprint:hover) {
+    background-color: #3a7de8 !important;
+}
+
+:global(.gm-style .gm-bundled-control button img) {
+    filter: brightness(0) invert(1) !important;
 }
