@@ -3,9 +3,10 @@ import axios from "axios";
 import ChatBubble from "./ChatBubble";
 import ChatInput from "./ChatInput";
 import "../../styles/ChatWindow.css";
+import { useAuth } from "../../contexts/AuthProvider";
 
 export default function ChatWindow() {
-  const [messages, setMessages] = useState([]);
+  const { messages, setMessages } = useAuth();
   const [loading, setLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(true);
 
@@ -50,18 +51,18 @@ export default function ChatWindow() {
       });
 
       const data = res.data;
-      console.log(data)
       if(data.success) {
         const reply = data.reply || {};
         const paragraph = reply.paragraph?.trim() || "I'm not sure how to respond.";
         const events = Array.isArray(reply.events) ? reply.events : [];
-
+        const options = Array.isArray(reply.options) ? reply.options : [];
         setMessages([
           ...newMessages,
           {
             role: "assistant",
             content: paragraph,
             events: events.length > 0 ? events : null,
+            options: options.length > 0 ? options : null,
           },
         ]);
       } else {
@@ -86,11 +87,25 @@ export default function ChatWindow() {
       sendMessage(text);
   };
 
+  const handleOptionClick = (option) => {
+    setMessages((prev) => {
+      const updated = [...prev];
+      for (let i = updated.length - 1; i >= 0; i--) {
+        if (updated[i].role === "assistant" && updated[i].options) {
+          updated[i] = { ...updated[i], options: null };
+          break;
+        }
+      }
+      return updated;
+    });
+    sendMessage(option);
+  };
+
   return (
     <div className="chat-container mx-auto mt-4">
         <div className="chat-box p-3" ref={chatBoxRef}>
         {messages.map((msg, i) => (
-            <ChatBubble key={i} message={msg} />
+            <ChatBubble key={i} message={msg} onOptionClick={handleOptionClick}/>
         ))}
 
         {/* typing animation */}
@@ -110,7 +125,7 @@ export default function ChatWindow() {
         )}
 
         {/* 🔹 Quick-response cards */}
-        {showSuggestions && (
+        {messages.length < 2 && (
           <div className="suggestion-section text-center mt-4">
             {/* <h4 className="fw-semibold">Welcome to VolunteerConnect AI</h4>
             <p className="text-muted">

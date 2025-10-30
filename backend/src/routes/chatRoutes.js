@@ -19,19 +19,24 @@ You are Vera, a warm-but-practical volunteer matchmaker who turns "I have to" in
 CORE RULES (must be enforced)
 1) Acknowledge: Open with a brief, natural acknowledgement (e.g., "Thanks!" or "Got it!"). Avoid clichés or creepy phrasing.
 2) Mandatory preference collection BEFORE any search or tool call:
-   - Default required fields: region, time availability, beneficiary/cause
+   - Default required fields: region, time availability, beneficiary/cause/category
    - Ask exactly one question at a time. After each user reply, ask the next missing required question.
 3) TOOL USAGE: As soon as the required prefs are collected, call the backend tool immediately (unless Conversational Exception applies).
 4) CONVERSATIONAL EXCEPTION: If the user's message is purely conversational/reflective (greeting, thanks, feedback, or "why/how" about prior suggestions), do NOT call tools. You may ask up to one brief clarifying question; otherwise answer from context.
 5) RECOMMENDATION RULES:
    - NEVER invent events or attributes.
-   - Recommend up to 3 verified events that match **all** user preferences.
+   - Recommend 0 to 3 verified events that match **all** user preferences.
    - If backend returns 0 matches, start reply exactly with:
      Not finding good matches now. Would you adjust your preferred causes or broaden the area?
-     Then ask ONE single follow-up question about flexibility.
+     Then ask ONE single follow-up question about flexibility with either availability, region or category.
    - Do NOT combine recommendation text with a follow-up-zero message in the same reply.
 6) NORMALIZATION, CONFIRMATION & STRICT-MATCH
 - Inform the user, in one short acknowledgement, of the normalization before calling the backend (e.g., "Got it — I'll look for 'animals' opportunities.").
+- After you present selectable options, the next user message is likely a selection.
+- If the user replies with one of the shown options, treat it as a selection and proceed accordingly.
+If the user’s new message adds information that narrows or refines a previous request 
+you MUST combine all known filters and call the getFilteredEvents tool 
+instead of a single-filter tool.
 7) META-PROMPT SELF-CHECK before any tool call:
    - Intent Check (user wants to see events)
    - Preference Check (region,time,beneficiary present)
@@ -60,8 +65,17 @@ const format_reminder = `
           },
           ...
         ]
+
+    What you should return if the user is requesting for selectable options (like region, category, or availability):
+      - First, write one short friendly line introducing the options.
+      - Then output a JSON object called "options" in the format:
+        {
+          "type": "string",  // e.g. "regions", "categories", or "availability"
+          "values": ["Option1", "Option2", "Option3", ...]
+        }
+
     Important: Do not include markdown lists or bullet points before the JSON.
-    Output only one short paragraph (plain text) and then a valid JSON array of events.
+    Output only one short paragraph (plain text) and then a valid JSON structure.
 `
 
 // Tools
@@ -74,8 +88,33 @@ const getAllEventsTool = tool({
   }
 })
 
+const getSelectableOptionsTool = tool({
+  description: `
+    Retrieve predefined selectable options (regions, categories, availability) for user interaction when the AI needs clarification.
+    Use this when the assistant needs to ask the user to choose from a known list.
+    If the user asks for type of acivities / groups, use this tool with the categories type.
+  `,
+  inputSchema: z.object({
+    type: z.string().describe("The type of options to retrieve. Example: 'regions', 'categories', 'availability'")
+  }),
+  execute: async ({type}) => {
+    try {
+      const res = await axios.get(`${BASE}/events/get_selectable_options`);
+      const data = res.data?.result ?? res.data ?? {};
+      const options = data[type.toLowerCase()] ?? [];
+      if (Array.isArray(options) && options.length > 0) return options;
+      return [];
+      
+    } catch (err) {
+      console.error("GetSelectableOptionsTool Error: ", err);
+      return {error: err?.message ?? String(err)};
+    }
+  }
+})
+
+
 const getEventsByCategoryTool = tool({
-  description: "Retreives a list of volunteering events that belong to a specific category from the backend api.",
+  description: "Retrieve volunteering events filtered by category only. Use this when the user specifies a single category ONLY.",
   inputSchema: z.object({
     category: z.string().describe("The event category to filter by")
   }),
@@ -99,7 +138,7 @@ const getEventsByCategoryTool = tool({
 })
 
 const getEventsByRegionTool = tool({
-  description: "Retreive a list of volunteering events that are located in a specific region from backend api.",
+  description: "Retrieve volunteering events located in a specific region. Use this when the only region is mentioned in the history.",
   inputSchema: z.object({
     region: z.string().describe("The region to filter by")
   }),
@@ -122,82 +161,83 @@ const getEventsByRegionTool = tool({
   }
 })
 
-// --- NEW: filter events by weekdays/weekends using start_date / end_date ---
-const getEventsByWeekTool = tool({
-  description: "Retrieves events filtered by week type: 'weekdays' (Mon-Fri) or 'weekends' (Sat-Sun). Uses start_date and end_date fields and handles multi-day events.",
+const getEventsByTimeTool = tool({
+  description: "Retreive a list of volunteering events filtered by time only (weekday, weekend, or date range) from backend api. Use this when the user’s request focuses ONLY on timing.",
   inputSchema: z.object({
-    weekType: z.enum(['weekdays','weekends']).describe("Either 'weekdays' or 'weekends'")
+    filter: z.enum(["weekday", "weekend", "range"]).describe("The time filter to apply. Can be 'weekday', 'weekend', or 'range'."),
+    start_date: z.string().optional().describe("Start date for the range filter (YYYY-MM-DD). Optional unless filter = 'range'."),
+    end_date: z.string().optional().describe("End date for the range filter (YYYY-MM-DD). Optional unless filter = 'range'."),
   }),
-  execute: async ({ weekType }) => {
+  execute: async({filter, start_date, end_date}) => {
     try {
-      const res = await axios.get(`${BASE}/events/get_all_events`);
+      const params = new URLSearchParams({ filter });
+      if (filter === "range" && start_date && end_date) {
+        params.append("start_date", start_date);
+        params.append("end_date", end_date);
+      }
+      const res = await axios.get(`${BASE}/events/get_events_by_time?${params.toString()}`);
       const data = res.data?.result ?? res.data ?? [];
 
-      const parseDate = (val) => {
-        if (!val) return null;
-        // Accept Date object, ISO string, or SQL date string
-        const d = (val instanceof Date) ? val : new Date(val);
-        return (d && !isNaN(d)) ? d : null;
-      };
+      if (Array.isArray(data) && data.length > 0) return data;
 
-      const rangeHasWeekend = (start, end) => {
-        if (!start || !end) return null;
-        // iterate day by day to detect any weekend day
-        const s = new Date(start.getFullYear(), start.getMonth(), start.getDate());
-        const e = new Date(end.getFullYear(), end.getMonth(), end.getDate());
-        for (let d = new Date(s); d <= e; d.setDate(d.getDate() + 1)) {
-          const dow = d.getDay(); // 0 = Sun, 6 = Sat
-          if (dow === 0 || dow === 6) return true;
-        }
-        return false;
-      };
-
-      const filtered = data.filter(event => {
-        // prefer explicit fields start_date/end_date; if end_date missing use start_date
-        const rawStart = event.start_date ?? event.startDate ?? event.date ?? null;
-        const rawEnd = event.end_date ?? event.endDate ?? null;
-
-        const start = parseDate(rawStart);
-        const end = parseDate(rawEnd) || start;
-
-        // If recurring_days present, use that
-        if (!start && Array.isArray(event.recurring_days) && event.recurring_days.length) {
-          const days = event.recurring_days.map(d => String(d).toLowerCase());
-          const wantsWeekend = weekType === 'weekends';
-          const hasWeekend = days.includes('saturday') || days.includes('sunday') || days.includes('sat') || days.includes('sun');
-          return wantsWeekend ? hasWeekend : !hasWeekend;
-        }
-
-        // If we can't parse dates, exclude (or change to include)
-        if (!start) return false;
-
-        const hasWeekend = rangeHasWeekend(start, end);
-        if (hasWeekend === null) return false;
-
-        return weekType === 'weekends' ? hasWeekend : !hasWeekend;
-      });
-
-      return filtered;
+      return [];
     } catch (err) {
-      console.error("GetEventsByWeekTool Error:", err?.message ?? err);
-      return { error: err?.message ?? String(err) };
+      console.error("GetEventsByTimeTool Error: ", err);
     }
   }
-});
+})
 
-async function runAgent(messages, expectedOrder = [], attempt = 0) {
-  // limit retries to avoid infinite recursion
-  const MAX_ATTEMPTS = 1;
+const getFilteredEventsTools = tool({
+  description: `Retrieve volunteering events filtered by one or more conditions —
+    including category, region, and time.
+    This tool MUST be used when the user asks for events that combine multiple filters,
+    If the user only specifies one filter (just category, region, or time),
+    use the corresponding single-parameter tool instead.
+  `,
+  inputSchema: z.object({
+    category: z.string().optional().describe("Category of the event"),
+    region: z.string().optional().describe("Region where the event is located in. e.g. east, west"),
+    filter: z.enum(["weekday", "weekend", "range", "any"]).optional().describe("Time filter: weekday, weekend or range."),
+    start_date: z.string().optional().describe("Start date for range filter (YYYY-MM-DD)."),
+    end_date: z.string().optional().describe("End date range filter (YYYY-MM-DD)."),
+  }),
+  execute: async({category, region, filter, start_date, end_date}) => {
+    try {
+      const params = new URLSearchParams();
+      if(category) params.append("category", category);
+      if(region) params.append("region", region);
+      if(filter) params.append("filter", filter);
+      if(filter === "range" && start_date && end_date) {
+        params.append("start_date", start_date);
+        params.append("end_date", end_date);
+      }
+      console.log(params.toString())
+      const res = await axios.get(`${BASE}/events/get_filtered_events?${params.toString()}`);
+      const data = res.data?.result ?? res.data ?? [];
 
+      if (Array.isArray(data) && data.length > 0) return data;
+      return [];
+    } catch (err) {
+      console.error("GetFilteredEventsTool Error: ", err);
+    }
+  }
+})
+
+async function runAgent(messages, attempt = 0) {
+  const MAX_RECURSION = 1;
+  const allowTools = attempt === 0;
   const response = streamText({
     model: openai('gpt-4o-mini'),
     messages,
-    tools: {
-      getAllEvents: getAllEventsTool,
-      getEventsByCategory: getEventsByCategoryTool,
-      getEventsByRegion: getEventsByRegionTool,
-      getEventsByWeek: getEventsByWeekTool, // <-- add this
-    },
+    ...(allowTools && {
+      tools: {
+        // getEventsByCategory: getEventsByCategoryTool,
+        // getEventsByRegion: getEventsByRegionTool,
+        // getEventsByTime: getEventsByTimeTool,
+        getFilteredEvents: getFilteredEventsTools,
+        getSelectableOptions: getSelectableOptionsTool,
+      }
+    }),
     response_format: {type: "json_object"},
   });
 
@@ -206,50 +246,39 @@ async function runAgent(messages, expectedOrder = [], attempt = 0) {
     fullResponse += delta;
   }
 
-  const toolCalls = (await response.toolCalls) ?? [];
-  const toolResults = (await response.toolResults) ?? [];
-  console.log("AI response text:", fullResponse);
-  console.log("toolCalls:", toolCalls.map(c => c.toolName));
-  // Enforce expected order if provided
-  if (Array.isArray(expectedOrder) && expectedOrder.length > 0 && toolCalls.length > 0) {
-    const observed = toolCalls.map(c => c.toolName);
-    const matchesOrder = expectedOrder.every((name, idx) => {
-      const pos = observed.indexOf(name);
-      if (pos === -1) return false;
-      for (let j = 0; j < idx; j++) {
-        if (observed.indexOf(expectedOrder[j]) > pos) return false;
-      }
-      return true;
-    });
+  const toolCalls = allowTools ? await response.toolCalls : [];
+  const toolResults = allowTools ? await response.toolResults : [];
+  console.log(fullResponse);
 
-    if (!matchesOrder && attempt < MAX_ATTEMPTS) {
-      console.warn(`Tool order mismatch. Expected: ${expectedOrder.join(' -> ')}; observed: ${observed.join(' -> ')}`);
-      messages.push({
-        role: 'assistant',
-        content: `Please call tools in this order: ${expectedOrder.join(' then ')}.`,
-      });
-      return await runAgent(messages, expectedOrder, attempt + 1);
-    }
-  }
+  if (toolCalls.length > 0 && attempt <= MAX_RECURSION) {
+    console.log(toolCalls);
+    console.log(toolResults);
 
-  // If tools were called and produced results, feed them back and allow the model to synthesize
-  if (toolCalls.length > 0 && toolResults.length > 0) {
     for (const tool of toolResults) {
       const data = tool.output?.result ?? tool.output ?? [];
       messages.push({
         role: 'assistant',
-        content: `Tool "${tool.toolName ?? 'unknown'}" returned the following data: \n${JSON.stringify(data, null, 2)}`,
+        content: `Tool "${tool.toolName}" was used and returned the following data: ${JSON.stringify(data, null, 2)}`,
       });
     }
-    // allow one more synthesis pass
-    if (attempt < MAX_ATTEMPTS) return await runAgent(messages, expectedOrder, attempt + 1);
+
+    return await runAgent(messages, attempt + 1);
   }
 
   // No more tool usage — parse final text into paragraph + JSON events (if present)
-  let parsed = { paragraph: "", events: [] };
+  let parsed = { paragraph: "", events: [], options: [] };
   try {
+    const optionsMatch = fullResponse.match(/\{[\s\S]*"values"[\s\S]*\}/);
     const jsonMatch = fullResponse.match(/\[[\s\S]*\]/);
-    if (jsonMatch) {
+    if (optionsMatch) {
+      const optionsObj = JSON.parse(optionsMatch[0]);
+      if (optionsObj.options && Array.isArray(optionsObj.options.values)) {
+        parsed.options = optionsObj.options.values;
+      } else if (Array.isArray(optionsObj.values)) {
+        parsed.options = optionsObj.values;
+      }
+      parsed.paragraph = fullResponse.slice(0, optionsMatch.index).trim();
+    } else if (jsonMatch) {
       parsed.events = JSON.parse(jsonMatch[0]);
       parsed.paragraph = fullResponse.slice(0, jsonMatch.index).trim();
     } else {
@@ -260,28 +289,19 @@ async function runAgent(messages, expectedOrder = [], attempt = 0) {
     parsed.paragraph = fullResponse.trim();
   }
 
+  console.log(parsed)
   return parsed;
 }
 
 router.post("/", async (req,res) => {
   try {
-    const {userMessage, history = [], userType } = req.body;
-
-    // map user types to the desired call order (tool names)
-    const expectedOrderMap = {
-      general: ['getEventsByRegion', 'getEventsByCategory'],
-      limited_time: ['getEventsByWeek', 'getEventsByRegion'],
-      skill_based: ['getEventsByCategory', 'getEventsByRegion'],
-      default: []
-    };
-    const expectedOrder = expectedOrderMap[userType] ?? expectedOrderMap.default;
-
+    const {userMessage, history = []} = req.body;
     const messages = [
       {role: "system", content: shortened_system},
       ...history,
       {role: "user", content: `${userMessage}${format_reminder}`},
     ];
-    const finalResponse = await runAgent(messages, expectedOrder);
+    const finalResponse = await runAgent(messages);
 
     return res.json({ success: true, reply: finalResponse });
   } catch (err) {

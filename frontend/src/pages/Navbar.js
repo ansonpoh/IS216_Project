@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "../styles/Navbar.css";
+import axios from "axios";
 import { useAuth } from "../contexts/AuthProvider"; // <-- add this
 
 function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const isActive = (path) => location.pathname === path;
+  const [image, setImage] = useState(null);
 
   const { auth, logout } = useAuth(); // { role: 'volunteer' | 'organiser', id: ... } or null
 
@@ -14,6 +16,15 @@ function Navbar() {
     logout();
     navigate("/");
   };
+
+  if(auth.id.length > 0) {
+    const fetch_user = async () => {
+      const user = await axios.get("http://localhost:3001/users/get_user_by_id", {params: {id: auth.id}})
+      const data = user.data.result[0];
+      setImage(data.profile_image);
+    }
+    fetch_user();
+  }
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4">
@@ -86,11 +97,13 @@ function Navbar() {
             />
             <i
               className="bi bi-person-circle fs-5"
-              onClick={() => navigate("/VolunteerProfile")}
+              onClick={() => navigate("/profile")}
               style={{ cursor: "pointer" }}
             />
           </>
         )}
+
+
 
         {/* Auth buttons */}
         {auth.id.length > 0 ?(
