@@ -7,12 +7,16 @@
     color: #333 !important;
     opacity: 0.5;
     border: none;
+    transition: all 0.3s ease;
 }
 .btn-region-central.active, 
-.btn-region-central:hover {
-    opacity: 1;
+.btn-region-central:hover,
+.btn-region-central.selected,
+.btn-region-central[aria-pressed="true"] {
+    opacity: 1 !important;
     background-color: #FFC107 !important;
     box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
+    color: white !important;
 }
 
 /* NORTH - Red */
@@ -21,12 +25,16 @@
     color: white !important;
     opacity: 0.5;
     border: none;
+    transition: all 0.3s ease;
 }
 .btn-region-north.active, 
-.btn-region-north:hover {
-    opacity: 1;
+.btn-region-north:hover,
+.btn-region-north.selected,
+.btn-region-north[aria-pressed="true"] {
+    opacity: 1 !important;
     background-color: #C82333 !important;
     box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+    color: white !important;
 }
 
 /* NORTH-EAST - Purple */
@@ -35,12 +43,16 @@
     color: white !important;
     opacity: 0.5;
     border: none;
+    transition: all 0.3s ease;
 }
 .btn-region-north-east.active, 
-.btn-region-north-east:hover {
-    opacity: 1;
+.btn-region-north-east:hover,
+.btn-region-north-east.selected,
+.btn-region-north-east[aria-pressed="true"] {
+    opacity: 1 !important;
     background-color: #7B1FA2 !important;
     box-shadow: 0 2px 8px rgba(156, 39, 176, 0.3);
+    color: white !important;
 }
 
 /* EAST - Green */
@@ -49,12 +61,16 @@
     color: white !important;
     opacity: 0.5;
     border: none;
+    transition: all 0.3s ease;
 }
 .btn-region-east.active, 
-.btn-region-east:hover {
-    opacity: 1;
+.btn-region-east:hover,
+.btn-region-east.selected,
+.btn-region-east[aria-pressed="true"] {
+    opacity: 1 !important;
     background-color: #218838 !important;
     box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+    color: white !important;
 }
 
 /* WEST - Blue */
@@ -63,10 +79,14 @@
     color: white !important;
     opacity: 0.5;
     border: none;
+    transition: all 0.3s ease;
 }
 .btn-region-west.active, 
-.btn-region-west:hover {
-    opacity: 1;
+.btn-region-west:hover,
+.btn-region-west.selected,
+.btn-region-west[aria-pressed="true"] {
+    opacity: 1 !important;
     background-color: #0056B3 !important;
     box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+    color: white !important;
 }
