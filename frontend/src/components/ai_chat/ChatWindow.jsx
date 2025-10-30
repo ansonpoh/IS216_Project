@@ -106,8 +106,8 @@ export default function ChatWindow() {
         {/* typing animation */}
         {loading && (
           <div className="d-flex align-items-center">
-            <div className={`${styles['avatar']} me-2 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center`}>
-              <i className="bi bi-robot"></i>
+            <div className={`${styles.avatar} me-2 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center`}>
+              <i className="bi bi-person-hearts"></i>
             </div>
             <div className={`${styles['bot-bubble']} p-3 bg-light`}>
               <div className={`${styles['typing-dots']}`}>

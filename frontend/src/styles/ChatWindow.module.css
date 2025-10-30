@@ -11,6 +11,26 @@
   overflow: hidden;
 }
 
+.typing-dots span {
+  height: 8px;
+  width: 8px;
+  margin: 0 2px;
+  background-color: #999;
+  border-radius: 50%;
+  display: inline-block;
+  animation: blink 1.4s infinite both;
+}
+
+.bot-bubble {
+  border-bottom-left-radius: 0;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
 .chat-box {
   flex: 1;
   overflow-y: auto;
@@ -58,4 +78,10 @@
 
 .suggestion-card i {
   font-size: 1.2rem;
+}
+
+@keyframes blink {
+  0% { opacity: 0.2; }
+  20% { opacity: 1; }
+  100% { opacity: 0.2; }
 }

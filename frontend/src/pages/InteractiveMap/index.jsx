@@ -84,18 +84,20 @@ const InteractiveMapDashboard = () => {
               <div className="col-md-6 mb-3 mb-md-0">
                 <h6 className="fw-semibold text-dark mb-3">Region</h6>
                 <div className="d-flex flex-wrap gap-2">
-                  {regions.map((region) => (
-                    <button
-                      key={region.name}
-                      className={`btn btn-sm d-flex align-items-center ${styles[`btn-region-${region.name.toLowerCase().replace('-', '-')}`]} ${
-                        activeFilters.includes(region.name) ? 'active' : ''
-                      }`}
-                      onClick={() => toggleFilter(region.name)}
-                    >
-                      <i className={`${region.icon} me-1`}></i>
-                      {region.name}
-                    </button>
-                  ))}
+                  {regions.map((region) => {
+                    const regionClass = styles[`btn-region-${region.name.toLowerCase().replace(' ', '-')}`];
+                    const isActive = activeFilters.includes(region.name);
+                    return (
+                      <button
+                        key={region.name}
+                        className={`${regionClass} ${isActive ? styles.active : ''} btn btn-sm d-flex align-items-center`}
+                        onClick={() => toggleFilter(region.name)}
+                      >
+                        <i className={`${region.icon} me-1`}></i>
+                        {region.name}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 

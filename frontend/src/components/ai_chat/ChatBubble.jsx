@@ -99,7 +99,7 @@ export default function ChatBubble({ message, onOptionClick }) {
                   </div>
 
                   <div className="d-flex gap-2 mt-4">
-                    <button className={`${styles['btn-primary']} btn flex-grow-1`}>
+                    <button className={`btn-primary btn flex-grow-1`}>
                       Apply Now
                     </button>
 
