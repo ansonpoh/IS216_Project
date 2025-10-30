@@ -5,8 +5,8 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Navbar from "../../components/Navbar.js";
-import MapContainer from "./components/MapContainer";
-import "./styles.css";
+import MapContainer from "./MapContainer.jsx";
+import "../../styles/MapStyles.css";
 
 const InteractiveMapDashboard = () => {
   const [activeFilters, setActiveFilters] = useState([]);
