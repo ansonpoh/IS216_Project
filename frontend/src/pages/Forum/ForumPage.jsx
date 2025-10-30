@@ -150,25 +150,22 @@ export default function ForumPage() {
 useEffect(() => {
   const fetchHighlights = async () => {
     try {
-      const response = await fetch('http://localhost:3001/highlight/get_all');
+      const response = await fetch('http://localhost:3001/community/get_all_highlights');
       const data = await response.json();
       
-      if (data.status && data.result) {
-        setSlides(data.result.map(highlight => ({
+      console.log('Highlights response:', data); // Debug log
+      
+      if (data.result) {  // Changed from data.status && data.result
+        const mappedSlides = data.result.map(highlight => ({
           image: highlight.image,
-          caption: highlight.title,
-          alt: highlight.excerpt,
-          author: highlight.author
-        })));
+          caption: highlight.caption
+        }));
+        console.log('Mapped slides:', mappedSlides); // Debug log
+        setSlides(mappedSlides);
       }
     } catch (err) {
-      console.error("Error fetching highlights:", err);
-      // Fallback to default slides if fetch fails
-      setSlides([
-        { image: "https://picsum.photos/seed/1/800/480", caption: "Member review: Love this!", alt: "review 1" },
-        { image: "https://picsum.photos/seed/2/800/480", caption: "New product spotlight", alt: "spotlight 2" },
-        { image: "https://picsum.photos/seed/3/800/480", caption: "Community event highlights", alt: "event 3" },
-      ]);
+      console.error("Error fetching highlights:");
+      // Fallback slides
     }
   };
 

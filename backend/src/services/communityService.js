@@ -93,7 +93,8 @@ export async function get_all_posts() {
 export async function get_all_highlights() {
     try {
         const query = `
-            SELECT * FROM highlight 
+            SELECT highlight_id, image, caption 
+            FROM highlight 
             ORDER BY highlight_id DESC`;
         const result = await pool.query(query);
         return result.rows;
@@ -103,13 +104,13 @@ export async function get_all_highlights() {
     }
 }
 
-export async function create_highlight(image, title, excerpt, author) {
+export async function create_highlight(image, caption) {
     try {
         const query = `
-            INSERT INTO highlight (image, title, excerpt, author)
-            VALUES ($1, $2, $3, $4)
-            RETURNING *`;
-        const values = [image, title, excerpt, author];
+            INSERT INTO highlight (image, caption)
+            VALUES ($1, $2)
+            RETURNING highlight_id, image, caption`;
+        const values = [image, caption];
         const result = await pool.query(query, values);
         return result.rows[0];
     } catch (err) {

@@ -24,12 +24,12 @@ const getCategoryMarkerIcon = (category) => {
       viewBox: '0 0 24 24'
     },
     'elderly': { 
-      color: '#8b5cf6', 
+      color: '#ff6b35', 
       icon: mdiHumanCane,
       viewBox: '0 0 24 24'
     },
     'senior': { 
-      color: '#8b5cf6', 
+      color: '#ff6b35', 
       icon: mdiHumanCane,
       viewBox: '0 0 24 24'
     },
@@ -520,12 +520,13 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters }, r
           onClick={onResetFilters}
           className="btn btn-sm btn-light position-absolute m-2"
           style={{
+            color: '#fff',
             top: '2px',
             right: '52px',
             zIndex: 1000,
             boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-            backgroundColor: '#ffd2d2ff',
-            border: '1px solid #000000ff'
+            backgroundColor: '#4891ffff',
+            border: '2px solid #0066ffff'
           }}
         >
           <i className="bi bi-x-circle me-1"></i>

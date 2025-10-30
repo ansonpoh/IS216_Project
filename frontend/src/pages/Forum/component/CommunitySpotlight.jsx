@@ -34,7 +34,6 @@ export default function CommunitySpotlight({ slides = [], interval = 4000 }) {
             <img
               src={slide.image}
               className="d-block w-100"
-              alt={slide.alt}
               style={{ height: "400px", objectFit: "cover" }}
             />
             {/* Caption overlay */}
@@ -45,7 +44,6 @@ export default function CommunitySpotlight({ slides = [], interval = 4000 }) {
                    padding: '15px'
                  }}>
               <h5>{slide.caption}</h5>
-              {slide.author && <p className="mb-0">By {slide.author}</p>}
             </div>
           </div>
         ))}
