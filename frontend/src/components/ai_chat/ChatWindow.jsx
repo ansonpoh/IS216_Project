@@ -22,6 +22,15 @@ export default function ChatWindow() {
   }, [messages, loading]);
 
   useEffect(() => {
+    const handleBeforeUnload = () => {
+      sessionStorage.removeItem("chatMessages");
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, []);
+
+  useEffect(() => {
     if (messages.length === 0) {
       setLoading(true);
       setTimeout(() => {
