@@ -164,12 +164,8 @@ useEffect(() => {
         setSlides(mappedSlides);
       }
     } catch (err) {
-      console.error("Error fetching highlights:", err);
+      console.error("Error fetching highlights:");
       // Fallback slides
-      setSlides([
-        { image: "https://picsum.photos/seed/1/800/480", caption: "Community Highlight 1" },
-        { image: "https://picsum.photos/seed/2/800/480", caption: "Community Highlight 2" }
-      ]);
     }
   };
 
