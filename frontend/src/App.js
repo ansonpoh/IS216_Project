@@ -1,6 +1,6 @@
 import './App.css';
 import VolunteerConnect from './pages/VolunteerConnect';
-import InteractiveMapDashboard from './pages/interactive-map-dashboard';
+import InteractiveMapDashboard from './pages/Interactive Map/index.jsx';
 // import AboutPage from './pages/AboutPage';
 import ProfilePage from './pages/Volunteer/ProfilePage.js';
 import NotificationsPage from './pages/Volunteer/NotificationPage.js';
