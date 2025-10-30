@@ -1,4 +1,4 @@
-import React, {useState } from "react";
+import React, {useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import "../../styles/ChatBubble.css";
@@ -13,14 +13,29 @@ export default function ChatBubble({ message, onOptionClick }) {
   const events = message.events
 
   const {auth} = useAuth();
-  if(auth.id.length > 0) {
+  useEffect(() => {
+    const fetch_org = async () => {
+      const org = await axios.get("http://localhost:3001/orgs/get_org_by_id", {params: {id: auth.id}});
+      const data = org.data.result[0];
+      console.log(data.profile_image)
+      setImage(data.profile_image);
+    }
+
     const fetch_user = async () => {
       const user = await axios.get("http://localhost:3001/users/get_user_by_id", {params: {id: auth.id}})
       const data = user.data.result[0];
       setImage(data.profile_image);
     }
-    fetch_user();
-  }
+
+    if(auth.id.length > 0) {
+      if(auth.role === "volunteer") {
+        fetch_user();
+      } else if(auth.role === "organiser") {
+        fetch_org();
+      }
+    }
+
+  }, []);
 
   return (
     <div className={`d-flex mb-3 ${isUser ? "justify-content-end" : "justify-content-start"}`}>

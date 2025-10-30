@@ -3,7 +3,6 @@ import axios from "axios";
 import { useAuth } from "../contexts/AuthProvider";
 import { useNavigate } from "react-router-dom";
 import "../styles/Signup.css";
-import "boxicons/css/boxicons.min.css";
 import Navbar from "./Navbar";
 import { supabase } from "../config/supabaseClient";
 
@@ -71,21 +70,7 @@ export default function LoginSignup() {
             console.error(err);
             setRegisterErrors("Unexpected error during registration.");
         }
-        // axios.post("http:// localhost:3001/users/register", {username: registerData.username, email: registerData.email, password: registerData.password, profile_image: registerData.profile_image}, {headers: {"Content-Type" : "multipart/form-data"}})
-        //     .then((res) => {
-        //         const data = res.data;
-        //         if(data.status) {
-        //             nav("/volunteer/auth")
-        //             // To remove
-        //             window.location.reload();
-        //             alert("Registration Success! Please login")
-        //         } else {
-        //             // alert(`Registration Failed! ${data.message}`)
-        //             setRegisterErrors(data.message);
-        //         }
-        //     })
-        
-        }
+    }
 
     const handle_login = async (e) => {
         e.preventDefault();
@@ -151,20 +136,7 @@ export default function LoginSignup() {
             setLoginErrors("Unexpected error during login");
 
         }
-
-        // axios.post("http://localhost:3001/users/login", {email: loginData.email, password: loginData.password})
-        //     .then((res) => {
-        //         const data = res.data;
-        //         if(data.status) {
-        //             setAuth({role: "volunteer", id: data.id, token: data.token});
-        //             nav("/")
-        //             // To remove
-        //             alert("Login Success!")
-        //         } else {
-        //             setLoginErrors(data.message);
-        //         }
-        //     })
-        }
+    }
   
   return (
     <>
