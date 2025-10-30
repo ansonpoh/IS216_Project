@@ -9,9 +9,7 @@
   border-bottom-right-radius: 0;
 }
 
-.bot-bubble {
-  border-bottom-left-radius: 0;
-}
+
 
 .avatar {
   width: 40px;
@@ -125,10 +123,4 @@
 
 .option-button:hover {
   background-color: #27ae60;
-}
-
-@keyframes blink {
-  0% { opacity: 0.2; }
-  20% { opacity: 1; }
-  100% { opacity: 0.2; }
 }

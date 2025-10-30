@@ -148,8 +148,8 @@ export default function LoginSignup() {
       <div className={styles.body}>
         <div className={`${styles.login_signup_container} ${active ? styles.active : ""}`}>
           {/* LOGIN FORM */}
-          <div className={styles.form_box}>
-            <form onSubmit={handle_login}>
+          <div className={styles['form-box']}>
+            <form onSubmit={handle_login} className={styles.form}>
               <h1>Login for Volunteer</h1>
               {loginErrors && (
                 <div className={`${styles['form-alert']} mt-3`} style={{ color: "red" }}>
@@ -162,7 +162,7 @@ export default function LoginSignup() {
                 <input
                   type="email"
                   placeholder="Email"
-                  className={styles['form-control']}
+                  className={`form-control`}
                   value={loginData.email}
                   onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
                   required
@@ -174,7 +174,7 @@ export default function LoginSignup() {
                 <input
                   type="password"
                   placeholder="Password"
-                  className={styles['form-control']}
+                  className={`form-control`}
                   value={loginData.password}
                   onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
                   required
@@ -201,11 +201,11 @@ export default function LoginSignup() {
           </div>
 
           {/* REGISTER FORM */}
-          <div className={`${styles.form_box} ${styles.register}`}>
+          <div className={`${styles['form-box']} ${styles.register}`}>
             <form onSubmit={handle_register}>
               <h1>Registration for Volunteer</h1>
               {registerErrors && (
-                <div className={`${styles['form-alert']} mt-3`} style={{ color: "red" }}>
+                <div className={`form-alert mt-3`} style={{ color: "red" }}>
                   <i className="bx bx-error-circle"></i>
                   {registerErrors}
                 </div>
@@ -215,7 +215,7 @@ export default function LoginSignup() {
                 <input
                   type="text"
                   placeholder="Username"
-                  className={styles['form-control']}
+                  className={'form-control'}
                   value={registerData.username}
                   onChange={(e) =>
                     setRegisterData({ ...registerData, username: e.target.value })
@@ -229,7 +229,7 @@ export default function LoginSignup() {
                 <input
                   type="email"
                   placeholder="Email"
-                  className={styles['form-control']}
+                  className={'form-control'}
                   value={registerData.email}
                   onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })}
                   required
@@ -241,7 +241,7 @@ export default function LoginSignup() {
                 <input
                   type="password"
                   placeholder="Password"
-                  className={styles['form-control']}
+                  className={'form-control'}
                   value={registerData.password}
                   onChange={(e) =>
                     setRegisterData({ ...registerData, password: e.target.value })
@@ -255,7 +255,7 @@ export default function LoginSignup() {
                 <input
                   type="password"
                   placeholder="Confirm Password"
-                  className={styles['form-control']}
+                  className={'form-control'}
                   value={registerData.confirmPassword}
                   onChange={(e) =>
                     setRegisterData({ ...registerData, confirmPassword: e.target.value })
@@ -286,8 +286,8 @@ export default function LoginSignup() {
           </div>
 
           {/* TOGGLE BOX */}
-          <div className={styles.toggle_box}>
-            <div className={`${styles.toggle_panel} ${styles['toggle-left']}`}>
+          <div className={styles['toggle-box']}>
+            <div className={`${styles['toggle-panel']} ${styles['toggle-left']}`}>
               <h1>Hello, Welcome!</h1>
               <p>Don't have an account?</p>
               <button className={styles.signup_btn} onClick={() => setActive(true)}>
@@ -295,7 +295,7 @@ export default function LoginSignup() {
               </button>
             </div>
 
-            <div className={`${styles.toggle_panel} ${styles['toggle-right']}`}>
+            <div className={`${styles['toggle-panel']} ${styles['toggle-right']}`}>
               <h1>Welcome Back!</h1>
               <p>Already have an account?</p>
               <button className={styles.signup_btn} onClick={() => setActive(false)}>
