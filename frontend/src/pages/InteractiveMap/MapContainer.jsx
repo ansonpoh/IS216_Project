@@ -1,5 +1,6 @@
 import { mdiPaw, mdiBalloon, mdiHumanCane, mdiTree, mdiCalendar, mdiHuman, mdiHeartPulse, } from '@mdi/js';
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import axios from "axios";
 
 // Helper function to create custom marker icons based on category
 const getCategoryMarkerIcon = (category) => {
@@ -119,8 +120,6 @@ const getCategoryMarkerIcon = (category) => {
   </svg>
 `;
 
-
-
   return {
     url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg),
     scaledSize: new window.google.maps.Size(40, 40),
@@ -128,13 +127,15 @@ const getCategoryMarkerIcon = (category) => {
   };
 };
 
-const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters }, ref) => {
+const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, recommendedEvents }, ref) => {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markersRef = useRef([]);
   const currentInfoWindowRef = useRef(null);
   const [opportunities, setOpportunities] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [mappedEvents, setMappedEvents] = useState([]);
+  const [showingRecommended, setShowingRecommended] = useState(false);
 
   // Filter opportunities based on active filters
   const filteredOpportunities = useMemo(() => {
@@ -248,22 +249,141 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters }, r
   const fetchOpportunities = async () => {
     try {
       const backendBase = process.env.REACT_APP_API_URL || 'http://localhost:3001';
-      const res = await fetch(`${backendBase}/api/opportunities`);
-      
-      if (!res.ok) {
-        console.error(`Failed to fetch opportunities: ${res.status}`);
-        return;
-      }
+      // const res = await fetch(`${backendBase}/api/opportunities`);
+      const opportunities = await axios.get(`${backendBase}/events/get_all_events`);
+      const res = await axios.post(`${backendBase}/events/event_data_modify`, {events: opportunities.data.result});
 
-      const data = await res.json();
+      const data = res.data;
       console.log('Fetched opportunities:', data);
       setOpportunities(Array.isArray(data) ? data : []);
       setLoading(false);
+      setShowingRecommended(false);
     } catch (err) {
       console.error('Error fetching opportunities:', err);
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const enrichRecommendedEvents = async () => {
+      if (!recommendedEvents || recommendedEvents.length === 0) return;
+
+      try {
+        const backendBase = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+        console.log("Sending recommendedEvents to event_data_modify...");
+        
+        const res = await axios.post(`${backendBase}/events/event_data_modify`, {
+          events: recommendedEvents
+        });
+
+        const modified = res.data?.events || res.data || [];
+        console.log("Modified events (with lat/lng):", modified);
+        setMappedEvents(modified);
+      } catch (err) {
+        console.error("Error enriching recommendedEvents:", err);
+        setMappedEvents(recommendedEvents); // fallback: show unmodified
+      }
+    };
+    enrichRecommendedEvents();
+  }, [recommendedEvents]);
+
+  useEffect(() => {
+    if (!mapInstanceRef.current || !window.google) return;
+    if (!mappedEvents || mappedEvents.length === 0) return;
+
+    console.log("Rendering recommended events on map:", mappedEvents);
+    setShowingRecommended(true);
+    // Clear previous markers
+    markersRef.current.forEach(m => m.setMap(null));
+    markersRef.current = [];
+
+    const bounds = new window.google.maps.LatLngBounds();
+
+    mappedEvents.forEach(ev => {
+      console.log(ev)
+      if (!ev.lat|| !ev.lng) return; // Skip if no coords
+      const pos = { lat: ev.lat, lng: ev.lng};
+
+      const marker = new window.google.maps.Marker({
+        position: pos,
+        map: mapInstanceRef.current,
+        title: ev.title,
+        icon: getCategoryMarkerIcon(ev.category),
+        animation: window.google.maps.Animation.DROP,
+      });
+
+      const imageUrl = ev.image_url;
+      const hasImage = imageUrl && imageUrl.trim() !== '';
+
+      const infoWindow = new window.google.maps.InfoWindow({
+        content: `
+          <div style="padding: 8px; max-width: 300px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+            ${hasImage ? `
+              <div style="margin: -8px -8px 12px -8px; overflow: hidden; border-radius: 8px 8px 0 0;">
+                <img 
+                  src="${ev.image_url}" 
+                  alt="${ev.title || 'Opportunity'}" 
+                  style="width: 100%; height: 180px; object-fit: cover; display: block;"
+                  onerror="this.style.display='none'; this.parentElement.style.display='none';"
+                />
+              </div>
+            ` : ''}
+            <div style="font-weight: 600; font-size: 17px; margin-bottom: 8px; color: #1a1a1a; line-height: 1.3;">
+              ${ev.title || 'Opportunity'}
+            </div>
+            ${ev.organization ? `
+              <div style="font-size: 13px; margin-bottom: 10px; color: #666; display: flex; align-items: center;">
+                <span style="margin-right: 6px;">🏢</span>
+                <span style="font-weight: 500;">${ev.organization}</span>
+              </div>
+            ` : ''}
+            ${ev.description ? `
+              <div style="font-size: 13px; margin-bottom: 12px; color: #444; line-height: 1.5;">
+                ${ev.description.substring(0, 150)}${ev.description.length > 150 ? '...' : ''}
+              </div>
+            ` : ''}
+            ${ev.category ? `
+              <div style="font-size: 11px; color: #0066cc; margin-bottom: 10px; display: inline-block; background: #e6f2ff; padding: 5px 12px; border-radius: 14px; font-weight: 600;">
+                🗃️ ${(ev.category)}
+              </div>
+            ` : ''}
+            <div style="font-size: 13px; color: #555; margin-top: 10px; display: flex; align-items: flex-start; padding: 8px 0; border-top: 1px solid #eee;">
+              <strong style="margin-right: 6px; font-size: 16px;">📍</strong>
+              <span style="line-height: 1.4;">${ev.postalcode}</span>
+            </div>
+            ${ev.event_id ? `
+              <a 
+                href="/opportunities" 
+                style="display: block; margin-top: 12px; padding: 10px 16px; background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 600; text-align: center; box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3); transition: transform 0.2s;"
+                onmouseover="this.style.transform='translateY(-2px)'"
+                onmouseout="this.style.transform='translateY(0)'"
+              >
+                Learn More →
+              </a>
+            ` : ''}
+          </div>
+        `,
+        maxWidth: 320
+      });
+
+      marker.addListener("click", () => {
+        if (currentInfoWindowRef.current) currentInfoWindowRef.current.close();
+        infoWindow.open(mapInstanceRef.current, marker);
+        currentInfoWindowRef.current = infoWindow;
+      });
+
+      markersRef.current.push(marker);
+      bounds.extend(pos);
+    });
+
+    if (mappedEvents.length === 1) {
+      mapInstanceRef.current.setCenter(bounds.getCenter());
+      mapInstanceRef.current.setZoom(14);
+    } else {
+      mapInstanceRef.current.fitBounds(bounds);
+    }
+  }, [mappedEvents, mapInstanceRef.current]);
+
 
   // Update markers when filtered opportunities change
   useEffect(() => {
@@ -444,7 +564,12 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters }, r
         });
 
         window.mapInstance = mapInstanceRef.current;
-        fetchOpportunities();
+        if (!recommendedEvents || recommendedEvents.length === 0) {
+          fetchOpportunities();
+        } else {
+          console.log("Skipping fetch — showing recommended events only.");
+          setLoading(false);
+        }
       }
     };
 
@@ -515,9 +640,18 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters }, r
         }}
       />
       
-      {activeFilters.length > 0 && (
+      {(activeFilters.length > 0 || showingRecommended) && (
         <button
-          onClick={onResetFilters}
+          // onClick={onResetFilters}
+          onClick={() => {
+            if(showingRecommended) {
+              setShowingRecommended(false);
+              setMappedEvents([]);
+              fetchOpportunities();
+            } else {
+              onResetFilters();
+            }
+          }}
           className="btn btn-sm btn-light position-absolute m-2"
           style={{
             color: '#fff',

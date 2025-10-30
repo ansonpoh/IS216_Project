@@ -166,6 +166,10 @@ const format_reminder = `
             "location": "string",
             "organization": "string",
             "image_url": "string",
+            "region": "string",
+            "category": "string",
+            "event_id": "string",
+            "description": "string",
             "skills": "string",
           },
           ...
