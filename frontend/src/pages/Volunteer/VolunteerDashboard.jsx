@@ -1,12 +1,10 @@
-import React, { useEffect, useMemo, useState } from "react";
-import "../../styles/volunteerDashboard.css";
+import React, { useEffect, useMemo, useState, useCallback, useRef } from "react";
+import styles from "../../styles/VolunteerDashboard.module.css";
 import { useNavigate } from "react-router-dom";
 
 const LS_KEY = "volunteer_dashboard_circular_carousel_v3";
 
-/* -------------------------------------------
-   Helpers: autoplay + keyboard navigation
-------------------------------------------- */
+/* ---------- Helpers ---------- */
 const useAutoplay = (enabled, cb, delay = 4500) => {
   useEffect(() => {
     if (!enabled) return;
@@ -26,21 +24,11 @@ const useKeyControls = (onPrev, onNext) => {
   }, [onPrev, onNext]);
 };
 
-/* -------------------------------------------
-   Small Circular Progress Ring (SVG)
-   (FIX: use explicit px size, not 100%)
-------------------------------------------- */
-function CircularProgressRing({
-  value,
-  max,
-  size = 200,      // default visual size
-  thickness = 16,
-  title = "Goal Progress",
-}) {
+/* ---------- Circular Progress Ring ---------- */
+function CircularProgressRing({ value, max, size = 200, thickness = 16, title = "Goal Progress" }) {
   const safeMax = Math.max(1, Number(max) || 1);
   const v = Math.min(Math.max(0, Number(value) || 0), safeMax);
   const pct = Math.round((v / safeMax) * 100);
-
   const R = size / 2 - 10;
   const C = 2 * Math.PI * R;
   const dash = (pct / 100) * C;
@@ -48,17 +36,11 @@ function CircularProgressRing({
 
   return (
     <div
-      className="vd-meter"
+      className={styles.vdMeter}
       title={title}
       style={{ width: size, height: size, display: "grid", placeItems: "center" }}
     >
-      <svg
-        width={size}
-        height={size}
-        viewBox={`0 0 ${size} ${size}`}
-        role="img"
-        aria-label={`${title}: ${pct}%`}
-      >
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} role="img" aria-label={`${title}: ${pct}%`}>
         <defs>
           <linearGradient id="ringGradient" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stopColor="#49E2FF" />
@@ -82,7 +64,6 @@ function CircularProgressRing({
           </filter>
         </defs>
 
-        {/* Base track */}
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -93,8 +74,6 @@ function CircularProgressRing({
           strokeWidth={thickness}
           strokeLinecap="round"
         />
-
-        {/* Progress arc */}
         <g filter="url(#softGlow)">
           <circle
             cx={size / 2}
@@ -110,8 +89,6 @@ function CircularProgressRing({
             style={{ transition: "stroke-dasharray 500ms ease" }}
           />
         </g>
-
-        {/* Inner disk */}
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -120,28 +97,10 @@ function CircularProgressRing({
           filter="url(#innerShadow)"
           opacity="0.06"
         />
-
-        {/* Center labels */}
-        <text
-          x="50%"
-          y="50%"
-          textAnchor="middle"
-          dominantBaseline="central"
-          fontSize="26"
-          fontWeight="800"
-          fill="#6b7a8d"
-          opacity="0.9"
-        >
+        <text x="50%" y="50%" textAnchor="middle" dominantBaseline="central" fontSize="26" fontWeight="800" fill="#6b7a8d" opacity="0.9">
           {pct}%
         </text>
-        <text
-          x="50%"
-          y={size / 2 + 18}
-          textAnchor="middle"
-          fontSize="10"
-          fill="#8fa1b6"
-          letterSpacing="1.5"
-        >
+        <text x="50%" y={size / 2 + 18} textAnchor="middle" fontSize="10" fill="#8fa1b6" letterSpacing="1.5">
           COMPLETE
         </text>
       </svg>
@@ -149,37 +108,21 @@ function CircularProgressRing({
   );
 }
 
-/* -------------------------------------------
-   3D Card Carousel (autoplay / keys / swipe / dots)
-------------------------------------------- */
-function CardCarousel({
-  title,
-  items,
-  renderCardFooter,
-  emptyText = "Nothing here yet.",
-  autoplay = true,
-}) {
+/* ---------- Card Carousel ---------- */
+function CardCarousel({ title, items, renderCardFooter, emptyText = "Nothing here yet.", autoplay = true }) {
   const [idx, setIdx] = useState(0);
   const [paused, setPaused] = useState(false);
   const count = items.length;
 
-  useEffect(() => {
-    if (idx >= count) setIdx(Math.max(0, count - 1));
-  }, [count, idx]);
+  useEffect(() => { if (idx >= count) setIdx(Math.max(0, count - 1)); }, [count, idx]);
 
-  const prev = React.useCallback(
-    () => setIdx((i) => (i - 1 + Math.max(1, count)) % Math.max(1, count)),
-    [count]
-  );
-  const next = React.useCallback(
-    () => setIdx((i) => (i + 1) % Math.max(1, count)),
-    [count]
-  );
+  const prev = useCallback(() => setIdx((i) => (i - 1 + Math.max(1, count)) % Math.max(1, count)), [count]);
+  const next = useCallback(() => setIdx((i) => (i + 1) % Math.max(1, count)), [count]);
 
   useKeyControls(prev, next);
   useAutoplay(autoplay && !paused && count > 1, next, 5000);
 
-  const touch = React.useRef({ x: 0 });
+  const touch = useRef({ x: 0 });
   const onTouchStart = (e) => (touch.current.x = e.changedTouches[0].clientX);
   const onTouchEnd = (e) => {
     const dx = e.changedTouches[0].clientX - touch.current.x;
@@ -187,7 +130,7 @@ function CardCarousel({
   };
 
   return (
-    <div className="card shadow-sm h-100 vd-card">
+    <div className={`card shadow-sm h-100 ${styles.vdCard}`}>
       <div className="card-body">
         <div className="d-flex justify-content-between align-items-center mb-2">
           <h5 className="card-title mb-0">{title}</h5>
@@ -198,7 +141,7 @@ function CardCarousel({
           <div className="text-muted">{emptyText}</div>
         ) : (
           <div
-            className="position-relative vd-carousel"
+            className={styles.vdCarousel}
             style={{ height: 200, perspective: "900px", overflow: "hidden" }}
             onMouseEnter={() => setPaused(true)}
             onMouseLeave={() => setPaused(false)}
@@ -206,42 +149,14 @@ function CardCarousel({
             onTouchEnd={onTouchEnd}
             tabIndex={0}
           >
-            <CarouselCard
-              event={items[idx]}
-              style={{
-                transform: "translateZ(0) rotateY(0deg) scale(1)",
-                opacity: 1,
-                zIndex: 3,
-              }}
-              footer={renderCardFooter?.(items[idx])}
-            />
+            <CarouselCard event={items[idx]} style={{ transform: "translateZ(0) rotateY(0deg) scale(1)", opacity: 1, zIndex: 3 }} footer={renderCardFooter?.(items[idx])} />
 
-            <button
-              type="button"
-              className="btn btn-light vd-nav position-absolute top-50 start-0 translate-middle-y"
-              onClick={prev}
-              aria-label="Previous"
-            >
-              ‹
-            </button>
-            <button
-              type="button"
-              className="btn btn-light vd-nav position-absolute top-50 end-0 translate-middle-y"
-              onClick={next}
-              aria-label="Next"
-            >
-              ›
-            </button>
+            <button type="button" className={`btn btn-light ${styles.vdNav} position-absolute top-50 start-0 translate-middle-y`} onClick={prev} aria-label="Previous">‹</button>
+            <button type="button" className={`btn btn-light ${styles.vdNav} position-absolute top-50 end-0 translate-middle-y`} onClick={next} aria-label="Next">›</button>
 
             <div className="position-absolute w-100 text-center" style={{ bottom: 6 }}>
               {Array.from({ length: count }).map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setIdx(i)}
-                  aria-label={`Go to ${i + 1}`}
-                  aria-current={i === idx ? "true" : undefined}
-                  className="p-0 border-0 vd-dot"
-                />
+                <button key={i} onClick={() => setIdx(i)} aria-label={`Go to ${i + 1}`} aria-current={i === idx ? "true" : undefined} className={`p-0 border-0 ${styles.vdDot}`} />
               ))}
             </div>
           </div>
@@ -254,28 +169,15 @@ function CardCarousel({
 function CarouselCard({ event, style, footer }) {
   if (!event) return null;
   return (
-    <div
-      className="position-absolute top-50 start-50 translate-middle p-3 rounded-4 vd-slide"
-      style={{
-        width: 420,
-        maxWidth: "94%",
-        transformStyle: "preserve-3d",
-        ...style,
-      }}
-    >
+    <div className={`position-absolute top-50 start-50 translate-middle p-3 rounded-4 ${styles.vdSlide}`} style={{ width: 420, maxWidth: "94%", transformStyle: "preserve-3d", ...style }}>
       <div className="fw-semibold">{event.title}</div>
-      <div className="small text-muted">
-        {fmtDT(event.start)} → {fmtDT(event.end)}
-        {event.location ? ` · ${event.location}` : ""} · {dur(event.start, event.end)} hrs
-      </div>
+      <div className="small text-muted">{fmtDT(event.start)} → {fmtDT(event.end)}{event.location ? ` · ${event.location}` : ""} · {dur(event.start, event.end)} hrs</div>
       {!!footer && <div className="mt-3 d-flex gap-2 flex-wrap">{footer}</div>}
     </div>
   );
 }
 
-/* -------------------------------------------
-   DASHBOARD
-------------------------------------------- */
+/* ---------- Dashboard ---------- */
 export default function VolunteerDashboard() {
   const navigate = useNavigate();
 
@@ -283,9 +185,8 @@ export default function VolunteerDashboard() {
   const [pendingEvents, setPendingEvents] = useState([]);
   const [pastEvents, setPastEvents] = useState([]);
   const [goalHours, setGoalHours] = useState(36);
-  const [manualTotalHours, setManualTotalHours] = useState(0); // 0 => show synced
+  const [manualTotalHours, setManualTotalHours] = useState(0);
 
-  // Load persisted
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem(LS_KEY) || "{}");
     if (Array.isArray(saved.activeEvents)) setActiveEvents(saved.activeEvents);
@@ -295,27 +196,14 @@ export default function VolunteerDashboard() {
     if (typeof saved.manualTotalHours === "number") setManualTotalHours(saved.manualTotalHours);
   }, []);
 
-  // Persist
   useEffect(() => {
-    localStorage.setItem(
-      LS_KEY,
-      JSON.stringify({
-        activeEvents,
-        pendingEvents,
-        pastEvents,
-        goalHours,
-        manualTotalHours,
-      })
-    );
+    localStorage.setItem(LS_KEY, JSON.stringify({ activeEvents, pendingEvents, pastEvents, goalHours, manualTotalHours }));
   }, [activeEvents, pendingEvents, pastEvents, goalHours, manualTotalHours]);
 
   const hoursBetween = (s, e) => Math.max(0, (new Date(e) - new Date(s)) / 36e5);
   const round1 = (n) => Math.round(n * 10) / 10;
 
-  const syncedTotalHours = useMemo(
-    () => round1(pastEvents.reduce((sum, ev) => sum + hoursBetween(ev.start, ev.end), 0)),
-    [pastEvents]
-  );
+  const syncedTotalHours = useMemo(() => round1(pastEvents.reduce((sum, ev) => sum + hoursBetween(ev.start, ev.end), 0)), [pastEvents]);
   const displayedTotalHours = manualTotalHours || syncedTotalHours;
 
   const syncedMonthlyHours = useMemo(() => {
@@ -329,7 +217,6 @@ export default function VolunteerDashboard() {
     return round1(inMonth.reduce((s, ev) => s + hoursBetween(ev.start, ev.end), 0));
   }, [pastEvents]);
 
-  // Actions (skeleton)
   const markAttended = (id) => {
     const ev = activeEvents.find((e) => e.id === id);
     if (!ev) return;
@@ -342,95 +229,52 @@ export default function VolunteerDashboard() {
     setActiveEvents((arr) => [{ ...ev }, ...arr]);
     setPendingEvents((arr) => arr.filter((e) => e.id !== id));
   };
-  const withdrawPending = (id) =>
-    setPendingEvents((arr) => arr.filter((e) => e.id !== id));
-  const deleteActive = (id) =>
-    setActiveEvents((arr) => arr.filter((e) => e.id !== id));
-  const deletePast = (id) =>
-    setPastEvents((arr) => arr.filter((e) => e.id !== id));
+  const withdrawPending = (id) => setPendingEvents((arr) => arr.filter((e) => e.id !== id));
+  const deleteActive = (id) => setActiveEvents((arr) => arr.filter((e) => e.id !== id));
+  const deletePast = (id) => setPastEvents((arr) => arr.filter((e) => e.id !== id));
 
   const syncHours = () => setManualTotalHours(syncedTotalHours);
   const clearManual = () => setManualTotalHours(0);
 
   return (
-    <div className="container py-4 vdash">
-      {/* Header with Back */}
+    <div className={`container py-4 ${styles.vdash}`}>
       <div className="d-flex align-items-center mb-3">
-        <button
-          className="btn btn-outline-primary btn-sm me-2 vd-back"
-          onClick={() => navigate(-1)}
-        >
-          ← Back
-        </button>
+        <button className={`btn btn-outline-primary btn-sm me-2 ${styles.vdBack}`} onClick={() => navigate(-1)}>← Back</button>
         <h2 className="h4 mb-0">Volunteer Dashboard</h2>
         <div className="ms-auto d-flex gap-2">
-          <button className="btn btn-outline-primary btn-sm" onClick={syncHours}>
-            Sync Hours from Past Events
-          </button>
-          {manualTotalHours > 0 && (
-            <button className="btn btn-outline-secondary btn-sm" onClick={clearManual}>
-              Clear Manual Override
-            </button>
-          )}
+          <button className="btn btn-outline-primary btn-sm" onClick={syncHours}>Sync Hours from Past Events</button>
+          {manualTotalHours > 0 && <button className="btn btn-outline-secondary btn-sm" onClick={clearManual}>Clear Manual Override</button>}
         </div>
       </div>
 
-      {/* Stats + Meter */}
       <div className="row g-3 mb-4">
         <div className="col-lg-4">
-          <div className="card shadow-sm h-100 vd-card">
+          <div className={`card shadow-sm h-100 ${styles.vdCard}`}>
             <div className="card-body">
               <h5 className="card-title mb-2">Total Volunteered Hours</h5>
               <div className="display-6 fw-semibold">{displayedTotalHours}</div>
-              <div className="text-muted mt-2">
-                Synced this month: {syncedMonthlyHours}
-              </div>
+              <div className="text-muted mt-2">Synced this month: {syncedMonthlyHours}</div>
               <div className="mt-3">
                 <label className="form-label">Adjust Total (optional)</label>
-                <input
-                  type="number"
-                  min={0}
-                  className="form-control"
-                  value={manualTotalHours}
-                  onChange={(e) =>
-                    setManualTotalHours(Math.max(0, Number(e.target.value || 0)))
-                  }
-                  placeholder="0 = show synced value"
-                />
+                <input type="number" min={0} className="form-control" value={manualTotalHours} onChange={(e) => setManualTotalHours(Math.max(0, Number(e.target.value || 0)))} placeholder="0 = show synced value" />
               </div>
             </div>
           </div>
         </div>
 
         <div className="col-lg-8">
-          <div className="card shadow-sm h-100 vd-card">
+          <div className={`card shadow-sm h-100 ${styles.vdCard}`}>
             <div className="card-body d-flex align-items-center gap-4">
-              {/* FIX: explicit size keeps the meter small */}
               <div className="flex-shrink-0">
-                <CircularProgressRing
-                  value={displayedTotalHours}
-                  max={goalHours}
-                  size={260}        // <- adjust this to taste (220–280)
-                  thickness={18}
-                />
+                <CircularProgressRing value={displayedTotalHours} max={goalHours} size={260} thickness={18} />
               </div>
               <div className="flex-grow-1">
                 <h5 className="mb-2">Goal Progress</h5>
-                <p className="text-muted mb-3">
-                  {Math.min(displayedTotalHours, goalHours)} / {goalHours} hours
-                </p>
+                <p className="text-muted mb-3">{Math.min(displayedTotalHours, goalHours)} / {goalHours} hours</p>
                 <div className="row g-2">
                   <div className="col-sm-6">
                     <label className="form-label">Set Goal (hours)</label>
-                    <input
-                      type="number"
-                      min={1}
-                      className="form-control"
-                      value={goalHours}
-                      onChange={(e) =>
-                        setGoalHours(Math.max(1, Number(e.target.value || 1)))
-                      }
-                    />
+                    <input type="number" min={1} className="form-control" value={goalHours} onChange={(e) => setGoalHours(Math.max(1, Number(e.target.value || 1)))} />
                   </div>
                 </div>
               </div>
@@ -439,55 +283,29 @@ export default function VolunteerDashboard() {
         </div>
       </div>
 
-      {/* Carousels */}
       <div className="row g-3">
         <div className="col-lg-6">
-          <CardCarousel
-            title="Active (Joined) Events"
-            items={activeEvents}
-            emptyText="Nothing here yet."
-            renderCardFooter={(e) => (
-              <>
-                <button className="btn btn-sm btn-success" onClick={() => markAttended(e.id)}>
-                  Mark Attended → Past
-                </button>
-                <button className="btn btn-sm btn-outline-danger" onClick={() => deleteActive(e.id)}>
-                  Delete
-                </button>
-              </>
-            )}
-          />
+          <CardCarousel title="Active (Joined) Events" items={activeEvents} emptyText="Nothing here yet." renderCardFooter={(e) => (
+            <>
+              <button className="btn btn-sm btn-success" onClick={() => markAttended(e.id)}>Mark Attended → Past</button>
+              <button className="btn btn-sm btn-outline-danger" onClick={() => deleteActive(e.id)}>Delete</button>
+            </>
+          )} />
         </div>
 
         <div className="col-lg-6">
-          <CardCarousel
-            title="Pending Applications"
-            items={pendingEvents}
-            emptyText="Nothing here yet."
-            renderCardFooter={(e) => (
-              <>
-                <button className="btn btn-sm btn-primary" onClick={() => approvePending(e.id)}>
-                  Approve → Active
-                </button>
-                <button className="btn btn-sm btn-outline-danger" onClick={() => withdrawPending(e.id)}>
-                  Withdraw
-                </button>
-              </>
-            )}
-          />
+          <CardCarousel title="Pending Applications" items={pendingEvents} emptyText="Nothing here yet." renderCardFooter={(e) => (
+            <>
+              <button className="btn btn-sm btn-primary" onClick={() => approvePending(e.id)}>Approve → Active</button>
+              <button className="btn btn-sm btn-outline-danger" onClick={() => withdrawPending(e.id)}>Withdraw</button>
+            </>
+          )} />
         </div>
 
         <div className="col-12">
-          <CardCarousel
-            title="Past Events"
-            items={pastEvents}
-            emptyText="Nothing here yet."
-            renderCardFooter={(e) => (
-              <button className="btn btn-sm btn-outline-danger" onClick={() => deletePast(e.id)}>
-                Delete
-              </button>
-            )}
-          />
+          <CardCarousel title="Past Events" items={pastEvents} emptyText="Nothing here yet." renderCardFooter={(e) => (
+            <button className="btn btn-sm btn-outline-danger" onClick={() => deletePast(e.id)}>Delete</button>
+          )} />
         </div>
       </div>
     </div>
@@ -495,12 +313,5 @@ export default function VolunteerDashboard() {
 }
 
 /* ---------- Utils ---------- */
-function fmtDT(iso) {
-  if (!iso) return "—";
-  const d = new Date(iso);
-  return d.toLocaleString();
-}
-function dur(start, end) {
-  const h = Math.max(0, (new Date(end) - new Date(start)) / 36e5);
-  return Math.round(h * 10) / 10;
-}
+function fmtDT(iso) { if (!iso) return "—"; return new Date(iso).toLocaleString(); }
+function dur(start, end) { return Math.round(Math.max(0, (new Date(end) - new Date(start)) / 36e5) * 10) / 10; }

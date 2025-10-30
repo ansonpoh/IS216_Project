@@ -1,7 +1,7 @@
 import React, {useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import "../../styles/ChatBubble.css";
+import styles from "../../styles/ChatBubble.module.css";
 import {useNavigate} from "react-router-dom"
 import { useAuth } from "../../contexts/AuthProvider";
 import axios from "axios";
@@ -40,23 +40,26 @@ export default function ChatBubble({ message, onOptionClick }) {
   return (
     <div className={`d-flex mb-3 ${isUser ? "justify-content-end" : "justify-content-start"}`}>
       {!isUser && (
-        <div className="avatar me-2 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center">
+        <div className={`${styles.avatar} me-2 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center`}>
           <i className="bi bi-person-hearts"></i>
         </div>
       )}
       <div
-        className={`chat-bubble p-3 ${
-          isUser ? "user-bubble bg-primary text-white" : "bot-bubble bg-light"
+        className={`${styles['chat-bubble']} p-3 ${
+          isUser
+            ? `${styles['user-bubble']} bg-primary text-white`
+            : `${styles['bot-bubble']} bg-light`
         }`}
+
       >
         <ReactMarkdown remarkPlugins={[remarkGfm]}>
           {message.content}
         </ReactMarkdown>
 
         {message.options && message.options.length > 0 && (
-          <div className="options-container">
+          <div className={`${styles['options-container']}`}>
             {message.options.map((option, index) => (
-              <button key={index} className="option-button" onClick={() => onOptionClick("I want " + option + " events")}>
+              <button key={index} className={`${styles['option-button']}`} onClick={() => onOptionClick("I want " + option + " events")}>
                 {option}
               </button>
             ))}
@@ -64,9 +67,9 @@ export default function ChatBubble({ message, onOptionClick }) {
         )}
 
         {message.events && message.events.length > 0 && (
-          <div className="event-card-grid mt-3">
+          <div className={`${styles['event-card-grid']} mt-3`}>
             {message.events.map((event, i) => (
-              <div key={i} className="event-card mb-3 shadow-sm border rounded-4 overflow-hidden">
+              <div key={i} className={`${styles['event-card']} mb-3 shadow-sm border rounded-4 overflow-hidden`}>
 
                 <div className="p-3">
                   <div className="d-flex justify-content-between align-items-start mb-1">
@@ -77,7 +80,7 @@ export default function ChatBubble({ message, onOptionClick }) {
                   </div>
 
                   {event.image_url && (
-                    <img src={event.image_url} alt={event.title} className="event-card-img mb-3"/>
+                    <img src={event.image_url} alt={event.title} className={`${styles['event-card-img']} mb-3`}/>
                   )}
 
                   {event.match && (
@@ -96,19 +99,19 @@ export default function ChatBubble({ message, onOptionClick }) {
                   </div>
 
                   <div className="d-flex gap-2 mt-4">
-                    <button className="btn btn-primary flex-grow-1">
+                    <button className={`${styles['btn-primary']} btn flex-grow-1`}>
                       Apply Now
                     </button>
 
-                    <button className="event-btn btn-outline-secondary flex-grow-1">
+                    <button className={`${styles['event-btn']} btn btn-outline-secondary flex-grow-1`}>
                       Learn More
                     </button>
                   </div>
                 </div>
               </div>
             ))}
-            <div className="view-all-container text-center mt-3">
-              <button className="btn-outline-secondary view-all-btn" onClick={() => nav("/maps", {state: {events}})}>
+            <div className={`${styles['view-all-container']} text-center mt-3`}>
+              <button className={`${styles['view-all-btn']} btn btn-outline-secondary`} onClick={() => nav("/maps", {state: {events}})}>
                 <i className="bi bi-map me-2"></i>View All on Map
               </button>
             </div>
@@ -117,12 +120,12 @@ export default function ChatBubble({ message, onOptionClick }) {
 
       </div>
       {isUser && (
-        <div className="avatar ms-2 rounded-circle overflow-hidden d-flex align-items-center justify-content-center">
+        <div className={`${styles.avatar} ms-2 rounded-circle overflow-hidden d-flex align-items-center justify-content-center`}>
           {image ? (
             <img
               src={image}
               alt="User"
-              className="avatar-img"
+              className={`${styles['avatar-img']}`}
             />
           ) : (
             <i className="bi bi-person"></i>

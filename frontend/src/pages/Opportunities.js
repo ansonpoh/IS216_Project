@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar.js";
-import "../styles/Opportunities.css";
+import styles from "../styles/Opportunities.module.css";
 import axios from 'axios';
 
 export default function Opportunities() {
@@ -15,29 +15,19 @@ export default function Opportunities() {
   const [dateFromFilter, setDateFromFilter] = useState("");
   const [dateToFilter, setDateToFilter] = useState("");
 
-  // ✅ Fetch opportunities on mount
   useEffect(() => {
     const fetchOpportunities = async () => {
       try {
         setLoading(true);
         const res = await axios.get("http://localhost:3001/events/get_all_events");
-
         const data = Array.isArray(res.data.result) ? res.data.result : [];
 
-        // Normalize data (same as your original)
         const normalized = data.map((it) => {
           const get = (...keys) => {
-            for (const k of keys) {
-              if (it[k] !== undefined && it[k] !== null) return it[k];
-            }
+            for (const k of keys) if (it[k] != null) return it[k];
             return undefined;
           };
-
-          const toNumber = (v) => {
-            if (v == null || v === "") return null;
-            const n = Number(v);
-            return Number.isNaN(n) ? null : n;
-          };
+          const toNumber = (v) => (v == null || v === "" ? null : (Number.isNaN(Number(v)) ? null : Number(v)));
 
           return {
             event_id: get("event_id", "id"),
@@ -69,24 +59,18 @@ export default function Opportunities() {
     fetchOpportunities();
   }, []);
 
-  // ✅ Fetch categories and regions
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const res = await axios.get("http://localhost:3001/events/get_all_categories");
         setCategories(Array.isArray(res.data.result) ? res.data.result : []);
-      } catch (err) {
-        console.error("Error loading categories", err);
-      }
+      } catch (err) { console.error("Error loading categories", err); }
     };
-
     const fetchRegions = async () => {
       try {
         const res = await axios.get("http://localhost:3001/events/get_all_regions");
         setRegions(Array.isArray(res.data.result) ? res.data.result : []);
-      } catch (err) {
-        console.error("Error loading regions", err);
-      }
+      } catch (err) { console.error("Error loading regions", err); }
     };
 
     fetchCategories();
@@ -110,18 +94,17 @@ export default function Opportunities() {
   }
 
   if (opportunities.length === 0) {
-  return (
-    <>
-      <Navbar />
-      <div className="no-opportunities-message">
-        <p>No opportunities found.</p>
-      </div>
-    </>
-  );
-}
+    return (
+      <>
+        <Navbar />
+        <div className={styles['no-opportunities-message']}>
+          <p>No opportunities found.</p>
+        </div>
+      </>
+    );
+  }
 
-
-   const filteredOpportunities = opportunities
+  const filteredOpportunities = opportunities
     .filter((op) => (categoryFilter ? op.category === categoryFilter : true))
     .filter((op) => (regionFilter ? op.region === regionFilter : true))
     .filter((op) => (dateFromFilter ? new Date(op.start_date) >= new Date(dateFromFilter) : true))
@@ -130,96 +113,74 @@ export default function Opportunities() {
   return (
     <>
       <Navbar />
-      <div className='opportunities-container'>
-      <h1>Opportunities</h1>
+      <div className={styles['opportunities-container']}>
+        <h1>Opportunities</h1>
 
-<div className="filters">
-  <div className="group-left">
-    <select
-      value={categoryFilter}
-      onChange={(e) => setCategoryFilter(e.target.value)}
-      aria-label="Filter by category"
-    >
-      <option value="">All Categories</option>
-      {categories.map((catObj, idx) => (
-        <option key={catObj.id ?? catObj.category ?? idx} value={catObj.category ?? catObj.name ?? ""}>
-          {catObj.category ?? catObj.name ?? "Unknown"}
-        </option>
-      ))}
-    </select>
+        <div className={styles.filters}>
+          <div className={styles['group-left']}>
+            <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} aria-label="Filter by category">
+              <option value="">All Categories</option>
+              {categories.map((catObj, idx) => (
+                <option key={catObj.id ?? catObj.category ?? idx} value={catObj.category ?? catObj.name ?? ""}>
+                  {catObj.category ?? catObj.name ?? "Unknown"}
+                </option>
+              ))}
+            </select>
 
-    <select
-      value={regionFilter}
-      onChange={(e) => setRegionFilter(e.target.value)}
-      aria-label="Filter by region"
-    >
-      <option value="">All Regions</option>
-      {regions.map((regObj, idx) => (
-        <option key={regObj.id ?? regObj.region ?? idx} value={regObj.region ?? regObj.name ?? ""}>
-          {regObj.region ?? regObj.name ?? "Unknown"}
-        </option>
-      ))}
-    </select>
-  </div>
+            <select value={regionFilter} onChange={(e) => setRegionFilter(e.target.value)} aria-label="Filter by region">
+              <option value="">All Regions</option>
+              {regions.map((regObj, idx) => (
+                <option key={regObj.id ?? regObj.region ?? idx} value={regObj.region ?? regObj.name ?? ""}>
+                  {regObj.region ?? regObj.name ?? "Unknown"}
+                </option>
+              ))}
+            </select>
+          </div>
 
-  <div className="group-right">
-    <div className="date-filter" aria-hidden={false}>
-      <label>
-        <span className="date-label">Start</span>
-        <input
-          type="date"
-          value={dateFromFilter}
-          onChange={(e) => setDateFromFilter(e.target.value)}
-          aria-label="Start date"
-        />
-      </label>
-
-      <label>
-        <span className="date-label">End</span>
-        <input
-          type="date"
-          value={dateToFilter}
-          onChange={(e) => setDateToFilter(e.target.value)}
-          aria-label="End date"
-        />
-      </label>
-    </div>
-
-    <button className="reset-btn" onClick={resetFilters} aria-label="Reset filters">
-      <i className="bi bi-arrow-counterclockwise" style={{ marginRight: "6px" }}></i>
-      Reset
-    </button>
-  </div>
-</div>
-
-
-       {/* Filtered opportunities */}
-        <div className="card-grid">
-          {filteredOpportunities.length === 0 ? (
-        <div className="empty-state-card">
-          <div className="empty-icon"></div>
-          <h3>No opportunities found</h3>
-          <p>Try adjusting your filters or reset to see all available opportunities.</p>
+          <div className={styles['group-right']}>
+            <div className={styles['date-filter']}>
+              <label>
+                <span className={styles['date-label']}>Start</span>
+                <input type="date" value={dateFromFilter} onChange={(e) => setDateFromFilter(e.target.value)} />
+              </label>
+              <label>
+                <span className={styles['date-label']}>End</span>
+                <input type="date" value={dateToFilter} onChange={(e) => setDateToFilter(e.target.value)} />
+              </label>
+            </div>
+            <button className={styles['reset-btn']} onClick={resetFilters}>
+              <i className="bi bi-arrow-counterclockwise" style={{ marginRight: "6px" }}></i>
+              Reset
+            </button>
+          </div>
         </div>
-)  : (
+
+        <div className={styles['card-grid']}>
+          {filteredOpportunities.length === 0 ? (
+            <div className={styles['empty-state-card']}>
+              <div className={styles['empty-icon']}></div>
+              <h3>No opportunities found</h3>
+              <p>Try adjusting your filters or reset to see all available opportunities.</p>
+            </div>
+          ) : (
             filteredOpportunities.map((op) => (
-              <div className="event-card" key={op.event_id}>
-                <div className="card-image">
+              <div className={styles['event-card']} key={op.event_id}>
+                <div className={styles['card-image']}>
                   {op.image_url && <img src={op.image_url} alt={op.title} />}
-                  <span className={`status-badge ${op.status}`}>{op.status}</span>
+                  <span className={`${styles['status-badge']} ${styles[op.status]}`}>{op.status}</span>
                 </div>
 
-                <div className="card-content">
-                  <h2 className="event-title">{op.title}</h2>
+                <div className={styles['card-content']}>
+                  <h2 className={styles['event-title']}>{op.title}</h2>
                   <p>{op.description}</p>
-                  <div className="card-info">
+                  <div className={styles['card-info']}>
                     <p>
                       <i className="bi bi-geo-alt-fill" style={{ marginRight: "5px" }}></i>
-                      <span className="info-text">{op.location || "N/A"}</span>
+                      <span className={styles['info-text']}>{op.location || "N/A"}</span>
                     </p>
                     <p>
                       <i className="bi bi-calendar-event" style={{ marginRight: "5px" }}></i>
-                      <span className="info-text">
+                      <span className={styles['info-text']}>
                         {formatDate(op.start_date)} - {formatTime(op.start_time)} - {formatTime(op.end_time)}
                       </span>
                     </p>
@@ -230,11 +191,11 @@ export default function Opportunities() {
                   </div>
                 </div>
 
-                <hr className="card-divider" />
+                <hr className={styles['card-divider']} />
 
-                <div className="card-footer">
-                  <span className="category-tag">{op.category ?? "Uncategorized"}</span>
-                  <button className="signup-btn">Sign Up</button>
+                <div className={styles['card-footer']}>
+                  <span className={styles['category-tag']}>{op.category ?? "Uncategorized"}</span>
+                  <button className={styles['signup-btn']}>Sign Up</button>
                 </div>
               </div>
             ))
