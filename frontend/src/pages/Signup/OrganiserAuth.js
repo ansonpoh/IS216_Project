@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useAuth } from "../contexts/AuthProvider";
+import { useAuth } from "../../contexts/AuthProvider";
 import { useNavigate } from "react-router-dom";
-import "../styles/Signup.css";
-import Navbar from "./Navbar";
-import { supabase } from "../config/supabaseClient";
+import "../../styles/Signup.css";
+import Navbar from "../../components/Navbar";
+import { supabase } from "../../config/supabaseClient";
 
 
 export default function LoginSignup() {

@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import Navbar from "./Navbar";
-import { AuthProvider, useAuth } from "../contexts/AuthProvider"; // optional if you guard by role
+import Navbar from "../../components/Navbar";
+import { AuthProvider, useAuth } from "../../contexts/AuthProvider"; // optional if you guard by role
 
 export default function OrganiserDashboard() {
   const nav = useNavigate();

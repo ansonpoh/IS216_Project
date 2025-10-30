@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "./volunteerDashboard.css";
+import "../../styles/volunteerDashboard.css";
 import { useNavigate } from "react-router-dom";
 
 const LS_KEY = "volunteer_dashboard_circular_carousel_v3";

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function VolunteerProfile() {
   const STORAGE_KEY = "volunteer_profile_v1";

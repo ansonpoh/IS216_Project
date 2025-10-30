@@ -4,7 +4,7 @@
 // UPDATE: regions array and category mapping
 
 import React, { useState, useEffect, useRef } from "react";
-import Navbar from "../Navbar.js";
+import Navbar from "../../components/Navbar.js";
 import MapContainer from "./components/MapContainer";
 import "./styles.css";
 

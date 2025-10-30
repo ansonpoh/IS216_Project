@@ -1,8 +1,8 @@
 import React, { useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "boxicons/css/boxicons.min.css";
-import Navbar from "./Navbar";
-import "./RoleSelect.css";
+import Navbar from "../../components/Navbar";
+import styles from "../../styles/RoleSelect.module.css";
 
 export default function RoleSelect() {
   const nav = useNavigate();
@@ -83,7 +83,7 @@ export default function RoleSelect() {
               {/* <button className="role-btn" onClick={ripple}>
                 Continue as Volunteer
               </button> */}
-              <button className="role-btn" onClick={(e) => { ripple(e); e.stopPropagation(); goVolunteer(); }}
+              <button className={styles['role-btn']} onClick={(e) => { ripple(e); e.stopPropagation(); goVolunteer(); }}
 >               Continue as Volunteer
             </button>
             </article>

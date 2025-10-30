@@ -1,7 +1,7 @@
 import React from "react";
 import "../styles/VolunteerConnect.css";
 import ChatWindow from "../components/ai_chat/ChatWindow";
-import Navbar from "./Navbar";
+import Navbar from "../components/Navbar";
 
 function VolunteerConnect() {
 
