@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import Navbar from "./Navbar";
-import { useAuth } from "../contexts/AuthProvider";
+import Navbar from "../../components/Navbar";
+import { useAuth } from "../../contexts/AuthProvider";
 
 export default function OrganiserCreateForm() {
   const nav = useNavigate();

@@ -1,6 +1,6 @@
 // NotificationsPage.jsx
 import React, { useMemo, useState } from "react";
-import Navbar from "./Navbar";
+import Navbar from "../../components/Navbar.js";
 
 const seed = [
   { id: "1", title: "Champion badge earned!", body: "You crossed 100 hours 🎉", ts: Date.now()-1000*60*12, read: false, type: "achievement" },

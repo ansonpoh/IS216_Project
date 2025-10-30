@@ -1,8 +1,8 @@
 import React, { useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "boxicons/css/boxicons.min.css";
-import Navbar from "./Navbar";
-import "./RoleSelect.css";
+import Navbar from "../../components/Navbar";
+import styles from "../../styles/RoleSelect.module.css";
 
 export default function RoleSelect() {
   const nav = useNavigate();
@@ -25,7 +25,7 @@ export default function RoleSelect() {
     r.style.width = r.style.height = `${size}px`;
     r.style.left = `${e.clientX - rect.left - size / 2}px`;
     r.style.top = `${e.clientY - rect.top - size / 2}px`;
-    r.className = "ripple";
+    r.className = styles.ripple;
     btn.appendChild(r);
     setTimeout(() => r.remove(), 600);
   };
@@ -33,23 +33,23 @@ export default function RoleSelect() {
   return (
     <>
       <Navbar />
-      <main className="role-bg">
-        <div className="orb orb-1" />
-        <div className="orb orb-2" />
-        <div className="orb orb-3" />
+      <main className={styles['role-bg']}>
+        <div className={styles.orb + " " + styles['orb-1']} />
+        <div className={styles.orb + " " + styles['orb-2']} />
+        <div className={styles.orb + " " + styles['orb-3']} />
 
-        <section ref={gateRef} className="role-gate container">
-          <header className="role-hero">
+        <section ref={gateRef} className={styles['role-gate'] + " container"}>
+          <header className={styles['role-hero']}>
             <h1 className="fade-up">Join the Movement ✨</h1>
             <p className="fade-up" style={{ animationDelay: "100ms" }}>
               Choose your role to get a tailored experience.
             </p>
           </header>
 
-          <div className="role-grid two-col">
+          <div className={`${styles['role-grid']} ${styles['two-col']}`}>
             {/* LEFT: Organiser */}
             <article
-              className="role-card organiser fade-up"
+              className={`${styles['role-card']} ${styles.organiser} fade-up`}
               style={{ animationDelay: "200ms" }}
               onClick={goOrganiser}
             >
@@ -61,14 +61,17 @@ export default function RoleSelect() {
                 <li><i className="bx bx-check"></i> Attendance tools</li>
                 <li><i className="bx bx-check"></i> Analytics overview</li>
               </ul>
-              <button className="role-btn alt" onClick={ripple}>
+              <button
+                className={`${styles['role-btn']} ${styles.alt}`}
+                onClick={(e) => { ripple(e); e.stopPropagation(); goOrganiser(); }}
+              >
                 Continue as Organiser
               </button>
             </article>
 
             {/* RIGHT: Volunteer */}
             <article
-              className="role-card volunteer fade-up"
+              className={`${styles['role-card']} ${styles.volunteer} fade-up`}
               style={{ animationDelay: "300ms" }}
               onClick={goVolunteer}
             >
@@ -80,12 +83,12 @@ export default function RoleSelect() {
                 <li><i className="bx bx-check"></i> Calendar sync</li>
                 <li><i className="bx bx-check"></i> Impact logbook</li>
               </ul>
-              {/* <button className="role-btn" onClick={ripple}>
+              <button
+                className={styles['role-btn']}
+                onClick={(e) => { ripple(e); e.stopPropagation(); goVolunteer(); }}
+              >
                 Continue as Volunteer
-              </button> */}
-              <button className="role-btn" onClick={(e) => { ripple(e); e.stopPropagation(); goVolunteer(); }}
->               Continue as Volunteer
-            </button>
+              </button>
             </article>
           </div>
         </section>

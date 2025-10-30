@@ -381,7 +381,7 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters }, r
             ` : ''}
             ${item.category ? `
               <div style="font-size: 11px; color: #0066cc; margin-bottom: 10px; display: inline-block; background: #e6f2ff; padding: 5px 12px; border-radius: 14px; font-weight: 600;">
-                📁 ${capitalizeCategory(item.category)}
+                🗃️ ${capitalizeCategory(item.category)}
               </div>
             ` : ''}
             <div style="font-size: 13px; color: #555; margin-top: 10px; display: flex; align-items: flex-start; padding: 8px 0; border-top: 1px solid #eee;">

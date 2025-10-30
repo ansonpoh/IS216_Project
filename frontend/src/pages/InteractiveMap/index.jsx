@@ -1,12 +1,7 @@
-// Updated Regional Filters and Recategorization for Singapore
-
-// FILE: frontend/src/pages/interactive-map-dashboard/index.jsx
-// UPDATE: regions array and category mapping
-
-import React, { useState, useEffect, useRef } from "react";
-import Navbar from "../Navbar.js";
-import MapContainer from "./components/MapContainer";
-import "./styles.css";
+import React, { useState, useRef } from "react";
+import Navbar from "../../components/Navbar.js";
+import MapContainer from "./MapContainer.jsx";
+import styles from "../../styles/MapStyles.module.css"
 
 const InteractiveMapDashboard = () => {
   const [activeFilters, setActiveFilters] = useState([]);
@@ -20,8 +15,6 @@ const InteractiveMapDashboard = () => {
     { name: "East", icon: "bi-arrow-right" },
     { name: "West", icon: "bi-arrow-left" }
   ];
-
-
 
   // CATEGORIES
   const categories = [
@@ -94,7 +87,7 @@ const InteractiveMapDashboard = () => {
                   {regions.map((region) => (
                     <button
                       key={region.name}
-                      className={`btn btn-sm d-flex align-items-center btn-region-${region.name.toLowerCase().replace('-', '-')} ${
+                      className={`btn btn-sm d-flex align-items-center ${styles[`btn-region-${region.name.toLowerCase().replace('-', '-')}`]} ${
                         activeFilters.includes(region.name) ? 'active' : ''
                       }`}
                       onClick={() => toggleFilter(region.name)}

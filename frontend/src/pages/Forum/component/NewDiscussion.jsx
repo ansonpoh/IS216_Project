@@ -1,9 +1,8 @@
 // src/components/NewDiscussion.jsx
 import React, { useState, useRef } from "react";
-import "../../../styles/Community.css";
+import styles from "../../../styles/Community.module.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
 
 // validation constants
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5MB
@@ -18,6 +17,7 @@ export default function NewDiscussion({ initialBoard = "" }) {
   const [status, setStatus] = useState("");
 
   const auth = JSON.parse(sessionStorage.getItem("auth"));
+
   const [formData, setFormData] = useState({
     supabase_id: auth.id,
     subject: "",
@@ -189,13 +189,13 @@ export default function NewDiscussion({ initialBoard = "" }) {
   }
 
   return (
-    <div className="container py-5">
+    <div className={`${styles['container']} py-5`}>
       <h1 className="display-6 mb-3">New Discussion</h1>
 
       <nav className="small text-muted mb-4">Welcome to the Community &nbsp;/&nbsp; New Discussion</nav>
 
-      <div className="card border-0">
-        <div className="card-body">
+      <div className={`${styles['card']} border-0`}>
+        <div className={`${styles['card-body']}`}>
           <p className="text-muted small mb-3">Remember that posts are subject to the Community Policy.</p>
 
           <form onSubmit={handlePost}>
@@ -206,13 +206,12 @@ export default function NewDiscussion({ initialBoard = "" }) {
                 id="subjectInput"
                 name="subject"
                 type="text"
-                className={`form-control ${errors.subject ? "is-invalid" : ""} subject-highlight`}
+                className={`form-control ${errors.subject ? "is-invalid" : ""} ${styles['subject-highlight']}`}
                 placeholder="Enter a subject"
                 value={formData.subject}
                 onChange={handleChange}
                 autoComplete="off"
                 required
-
               />
               {errors.subject && <div className="invalid-feedback">{errors.subject}</div>}
             </div>
@@ -250,7 +249,7 @@ export default function NewDiscussion({ initialBoard = "" }) {
                 <small className="text-muted">Attach an image (optional) — drag & drop, paste, or choose file</small>
 
                 <div>
-                  <label className="btn btn-sm btn-outline-secondary mb-0">
+                  <label className={`btn ${styles['btn-sm']} btn-outline-secondary mb-0`}>
                     Choose file
                     <input
                       ref={fileInputRef}
@@ -264,7 +263,7 @@ export default function NewDiscussion({ initialBoard = "" }) {
                   {formData.image_file && (
                     <button
                       type="button"
-                      className="btn btn-sm btn-outline-danger ms-2"
+                      className={`btn ${styles['btn-sm']} btn-outline-danger ms-2`}
                       onClick={clearImage}
                       disabled={uploading || submitting}
                     >

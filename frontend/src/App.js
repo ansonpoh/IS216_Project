@@ -1,9 +1,9 @@
 import './App.css';
 import VolunteerConnect from './pages/VolunteerConnect';
-import InteractiveMapDashboard from './pages/interactive-map-dashboard';
-import AboutPage from './pages/AboutPage';
-import ProfilePage from './pages/ProfilePage';
-import NotificationsPage from './pages/NotificationPage';
+import InteractiveMapDashboard from './pages/InteractiveMap/index.jsx';
+// import AboutPage from './pages/AboutPage';
+import ProfilePage from './pages/Volunteer/ProfilePage.js';
+import NotificationsPage from './pages/Volunteer/NotificationPage.js';
 import {Routes, Route} from "react-router-dom";
 import { AuthProvider } from './contexts/AuthProvider';
 import Opportunities from './pages/Opportunities';
@@ -11,13 +11,13 @@ import Community from './pages/Forum/ForumPage';
 import NewDiscussion from './pages/Forum/component/NewDiscussion'; 
 // changed code
 // import LoginSignup from './pages/SignupAlt';
-import RoleSelect from './pages/RoleSelect';
-import OrganiserAuth from './pages/OrganiserAuth';
-import VolunteerAuth from './pages/VolunteerAuth';
-import OrganiserDashboard from './pages/OrganiserDashboard';
-import OrganiserCreateForm from "./pages/OrganiserCreateForm"
-import VolunteerProfile from "./pages/VolunteerProfile.jsx";
-import VolunteerDashboard from "./pages/VolunteerDashboard.jsx";
+import RoleSelect from './pages/Signup/RoleSelect.jsx';
+import OrganiserAuth from './pages/Signup/OrganiserAuth.js';
+import VolunteerAuth from './pages/Signup/VolunteerAuth.js';
+import OrganiserDashboard from './pages/Organisers/OrganiserDashboard.jsx';
+import OrganiserCreateForm from "./pages/Organisers/OrganiserCreateForm.jsx"
+import VolunteerProfile from "./pages/Volunteer/VolunteerProfile.jsx";
+import VolunteerDashboard from "./pages/Volunteer/VolunteerDashboard.jsx";
 
 
 
@@ -30,7 +30,7 @@ function App() {
         <Route path='/' element={<VolunteerConnect />}/>
         <Route path='/maps' element={<InteractiveMapDashboard />}/>
         {/* <Route path='/signup' element={<LoginSignup/>}/> */}
-        <Route path='/about' element={<AboutPage/>} />
+        {/* <Route path='/about' element={<AboutPage/>} /> */}
         {/* <Route path='/profile' element={<ProfilePage/>} /> */}
         <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/opportunities" element={<Opportunities/>} />
