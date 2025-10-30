@@ -2,10 +2,13 @@ import React, { useState, useRef } from "react";
 import Navbar from "../../components/Navbar.js";
 import MapContainer from "./MapContainer.jsx";
 import styles from "../../styles/MapStyles.module.css"
+import { useLocation } from "react-router-dom";
 
 const InteractiveMapDashboard = () => {
   const [activeFilters, setActiveFilters] = useState([]);
   const mapRef = useRef(null);
+  const location = useLocation();
+  const recommendedEvents = location.state?.events || [];
 
   // UPDATED REGIONS - Singapore regions
   const regions = [
@@ -130,6 +133,7 @@ const InteractiveMapDashboard = () => {
           ref={mapRef}
           activeFilters={activeFilters}
           onResetFilters={handleResetFilters}
+          recommendedEvents={recommendedEvents}
         />
 
         {/* Current Location Button */}
