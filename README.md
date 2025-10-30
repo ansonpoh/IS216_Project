@@ -118,6 +118,12 @@ GOOGLE_MAPS_API_KEY=<your_google_maps_api_key>
 OPENAI_API_KEY=<your_openai_api_key>
 ```
 
+Create a `.env` file in the root/frontend directory with the following structure:
+```bash
+REACT_APP_SUPABASE_URL=<supabase_url>
+REACT_APP_SUPABASE_ANON_KEY=<supabase_anon_key>
+```
+
 > Never commit the `.env` file to your repository.  
 > Instead, include a `.env.example` file with placeholder values.
 
