@@ -1,0 +1,165 @@
+/* volunteerDashboard.css
+   Light-blue theme with subtle motion
+   ---------------------------------- */
+
+:root{
+  --vd-bg: #f7fbff;
+  --vd-surface: #ffffff;
+  --vd-surface-2: #f4f8ff;
+  --vd-text: #1f2a3b;
+  --vd-muted: #6c7a90;
+  --vd-blue: #4aa8ff;
+  --vd-blue-2: #44b2ff;
+  --vd-blue-3: #0d6efd;  /* bootstrap primary */
+  --vd-cyan: #49e2ff;
+  --vd-glow: rgba(13, 110, 253, .18);
+  --vd-shadow: 0 10px 24px rgba(13,110,253,.10), 0 3px 8px rgba(0,0,0,.05);
+  --vd-shadow-strong: 0 18px 40px rgba(13,110,253,.18);
+}
+
+/* Page background + gentle entrance */
+.vdash {
+  animation: vdash-fade-in .45s ease both;
+}
+@keyframes vdash-fade-in {
+  from { opacity: 0; transform: translateY(6px) }
+  to   { opacity: 1; transform: translateY(0) }
+}
+
+/* Cards get glassy light-blue hover */
+.vd-card {
+  background: linear-gradient(180deg, var(--vd-surface), var(--vd-surface-2));
+  box-shadow: var(--vd-shadow);
+  transition: transform .25s ease, box-shadow .25s ease, background .25s ease;
+  border: 1px solid rgba(13,110,253,.06);
+}
+.vd-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--vd-shadow-strong);
+}
+
+/* Meter wrapper: soft floating glow */
+.vd-meter {
+  filter: drop-shadow(0 6px 16px var(--vd-glow));
+  transition: transform .25s ease;
+}
+.vd-meter:hover {
+  transform: translateY(-2px);
+}
+
+/* Carousel stage: soft gradient backdrop + edges fade */
+.vd-carousel {
+  background:
+    radial-gradient(120% 80% at 50% 0%, #ffffff 0%, #f5faff 60%, #eef6ff 100%);
+  border-radius: 16px;
+  border: 1px solid rgba(13,110,253,.06);
+  box-shadow: var(--vd-shadow);
+  position: relative;
+}
+.vd-carousel::before,
+.vd-carousel::after{
+  content:"";
+  position:absolute;
+  top:0; bottom:0;
+  width:48px;
+  pointer-events:none;
+  z-index:4;
+}
+.vd-carousel::before{ left:0; background:linear-gradient(90deg, #fff, rgba(255,255,255,0)); }
+.vd-carousel::after{ right:0; background:linear-gradient(-90deg, #fff, rgba(255,255,255,0)); }
+
+/* Slide card styling */
+.vd-slide{
+  background: linear-gradient(180deg, #ffffff 0%, #f7faff 100%);
+  border: 1px solid rgba(13,110,253,.08);
+  box-shadow: var(--vd-shadow);
+  transition: transform 350ms ease, opacity 300ms ease, box-shadow 300ms ease, outline-color .2s;
+  outline: 0 solid transparent;
+}
+.vd-slide:hover{
+  box-shadow: var(--vd-shadow-strong);
+}
+.vd-slide:focus-within{
+  outline: 2px solid rgba(68,178,255,.65);
+}
+
+/* Carousel arrows: glass buttons with ripple */
+.vd-nav{
+  width: 36px; height: 36px; border-radius: 999px;
+  backdrop-filter: blur(6px);
+  background: rgba(255,255,255,.85);
+  border: 1px solid rgba(13,110,253,.15);
+  color: var(--vd-blue-3);
+  transition: transform .12s ease, box-shadow .2s ease, background .2s ease;
+}
+.vd-nav:hover{ box-shadow: 0 6px 18px rgba(13,110,253,.20); background: rgba(255,255,255,.95); }
+.vd-nav:active{ transform: translateY(1px) scale(.98); }
+
+/* Dots (pagers) */
+.vd-dot{
+  width: 9px; height: 9px; margin: 4px; border-radius: 999px !important;
+  background: #cfe7ff;
+  transition: background .25s ease, transform .25s ease, box-shadow .25s ease;
+}
+.vd-dot:hover{ transform: translateY(-1px); box-shadow: 0 4px 10px rgba(13,110,253,.20); }
+.vd-dot[aria-current="true"],
+.vd-dot.active{
+  background: var(--vd-blue);
+  box-shadow: 0 0 0 4px rgba(74,168,255,.18);
+}
+
+/* Buttons (global micro interaction) */
+.btn { transition: transform .08s ease, box-shadow .18s ease; }
+.btn:active{ transform: translateY(1px) scale(.98); }
+.btn-outline-primary, .btn-outline-secondary{
+  background: linear-gradient(180deg, #ffffff, #f9fbff);
+}
+
+/* Subtle “shimmer” accent you can apply with class .vd-shimmer */
+.vd-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.vd-shimmer::after{
+  content:"";
+  position:absolute; inset:0;
+  background: linear-gradient(110deg, transparent 45%, rgba(255,255,255,.6) 50%, transparent 55%);
+  transform: translateX(-120%);
+  animation: vd-shine 2.2s ease-in-out infinite;
+}
+@keyframes vd-shine {
+  to { transform: translateX(120%); }
+}
+
+/* Typographic polish */
+.card-title { color: var(--vd-text); }
+.text-muted { color: var(--vd-muted) !important; }
+
+/* Optional: animate section entrances */
+.vdash .row.g-3 > [class*="col-"] {
+  animation: vd-rise .45s ease both;
+}
+.vdash .row.g-3 > [class*="col-"]:nth-child(1){ animation-delay: .02s }
+.vdash .row.g-3 > [class*="col-"]:nth-child(2){ animation-delay: .06s }
+.vdash .row.g-3 > [class*="col-"]:nth-child(3){ animation-delay: .10s }
+@keyframes vd-rise {
+  from { opacity: 0; transform: translateY(8px) }
+  to   { opacity: 1; transform: translateY(0) }
+}
+
+/* Back Button */
+.vd-back {
+  transition: all 0.2s ease;
+  border-radius: 20px;
+  background: linear-gradient(180deg, #f8fbff, #e8f3ff);
+  color: #007bff;
+  border: 1px solid rgba(0, 123, 255, 0.3);
+}
+.vd-back:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(74, 168, 255, 0.3);
+  background: linear-gradient(180deg, #eaf6ff, #d9edff);
+}
+.vd-back:active {
+  transform: translateY(1px);
+}

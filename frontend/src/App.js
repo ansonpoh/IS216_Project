@@ -16,6 +16,9 @@ import OrganiserAuth from './pages/OrganiserAuth';
 import VolunteerAuth from './pages/VolunteerAuth';
 import OrganiserDashboard from './pages/OrganiserDashboard';
 import OrganiserCreateForm from "./pages/OrganiserCreateForm"
+import VolunteerProfile from "./pages/VolunteerProfile.jsx";
+import VolunteerDashboard from "./pages/VolunteerDashboard.jsx";
+
 
 
 function App() {
@@ -28,7 +31,7 @@ function App() {
         <Route path='/maps' element={<InteractiveMapDashboard />}/>
         {/* <Route path='/signup' element={<LoginSignup/>}/> */}
         <Route path='/about' element={<AboutPage/>} />
-        <Route path='/profile' element={<ProfilePage/>} />
+        {/* <Route path='/profile' element={<ProfilePage/>} /> */}
         <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/opportunities" element={<Opportunities/>} />
         <Route path="/community" element={<Community />} />
@@ -38,6 +41,9 @@ function App() {
         <Route path="/volunteer/auth" element={<VolunteerAuth />} />
         <Route path="/organiser/dashboard" element={<OrganiserDashboard />} />
         <Route path="/organiser/opportunities/new" element={<OrganiserCreateForm/>} />
+        <Route path='/VolunteerProfile' element={<VolunteerProfile/>} />
+        <Route path="/volunteer/dashboard" element={<VolunteerDashboard />} />
+
 
 
       </Routes>

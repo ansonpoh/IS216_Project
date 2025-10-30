@@ -87,6 +87,17 @@ function Navbar() {
               </a>
             </li>
           )}
+          {/* Volunteer-only link */}
+        {auth?.role === "volunteer" && (
+          <li className="nav-item">
+            <a
+              className={`navbar_item nav-link fw-semibold ${isActive("/volunteer/dashboard") ? "active" : ""}`}
+              href="/volunteer/dashboard"
+            >
+              Dashboard
+            </a>
+          </li>
+        )}
         </ul>
       </div>
 
@@ -100,17 +111,11 @@ function Navbar() {
               onClick={() => navigate("/notifications")}
               style={{ cursor: "pointer" }}
             />
-            <div className="avatar ms-2 rounded-circle overflow-hidden d-flex align-items-center justify-content-center">
-              {image ? (
-                <img
-                  src={image}
-                  alt="User"
-                  className="avatar-img"
-                />
-              ) : (
-                <i className="bi bi-person"></i>
-              )}
-            </div>
+            <i
+              className="bi bi-person-circle fs-5"
+              onClick={() => navigate("/profile")}
+              style={{ cursor: "pointer" }}
+            />
           </>
         )}
 
