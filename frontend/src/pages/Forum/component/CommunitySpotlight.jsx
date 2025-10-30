@@ -11,58 +11,55 @@ export default function CommunitySpotlight({ slides = [], interval = 4000 }) {
   const id = "communityCarousel-" + Math.random().toString(36).slice(2, 9);
 
   return (
-    <div className="card mb-3 h-100">
-      <div className="card-body d-flex flex-column">
-        <h6 className="mb-2 text-center fs-2">Community Spotlight</h6>
-        <p className="small text-muted text-center mb-3">
-          Share the joy! Highlight memorable moments from your volunteering experiences.
-        </p>
-        <div className="mb-3">
-          <div
-            id={id}
-            className="carousel slide"
-            data-bs-ride={slides.length > 1 ? "carousel" : undefined}
-            data-bs-interval={interval}
-          >
-            <div className="carousel-inner">
-              {slides.length === 0 && (
-                <div className="carousel-item active">
-                  <div className="d-flex align-items-center justify-content-center" style={{ height: "300px", background: "#f0f0f0" }}>
-                    <small className="text-muted">No spotlight images yet</small>
-                  </div>
-                </div>
-              )}
-              {slides.map((s, i) => (
-                <div key={i} className={`carousel-item ${i === 0 ? "active" : ""}`}>
-                  <img
-                    src={s.image}
-                    className="d-block w-100"
-                    alt={s.alt || `slide-${i + 1}`}
-                    style={{ height: "300px", objectFit: "cover" }}
-                  />
-                  {s.caption && (
-                    <div className="carousel-caption d-none d-md-block">
-                      <small>{s.caption}</small>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-            {slides.length > 1 && (
-              <>
-                <button className="carousel-control-prev" type="button" data-bs-target={`#${id}`} data-bs-slide="prev">
-                  <span className="carousel-control-prev-icon" aria-hidden="true" />
-                  <span className="visually-hidden">Previous</span>
-                </button>
-                <button className="carousel-control-next" type="button" data-bs-target={`#${id}`} data-bs-slide="next">
-                  <span className="carousel-control-next-icon" aria-hidden="true" />
-                  <span className="visually-hidden">Next</span>
-                </button>
-              </>
-            )}
-          </div>
-        </div>
+    <div id="communitySpotlight" className="carousel slide" data-bs-ride="carousel">
+      {/* Carousel indicators */}
+      <div className="carousel-indicators">
+        {slides.map((_, index) => (
+          <button
+            key={index}
+            type="button"
+            data-bs-target="#communitySpotlight"
+            data-bs-slide-to={index}
+            className={index === 0 ? "active" : ""}
+            aria-current={index === 0 ? "true" : "false"}
+            aria-label={`Slide ${index + 1}`}
+          />
+        ))}
       </div>
+
+      {/* Carousel slides */}
+      <div className="carousel-inner rounded-4 overflow-hidden">
+        {slides.map((slide, index) => (
+          <div key={index} className={`carousel-item ${index === 0 ? "active" : ""}`}>
+            <img
+              src={slide.image}
+              className="d-block w-100"
+              alt={slide.alt}
+              style={{ height: "400px", objectFit: "cover" }}
+            />
+            {/* Caption overlay */}
+            <div className="carousel-caption d-none d-md-block" 
+                 style={{ 
+                   background: 'rgba(0,0,0,0.5)', 
+                   borderRadius: '8px',
+                   padding: '15px'
+                 }}>
+              <h5>{slide.caption}</h5>
+              {slide.author && <p className="mb-0">By {slide.author}</p>}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Navigation controls */}
+      <button className="carousel-control-prev" type="button" data-bs-target="#communitySpotlight" data-bs-slide="prev">
+        <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span className="visually-hidden">Previous</span>
+      </button>
+      <button className="carousel-control-next" type="button" data-bs-target="#communitySpotlight" data-bs-slide="next">
+        <span className="carousel-control-next-icon" aria-hidden="true"></span>
+        <span className="visually-hidden">Next</span>
+      </button>
     </div>
   );
 }

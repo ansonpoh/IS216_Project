@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 export default function FeaturedCard({
   feedback_id,
   user_id,
+  
   subject = "",
   body = "",
   created_at = "",

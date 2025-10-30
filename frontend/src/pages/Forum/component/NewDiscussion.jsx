@@ -19,7 +19,7 @@ export default function NewDiscussion({ initialBoard = "" }) {
   const auth = JSON.parse(sessionStorage.getItem("auth"));
 
   const [formData, setFormData] = useState({
-    user_id: auth.id,
+    supabase_id: auth.id,
     subject: "",
     body: "",
     image_file: null,
@@ -113,6 +113,7 @@ export default function NewDiscussion({ initialBoard = "" }) {
 
       // Debug log
       console.log("Sending data:", {
+        supabase_id: auth.id,
         user_id: auth.id,
         subject: formData.subject,
         body: formData.body,
@@ -120,6 +121,7 @@ export default function NewDiscussion({ initialBoard = "" }) {
       });
 
       const fd = new FormData();
+      fd.append("supabase_id", auth.id);
       fd.append("user_id", auth.id);
       fd.append("subject", formData.subject.trim());
       fd.append("body", formData.body.trim());
