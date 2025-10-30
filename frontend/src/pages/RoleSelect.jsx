@@ -2,7 +2,8 @@ import React, { useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "boxicons/css/boxicons.min.css";
 import Navbar from "./Navbar";
-import "./RoleSelect.css";
+import "../styles/RoleSelect.css";
+
 
 export default function RoleSelect() {
   const nav = useNavigate();

@@ -1,0 +1,136 @@
+:root {
+  --bg1: #0f172a;
+  --bg2: #111827;
+  --brand: #5b8cff;
+  --brand2: #22c55e;
+  --txt: #e5e7eb;
+  --muted: #a7b0c0;
+}
+
+/* ==== Background & Floating Blobs ==== */
+.role-bg {
+  position: relative;
+  min-height: 100vh;
+  background: radial-gradient(1200px 800px at 10% -10%, #1f2937 0%, transparent 50%),
+              radial-gradient(900px 600px at 110% 10%, #0ea5e9 0%, transparent 40%),
+              linear-gradient(160deg, var(--bg1), var(--bg2));
+  overflow: hidden;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.45;
+  animation: float 12s ease-in-out infinite;
+  z-index: 0;
+  pointer-events: none;
+}
+.orb-1 { width: 280px; height: 280px; background: #60a5fa; top: 12%; left: 6%; }
+.orb-2 { width: 360px; height: 360px; background: #22c55e; bottom: 10%; right: 8%; animation-delay: .8s; }
+.orb-3 { width: 220px; height: 220px; background: #a78bfa; top: 55%; left: 50%; animation-delay: 1.4s; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-18px); }
+}
+
+/* ==== Layout Containers ==== */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 3rem 1.25rem;
+  position: relative;
+  z-index: 2;
+}
+
+.role-hero {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: var(--txt);
+  position: relative;
+  z-index: 3;
+}
+.role-hero h1 {
+  font-weight: 800;
+  font-size: 2.2rem;
+  color: var(--txt);
+}
+.role-hero p {
+  color: var(--muted);
+  font-size: 1.1rem;
+}
+
+.role-grid.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  position: relative;
+  z-index: 3;
+}
+
+/* ==== Card Design ==== */
+.role-card {
+  position: relative;
+  color: var(--txt);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  padding: 2rem;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  cursor: pointer;
+  z-index: 3;
+}
+.role-card:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.role-card h2 {
+  font-weight: 700;
+  margin-bottom: .4rem;
+  color: var(--txt);
+}
+.role-card p {
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+/* ==== Buttons ==== */
+.role-btn {
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  padding: .75rem 1rem;
+  font-weight: 700;
+  color: #0b1220;
+  background: linear-gradient(180deg, #9cc1ff, #5b8cff);
+  box-shadow: 0 8px 22px rgba(91, 140, 255, .35);
+  transition: transform .12s, box-shadow .16s;
+}
+.role-btn:hover {
+  transform: translateY(-2px);
+}
+.role-btn.alt {
+  background: linear-gradient(180deg, #6ee7b7, #22c55e);
+  box-shadow: 0 8px 22px rgba(34, 197, 94, .35);
+}
+
+/* ==== Animation Effects ==== */
+.fade-up {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeUp .5s ease forwards;
+}
+@keyframes fadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==== Mobile ==== */
+@media (max-width: 900px) {
+  .role-grid.two-col { grid-template-columns: 1fr; }
+}
