@@ -1,16 +1,12 @@
 import './App.css';
 import VolunteerConnect from './pages/VolunteerConnect';
 import InteractiveMapDashboard from './pages/InteractiveMap/InteractiveMapDashboard.jsx';
-// import AboutPage from './pages/AboutPage';
-import ProfilePage from './pages/Volunteer/ProfilePage.js';
 import NotificationsPage from './pages/Volunteer/NotificationPage.js';
 import {Routes, Route} from "react-router-dom";
 import { AuthProvider } from './contexts/AuthProvider';
 import Opportunities from './pages/Opportunities';
 import Community from './pages/Forum/ForumPage';
 import NewDiscussion from './pages/Forum/component/NewDiscussion'; 
-// changed code
-// import LoginSignup from './pages/SignupAlt';
 import RoleSelect from './pages/Signup/RoleSelect.jsx';
 import OrganiserAuth from './pages/Signup/OrganiserAuth.js';
 import VolunteerAuth from './pages/Signup/VolunteerAuth.js';
