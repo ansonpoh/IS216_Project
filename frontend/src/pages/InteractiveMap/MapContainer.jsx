@@ -127,7 +127,7 @@ const getCategoryMarkerIcon = (category) => {
   };
 };
 
-const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, recommendedEvents }, ref) => {
+const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, recommendedEvents, onCurrentLocation }, ref) => {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markersRef = useRef([]);
@@ -560,7 +560,28 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
               elementType: 'labels',
               stylers: [{ visibility: 'off' }]
             }
-          ]
+          ],
+          // Enable all camera controls
+          zoomControl: true,
+          zoomControlOptions: {
+            position: window.google.maps.ControlPosition.TOP_RIGHT
+          },
+          mapTypeControl: true,
+          mapTypeControlOptions: {
+            style: window.google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+            position: window.google.maps.ControlPosition.TOP_LEFT
+          },
+          scaleControl: true,
+          streetViewControl: true,
+          streetViewControlOptions: {
+            position: window.google.maps.ControlPosition.RIGHT_BOTTOM
+          },
+          rotateControl: false,
+          tiltControl: false,
+          fullscreenControl: true,
+          fullscreenControlOptions: {
+            position: window.google.maps.ControlPosition.TOP_RIGHT
+          }
         });
 
         window.mapInstance = mapInstanceRef.current;
@@ -660,13 +681,43 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
             zIndex: 1000,
             boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
             backgroundColor: '#4891ffff',
-            border: '2px solid #0066ffff'
+            border: '2px solid #0066ffff',
+            height: '40px',
+            display: 'flex',
+            alignItems: 'center'
           }}
         >
           <i className="bi bi-x-circle me-1"></i>
           Reset Filters
         </button>
       )}
+
+      {/* Current Location Button */}
+      <button
+        onClick={onCurrentLocation}
+        className="btn position-absolute"
+        title="Center on my location"
+        style={{
+          top: '10px',
+          left: '192px',
+          zIndex: 1000,
+          backgroundColor: '#4891ffff',
+          border: '2px solid #0066ffff',
+          borderRadius: '2px',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          width: '40px',
+          height: '40px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'white',
+          padding: 0
+        }}
+        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#3a7de8'}
+        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#4891ffff'}
+      >
+        <i className="bi bi-compass" style={{ fontSize: '18px' }}></i>
+      </button>
 
       {loading && (
         <div

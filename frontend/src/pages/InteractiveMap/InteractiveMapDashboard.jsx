@@ -129,24 +129,13 @@ const InteractiveMapDashboard = () => {
         </div>
 
         {/* Map Container */}
-        <MapContainer 
+        <MapContainer
           ref={mapRef}
           activeFilters={activeFilters}
           onResetFilters={handleResetFilters}
           recommendedEvents={recommendedEvents}
+          onCurrentLocation={handleCurrentLocation}
         />
-
-        {/* Current Location Button */}
-        <div className="position-fixed bottom-0 end-0 m-5" style={{ zIndex: 10 }}>
-          <button
-            id="current-location"
-            className="btn btn-light rounded-circle shadow-lg p-3"
-            onClick={handleCurrentLocation}
-            title="Center on my location"
-          >
-            <i className="bi bi-compass"></i>
-          </button>
-        </div>
       </div>
     </div>
   );

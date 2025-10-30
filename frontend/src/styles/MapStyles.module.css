@@ -190,6 +190,9 @@
 /* Style Map Type Control (Map/Satellite buttons) */
 :global(.gm-style .gm-style-mtc) {
     margin-top: 0px !important;
+    margin-left: 2px !important;
+    margin-right: 2px !important;
+    margin-bottom: 0px !important;
 }
 
 :global(.gm-style .gm-style-mtc button) {
@@ -214,13 +217,15 @@
 
 /* Style Fullscreen Control */
 :global(.gm-style .gm-fullscreen-control) {
-    background-color: #4891ff !important;
-    border: 2px solid #0066ff !important;
+    background-color: #4891ffff !important;
+    border: 2px solid #0066ffff !important;
     border-radius: 2px !important;
-    box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 4px -1px !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
     width: 40px !important;
-    height: 32px !important;
-    margin: 10px 10px 0 0 !important;
+    height: 40px !important;
+    margin-top: 10px !important;
+    margin-right: 10px !important;
+    margin-bottom: 0px !important;
 }
 
 :global(.gm-style .gm-fullscreen-control:hover) {
@@ -232,17 +237,125 @@
 }
 
 /* Style Zoom Controls */
+:global(.gm-style .gm-bundled-control) {
+    top: 50px !important;
+    right: 40px !important;
+}
+
 :global(.gm-style .gm-bundled-control .gmnoprint) {
-    background-color: #4891ff !important;
-    border: 2px solid #0066ff !important;
+    background-color: #4891ffff !important;
+    border: 2px solid #0066ffff !important;
     border-radius: 2px !important;
-    box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 4px -1px !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+    margin-right: 0px !important;
+    width: 40px !important;
 }
 
 :global(.gm-style .gm-bundled-control .gmnoprint:hover) {
     background-color: #3a7de8 !important;
 }
 
-:global(.gm-style .gm-bundled-control button img) {
+/* Override white background on inner div */
+:global(.gm-style .gm-bundled-control .gmnoprint > div) {
+    background-color: transparent !important;
+}
+
+:global(.gm-style .gm-bundled-control button.gm-control-active) {
+    background-color: #4891ffff !important;
+    border: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 36px !important;
+    height: 40px !important;
+    padding: 0 !important;
+}
+
+:global(.gm-style .gm-bundled-control button.gm-control-active:hover) {
+    background-color: #3a7de8 !important;
+}
+
+:global(.gm-style .gm-bundled-control button.gm-control-active img) {
     filter: brightness(0) invert(1) !important;
+    opacity: 1 !important;
+    display: block !important;
+    width: 18px !important;
+    height: 18px !important;
+    margin: 0 auto !important;
+}
+
+/* Style Street View Pegman Control Container */
+:global(.gm-style .gm-svpc) {
+    margin-top: 20px !important;
+}
+
+/* Style Street View Pegman Control */
+:global(.gm-style button[draggable="true"]) {
+    background-color: #4891ffff !important;
+    border: 2px solid #0066ffff !important;
+    border-radius: 2px !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+    width: 40px !important;
+    height: 40px !important;
+    overflow: hidden !important;
+}
+
+:global(.gm-style button[draggable="true"]:hover) {
+    background-color: #3a7de8 !important;
+}
+
+:global(.gm-style button[draggable="true"] img:first-child) {
+    filter: brightness(0) invert(1) !important;
+    opacity: 1 !important;
+}
+
+:global(.gm-style button[draggable="true"] img:last-child) {
+    display: none !important;
+}
+
+/* Hide camera controls */
+:global(.gm-style button[aria-label="Map camera controls"]) {
+    display: none !important;
+}
+
+/* Style other gm-control-active buttons (if any) */
+:global(.gm-style .gm-control-active) {
+    background-color: #4891ffff !important;
+    border: 2px solid #0066ffff !important;
+    border-radius: 2px !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+    width: 40px !important;
+    height: 40px !important;
+    background-position: center !important;
+    background-size: 20px !important;
+}
+
+:global(.gm-style .gm-control-active:hover) {
+    background-color: #3a7de8 !important;
+}
+
+:global(.gm-style .gm-control-active img) {
+    filter: brightness(0) invert(1) !important;
+    opacity: 1 !important;
+    width: 20px !important;
+    height: 20px !important;
+}
+
+/* Additional selector for location button */
+:global(.gm-style button[title*="location" i]) {
+    background-color: #4891ffff !important;
+    border: 2px solid #0066ffff !important;
+    border-radius: 2px !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+    width: 40px !important;
+    height: 40px !important;
+}
+
+:global(.gm-style button[title*="location" i]:hover) {
+    background-color: #3a7de8 !important;
+}
+
+:global(.gm-style button[title*="location" i] img) {
+    filter: brightness(0) invert(1) !important;
+    opacity: 1 !important;
 }
