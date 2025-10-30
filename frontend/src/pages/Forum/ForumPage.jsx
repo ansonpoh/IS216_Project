@@ -5,13 +5,6 @@ import CommunitySpotlight from "./component/CommunitySpotlight";
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 
-
-const slides = [
-  { image: "https://picsum.photos/seed/1/800/480", caption: "Member review: Love this!", alt: "review 1" },
-  { image: "https://picsum.photos/seed/2/800/480", caption: "New product spotlight", alt: "spotlight 2" },
-  { image: "https://picsum.photos/seed/3/800/480", caption: "Community event highlights", alt: "event 3" },
-];
-
 const PostModal = ({ post, onClose, onLike }) => {
   if (!post) return null;
 
@@ -47,11 +40,19 @@ const PostModal = ({ post, onClose, onLike }) => {
                   {/* User info */}
                   <div className="d-flex align-items-center mb-3">
                     <div className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3"
-                         style={{ width: "48px", height: "48px", fontSize: "1.2rem" }}>
-                      {post.user_id?.substring(0, 1).toUpperCase() || "U"}
+                         style={{ width: "48px", height: "48px", fontSize: "1.2rem", overflow: 'hidden' }}>
+                      {post.profile_image ? (
+                          <img 
+                              src={post.profile_image}
+                              alt={post.username}
+                              className="w-100 h-100 object-fit-cover"
+                          />
+                      ) : (
+                          post.username?.substring(0, 1).toUpperCase() || "U"
+                      )}
                     </div>
                     <div>
-                      <h6 className="mb-0">{post.user_id || "Anonymous"}</h6>
+                      <h6 className="mb-0">{post.username}</h6>
                       <small className="text-muted">
                         {new Date(post.created_at).toLocaleDateString()}
                       </small>
@@ -96,6 +97,7 @@ export default function ForumPage() {
 
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [slides, setSlides] =useState([]);
 
   const [filteredPosts, setFilteredPosts] = useState([]);
   const [query, setQuery] = useState("");
@@ -103,24 +105,7 @@ export default function ForumPage() {
   const [selectedPost, setSelectedPost] = useState(null);
 
   const nav = useNavigate();
-  
 
-  // Get current user ID from session storage
-  const getCurrentUserId = () => {
-    try {
-      const authData = sessionStorage.getItem("auth");
-      if (authData) {
-        const { id } = JSON.parse(authData);
-        return id;
-      }
-    } catch (error) {
-      console.error("Error getting user ID:", error);
-    }
-    return null;
-  };
-  
-
-  // Fetch posts from backend API (commented out for testing with example posts)
 
   useEffect(() => {
         const fetchPosts = async () => {
@@ -133,12 +118,15 @@ export default function ForumPage() {
       const data = responseData.result || [];
       console.log("Posts data:", data);
 
+      // Changed from profile_picture to profile_image
       const normalised = data.map(item => ({
         feedback_id: item.feedback_id,
         user_id: item.user_id,
+        username: item.username || "Anonymous",
+        profile_image: item.profile_image, // Changed from profile_picture to profile_image
         subject: item.subject,
         body: item.body,
-        img: item.image, 
+        img: item.image,
         created_at: item.created_at,
         liked_count: 0
       }));
@@ -158,6 +146,35 @@ export default function ForumPage() {
   fetchPosts();
 }, []);
   
+// highlight fetching
+useEffect(() => {
+  const fetchHighlights = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/highlight/get_all');
+      const data = await response.json();
+      
+      if (data.status && data.result) {
+        setSlides(data.result.map(highlight => ({
+          image: highlight.image,
+          caption: highlight.title,
+          alt: highlight.excerpt,
+          author: highlight.author
+        })));
+      }
+    } catch (err) {
+      console.error("Error fetching highlights:", err);
+      // Fallback to default slides if fetch fails
+      setSlides([
+        { image: "https://picsum.photos/seed/1/800/480", caption: "Member review: Love this!", alt: "review 1" },
+        { image: "https://picsum.photos/seed/2/800/480", caption: "New product spotlight", alt: "spotlight 2" },
+        { image: "https://picsum.photos/seed/3/800/480", caption: "Community event highlights", alt: "event 3" },
+      ]);
+    }
+  };
+
+  fetchHighlights();
+}, []); // Empty dependency array means this runs once on mount
+
   // useEffect(() => {
   //   const userId = getCurrentUserId();
   //   if (userId && posts.length > 0) {
@@ -331,6 +348,8 @@ export default function ForumPage() {
                 <FeaturedCard
                   feedback_id={post.feedback_id}
                   user_id={post.user_id}
+                  username={post.username}
+                  profile_picture={post.profile_image}
                   subject={post.subject}
                   body={post.body}
                   created_at={post.created_at}

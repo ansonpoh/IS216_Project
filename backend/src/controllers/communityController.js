@@ -2,7 +2,9 @@ import {
     create_post,
     get_all_posts,
     get_post_likes,
-    user_likes_post
+    user_likes_post,
+    create_highlight,
+    get_all_highlights
 } from "../services/communityService.js";
 
 export async function create_post_handler (req, res) {
@@ -47,5 +49,40 @@ export async function user_likes_post_handler (req, res) {
     } catch (err) {
         console.error(err);
         throw err;
+    }
+}
+
+export async function get_all_highlights_handler(req, res) {
+    try {
+        const highlights = await highlightService.get_all_highlights();
+        res.json({ 
+            status: true,
+            result: highlights 
+        });
+    } catch (error) {
+        console.error('Error in get_all_highlights_handler:', error);
+        res.status(500).json({ 
+            status: false,
+            message: 'Failed to fetch highlights' 
+        });
+    }
+}
+
+export async function create_highlight_handler(req, res) {
+    try {
+        const { image, title, excerpt, author } = req.body;
+        const highlight = await highlightService.create_highlight(
+            image, title, excerpt, author
+        );
+        res.json({ 
+            status: true,
+            result: highlight 
+        });
+    } catch (error) {
+        console.error('Error in create_highlight_handler:', error);
+        res.status(500).json({ 
+            status: false,
+            message: 'Failed to create highlight' 
+        });
     }
 }
