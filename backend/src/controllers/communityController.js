@@ -52,12 +52,13 @@ export async function user_likes_post_handler (req, res) {
     }
 }
 
+
 export async function get_all_highlights_handler(req, res) {
     try {
-        const highlights = await highlightService.get_all_highlights();
-        res.json({ 
+        const highlights = await get_all_highlights();
+        res.json({
             status: true,
-            result: highlights 
+            result: highlights  // Changed from {highlights} to {result: highlights}
         });
     } catch (error) {
         console.error('Error in get_all_highlights_handler:', error);
@@ -70,9 +71,9 @@ export async function get_all_highlights_handler(req, res) {
 
 export async function create_highlight_handler(req, res) {
     try {
-        const { image, title, excerpt, author } = req.body;
-        const highlight = await highlightService.create_highlight(
-            image, title, excerpt, author
+        const { image, caption } = req.body;
+        const highlight = await create_highlight(
+            image, caption
         );
         res.json({ 
             status: true,
