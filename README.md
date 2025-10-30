@@ -106,16 +106,16 @@ npm install
 ---
 
 ### 2) Configure Environment Variables
-Create a `.env` file in the root directory with the following structure:
+Create a `.env` file in the root/backend directory with the following structure:
 
 ```bash
-VITE_API_URL=<your_backend_or_firebase_url>
-VITE_FIREBASE_API_KEY=<your_firebase_api_key>
-VITE_FIREBASE_AUTH_DOMAIN=<your_auth_domain>
-VITE_FIREBASE_PROJECT_ID=<your_project_id>
-VITE_FIREBASE_STORAGE_BUCKET=<your_storage_bucket>
-VITE_FIREBASE_MESSAGING_SENDER_ID=<your_sender_id>
-VITE_FIREBASE_APP_ID=<your_app_id>
+DATABASE_URL=<your_backend_url>
+SUPABASE_URL=<your_supabase_url>
+SUPABASE_KEY=<your_supabase_api_key>
+OR_API=<or_api>
+OR_MODEL=<or_model>
+GOOGLE_MAPS_API_KEY=<your_google_maps_api_key>
+OPENAI_API_KEY=<your_openai_api_key>
 ```
 
 > Never commit the `.env` file to your repository.  
@@ -213,7 +213,7 @@ Each member should contribute 2–3 sentences on their learning and project expe
 > - *Sitinur:* 
 > - *Keying:* 
 > - *Riya:* 
-> - *Joshua:* 
+> - *Joshua:* Learned how to use Fort Awesome, Bootstrap icons, SVG over map API, as well as map filter logic.
 > - *Yuanlong:* 
 
 As a team, reflect on:
