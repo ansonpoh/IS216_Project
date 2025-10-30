@@ -113,7 +113,7 @@ function Navbar() {
             />
             <i
               className="bi bi-person-circle fs-5"
-              onClick={() => navigate("/profile")}
+              onClick={() => navigate("/VolunteerProfile")}
               style={{ cursor: "pointer" }}
             />
           </>

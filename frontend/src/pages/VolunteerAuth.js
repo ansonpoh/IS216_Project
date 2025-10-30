@@ -220,7 +220,7 @@ export default function LoginSignup() {
                     <i className="bx bxs-lock-alt"></i>
                 </div>
 
-                <div className="input-box">
+                {/* <div className="input-box">
                 <input
                     className="form-control"
                     type="file"
@@ -229,7 +229,7 @@ export default function LoginSignup() {
                     setRegisterData({ ...registerData, profile_image: e.target.files[0] })
                     }
                 />
-                </div>
+                </div> */}
                 
                 <div className="form-check mb-3">
                       <input className={`form-check-input`} type="checkbox" checked={registerData.agree} onChange={(e) => setRegisterData({...registerData, agree: e.target.checked})}
