@@ -11,3 +11,16 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Override Bootstrap button hover text color */
+.btn:hover {
+  color: inherit !important;
+}
+
+/* Or target specific button variants */
+.btn-primary:hover,
+.btn-secondary:hover,
+.btn-outline-primary:hover,
+.btn-outline-secondary:hover {
+  color: inherit !important;
+}
