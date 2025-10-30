@@ -1,10 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-<<<<<<< HEAD:frontend/src/pages/Volunteer/VolunteerDashboard.jsx
 import "../../styles/volunteerDashboard.css";
-=======
-import "bootstrap/dist/css/bootstrap.min.css";
-import "../styles/volunteerDashboard.css";
->>>>>>> 0e4bf75f688dfd7431db39af9bea933361f56775:frontend/src/pages/VolunteerDashboard.jsx
 import { useNavigate } from "react-router-dom";
 
 const LS_KEY = "volunteer_dashboard_circular_carousel_v3";
