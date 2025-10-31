@@ -5,6 +5,7 @@ import CommunitySpotlight from "./component/CommunitySpotlight";
 import axios from 'axios';
 import { useNavigate, Link } from "react-router-dom";
 import PageTransition from "../../components/Animation/PageTransition.jsx";
+import NewDiscussion from "./component/NewDiscussion.jsx";
 
 const PostModal = ({ post, onClose, onLike }) => {
   if (!post) return null;

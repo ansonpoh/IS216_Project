@@ -1,12 +1,12 @@
 /* component/community.css — tightened for ForumPage features */
 
 /* -------- Vars -------- */
-:root{
+:root {
   --bg: #f7f7f7;
   --card-bg: #fff;
   --muted: #6b6b6b;
   --accent: #0a66c2;
-  --shadow: 0 6px 18px rgba(28,28,28,0.06);
+  --shadow: 0 6px 18px rgba(28, 28, 28, 0.06);
 
   --right-col: 320px;
   --gutter: 20px;
@@ -15,9 +15,10 @@
 }
 
 /* -------- Base / page -------- */
-.page-community, .container {
+.page-community,
+.container {
   background: var(--bg);
-  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif ;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
   color: #111;
 }
 
@@ -28,27 +29,42 @@
 }
 
 /* -------- Layout (tight) -------- */
-.container.py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+.container.py-4 {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
 
-.row.gx-4 { gap: var(--gutter); }
+.row.gx-4 {
+  gap: var(--gutter);
+}
 
 /* Left / right columns used in ForumPage */
-.col-right { max-width: var(--right-col); }
+.col-right {
+  max-width: var(--right-col);
+}
 
 /* Top small controls (search + button) */
 .forum-top-controls {
-  display:flex;
-  gap:0.5rem;
-  align-items:center;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
 }
-.form-control-sm { height: 36px; padding: .375rem .5rem; }
+
+.form-control-sm {
+  height: 36px;
+  padding: .375rem .5rem;
+}
 
 /* -------- Discussion / Featured Card (reusable) -------- */
 /* component uses: <article className="card mb-3 discussion-card"> */
 .discussion-card {
-  border: 1px solid #eef0f2;
+  border-radius: 12px;
   overflow: hidden;
   transition: transform 160ms ease, box-shadow 160ms ease;
+  border: 1px solid rgba(15, 23, 42, 0.04);
+  box-shadow: 0 6px 18px rgba(7, 12, 20, 0.06);
+  transition: transform .16s ease, box-shadow .16s ease;
+
 }
 
 /* smaller compact spacing to tighten appearance */
@@ -60,9 +76,10 @@
 .discussion-card .card-img-top,
 .discussion-card img.card-img-top {
   width: 100%;
-  height: clamp(120px, 22vh, 220px); /* fluid height */
+  height: clamp(120px, 22vh, 220px);
+  /* fluid height */
   object-fit: cover;
-  display:block;
+  display: block;
 }
 
 /* title/excerpt */
@@ -81,9 +98,9 @@
 
 /* meta row (author / time / stats) */
 .discussion-card .meta-row {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   gap: .5rem;
   font-size: .875rem;
   color: var(--muted);
@@ -91,34 +108,42 @@
 
 /* clickable feel */
 .discussion-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 30px rgba(28,28,28,0.08);
+  transform: translateY(-6px);
+  box-shadow: 0 18px 40px rgba(7, 12, 20, 0.12);
 }
 
 /* keep the link text color neutral */
-.discussion-card a { color: inherit; text-decoration: none; }
+.discussion-card a {
+  color: inherit;
+  text-decoration: none;
+}
 
 /* very small screens — slightly more compact */
 @media (max-width: 420px) {
-  .discussion-card .card-body { padding: .6rem; }
-  .discussion-card .card-title { font-size: .95rem; }
+  .discussion-card .card-body {
+    padding: .6rem;
+  }
+
+  .discussion-card .card-title {
+    font-size: .95rem;
+  }
 }
 
 /* -------- Spotlight / Carousel (compact + fluid) -------- */
 .spotlight-wrapper .card {
   max-height: clamp(320px, 50vh, 520px);
-  display:flex;
-  flex-direction:column;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
   transition: max-height 280ms ease;
 }
 
 .spotlight-wrapper .card-body {
-  display:flex;
-  flex-direction:column;
-  gap:.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
   padding: .75rem;
-  overflow:auto;
+  overflow: auto;
 }
 
 /* carousel image area fluid and smoothly transitioning */
@@ -132,19 +157,26 @@
 .spotlight-wrapper .carousel img,
 .spotlight-wrapper .spotlight-img,
 .spotlight-wrapper .card-img-top {
-  width:100%;
+  width: 100%;
   height: clamp(110px, 28vh, 360px);
   object-fit: cover;
   transition: height 280ms ease, transform 280ms ease;
 }
 
 /* keep CTA at bottom */
-.spotlight-wrapper .card-body > .btn { margin-top: auto; }
+.spotlight-wrapper .card-body>.btn {
+  margin-top: auto;
+}
 
 /* avoid big jumps on medium screens by using clamps */
 @media (max-width: 992px) {
-  .spotlight-wrapper .card { max-height: clamp(280px, 48vh, 480px); }
-  .spotlight-wrapper .carousel img { height: clamp(100px, 26vh, 300px); }
+  .spotlight-wrapper .card {
+    max-height: clamp(280px, 48vh, 480px);
+  }
+
+  .spotlight-wrapper .carousel img {
+    height: clamp(100px, 26vh, 300px);
+  }
 }
 
 /* -------- Utilities -------- */
@@ -155,10 +187,16 @@
 }
 
 /* simple small text helper */
-.small-muted { color: var(--muted); font-size: .88rem; }
+.small-muted {
+  color: var(--muted);
+  font-size: .88rem;
+}
 
 /* keep inputs/buttons compact and aligned */
-.btn-sm { padding: .35rem .6rem; font-size: .88rem; }
+.btn-sm {
+  padding: .35rem .6rem;
+  font-size: .88rem;
+}
 
 
 
@@ -187,7 +225,7 @@
   font-weight: 500;
 }
 
-.form_label{
+.form_label {
   text-align: left !important;
   display: block;
   margin-bottom: 0.5rem;
@@ -223,8 +261,9 @@
 .breadcrumb {
   backdrop-filter: blur(5px);
 }
+
 .My_moment {
-  font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif ;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
 
 /* icon */
@@ -248,10 +287,10 @@
 }
 
 :global(.tooltip .tooltip-inner) {
-  background-color: #f7f3ec  !important;
+  background-color: #f7f3ec !important;
   color: #333 !important;
   border: 1px solid #dee2e6;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   max-width: 300px;
   padding: 1rem;
 }

@@ -1,7 +1,6 @@
 import './App.css';
 import VolunteerConnect from './pages/VolunteerConnect';
 import InteractiveMapDashboard from './pages/InteractiveMap/InteractiveMapDashboard.jsx';
-import NotificationsPage from './pages/Volunteer/NotificationPage.js';
 import {Routes, Route, useLocation} from "react-router-dom";
 import { AuthProvider } from './contexts/AuthProvider';
 import Opportunities from './pages/Opportunities';
@@ -39,12 +38,6 @@ function App() {
             
             {/* Opportunities Page */}
             <Route path="/opportunities" element={<Opportunities />} />
-            
-            {/* Notifications Page */}
-            <Route path="/notifications" element={<NotificationsPage />} />
-            
-            {/* Profile Page */}
-            {/* <Route path="/profile" element={<ProfilePage />} /> */}
             
             {/* Choose Role Page */}
             <Route path="/choose-role" element={<RoleSelect />} />
