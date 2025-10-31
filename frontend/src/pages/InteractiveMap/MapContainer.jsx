@@ -644,7 +644,7 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
       markersRef.current.forEach(m => m.setMap(null));
       markersRef.current = [];
     };
-  }, [onMapLoad]);
+  }, []);
 
   return (
     <div className="position-relative flex-grow-1">
