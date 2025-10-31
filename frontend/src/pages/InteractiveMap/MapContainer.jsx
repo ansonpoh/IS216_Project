@@ -555,14 +555,22 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
         display: none !important;
       }
 
-      /* Hide zoom control divider */
+      /* Show zoom control divider with proper styling */
       .gmnoprint > div[style*="background-color: rgb(230, 230, 230)"] {
-        display: none !important;
+        width: 36px !important;
+        height: 1px !important;
+        margin: 0px 0px !important;
+        background-color: rgb(230, 230, 230) !important;
+        display: block !important;
       }
 
       /* Alternative selector for zoom divider */
       .gm-control-active + div[style*="background"] {
-        display: none !important;
+        width: 36px !important;
+        height: 1px !important;
+        margin: 0px 0px !important;
+        background-color: rgb(230, 230, 230) !important;
+        display: block !important;
       }
 
       /* Ensure zoom buttons are properly sized */
