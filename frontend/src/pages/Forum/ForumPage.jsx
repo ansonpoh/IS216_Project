@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar.js";
 import FeaturedCard from "./component/FeaturedCard";
 import CommunitySpotlight from "./component/CommunitySpotlight";
-import axios from 'axios';
+import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import PageTransition from "../../components/Animation/PageTransition.jsx";
 import NewDiscussion from "./component/NewDiscussion.jsx";
@@ -41,8 +41,15 @@ const PostModal = ({ post, onClose, onLike }) => {
                 <div className="p-4">
                   {/* User info */}
                   <div className="d-flex align-items-center mb-3">
-                    <div className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3"
-                      style={{ width: "48px", height: "48px", fontSize: "1.2rem", overflow: 'hidden' }}>
+                    <div
+                      className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3"
+                      style={{
+                        width: "48px",
+                        height: "48px",
+                        fontSize: "1.2rem",
+                        overflow: "hidden",
+                      }}
+                    >
                       {post.profile_image ? (
                         <img
                           src={post.profile_image}
@@ -68,10 +75,16 @@ const PostModal = ({ post, onClose, onLike }) => {
                   {/* Actions */}
                   <div className="d-flex gap-2 mb-4">
                     <button
-                      className={`btn ${post.isLiked ? 'btn-primary' : 'btn-outline-primary'} d-flex align-items-center gap-2`}
+                      className={`btn ${
+                        post.isLiked ? "btn-primary" : "btn-outline-primary"
+                      } d-flex align-items-center gap-2`}
                       onClick={() => onLike(post.feedback_id)}
                     >
-                      <i className={`bi ${post.isLiked ? 'bi-heart-fill' : 'bi-heart'}`}></i>
+                      <i
+                        className={`bi ${
+                          post.isLiked ? "bi-heart-fill" : "bi-heart"
+                        }`}
+                      ></i>
                       <span>{post.liked_count || 0}</span>
                     </button>
                   </div>
@@ -81,7 +94,9 @@ const PostModal = ({ post, onClose, onLike }) => {
                     <div className="border-top pt-3">
                       <small className="text-muted">
                         {post.event_id && <div>Event ID: {post.event_id}</div>}
-                        {post.org_id && <div>Organization ID: {post.org_id}</div>}
+                        {post.org_id && (
+                          <div>Organization ID: {post.org_id}</div>
+                        )}
                       </small>
                     </div>
                   )}
@@ -96,7 +111,6 @@ const PostModal = ({ post, onClose, onLike }) => {
 };
 
 export default function ForumPage() {
-
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [slides, setSlides] = useState([]);
@@ -108,17 +122,17 @@ export default function ForumPage() {
 
   const nav = useNavigate();
 
-
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:3001/community/get_all_posts');
-        const responseData = await response.json();
-        const data = responseData.result || [];
+        const response = await axios.get(
+          "http://localhost:3001/community/get_all_posts"
+        );
+        const data = response.data.result || [];
         console.log("Posts data:", data);
 
-        const normalised = data.map(item => ({
+        const normalised = data.map((item) => ({
           feedback_id: item.feedback_id,
           user_id: item.user_id,
           username: item.username || "Anonymous",
@@ -127,12 +141,11 @@ export default function ForumPage() {
           body: item.body,
           img: item.image,
           created_at: item.created_at,
-          liked_count: 0
+          liked_count: 0,
         }));
 
         setPosts(normalised);
         setFilteredPosts(normalised);
-
       } catch (err) {
         console.error("Error fetching posts:", err);
         setPosts([]);
@@ -149,22 +162,20 @@ export default function ForumPage() {
   useEffect(() => {
     const fetchHighlights = async () => {
       try {
-        const response = await fetch('http://localhost:3001/community/get_all_highlights');
-        const data = await response.json();
+        const response = await axios.get(
+          "http://localhost:3001/community/get_all_highlights"
+        );
+        const data = response.data;
 
-        console.log('Highlights response:', data); // Debug log
-
-        if (data.result) {  // Changed from data.status && data.result
-          const mappedSlides = data.result.map(highlight => ({
+        if (data.result) {
+          const mappedSlides = data.result.map((highlight) => ({
             image: highlight.image,
-            caption: highlight.caption
+            caption: highlight.caption,
           }));
-          console.log('Mapped slides:', mappedSlides); // Debug log
           setSlides(mappedSlides);
         }
       } catch (err) {
-        console.error("Error fetching highlights:");
-        // Fallback slides
+        console.error("Error fetching highlights:", err);
       }
     };
 
@@ -201,8 +212,6 @@ export default function ForumPage() {
   //   }
   // };
 
-
-
   // // Handle like/unlike
   // const handleLike = async (postId) => {
   //   const userId = getCurrentUserId();
@@ -220,8 +229,8 @@ export default function ForumPage() {
   //     const response = await fetch('http://localhost:3001/community/user_likes_post', {
   //       method: 'POST',
   //       headers: { 'Content-Type': 'application/json' },
-  //       body: JSON.stringify({ 
-  //         feedback_id: postId, 
+  //       body: JSON.stringify({
+  //         feedback_id: postId,
   //         user_id: userId,
   //         action: post.isLiked ? 'unlike' : 'like' // Add action to determine like/unlike
   //       })
@@ -239,8 +248,8 @@ export default function ForumPage() {
   // };
 
   // const updatePostLikeState = (postId, isLiked, countChange) => {
-  //   const updatePosts = (postsList) => postsList.map(post => 
-  //     post.feedback_id === postId 
+  //   const updatePosts = (postsList) => postsList.map(post =>
+  //     post.feedback_id === postId
   //       ? { ...post, isLiked, liked_count: (post.liked_count || 0) + countChange }
   //       : post
   //   );
@@ -264,9 +273,10 @@ export default function ForumPage() {
     // Apply search filter
     if (query.trim()) {
       const lowerQuery = query.toLowerCase();
-      result = result.filter(post =>
-        post.subject?.toLowerCase().includes(lowerQuery) ||
-        post.body?.toLowerCase().includes(lowerQuery)
+      result = result.filter(
+        (post) =>
+          post.subject?.toLowerCase().includes(lowerQuery) ||
+          post.body?.toLowerCase().includes(lowerQuery)
       );
     }
 
@@ -281,9 +291,9 @@ export default function ForumPage() {
   }, [query, sortBy, posts]);
 
   return (
-    <><Navbar />
+    <>
+      <Navbar />
       <div className="container-fluid vh-100 d-flex flex-column page-community">
-
         <PageTransition>
           <div className="container py-4 flex-grow-1">
             {/* Spotlight carousel */}
@@ -326,8 +336,6 @@ export default function ForumPage() {
                     Add Post
                   </button>
                 </div>
-
-
               </div>
             </div>
 
@@ -341,13 +349,18 @@ export default function ForumPage() {
             ) : filteredPosts.length === 0 ? (
               <div className="text-center py-5">
                 <p className="text-muted">
-                  {query ? "No posts found matching your search." : "No posts yet. Be the first to share!"}
+                  {query
+                    ? "No posts found matching your search."
+                    : "No posts yet. Be the first to share!"}
                 </p>
               </div>
             ) : (
-              <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+              <div className="d-flex flex-wrap gap-4 justify-content-start">
                 {filteredPosts.map((post) => (
-                  <div key={post.feedback_id} className="col">
+                  <div
+                    key={post.feedback_id}
+                    style={{ flex: "1 1 300px", maxWidth: "350px" }}
+                  >
                     <FeaturedCard
                       feedback_id={post.feedback_id}
                       user_id={post.user_id}
@@ -372,7 +385,7 @@ export default function ForumPage() {
           <PostModal
             post={selectedPost}
             onClose={() => setSelectedPost(null)}
-          // onLike={handleLike}
+            // onLike={handleLike}
           />
         )}
       </div>
