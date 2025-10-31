@@ -13,6 +13,7 @@ export default function OrganiserCreateForm() {
   const [preview, setPreview] = useState(null);
   const [regions, setRegions] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [org, setOrg] = useState(null);
 
   useEffect(() => {
     const fetch_regions = async () => {
@@ -35,14 +36,25 @@ export default function OrganiserCreateForm() {
       }
     }
 
+    const fetch_org = async () => {
+      try {
+        const res = await axios.get("http://localhost:3001/orgs/get_org_by_id", {params: {id: auth.id}})
+        const data = res.data.result[0];
+        setOrg(data);
+        setForm(prev => ({ ...prev, org_id: data.org_id }));
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
     fetch_regions();
     fetch_categories();
+    fetch_org();
   }, [])
 
-  const org_id = auth.id;
 
   const [form, setForm] = useState({
-    org_id: org_id,
+    org_id: "",
     title: "",
     category: "",
     description: "",
