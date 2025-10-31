@@ -154,7 +154,7 @@ export default function LoginSignup() {
             <form onSubmit={handle_login} className={styles.form}>
               <h1>Login for Volunteer</h1>
               {loginErrors && (
-                <div className={`${styles['form-alert']} mt-3`} style={{ color: "red" }}>
+                <div className={`form-alert mt-3`} style={{ color: "red" }}>
                   <i className="bx bx-error-circle"></i>
                   {loginErrors}
                 </div>

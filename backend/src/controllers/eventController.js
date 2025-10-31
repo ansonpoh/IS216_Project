@@ -12,6 +12,7 @@ import {
   get_filtered_events,
   get_selectable_options,
 } from "../services/eventServices.js";
+import axios from "axios";
 
 export async function create_event_handler (req, res) {
   try {
@@ -141,6 +142,54 @@ export async function get_selectable_options_handler(req, res) {
   try {
     const result = await get_selectable_options();
     return res.json({result});
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+}
+
+export async function event_data_modify_handler(req, res) {
+  try {
+        let key = process.env.GOOGLE_MAPS_API_KEY || process.env.REACT_APP_GOOGLE_MAPS_API_KEY || '';
+        if (typeof key === 'string') {
+            key = key.replace(/^\s*"|"\s*$/g, '').trim();
+        }
+
+        const {events} = req.body;
+        if(events.length < 1) return res.json({events: []});
+
+        const geocodeUrl = (postal) => `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(postal)}&components=country:SG&key=${key}`;
+
+        const promises = events.map(async (e) => {
+          const postal = e.location;
+          try {
+            const geoRes = await axios.get(geocodeUrl(postal));
+            if(geoRes.data && geoRes.data.status === "OK" && geoRes.data.results && geoRes.data.results.length) {
+              const loc = geoRes.data.results[0].geometry.location;
+              return {
+                title: e.title,
+                postalcode: postal,
+                region: e.region,
+                category: e.category,
+                organization: e.organization,
+                description: e.description,
+                event_id: e.event_id,
+                lat: loc.lat,
+                lng: loc.lng,
+                date: e.date,
+                time: e.time,
+                image_url: e.image_url,
+              }
+            }
+          } catch (err) {
+            console.error(err);
+            throw err;
+          }
+        })
+
+        const results = await Promise.all(promises);
+        return res.json(results.filter(Boolean));
+        
   } catch (err) {
     console.error(err);
     throw err;

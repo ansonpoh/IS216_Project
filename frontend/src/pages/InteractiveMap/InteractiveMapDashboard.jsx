@@ -1,12 +1,14 @@
 import React, { useState, useRef } from "react";
 import Navbar from "../../components/Navbar.js";
 import MapContainer from "./MapContainer.jsx";
-// import PageTransition from "../../components/PageTransition/PageTransition";
-import styles from "../../styles/MapStyles.module.css";
+import styles from "../../styles/MapStyles.module.css"
+import { useLocation } from "react-router-dom";
 
 const InteractiveMapDashboard = () => {
   const [activeFilters, setActiveFilters] = useState([]);
   const mapRef = useRef(null);
+  const location = useLocation();
+  const recommendedEvents = location.state?.events || [];
 
   // Add map instance ref
   const mapInstanceRef = useRef(null);
@@ -156,6 +158,19 @@ const InteractiveMapDashboard = () => {
           </div>
         </div>
       {/* </PageTransition> */}
+
+    {/* </> */}
+
+        {/* Map Container */}
+        <MapContainer
+          ref={mapRef}
+          activeFilters={activeFilters}
+          onResetFilters={handleResetFilters}
+          recommendedEvents={recommendedEvents}
+          onCurrentLocation={handleCurrentLocation}
+        />
+      {/* </div>
+    </div> */}
     </>
   );
 };
