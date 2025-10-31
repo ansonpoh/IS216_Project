@@ -1,7 +1,11 @@
 // src/components/NewDiscussion.jsx
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import * as bootstrap from 'bootstrap';  // Add this line
 import styles from "../../../styles/Community.module.css";
+import SplitText from "../../../components/animations/SplitText";
 import axios from "axios";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import { useNavigate } from "react-router-dom";
 
 // validation constants
@@ -122,10 +126,10 @@ export default function NewDiscussion({ initialBoard = "" }) {
 
       const fd = new FormData();
       fd.append("supabase_id", auth.id);
-      fd.append("user_id", auth.id);
+      fd.append("user_id", auth.id)
       fd.append("subject", formData.subject.trim());
       fd.append("body", formData.body.trim());
-      
+
       if (formData.image_file) {
         fd.append("image_file", formData.image_file);
         console.log("Image file type:", formData.image_file.type);
@@ -164,14 +168,14 @@ export default function NewDiscussion({ initialBoard = "" }) {
 
     } catch (err) {
       console.error("Full error object:", err);
-      
-      const errorMessage = err.response?.data?.message 
-        || err.message 
+
+      const errorMessage = err.response?.data?.message
+        || err.message
         || "Failed to create post";
-      
+
       setStatus(errorMessage);
       alert(`Error: ${errorMessage}`);
-      
+
       if (err.response?.status === 413) {
         setStatus("Image file is too large");
       } else if (err.response?.status === 415) {
@@ -188,20 +192,75 @@ export default function NewDiscussion({ initialBoard = "" }) {
     window.history.back();
   }
 
+  // Add useEffect for tooltip initialization
+  useEffect(() => {
+    // Initialize all tooltips
+    const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    tooltips.forEach(tooltip => {
+      new bootstrap.Tooltip(tooltip);
+    });
+
+    // Cleanup on unmount
+    return () => {
+      tooltips.forEach(tooltip => {
+        const instance = bootstrap.Tooltip.getInstance(tooltip);
+        if (instance) {
+          instance.dispose();
+        }
+      });
+    };
+  }, []);
+
   return (
-    <div className={`${styles['container']} py-5`}>
-      <h1 className="display-6 mb-3">New Discussion</h1>
+    <div className={`${styles.My_moment}`}>
+      {/* Enhanced Header with SplitText */}
+      <div className="text-center mb-2 mt-5 ">
+        <SplitText
+          text="My Moment"
+          tag="h1"
+          className="display-4 fw-bold mb-3"
+          delay={150}
+          duration={0.8}
+          from={{ opacity: 0, y: 50 }}
+          to={{ opacity: 1, y: 0 }}
+          splitType="chars"
+        />
+        <nav className={`${styles.breadcrumb} d-inline-flex`}>
+          <SplitText
+            text="Share with the Community"
+            delay={50}
+            duration={0.6}
+            from={{ opacity: 0, y: 20 }}
+            to={{ opacity: 1, y: 0 }}
+            splitType="words"
+            className="text-muted"
+          />
+        </nav>
+      </div>
 
-      <nav className="small text-muted mb-4">Welcome to the Community &nbsp;/&nbsp; New Discussion</nav>
 
-      <div className={`${styles['card']} border-0`}>
-        <div className={`${styles['card-body']}`}>
-          <p className="text-muted small mb-3">Remember that posts are subject to the Community Policy.</p>
+
+      <div className={styles.card}>
+        <div className={styles['card-body']}>
+          {/* Policy notice with icon */}
+          <div className="alert alert-light border d-flex align-items-center mb-4">
+            <i 
+              className={`bi bi-info-circle me-2 ${styles.info_icon}`}
+              style={{ cursor: 'pointer' }}
+              data-bs-toggle="tooltip"
+              data-bs-placement="right"
+              data-bs-html="true"
+              title='<div class="guidelines_title">Community Guidelines:</div>• Be respectful and kind<br/>• No personal attacks or bullying<br/>• Keep content family-friendly<br/>• No spam or self-promotion<br/>• Respect privacy and confidentiality'
+            ></i>
+            <p className="mb-0">Remember that posts are subject to the Community Policy.</p>
+          </div>
 
           <form onSubmit={handlePost}>
-            {/* Subject */}
-            <div className="mb-3">
-              <label htmlFor="subjectInput" className="form-label">Subject</label>
+            {/* Subject with enhanced styling */}
+            <div className="mb-4">
+              <label htmlFor="subjectInput" className={`form-label fw-bold ${styles.form_label}`}>
+                Subject
+              </label>
               <input
                 id="subjectInput"
                 name="subject"
@@ -216,9 +275,14 @@ export default function NewDiscussion({ initialBoard = "" }) {
               {errors.subject && <div className="invalid-feedback">{errors.subject}</div>}
             </div>
 
-            {/* Body */}
-            <div className="mb-3" onPaste={onPaste}>
-              <label htmlFor="body" className="form-label mb-2">Body</label>
+            {/* Body with enhanced styling */}
+            <div className="mb-4">
+              <label
+                htmlFor="body"
+                className={`form-label fw-bold ${styles.form_label}`}
+              >
+                Body
+              </label>
               <textarea
                 id="body"
                 name="body"
@@ -238,16 +302,17 @@ export default function NewDiscussion({ initialBoard = "" }) {
               )}
             </div>
 
-            {/* Image upload area */}
+            {/* Enhanced image upload area */}
             <div
-              className="border rounded p-2 mb-3"
+              className={`${styles['image-upload-area']} mb-4`}
               onDrop={onDrop}
               onDragOver={onDragOver}
-              aria-label="Attach an image (drag & drop, paste or choose file)"
             >
               <div className="d-flex align-items-center justify-content-between">
-                <small className="text-muted">Attach an image (optional) — drag & drop, paste, or choose file</small>
-
+                <div className="d-flex align-items-center">
+                  <i className="bi bi-image me-2 text-primary"></i>
+                  <small>Attach an image (optional)</small>
+                </div>
                 <div>
                   <label className={`btn ${styles['btn-sm']} btn-outline-secondary mb-0`}>
                     Choose file
@@ -276,29 +341,51 @@ export default function NewDiscussion({ initialBoard = "" }) {
               {imageError && <div className="text-danger small mt-2">{imageError}</div>}
 
               {imagePreview && (
-                <div className="mt-2">
+                <div className={styles['preview-container']}>
                   <img
                     src={imagePreview}
                     alt="preview"
-                    style={{ maxWidth: "100%", height: 220, objectFit: "cover", borderRadius: 6 }}
+                    className="w-100"
+                    style={{ height: 220, objectFit: "cover" }}
                   />
-                  <div className="small text-muted mt-1">Preview — image will be uploaded when you submit.</div>
+                  <div className="small text-muted mt-2 text-center">
+                    <i className="bi bi-eye me-1"></i>Preview
+                  </div>
                 </div>
               )}
             </div>
 
-            {/* Actions */}
-            <div className="d-flex justify-content-end gap-2 mt-3">
+            {/* Enhanced action buttons */}
+            <div className="d-flex justify-content-end gap-3 mt-4">
               <button
                 type="button"
-                className="btn btn-outline-secondary"
+                className="btn btn-outline-secondary px-4"
                 onClick={handleCancel}
                 disabled={submitting}
               >
-                Cancel
+                <i className="bi bi-x me-2"></i>Cancel
               </button>
-              <button type="submit" className="btn btn-dark" disabled={submitting || uploading}>
-                {submitting ? "Posting..." : uploading ? "Uploading…" : "Post"}
+              <button
+                type="submit"
+                className="btn btn-primary px-4"
+                disabled={submitting || uploading}
+              >
+                {submitting ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Posting...
+                  </>
+                ) : uploading ? (
+                  <>
+                    <i className="bi bi-cloud-upload me-2"></i>
+                    Uploading...
+                  </>
+                ) : (
+                  <>
+                    <i className="bi bi-send me-2"></i>
+                    Post
+                  </>
+                )}
               </button>
             </div>
           </form>

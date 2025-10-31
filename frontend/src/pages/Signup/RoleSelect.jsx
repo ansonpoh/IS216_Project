@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import "boxicons/css/boxicons.min.css";
 import Navbar from "../../components/Navbar";
 import styles from "../../styles/RoleSelect.module.css";
+import PageTransition from "../../components/Animation/PageTransition";
 
 export default function RoleSelect() {
   const nav = useNavigate();
@@ -33,6 +34,7 @@ export default function RoleSelect() {
   return (
     <>
       <Navbar />
+      <PageTransition>
       <main className={styles['role-bg']}>
         <div className={styles.orb + " " + styles['orb-1']} />
         <div className={styles.orb + " " + styles['orb-2']} />
@@ -93,6 +95,7 @@ export default function RoleSelect() {
           </div>
         </section>
       </main>
+      </PageTransition>
     </>
   );
 }

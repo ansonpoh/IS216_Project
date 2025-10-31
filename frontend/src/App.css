@@ -36,3 +36,80 @@
     transform: rotate(360deg);
   }
 }
+
+:root{
+  --bg1: #ffffff;
+  --bg2: #edf1fa;
+  --accent1: #77b3fc;
+  --accent2: hwb(34 11% 5%);
+}
+
+/* Global font for the entire app */
+html, body, #root {
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  height: 100%;
+  margin: 0;
+  background-color: var(--bg1);
+  background-image:
+    radial-gradient(1200px 800px at 10% -10%, rgb(231, 190, 7) 0%, transparent 50%),
+    radial-gradient(900px 600px at 110% 10%, rgb(84, 161, 255) 0%, transparent 40%),
+    linear-gradient(160deg, var(--bg1), var(--bg2));
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Ensure common UI elements inherit the font */
+button,
+input,
+textarea,
+select,
+.form-control,
+.navbar,
+.card,
+.btn,
+a {
+  font-family: inherit;
+}
+
+/* Optional: make headings slightly heavier if needed */
+h1, h2, h3, h4, h5, h6 {
+  font-family: inherit;
+  font-weight: 600;
+}
+
+/* Force global background and make common layout containers transparent */
+html, body, #root {
+  /* ensure your desired background is applied */
+  background-color: var(--bg1) !important;
+  background-image:
+    radial-gradient(1200px 800px at 10% -10%, rgb(231, 190, 7) 0%, transparent 50%),
+    radial-gradient(900px 600px at 110% 10%, rgb(84, 161, 255) 0%, transparent 40%),
+    linear-gradient(160deg, var(--bg1), var(--bg2)) !important;
+}
+
+/* let top-level layout containers show the page background */
+.container,
+.container-fluid,
+.app-root,
+.page-community,
+.page-map,
+.main-page,
+.content-wrapper {
+  background: transparent !important;
+}
+
+/* override Bootstrap helper classes that may force white backgrounds */
+.bg-light,
+.bg-white {
+  background-color: transparent !important;
+}
+
+/* keep cards readable */
+.card {
+  background: rgba(255,255,255,0.95) !important;
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(0,0,0,0.04);
+}

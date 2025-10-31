@@ -65,7 +65,7 @@ function Navbar() {
             </a>
           </li>
           <li className="nav-item">
-            <a className={`${styles['navbar_item']} nav-link fw-semibold ${isActive("/maps") ? styles.active : ""}`} href="/maps">
+            <a className={`${styles['navbar_item']} nav-link fw-semibold ${isActive("/map") ? styles.active : ""}`} href="/map">
               Map
             </a>
           </li>

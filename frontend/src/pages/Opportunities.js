@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar.js";
 import styles from "../styles/Opportunities.module.css";
 import axios from 'axios';
+import PageTransition from "../components/Animation/PageTransition.jsx";
 
 export default function Opportunities() {
   const [opportunities, setOpportunities] = useState([]);
@@ -112,7 +113,9 @@ export default function Opportunities() {
 
   return (
     <>
+    
       <Navbar />
+      <PageTransition>
       <div className={styles['opportunities-container']}>
         <h1>Opportunities</h1>
 
@@ -202,6 +205,7 @@ export default function Opportunities() {
           )}
         </div>
       </div>
+      </PageTransition>
     </>
   );
 }

@@ -128,7 +128,11 @@ const getCategoryMarkerIcon = (category) => {
   };
 };
 
-const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters }, ref) => {
+const MapContainer = React.forwardRef(({ 
+  activeFilters = [], 
+  onResetFilters,
+  onMapLoad 
+}, ref) => {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markersRef = useRef([]);
@@ -443,7 +447,11 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters }, r
           ]
         });
 
-        window.mapInstance = mapInstanceRef.current;
+        // Call onMapLoad with the map instance
+        if (onMapLoad) {
+          onMapLoad(mapInstanceRef.current);
+        }
+
         fetchOpportunities();
       }
     };
@@ -498,7 +506,7 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters }, r
       markersRef.current.forEach(m => m.setMap(null));
       markersRef.current = [];
     };
-  }, []);
+  }, [onMapLoad]);
 
   return (
     <div className="position-relative flex-grow-1">

@@ -12,7 +12,7 @@ export default function ChatInput({ onSend }) {
   };
 
   return (
-    <Form onSubmit={handleSubmit} className="border-top p-3 bg-white">
+    <Form onSubmit={handleSubmit} className="border-top p-3 bg-transparent">
       <InputGroup>
         <Form.Control
           type="text"

@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import styles from "../../styles/Signup.module.css";
 import Navbar from "../../components/Navbar";
 import { supabase } from "../../config/supabaseClient";
+import PageTransition from "../../components/Animation/PageTransition";
 
 export default function LoginSignup() {
   const [active, setActive] = useState(false);
@@ -145,6 +146,7 @@ export default function LoginSignup() {
   return (
     <>
       <Navbar />
+      <PageTransition>
       <div className={styles.body}>
         <div className={`${styles.login_signup_container} ${active ? styles.active : ""}`}>
           {/* LOGIN FORM */}
@@ -305,6 +307,7 @@ export default function LoginSignup() {
           </div>
         </div>
       </div>
+      </PageTransition>
     </>
   );
 }

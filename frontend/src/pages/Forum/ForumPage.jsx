@@ -3,7 +3,8 @@ import Navbar from "../../components/Navbar.js";
 import FeaturedCard from "./component/FeaturedCard";
 import CommunitySpotlight from "./component/CommunitySpotlight";
 import axios from 'axios';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import PageTransition from "../../components/Animation/PageTransition.jsx";
 
 const PostModal = ({ post, onClose, onLike }) => {
   if (!post) return null;
@@ -113,17 +114,14 @@ export default function ForumPage() {
       setLoading(true);
       const response = await fetch('http://localhost:3001/community/get_all_posts');
       const responseData = await response.json();
-
-      // Extract posts array from result property
       const data = responseData.result || [];
       console.log("Posts data:", data);
 
-      // Changed from profile_picture to profile_image
       const normalised = data.map(item => ({
         feedback_id: item.feedback_id,
         user_id: item.user_id,
         username: item.username || "Anonymous",
-        profile_image: item.profile_image, // Changed from profile_picture to profile_image
+        profile_image: item.profile_image, 
         subject: item.subject,
         body: item.body,
         img: item.image,
@@ -282,9 +280,9 @@ useEffect(() => {
   }, [query, sortBy, posts]);
 
   return (
-    <div className="container-fluid vh-100 d-flex flex-column bg-light">
+    <div className="container-fluid vh-100 d-flex flex-column page-community">
       <Navbar />
-
+      <PageTransition>
       <div className="container py-4 flex-grow-1">
         {/* Spotlight carousel */}
         <div className="col-lg-12 mb-4">
@@ -317,11 +315,13 @@ useEffect(() => {
               <option value="likes">Sort by Likes</option>
             </select>
 
-            {/* New post button */}
-            <a href="/community/new-discussion" className="btn btn-primary btn-sm">
+            {/* New post button - Fix the path */}
+            <Link to="/community/new" className="btn btn-primary btn-sm">
               <i className="bi bi-plus-circle me-1"></i>
               Add Post
-            </a>
+            </Link>
+
+
           </div>
         </div>
 
@@ -359,6 +359,7 @@ useEffect(() => {
           </div>
         )}
       </div>
+      </PageTransition>
 
       {/* Post Modal */}
       {selectedPost && (
