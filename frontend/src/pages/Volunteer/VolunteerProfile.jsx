@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Navbar from "../../components/Navbar";
 
 export default function VolunteerProfile() {
   const STORAGE_KEY = "volunteer_profile_v1";
@@ -91,6 +92,8 @@ export default function VolunteerProfile() {
   };
 
   return (
+    <>
+    <Navbar/>
     <div className="container py-4">
       <div className="row g-4">
         {/* === LEFT PREVIEW === */}
@@ -322,6 +325,8 @@ export default function VolunteerProfile() {
         </div>
       </div>
     </div>
+    </>
+
   );
 }
 
