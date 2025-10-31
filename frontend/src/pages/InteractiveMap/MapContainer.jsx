@@ -569,6 +569,48 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
     }
   }, [filteredOpportunities]);
 
+  // Hide camera control button and fix zoom control styling
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.innerHTML = `
+      gmp-internal-camera-control {
+        display: none !important;
+      }
+
+      /* Hide zoom control divider */
+      .gmnoprint > div[style*="background-color: rgb(230, 230, 230)"] {
+        display: none !important;
+      }
+
+      /* Alternative selector for zoom divider */
+      .gm-control-active + div[style*="background"] {
+        display: none !important;
+      }
+
+      /* Ensure zoom buttons are properly sized */
+      button.gm-control-active[aria-label*="Zoom"] {
+        width: 40px !important;
+        height: 40px !important;
+      }
+
+      /* Ensure zoom control container has proper styling */
+      .gmnoprint div[draggable="false"] {
+        border-radius: 2px !important;
+        box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 4px -1px !important;
+      }
+
+      /* Keep current location button icon white on hover */
+      .btn.position-absolute:hover i.bi-compass {
+        color: white !important;
+      }
+    `;
+    document.head.appendChild(style);
+
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+
   // Initialize map
   useEffect(() => {
     const initMap = () => {
@@ -584,6 +626,7 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
             }
           ],
           // Enable all camera controls
+          panControl: false, // Disable camera pan controls
           zoomControl: true,
           zoomControlOptions: {
             position: window.google.maps.ControlPosition.TOP_RIGHT
@@ -653,6 +696,24 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
           document.head.appendChild(script);
         } else if (window.google) {
           initMap();
+        } else {
+          // Script exists but Google Maps not loaded yet - wait for it
+          console.log('Google Maps script exists but not loaded yet, waiting...');
+          const checkGoogleLoaded = setInterval(() => {
+            if (window.google) {
+              clearInterval(checkGoogleLoaded);
+              initMap();
+            }
+          }, 100);
+
+          // Timeout after 10 seconds
+          setTimeout(() => {
+            clearInterval(checkGoogleLoaded);
+            if (!window.google) {
+              console.error('Timeout waiting for Google Maps to load');
+              setLoading(false);
+            }
+          }, 10000);
         }
       } catch (err) {
         console.error('Error loading Google Maps:', err);
@@ -735,10 +796,16 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
           color: 'white',
           padding: 0
         }}
-        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#3a7de8'}
-        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#4891ffff'}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = '#3a7de8';
+          e.currentTarget.style.color = 'white';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = '#4891ffff';
+          e.currentTarget.style.color = 'white';
+        }}
       >
-        <i className="bi bi-compass" style={{ fontSize: '18px' }}></i>
+        <i className="bi bi-compass" style={{ fontSize: '18px', color: 'white' }}></i>
       </button>
 
       {loading && (
