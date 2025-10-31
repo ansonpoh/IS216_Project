@@ -14,7 +14,7 @@ import OrganiserDashboard from './pages/Organisers/OrganiserDashboard.jsx';
 import OrganiserCreateForm from "./pages/Organisers/OrganiserCreateForm.jsx"
 import VolunteerProfile from "./pages/Volunteer/VolunteerProfile.jsx";
 import VolunteerDashboard from "./pages/Volunteer/VolunteerDashboard.jsx";
-import NewDiscussion from './pages/Forum/component/NewDiscussion';
+
 
 //transition wrapper
 import {AnimatePresence} from "framer-motion";
@@ -44,7 +44,7 @@ function App() {
             <Route path="/notifications" element={<NotificationsPage />} />
             
             {/* Profile Page */}
-            <Route path="/profile" element={<ProfilePage />} />
+            {/* <Route path="/profile" element={<ProfilePage />} /> */}
             
             {/* Choose Role Page */}
             <Route path="/choose-role" element={<RoleSelect />} />
