@@ -7,14 +7,71 @@ import { AuthProvider, useAuth } from "../../contexts/AuthProvider"; // optional
 export default function OrganiserDashboard() {
   const nav = useNavigate();
   const { auth } = useAuth?.() || {}; // safe in case hook shape differs
-  const org_id = auth.id;
+  const id = auth.id;
 
   const [events, setEvents] = useState([]);
+  const [filteredEvents, setFilteredEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("all"); // all | draft | published | closed
   const [sort, setSort] = useState("startAt"); // startAt | createdAt | capacity
+  const [org, setOrg] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        setLoading(true);
+        setErr("");
+        const org = await axios.get("http://localhost:3001/orgs/get_org_by_id", {params: {id}})
+        setOrg(org.data.result[0]);
+        const org_id = org.data.result[0].org_id;
+        const res = await axios.get("http://localhost:3001/events/get_events_of_org", {params: {org_id}});
+        setEvents(res.data.result);
+        setFilteredEvents(res.data.result);
+        // if (!cancelled) {
+        //   setEvents(Array.isArray(res.data) ? res.data : res.data?.events || []);
+        // }
+      } catch (e) {
+        if (!cancelled) setErr(e?.response?.data?.message || "Failed to load events.");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    let list = [...events];
+
+    if (status !== "all") list = list.filter((e) => (e.status || "draft") === status);
+
+    if (query.trim()) {
+      const q = query.toLowerCase();
+      list = list.filter(
+        (e) =>
+          e.title?.toLowerCase().includes(q) ||
+          e.location?.toLowerCase().includes(q) ||
+          e.description?.toLowerCase().includes(q)
+      );
+    }
+
+    list.sort((a, b) => {
+      if (sort === "capacity") {
+        const pa = capacityPct(a);
+        const pb = capacityPct(b);
+        return pb - pa; // most filled first
+      }
+      const av = a[sort];
+      const bv = b[sort];
+      return (av || "").localeCompare?.(bv || "") || new Date(av) - new Date(bv);
+    });
+    console.log(events);
+    setFilteredEvents(list);
+  }, [events, query, status, sort]);
 
   const fmtDate = (iso) => {
     if (!iso) return "-";
@@ -35,27 +92,6 @@ export default function OrganiserDashboard() {
     return Math.min(100, Math.round((filled / cap) * 100));
   };
 
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        setLoading(true);
-        setErr("");
-        const res = await axios.get("http://localhost:3001/events/get_events_of_org", {params: {org_id}});
-        console.log(res);
-        if (!cancelled) {
-          setEvents(Array.isArray(res.data) ? res.data : res.data?.events || []);
-        }
-      } catch (e) {
-        if (!cancelled) setErr(e?.response?.data?.message || "Failed to load events.");
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   const goCreate = () => nav("/organiser/opportunities/new"); // <-- point this to your actual form route
 
@@ -97,34 +133,7 @@ export default function OrganiserDashboard() {
     }
   };
 
-  const filtered = useMemo(() => {
-    let list = [...events];
 
-    if (status !== "all") list = list.filter((e) => (e.status || "draft") === status);
-
-    if (query.trim()) {
-      const q = query.toLowerCase();
-      list = list.filter(
-        (e) =>
-          e.title?.toLowerCase().includes(q) ||
-          e.location?.toLowerCase().includes(q) ||
-          e.description?.toLowerCase().includes(q)
-      );
-    }
-
-    list.sort((a, b) => {
-      if (sort === "capacity") {
-        const pa = capacityPct(a);
-        const pb = capacityPct(b);
-        return pb - pa; // most filled first
-      }
-      const av = a[sort];
-      const bv = b[sort];
-      return (av || "").localeCompare?.(bv || "") || new Date(av) - new Date(bv);
-    });
-
-    return list;
-  }, [events, query, status, sort]);
 
   // ---- UI ------------------------------------------------------------------
   return (
@@ -136,7 +145,7 @@ export default function OrganiserDashboard() {
           <div>
             <h2 className="mb-1">Organiser Dashboard</h2>
             <div className="text-muted">
-              Welcome{auth?.id ? `, organiser #${auth.id}` : ""}. Manage your opportunities and volunteers.
+              Welcome {org ? org.org_name : ""}. Manage your opportunities and volunteers.
             </div>
           </div>
           <button className="btn btn-success" onClick={goCreate}>
@@ -188,7 +197,7 @@ export default function OrganiserDashboard() {
           </div>
         )}
 
-        {!loading && !err && filtered.length === 0 && (
+        {!loading && !err && filteredEvents.length === 0 && (
           <div className="text-center text-muted py-5">
             <h5 className="mb-2">No opportunities yet</h5>
             <p className="mb-3">Create your first event and start collecting signups.</p>
@@ -198,7 +207,7 @@ export default function OrganiserDashboard() {
           </div>
         )}
 
-        {!loading && !err && filtered.length > 0 && (
+        {!loading && !err && filteredEvents.length > 0 && (
           <div className="table-responsive">
             <table className="table align-middle">
               <thead className="table-light">
@@ -212,7 +221,7 @@ export default function OrganiserDashboard() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((e) => {
+                {filteredEvents.map((e) => {
                   const pct = capacityPct(e);
                   return (
                     <tr key={e.id}>
