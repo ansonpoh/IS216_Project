@@ -6,103 +6,114 @@ import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import PageTransition from "../../components/Animation/PageTransition.jsx";
 import NewDiscussion from "./component/NewDiscussion.jsx";
+import styles from "../../styles/Community.module.css";
 
 const PostModal = ({ post, onClose, onLike }) => {
   if (!post) return null;
 
+   const handleOverlayClick = (e) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   return (
-    <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
-      <div className="modal-dialog modal-xl modal-dialog-centered">
-        <div className="modal-content">
-          <div className="modal-header border-0">
-            <button type="button" className="btn-close" onClick={onClose}></button>
+    <div className={styles["modal-overlay"]} onClick={handleOverlayClick}>
+      <div className={styles["modal-wrapper"]}>
+        {/* Close button */}
+        <button className={styles["modal-close"]} onClick={onClose}>
+          ×
+        </button>
+
+        {/* Modal content */}
+        <div className={styles["modal-content-row"]}>
+          {/* Left side - Image */}
+          <div className={styles["modal-left"]}>
+            {post.img ? (
+              <img
+                src={post.img}
+                alt={post.subject}
+                className={styles["modal-large-image"]}
+              />
+            ) : (
+              <div className="text-muted" style={{ textAlign: "center" }}>
+                <i className="bi bi-image" style={{ fontSize: "4rem" }}></i>
+                <p className="mt-3">No image available</p>
+              </div>
+            )}
           </div>
-          <div className="modal-body p-0">
-            <div className="row g-0">
-              {/* Left side - Image */}
-              <div className="col-lg-7 bg-dark d-flex align-items-center justify-content-center">
-                {post.img ? (
+
+          {/* Right side - Details */}
+          <div className={styles["modal-right"]}>
+            {/* User info */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginBottom: "16px",
+                gap: "12px",
+              }}
+            >
+              <div
+                style={{
+                  width: "48px",
+                  height: "48px",
+                  borderRadius: "50%",
+                  backgroundColor: "#0d6efd",
+                  color: "#fff",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  overflow: "hidden",
+                  fontSize: "1.2rem",
+                }}
+              >
+                {post.profile_image ? (
                   <img
-                    src={post.img}
-                    alt={post.subject}
-                    className="img-fluid"
-                    style={{ maxHeight: "70vh", objectFit: "contain" }}
+                    src={post.profile_image}
+                    alt={post.username}
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
                   />
                 ) : (
-                  <div className="text-white p-5">
-                    <i className="bi bi-image" style={{ fontSize: "4rem" }}></i>
-                    <p className="mt-3">No image available</p>
-                  </div>
+                  post.username?.substring(0, 1).toUpperCase() || "U"
                 )}
               </div>
-
-              {/* Right side - Details */}
-              <div className="col-lg-5">
-                <div className="p-4">
-                  {/* User info */}
-                  <div className="d-flex align-items-center mb-3">
-                    <div
-                      className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3"
-                      style={{
-                        width: "48px",
-                        height: "48px",
-                        fontSize: "1.2rem",
-                        overflow: "hidden",
-                      }}
-                    >
-                      {post.profile_image ? (
-                        <img
-                          src={post.profile_image}
-                          alt={post.username}
-                          className="w-100 h-100 object-fit-cover"
-                        />
-                      ) : (
-                        post.username?.substring(0, 1).toUpperCase() || "U"
-                      )}
-                    </div>
-                    <div>
-                      <h6 className="mb-0">{post.username}</h6>
-                      <small className="text-muted">
-                        {new Date(post.created_at).toLocaleDateString()}
-                      </small>
-                    </div>
-                  </div>
-
-                  {/* Post content */}
-                  <h5 className="mb-3">{post.subject}</h5>
-                  <p className="text-muted mb-4">{post.body}</p>
-
-                  {/* Actions */}
-                  <div className="d-flex gap-2 mb-4">
-                    <button
-                      className={`btn ${
-                        post.isLiked ? "btn-primary" : "btn-outline-primary"
-                      } d-flex align-items-center gap-2`}
-                      onClick={() => onLike(post.feedback_id)}
-                    >
-                      <i
-                        className={`bi ${
-                          post.isLiked ? "bi-heart-fill" : "bi-heart"
-                        }`}
-                      ></i>
-                      <span>{post.liked_count || 0}</span>
-                    </button>
-                  </div>
-
-                  {/* Event/Org info if available */}
-                  {(post.event_id || post.org_id) && (
-                    <div className="border-top pt-3">
-                      <small className="text-muted">
-                        {post.event_id && <div>Event ID: {post.event_id}</div>}
-                        {post.org_id && (
-                          <div>Organization ID: {post.org_id}</div>
-                        )}
-                      </small>
-                    </div>
-                  )}
-                </div>
+              <div>
+                <h6 style={{ margin: 0 }}>{post.username}</h6>
+                <small style={{ color: "#6c757d" }}>
+                  {new Date(post.created_at).toLocaleDateString()}
+                </small>
               </div>
             </div>
+
+            {/* Post content */}
+            <h3 className={styles["modal-title"]}>{post.subject}</h3>
+            <p className={styles["modal-desc"]}>{post.body}</p>
+
+            {/* Actions */}
+            <button
+              className={styles["modal-signup-btn"]}
+              style={{
+                backgroundColor: post.isLiked ? "#0d6efd" : "#fff",
+                color: post.isLiked ? "#fff" : "#0d6efd",
+                border: "1px solid #0d6efd",
+                
+              }}
+              onClick={() => onLike(post.feedback_id)}
+            >
+              <i className={`bi ${post.isLiked ? "bi-heart-fill" : "bi-heart"}`}></i>
+              {post.liked_count || 0}
+            </button>
+
+            {/* Event/Org info */}
+            {(post.event_id || post.org_id) && (
+              <div style={{ marginTop: "16px", borderTop: "1px solid #ddd", paddingTop: "12px" }}>
+                <small style={{ color: "#6c757d" }}>
+                  {post.event_id && <div>Event ID: {post.event_id}</div>}
+                  {post.org_id && <div>Organization ID: {post.org_id}</div>}
+                </small>
+              </div>
+            )}
           </div>
         </div>
       </div>
