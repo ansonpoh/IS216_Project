@@ -1,6 +1,7 @@
 import { mdiPaw, mdiBalloon, mdiHumanCane, mdiTree, mdiCalendar, mdiHuman, mdiHeartPulse, } from '@mdi/js';
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import axios from "axios";
+import { useNavigate } from 'react-router-dom';
 
 // Helper function to create custom marker icons based on category
 const getCategoryMarkerIcon = (category) => {
@@ -136,6 +137,7 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
   const [loading, setLoading] = useState(true);
   const [mappedEvents, setMappedEvents] = useState([]);
   const [showingRecommended, setShowingRecommended] = useState(false);
+  const nav = useNavigate();
 
   // Filter opportunities based on active filters
   const filteredOpportunities = useMemo(() => {
@@ -314,6 +316,7 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
 
       const imageUrl = ev.image_url;
       const hasImage = imageUrl && imageUrl.trim() !== '';
+      const buttonId = `learn-more-${ev.event_id}`;
 
       const infoWindow = new window.google.maps.InfoWindow({
         content: `
@@ -353,7 +356,7 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
             </div>
             ${ev.event_id ? `
               <a 
-                href="/opportunities" 
+                id=${buttonId}
                 style="display: block; margin-top: 12px; padding: 10px 16px; background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 600; text-align: center; box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3); transition: transform 0.2s;"
                 onmouseover="this.style.transform='translateY(-2px)'"
                 onmouseout="this.style.transform='translateY(0)'"
@@ -364,6 +367,15 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
           </div>
         `,
         maxWidth: 320
+      });
+
+      infoWindow.addListener("domready", () => {
+        const btn = document.getElementById(buttonId);
+        if (btn) {
+          btn.addEventListener("click", () => {
+            nav("/opportunities", { state: { eventId: ev.event_id } });
+          });
+        }
       });
 
       marker.addListener("click", () => {
@@ -446,7 +458,7 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
       const customIcon = getCategoryMarkerIcon(item.category);
       
       // Debug: Log category to icon mapping
-      console.log(`Marker created - Category: "${item.category}" | Title: "${item.title}"`);
+      // console.log(`Marker created - Category: "${item.category}" | Title: "${item.title}"`);
       
       const marker = new window.google.maps.Marker({
         position: loc,
@@ -471,7 +483,8 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
       // Check multiple possible image field names from backend
       const imageUrl = item.image_url || item.image || item.imageUrl || item.img;
       const hasImage = imageUrl && imageUrl.trim() !== '';
-      
+      const buttonId = `learn-more-${item.event_id}`;
+
       const infoWindow = new window.google.maps.InfoWindow({
         content: `
           <div style="padding: 8px; max-width: 300px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
@@ -506,12 +519,12 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
             ` : ''}
             <div style="font-size: 13px; color: #555; margin-top: 10px; display: flex; align-items: flex-start; padding: 8px 0; border-top: 1px solid #eee;">
               <strong style="margin-right: 6px; font-size: 16px;">📍</strong>
-              <span style="line-height: 1.4;">${item.location}</span>
+              <span style="line-height: 1.4;">${item.postalcode}</span>
             </div>
             ${item.event_id ? `
               <a 
-                href="/opportunities" 
-                style="display: block; margin-top: 12px; padding: 10px 16px; background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 600; text-align: center; box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3); transition: transform 0.2s;"
+                id=${buttonId}
+                style="display: block; margin-top: 12px; padding: 10px 16px; background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 600; text-align: center; box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3); transition: transform 0.2s; cursor: pointer;"
                 onmouseover="this.style.transform='translateY(-2px)'"
                 onmouseout="this.style.transform='translateY(0)'"
               >
@@ -521,6 +534,15 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
           </div>
         `,
         maxWidth: 320
+      });
+
+      infoWindow.addListener("domready", () => {
+        const btn = document.getElementById(buttonId);
+        if (btn) {
+          btn.addEventListener("click", () => {
+            nav("/opportunities", { state: { eventId: item.event_id } });
+          });
+        }
       });
 
       marker.addListener('click', () => {
@@ -547,6 +569,56 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
     }
   }, [filteredOpportunities]);
 
+  // Hide camera control button and fix zoom control styling
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.innerHTML = `
+      gmp-internal-camera-control {
+        display: none !important;
+      }
+
+      /* Show zoom control divider with proper styling */
+      .gmnoprint > div[style*="background-color: rgb(230, 230, 230)"] {
+        width: 36px !important;
+        height: 1px !important;
+        margin: 0px 0px !important;
+        background-color: rgb(230, 230, 230) !important;
+        display: block !important;
+      }
+
+      /* Alternative selector for zoom divider */
+      .gm-control-active + div[style*="background"] {
+        width: 36px !important;
+        height: 1px !important;
+        margin: 0px 0px !important;
+        background-color: rgb(230, 230, 230) !important;
+        display: block !important;
+      }
+
+      /* Ensure zoom buttons are properly sized */
+      button.gm-control-active[aria-label*="Zoom"] {
+        width: 40px !important;
+        height: 40px !important;
+      }
+
+      /* Ensure zoom control container has proper styling */
+      .gmnoprint div[draggable="false"] {
+        border-radius: 2px !important;
+        box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 4px -1px !important;
+      }
+
+      /* Keep current location button icon white on hover */
+      .btn.position-absolute:hover i.bi-compass {
+        color: white !important;
+      }
+    `;
+    document.head.appendChild(style);
+
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+
   // Initialize map
   useEffect(() => {
     const initMap = () => {
@@ -562,6 +634,7 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
             }
           ],
           // Enable all camera controls
+          panControl: false, // Disable camera pan controls
           zoomControl: true,
           zoomControlOptions: {
             position: window.google.maps.ControlPosition.TOP_RIGHT
@@ -631,6 +704,24 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
           document.head.appendChild(script);
         } else if (window.google) {
           initMap();
+        } else {
+          // Script exists but Google Maps not loaded yet - wait for it
+          console.log('Google Maps script exists but not loaded yet, waiting...');
+          const checkGoogleLoaded = setInterval(() => {
+            if (window.google) {
+              clearInterval(checkGoogleLoaded);
+              initMap();
+            }
+          }, 100);
+
+          // Timeout after 10 seconds
+          setTimeout(() => {
+            clearInterval(checkGoogleLoaded);
+            if (!window.google) {
+              console.error('Timeout waiting for Google Maps to load');
+              setLoading(false);
+            }
+          }, 10000);
         }
       } catch (err) {
         console.error('Error loading Google Maps:', err);
@@ -713,10 +804,16 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
           color: 'white',
           padding: 0
         }}
-        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#3a7de8'}
-        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#4891ffff'}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = '#3a7de8';
+          e.currentTarget.style.color = 'white';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = '#4891ffff';
+          e.currentTarget.style.color = 'white';
+        }}
       >
-        <i className="bi bi-compass" style={{ fontSize: '18px' }}></i>
+        <i className="bi bi-compass" style={{ fontSize: '18px', color: 'white' }}></i>
       </button>
 
       {loading && (
