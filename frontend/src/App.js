@@ -14,7 +14,6 @@ import OrganiserCreateForm from "./pages/Organisers/OrganiserCreateForm.jsx"
 import VolunteerProfile from "./pages/Volunteer/VolunteerProfile.jsx";
 import VolunteerDashboard from "./pages/Volunteer/VolunteerDashboard.jsx";
 
-
 //transition wrapper
 import {AnimatePresence} from "framer-motion";
 
@@ -38,6 +37,9 @@ function App() {
             
             {/* Opportunities Page */}
             <Route path="/opportunities" element={<Opportunities />} />
+            
+            {/* Notifications Page */}
+            {/* <Route path="/notifications" element={<NotificationsPage />} /> */}
             
             {/* Choose Role Page */}
             <Route path="/choose-role" element={<RoleSelect />} />

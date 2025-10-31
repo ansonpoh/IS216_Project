@@ -1,6 +1,6 @@
-.App {
+/* .App {
   text-align: center;
-}
+} */
 
 .App-logo {
   height: 40vmin;
@@ -41,7 +41,7 @@
   --bg1: #ffffff;
   --bg2: #edf1fa;
   --accent1: #77b3fc;
-  --accent2: hwb(34 11% 5%);
+  --accent2: hwb(216 62% 0%);
 }
 
 /* Global font for the entire app */
@@ -51,7 +51,7 @@ html, body, #root {
   margin: 0;
   background-color: var(--bg1);
   background-image:
-    radial-gradient(1200px 800px at 10% -10%, rgb(231, 190, 7) 0%, transparent 50%),
+    radial-gradient(1200px 800px at 10% -10%, hwb(216 62% 0%) 0%, transparent 50%),
     radial-gradient(900px 600px at 110% 10%, rgb(84, 161, 255) 0%, transparent 40%),
     linear-gradient(160deg, var(--bg1), var(--bg2));
   background-repeat: no-repeat;
@@ -78,16 +78,6 @@ a {
 h1, h2, h3, h4, h5, h6 {
   font-family: inherit;
   font-weight: 600;
-}
-
-/* Force global background and make common layout containers transparent */
-html, body, #root {
-  /* ensure your desired background is applied */
-  background-color: var(--bg1) !important;
-  background-image:
-    radial-gradient(1200px 800px at 10% -10%, rgb(231, 190, 7) 0%, transparent 50%),
-    radial-gradient(900px 600px at 110% 10%, rgb(84, 161, 255) 0%, transparent 40%),
-    linear-gradient(160deg, var(--bg1), var(--bg2)) !important;
 }
 
 /* let top-level layout containers show the page background */
