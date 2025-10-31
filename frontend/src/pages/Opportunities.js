@@ -19,6 +19,8 @@ export default function Opportunities() {
   const [dateToFilter, setDateToFilter] = useState("");
   const [selectedOpportunity, setSelectedOpportunity] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
 
   useEffect(() => {
     const fetchOpportunities = async () => {
@@ -92,6 +94,20 @@ export default function Opportunities() {
       }
     }
   }, [openEventId, opportunities])
+
+  useEffect(() => {
+  const handleScroll = () => {
+    if (window.scrollY > 300) {  // show button after scrolling 300px
+      setShowScrollTop(true);
+    } else {
+      setShowScrollTop(false);
+    }
+  };
+
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, []);
+
 
   const resetFilters = () => {
     setCategoryFilter("");
@@ -185,7 +201,7 @@ export default function Opportunities() {
               <div className={styles['event-card']} key={op.event_id} onClick={() => {setShowModal(true); setSelectedOpportunity(op);}}>
                 <div className={styles['card-image']}>
                   {op.image_url && <img src={op.image_url} alt={op.title} />}
-                  <span className={`${styles['status-badge']} ${styles[op.status]}`}>{op.status}</span>
+                  {/* <span className={`${styles['status-badge']} ${styles[op.status]}`}>{op.status}</span> */}
                 </div>
 
                 <div className={styles['card-content']}>
@@ -197,7 +213,7 @@ export default function Opportunities() {
                       <span className={styles['info-text']}>{op.location || "N/A"}</span>
                     </p>
                     <p>
-                      <i className="bi bi-calendar-event" style={{ marginRight: "5px" }}></i>
+                      <i className="bi bi-calendar-event" style={{ marginRight: "7px" }}></i>
                       <span className={styles['info-text']}>
                         {formatDate(op.start_date)} - {formatTime(op.start_time)} - {formatTime(op.end_time)}
                       </span>
@@ -212,7 +228,9 @@ export default function Opportunities() {
                 <hr className={styles['card-divider']} />
 
                 <div className={styles['card-footer']}>
-                  <span className={styles['category-tag']}>{op.category ?? "Uncategorized"}</span>
+                <span className={`${styles['category-tag']} ${styles[`category-${op.category?.toLowerCase().replace(/\s+/g, "-")}`] || styles['category-general']}`}>
+                {op.category ?? "Uncategorized"}
+                </span>
                   <button className={styles['signup-btn']}>Sign Up</button>
                 </div>
               </div>
@@ -270,6 +288,17 @@ export default function Opportunities() {
         </div>
         </>
       )}
+
+      {showScrollTop && (
+  <button 
+    onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} 
+    className={styles.scrollTopButton}
+    aria-label="Scroll to top"
+  >
+    ↑
+  </button>
+)}
+
       </PageTransition>
     </>
   );
