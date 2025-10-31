@@ -1,374 +1,396 @@
-import React, { useEffect, useState } from "react";
-import Navbar from "../../../components/Navbar.js";
-import FeaturedCard from "./FeaturedCard";
-import CommunitySpotlight from "./CommunitySpotlight.jsx";
-import axios from 'axios';
-import { useNavigate, Link } from "react-router-dom";
-import PageTransition from "../../../components/Animation/PageTransition.jsx";
+// src/components/NewDiscussion.jsx
+import React, { useState, useRef, useEffect } from "react";
+import * as bootstrap from 'bootstrap';  // Add this line
+import styles from "../../../styles/Community.module.css";
+import SplitText from "../../../components/Animation/SplitText.jsx";
+import axios from "axios";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import { useNavigate } from "react-router-dom";
 
-const PostModal = ({ post, onClose, onLike }) => {
-  if (!post) return null;
+// validation constants
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5MB
+const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+
+export default function NewDiscussion({ initialBoard = "" }) {
+  const [imagePreview, setImagePreview] = useState(null);
+  const [imageError, setImageError] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [status, setStatus] = useState("");
+
+  const auth = JSON.parse(sessionStorage.getItem("auth"));
+
+  const [formData, setFormData] = useState({
+    supabase_id: auth.id,
+    subject: "",
+    body: "",
+    image_file: null,
+  });
+
+  // refs
+  const fileInputRef = useRef(null);
+  const nav = useNavigate();
+
+  /* ========== Image helpers ========== */
+  function clearImage() {
+    if (imagePreview) URL.revokeObjectURL(imagePreview);
+    setImagePreview(null);
+    setFormData((prev) => ({ ...prev, image_file: null }));
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }
+
+  const handleImageFile = (file) => {
+    if (!file) return clearImage();
+
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      setStatus("Only JPG, PNG, WEBP or GIF allowed.");
+      return;
+    }
+    if (file.size > MAX_IMAGE_BYTES) {
+      setStatus("Image is too large (max 5MB).");
+      return;
+    }
+
+    setFormData((prev) => ({ ...prev, image_file: file }));
+
+    const previewUrl = URL.createObjectURL(file);
+    setImagePreview(previewUrl);
+  };
+
+  const onImageChange = (e) => {
+    const file = e.target.files?.[0];
+    handleImageFile(file);
+  };
+
+  function onDrop(e) {
+    e.preventDefault();
+    if (e.dataTransfer?.files?.length) {
+      const file = e.dataTransfer.files[0];
+      handleImageFile(file);
+    }
+  }
+
+  function onDragOver(e) {
+    e.preventDefault();
+  }
+
+  function onPaste(e) {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    for (let i = 0; i < items.length; i++) {
+      const it = items[i];
+      if (it.kind === "file" && it.type.startsWith("image/")) {
+        const file = it.getAsFile();
+        handleImageFile(file);
+        break;
+      }
+    }
+  }
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  /* ========== Submit ========== */
+  async function handlePost(e) {
+    e.preventDefault();
+    setSubmitting(true);
+    setStatus("");
+
+    try {
+      // Auth check
+      if (!auth?.id) {
+        setStatus("Please sign in to post");
+        alert("Please sign in to create a post");
+        nav("/volunteer/auth");
+        return;
+      }
+
+      // Form validation
+      if (!formData.subject.trim() || !formData.body.trim()) {
+        setStatus("Subject and body are required");
+        return;
+      }
+
+      // Debug log
+      console.log("Sending data:", {
+        supabase_id: auth.id,
+        user_id: auth.id,
+        subject: formData.subject,
+        body: formData.body,
+        hasImage: !!formData.image_file
+      });
+
+      const fd = new FormData();
+      fd.append("supabase_id", auth.id);
+      fd.append("user_id", auth.id)
+      fd.append("subject", formData.subject.trim());
+      fd.append("body", formData.body.trim());
+
+      if (formData.image_file) {
+        fd.append("image_file", formData.image_file);
+        console.log("Image file type:", formData.image_file.type);
+        console.log("Image file size:", formData.image_file.size);
+      }
+
+      // Make the API call with detailed error logging
+      try {
+        const response = await axios.post(
+          "http://localhost:3001/community/create_post",
+          fd,
+          {
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'multipart/form-data'
+            },
+            withCredentials: true
+          }
+        );
+
+        console.log("Server response:", response.data);
+
+        if (response.data.status) {
+          alert("Post Created Successfully!");
+          nav("/community");
+        }
+      } catch (axiosError) {
+        console.error("Axios error details:", {
+          message: axiosError.message,
+          status: axiosError.response?.status,
+          statusText: axiosError.response?.statusText,
+          responseData: axiosError.response?.data
+        });
+        throw axiosError;
+      }
+
+    } catch (err) {
+      console.error("Full error object:", err);
+
+      const errorMessage = err.response?.data?.message
+        || err.message
+        || "Failed to create post";
+
+      setStatus(errorMessage);
+      alert(`Error: ${errorMessage}`);
+
+      if (err.response?.status === 413) {
+        setStatus("Image file is too large");
+      } else if (err.response?.status === 415) {
+        setStatus("Unsupported image format");
+      }
+    } finally {
+      setSubmitting(false);
+      setUploading(false);
+    }
+  }
+
+
+  function handleCancel() {
+    window.history.back();
+  }
+
+  // Add useEffect for tooltip initialization
+  useEffect(() => {
+    // Initialize all tooltips
+    const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    tooltips.forEach(tooltip => {
+      new bootstrap.Tooltip(tooltip);
+    });
+
+    // Cleanup on unmount
+    return () => {
+      tooltips.forEach(tooltip => {
+        const instance = bootstrap.Tooltip.getInstance(tooltip);
+        if (instance) {
+          instance.dispose();
+        }
+      });
+    };
+  }, []);
 
   return (
-    <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
-      <div className="modal-dialog modal-xl modal-dialog-centered">
-        <div className="modal-content">
-          <div className="modal-header border-0">
-            <button type="button" className="btn-close" onClick={onClose}></button>
+    <div className={`${styles.My_moment}`}>
+      {/* Enhanced Header with SplitText */}
+      <div className="text-center mb-2 mt-5 ">
+        <SplitText
+          text="My Moment"
+          tag="h1"
+          className="display-4 fw-bold mb-3"
+          delay={150}
+          duration={0.8}
+          from={{ opacity: 0, y: 50 }}
+          to={{ opacity: 1, y: 0 }}
+          splitType="chars"
+        />
+        <nav className={`${styles.breadcrumb} d-inline-flex`}>
+          <SplitText
+            text="Share with the Community"
+            delay={50}
+            duration={0.6}
+            from={{ opacity: 0, y: 20 }}
+            to={{ opacity: 1, y: 0 }}
+            splitType="words"
+            className="text-muted"
+          />
+        </nav>
+      </div>
+
+
+
+      <div className={styles.card}>
+        <div className={styles['card-body']}>
+          {/* Policy notice with icon */}
+          <div className="alert alert-light border d-flex align-items-center mb-4">
+            <i 
+              className={`bi bi-info-circle me-2 ${styles.info_icon}`}
+              style={{ cursor: 'pointer' }}
+              data-bs-toggle="tooltip"
+              data-bs-placement="right"
+              data-bs-html="true"
+              title='<div class="guidelines_title">Community Guidelines:</div>• Be respectful and kind<br/>• No personal attacks or bullying<br/>• Keep content family-friendly<br/>• No spam or self-promotion<br/>• Respect privacy and confidentiality'
+            ></i>
+            <p className="mb-0">Remember that posts are subject to the Community Policy.</p>
           </div>
-          <div className="modal-body p-0">
-            <div className="row g-0">
-              {/* Left side - Image */}
-              <div className="col-lg-7 bg-dark d-flex align-items-center justify-content-center">
-                {post.img ? (
-                  <img 
-                    src={post.img} 
-                    alt={post.subject}
-                    className="img-fluid"
-                    style={{ maxHeight: "70vh", objectFit: "contain" }}
-                  />
-                ) : (
-                  <div className="text-white p-5">
-                    <i className="bi bi-image" style={{ fontSize: "4rem" }}></i>
-                    <p className="mt-3">No image available</p>
-                  </div>
-                )}
-              </div>
 
-              {/* Right side - Details */}
-              <div className="col-lg-5">
-                <div className="p-4">
-                  {/* User info */}
-                  <div className="d-flex align-items-center mb-3">
-                    <div className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3"
-                         style={{ width: "48px", height: "48px", fontSize: "1.2rem", overflow: 'hidden' }}>
-                      {post.profile_image ? (
-                          <img 
-                              src={post.profile_image}
-                              alt={post.username}
-                              className="w-100 h-100 object-fit-cover"
-                          />
-                      ) : (
-                          post.username?.substring(0, 1).toUpperCase() || "U"
-                      )}
-                    </div>
-                    <div>
-                      <h6 className="mb-0">{post.username}</h6>
-                      <small className="text-muted">
-                        {new Date(post.created_at).toLocaleDateString()}
-                      </small>
-                    </div>
-                  </div>
+          <form onSubmit={handlePost}>
+            {/* Subject with enhanced styling */}
+            <div className="mb-4">
+              <label htmlFor="subjectInput" className={`form-label fw-bold ${styles.form_label}`}>
+                Subject
+              </label>
+              <input
+                id="subjectInput"
+                name="subject"
+                type="text"
+                className={`form-control ${errors.subject ? "is-invalid" : ""} ${styles['subject-highlight']}`}
+                placeholder="Enter a subject"
+                value={formData.subject}
+                onChange={handleChange}
+                autoComplete="off"
+                required
+              />
+              {errors.subject && <div className="invalid-feedback">{errors.subject}</div>}
+            </div>
 
-                  {/* Post content */}
-                  <h5 className="mb-3">{post.subject}</h5>
-                  <p className="text-muted mb-4">{post.body}</p>
+            {/* Body with enhanced styling */}
+            <div className="mb-4">
+              <label
+                htmlFor="body"
+                className={`form-label fw-bold ${styles.form_label}`}
+              >
+                Body
+              </label>
+              <textarea
+                id="body"
+                name="body"
+                className={`form-control ${errors.body ? "is-invalid" : ""}`}
+                rows={10}
+                placeholder="Write your post here..."
+                value={formData.body}
+                onChange={handleChange}
+                required
+                aria-invalid={errors.body ? "true" : "false"}
+                aria-describedby={errors.body ? "body-error" : undefined}
+              />
+              {errors.body && (
+                <div id="body-error" className="invalid-feedback d-block">
+                  {errors.body}
+                </div>
+              )}
+            </div>
 
-                  {/* Actions */}
-                  <div className="d-flex gap-2 mb-4">
-                    <button 
-                      className={`btn ${post.isLiked ? 'btn-primary' : 'btn-outline-primary'} d-flex align-items-center gap-2`}
-                      onClick={() => onLike(post.feedback_id)}
+            {/* Enhanced image upload area */}
+            <div
+              className={`${styles['image-upload-area']} mb-4`}
+              onDrop={onDrop}
+              onDragOver={onDragOver}
+            >
+              <div className="d-flex align-items-center justify-content-between">
+                <div className="d-flex align-items-center">
+                  <i className="bi bi-image me-2 text-primary"></i>
+                  <small>Attach an image (optional)</small>
+                </div>
+                <div>
+                  <label className={`btn ${styles['btn-sm']} btn-outline-secondary mb-0`}>
+                    Choose file
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={onImageChange}
+                      style={{ display: "none" }}
+                    />
+                  </label>
+
+                  {formData.image_file && (
+                    <button
+                      type="button"
+                      className={`btn ${styles['btn-sm']} btn-outline-danger ms-2`}
+                      onClick={clearImage}
+                      disabled={uploading || submitting}
                     >
-                      <i className={`bi ${post.isLiked ? 'bi-heart-fill' : 'bi-heart'}`}></i>
-                      <span>{post.liked_count || 0}</span>
+                      Remove
                     </button>
-                  </div>
-
-                  {/* Event/Org info if available */}
-                  {(post.event_id || post.org_id) && (
-                    <div className="border-top pt-3">
-                      <small className="text-muted">
-                        {post.event_id && <div>Event ID: {post.event_id}</div>}
-                        {post.org_id && <div>Organization ID: {post.org_id}</div>}
-                      </small>
-                    </div>
                   )}
                 </div>
               </div>
+
+              {imageError && <div className="text-danger small mt-2">{imageError}</div>}
+
+              {imagePreview && (
+                <div className={styles['preview-container']}>
+                  <img
+                    src={imagePreview}
+                    alt="preview"
+                    className="w-100"
+                    style={{ height: 220, objectFit: "cover" }}
+                  />
+                  <div className="small text-muted mt-2 text-center">
+                    <i className="bi bi-eye me-1"></i>Preview
+                  </div>
+                </div>
+              )}
             </div>
-          </div>
+
+            {/* Enhanced action buttons */}
+            <div className="d-flex justify-content-end gap-3 mt-4">
+              <button
+                type="button"
+                className="btn btn-outline-secondary px-4"
+                onClick={handleCancel}
+                disabled={submitting}
+              >
+                <i className="bi bi-x me-2"></i>Cancel
+              </button>
+              <button
+                type="submit"
+                className="btn btn-primary px-4"
+                disabled={submitting || uploading}
+              >
+                {submitting ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Posting...
+                  </>
+                ) : uploading ? (
+                  <>
+                    <i className="bi bi-cloud-upload me-2"></i>
+                    Uploading...
+                  </>
+                ) : (
+                  <>
+                    <i className="bi bi-send me-2"></i>
+                    Post
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
         </div>
       </div>
-    </div>
-  );
-};
-
-export default function ForumPage() {
-
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [slides, setSlides] =useState([]);
-
-  const [filteredPosts, setFilteredPosts] = useState([]);
-  const [query, setQuery] = useState("");
-  const [sortBy, setSortBy] = useState("date"); // date, likes
-  const [selectedPost, setSelectedPost] = useState(null);
-
-  const nav = useNavigate();
-
-
-  useEffect(() => {
-        const fetchPosts = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch('http://localhost:3001/community/get_all_posts');
-      const responseData = await response.json();
-      const data = responseData.result || [];
-      console.log("Posts data:", data);
-
-      const normalised = data.map(item => ({
-        feedback_id: item.feedback_id,
-        user_id: item.user_id,
-        username: item.username || "Anonymous",
-        profile_image: item.profile_image, 
-        subject: item.subject,
-        body: item.body,
-        img: item.image,
-        created_at: item.created_at,
-        liked_count: 0
-      }));
-
-      setPosts(normalised);
-      setFilteredPosts(normalised);
-      
-    } catch (err) {
-      console.error("Error fetching posts:", err);
-      setPosts([]);
-      setFilteredPosts([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  fetchPosts();
-}, []);
-  
-// highlight fetching
-useEffect(() => {
-  const fetchHighlights = async () => {
-    try {
-      const response = await fetch('http://localhost:3001/community/get_all_highlights');
-      const data = await response.json();
-      
-      console.log('Highlights response:', data); // Debug log
-      
-      if (data.result) {  // Changed from data.status && data.result
-        const mappedSlides = data.result.map(highlight => ({
-          image: highlight.image,
-          caption: highlight.caption
-        }));
-        console.log('Mapped slides:', mappedSlides); // Debug log
-        setSlides(mappedSlides);
-      }
-    } catch (err) {
-      console.error("Error fetching highlights:");
-      // Fallback slides
-    }
-  };
-
-  fetchHighlights();
-}, []); // Empty dependency array means this runs once on mount
-
-  // useEffect(() => {
-  //   const userId = getCurrentUserId();
-  //   if (userId && posts.length > 0) {
-  //     checkUserLikes(posts, userId);
-  //   }
-  // }, [posts]); //run when posts change;
-
-  // const checkUserLikes = async (posts, userId) => {
-  //   try {
-  //     const response = await fetch(`http://localhost:3001/community/get_post_likes/${userId}`);
-  //     const data = await response.json();
-
-  //     if (!response.ok) throw new Error('Failed to fetch likes');
-
-  //     const likedPostIds = new Set(data.map(like => like.feedback_id));
-      
-  //     const updatedPosts = posts.map(post => ({
-  //       ...post,
-  //       isLiked: likedPostIds.has(post.feedback_id)
-  //     }));
-
-  //     setPosts(updatedPosts);
-  //     setFilteredPosts(updatedPosts);
-  //   } catch (err) {
-  //     console.error("Error checking user likes:", err);
-  //     setPosts(posts);
-  //     setFilteredPosts(posts);
-  //   }
-  // };
-
-
-
-  // // Handle like/unlike
-  // const handleLike = async (postId) => {
-  //   const userId = getCurrentUserId();
-    
-  //   if (!userId) {
-  //     alert("Please sign in to like posts");
-  //     nav("/volunteer/auth");
-  //     return;
-  //   }
-
-  //   try {
-  //     const post = posts.find(p => p.feedback_id === postId);
-      
-  //     // Using the correct endpoint from communityRoutes.js
-  //     const response = await fetch('http://localhost:3001/community/user_likes_post', {
-  //       method: 'POST',
-  //       headers: { 'Content-Type': 'application/json' },
-  //       body: JSON.stringify({ 
-  //         feedback_id: postId, 
-  //         user_id: userId,
-  //         action: post.isLiked ? 'unlike' : 'like' // Add action to determine like/unlike
-  //       })
-  //     });
-
-  //     if (!response.ok) throw new Error(`Failed to ${post.isLiked ? 'unlike' : 'like'} post`);
-
-  //     // Update local state
-  //     updatePostLikeState(postId, !post.isLiked, post.isLiked ? -1 : 1);
-      
-  //   } catch (err) {
-  //     console.error("Error handling like:", err);
-  //     alert("Failed to update like. Please try again.");
-  //   }
-  // };
-
-  // const updatePostLikeState = (postId, isLiked, countChange) => {
-  //   const updatePosts = (postsList) => postsList.map(post => 
-  //     post.feedback_id === postId 
-  //       ? { ...post, isLiked, liked_count: (post.liked_count || 0) + countChange }
-  //       : post
-  //   );
-
-  //   setPosts(prev => updatePosts(prev));
-  //   setFilteredPosts(prev => updatePosts(prev));
-    
-  //   if (selectedPost?.feedback_id === postId) {
-  //     setSelectedPost(prev => ({
-  //       ...prev,
-  //       isLiked,
-  //       liked_count: (prev.liked_count || 0) + countChange
-  //     }));
-  //   }
-  // };
-
-  // Handle search
-  useEffect(() => {
-    let result = [...posts];
-
-    // Apply search filter
-    if (query.trim()) {
-      const lowerQuery = query.toLowerCase();
-      result = result.filter(post => 
-        post.subject?.toLowerCase().includes(lowerQuery) ||
-        post.body?.toLowerCase().includes(lowerQuery)
-      );
-    }
-
-    // Apply sorting
-    if (sortBy === "date") {
-      result.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-    } else if (sortBy === "likes") {
-      result.sort((a, b) => (b.liked_count || 0) - (a.liked_count || 0));
-    }
-
-    setFilteredPosts(result);
-  }, [query, sortBy, posts]);
-
-  return (
-    <div className="container-fluid vh-100 d-flex flex-column page-community">
-      <Navbar />
-      <PageTransition>
-      <div className="container py-4 flex-grow-1">
-        {/* Spotlight carousel */}
-        <div className="col-lg-12 mb-4">
-          <CommunitySpotlight slides={slides} interval={4500} />
-        </div>
-
-        {/* Header with search and controls */}
-        <div className="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-3">
-          <h3 className="mb-0">Share the Joy</h3>
-
-          <div className="d-flex gap-2 flex-wrap">
-            {/* Search */}
-            <input
-              type="search"
-              className="form-control form-control-sm"
-              placeholder="Search posts..."
-              style={{ width: 220 }}
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
-
-            {/* Sort dropdown */}
-            <select 
-              className="form-select form-select-sm"
-              style={{ width: 160 }}
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-            >
-              <option value="date">Sort by Date</option>
-              <option value="likes">Sort by Likes</option>
-            </select>
-
-            {/* New post button - Fix the path */}
-            <Link to="/community/new" className="btn btn-primary btn-sm">
-              <i className="bi bi-plus-circle me-1"></i>
-              Add Post
-            </Link>
-
-
-          </div>
-        </div>
-
-        {/* Posts grid */}
-        {loading ? (
-          <div className="text-center py-5">
-            <div className="spinner-border text-primary" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
-          </div>
-        ) : filteredPosts.length === 0 ? (
-          <div className="text-center py-5">
-            <p className="text-muted">
-              {query ? "No posts found matching your search." : "No posts yet. Be the first to share!"}
-            </p>
-          </div>
-        ) : (
-          <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-            {filteredPosts.map((post) => (
-              <div key={post.feedback_id} className="col">
-                <FeaturedCard
-                  feedback_id={post.feedback_id}
-                  user_id={post.user_id}
-                  username={post.username}
-                  profile_picture={post.profile_image}
-                  subject={post.subject}
-                  body={post.body}
-                  created_at={post.created_at}
-                  image={post.img}
-                  likes={post.liked_count || 0}
-                  onClick={() => setSelectedPost(post)}
-                />
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-      </PageTransition>
-
-      {/* Post Modal */}
-      {selectedPost && (
-        <PostModal 
-          post={selectedPost} 
-          onClose={() => setSelectedPost(null)}
-          // onLike={handleLike}
-        />
-      )}
     </div>
   );
 }
