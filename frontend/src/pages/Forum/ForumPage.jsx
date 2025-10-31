@@ -281,8 +281,9 @@ useEffect(() => {
   }, [query, sortBy, posts]);
 
   return (
+    <><Navbar />
     <div className="container-fluid vh-100 d-flex flex-column page-community">
-      <Navbar />
+      
       <PageTransition>
       <div className="container py-4 flex-grow-1">
         {/* Spotlight carousel */}
@@ -371,5 +372,6 @@ useEffect(() => {
         />
       )}
     </div>
+    </>
   );
 }

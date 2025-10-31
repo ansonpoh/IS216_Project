@@ -1,28 +1,4 @@
-/* :root{
-  --bg1:#0f172a; --bg2:#111827; --glass:#0b1220cc;
-  --brand:#5b8cff; --brand2:#22c55e; --txt:#e5e7eb; --muted:#a7b0c0;
-} */
 
-/* Background and animated color blobs */
-.role-bg{
-  min-height:100vh;
-  background: radial-gradient(1200px 800px at 10% -10%, #1f2937 0%, transparent 50%),
-              radial-gradient(900px 600px at 110% 10%, #0ea5e9 0%, transparent 40%),
-              linear-gradient(160deg, var(--bg1), var(--bg2));
-  overflow:hidden;
-  position:relative;
-}
-
-.orb{ position:absolute; border-radius:50%; filter:blur(60px); opacity:.45; animation:float 12s ease-in-out infinite; }
-.orb-1{ width:280px; height:280px; background:#60a5fa; top:12%; left:6%; }
-.orb-2{ width:360px; height:360px; background:#22c55e; bottom:10%; right:8%; animation-delay:.8s; }
-.orb-3{ width:220px; height:220px; background:#a78bfa; top:55%; left:50%; animation-delay:1.4s; }
-@keyframes float{ 0%,100%{transform:translateY(0);} 50%{transform:translateY(-18px);} }
-
-.container{ max-width:1100px; margin:0 auto; padding:3rem 1.25rem; }
-.role-hero{text-align:center;margin-bottom:2rem;color:var(--txt);}
-.role-hero h1{font-weight:800;font-size:2.2rem;}
-.role-hero p{color:var(--muted);font-size:1.1rem;}
 
 /* Two-column layout */
 .role-grid.two-col{
