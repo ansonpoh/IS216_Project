@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Icon from '../../../components/AppIcon';
 import Image from '../../../components/AppImage';
 import Button from '../../components/ui/Button';
@@ -29,6 +29,9 @@ const OpportunityCard = ({
     coordinates,
     estimatedTime
   } = opportunity;
+
+
+  const nav = useNavigate();
 
   const getCategoryIcon = (category) => {
     const icons = {
@@ -188,7 +191,7 @@ const OpportunityCard = ({
         {/* Actions */}
         <div className="flex space-x-2">
           <Link to="/opportunity-detail-pages" className="flex-1">
-            <Button variant="default" fullWidth size="sm">
+            <Button variant="default" fullWidth size="sm" onClick={() => nav("/opportunities", {state: {id}})}>
               Learn More
             </Button>
           </Link>
