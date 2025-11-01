@@ -3,6 +3,7 @@ import styles from "../../styles/VolunteerDashboard.module.css";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthProvider";
 import axios from "axios";
+import confetti from "canvas-confetti";
 
 const LS_KEY = "volunteer_dashboard_circular_carousel_v3";
 /* ---------- Helpers ---------- */
@@ -25,23 +26,84 @@ const useKeyControls = (onPrev, onNext) => {
   }, [onPrev, onNext]);
 };
 
-/* ---------- Circular Progress Ring ---------- */
-function CircularProgressRing({ value, max, size = 200, thickness = 16, title = "Goal Progress" }) {
+/* ---------- Circular Progress Ring (confetti + milestone messages, RIGHT aligned text) ---------- */
+function CircularProgressRing({
+  value,
+  max,
+  size = 200,
+  thickness = 16,
+  title = "Goal Progress",
+}) {
   const safeMax = Math.max(1, Number(max) || 1);
   const v = Math.min(Math.max(0, Number(value) || 0), safeMax);
   const pct = Math.round((v / safeMax) * 100);
+
   const R = size / 2 - 10;
   const C = 2 * Math.PI * R;
   const dash = (pct / 100) * C;
   const gap = C - dash;
 
+  const ringRef = useRef(null);
+  const firedRef = useRef(false);
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    if (pct === 100 && !firedRef.current && typeof window !== "undefined") {
+      firedRef.current = true;
+
+      const blast = (opts = {}) =>
+        confetti({
+          particleCount: 520,
+          spread: 360,
+          startVelocity: 68,
+          ticks: 260,
+          gravity: 0.9,
+          scalar: 1.2,
+          origin: { x: 0.5, y: 0.5 },
+          zIndex: 9999,
+          colors: ["#49E2FF", "#43B2FF", "#FF5A9F", "#FF9E5A", "#FFD15A"],
+          ...opts,
+        });
+
+      // two full-screen blasts
+      blast();
+      setTimeout(() => blast({ startVelocity: 72, particleCount: 560 }), 900);
+
+      setMessage("🏆 You did it! 100% – amazing dedication! Increase your goal?");
+    } else if (pct >= 75) {
+      setMessage("💪 Almost there! You’re unstoppable!");
+    } else if (pct >= 50) {
+      setMessage("✨ Halfway through! Keep pushing!");
+    } else if (pct >= 25) {
+      setMessage("🔥 Great start! You’re making real progress!");
+    } else {
+      setMessage("");
+    }
+
+    // re-arm confetti if progress drops below 100
+    if (pct < 100 && firedRef.current) firedRef.current = false;
+  }, [pct]);
+
   return (
     <div
+      ref={ringRef}
       className={styles.vdMeter}
       title={title}
-      style={{ width: size, height: size, display: "grid", placeItems: "center" }}
+      style={{
+        width: size,
+        height: size,
+        display: "grid",
+        placeItems: "center",
+        position: "relative", // needed for the right-side message positioning
+      }}
     >
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} role="img" aria-label={`${title}: ${pct}%`}>
+      <svg
+        width={size}
+        height={size}
+        viewBox={`0 0 ${size} ${size}`}
+        role="img"
+        aria-label={`${title}: ${pct}%`}
+      >
         <defs>
           <linearGradient id="ringGradient" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stopColor="#49E2FF" />
@@ -90,6 +152,7 @@ function CircularProgressRing({ value, max, size = 200, thickness = 16, title = 
             style={{ transition: "stroke-dasharray 500ms ease" }}
           />
         </g>
+
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -98,16 +161,40 @@ function CircularProgressRing({ value, max, size = 200, thickness = 16, title = 
           filter="url(#innerShadow)"
           opacity="0.06"
         />
-        <text x="50%" y="50%" textAnchor="middle" dominantBaseline="central" fontSize="26" fontWeight="800" fill="#6b7a8d" opacity="0.9">
+        <text
+          x="50%"
+          y="50%"
+          textAnchor="middle"
+          dominantBaseline="central"
+          fontSize="26"
+          fontWeight="800"
+          fill="#6b7a8d"
+          opacity="0.9"
+        >
           {pct}%
         </text>
-        <text x="50%" y={size / 2 + 18} textAnchor="middle" fontSize="10" fill="#8fa1b6" letterSpacing="1.5">
+        <text
+          x="50%"
+          y={size / 2 + 18}
+          textAnchor="middle"
+          fontSize="10"
+          fill="#8fa1b6"
+          letterSpacing="1.5"
+        >
           COMPLETE
         </text>
       </svg>
+
+      {/* message to the RIGHT of the circle */}
+      {message && (
+        <div className={styles.vdMotivationRight} aria-live="polite">
+          {message}
+        </div>
+      )}
     </div>
   );
 }
+
 
 /* ---------- Card Carousel ---------- */
 function CardCarousel({ title, items, renderCardFooter, emptyText = "Nothing here yet.", autoplay = true }) {
@@ -203,11 +290,11 @@ export default function VolunteerDashboard() {
     let active = [];
     let past = [];
 
-    for(let e of events) {
-      if(e.status === "pending") pending.push(e);
-      else if(e.status === "approved") active.push(e);
-      else past.push(e);
-    }
+    // for(let e of events) {
+    //   if(e.status === "pending") pending.push(e);
+    //   else if(e.status === "approved") active.push(e);
+    //   else past.push(e);
+    // }
 
     setPendingEvents(pending);
     setActiveEvents(active);

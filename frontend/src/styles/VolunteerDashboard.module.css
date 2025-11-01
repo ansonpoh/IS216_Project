@@ -163,3 +163,36 @@
 .vd-back:active {
   transform: translateY(1px);
 }
+
+@keyframes fadeInUp {
+  0% { opacity: 0; transform: translateY(8px); filter: blur(2px); }
+  100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+.vdMotivationRight {
+  position: absolute;
+  top: 50%;
+ left: calc(100% + 13.5rem); /* 💥 pushes it even further to the right */
+  transform: translateY(-50%);
+  width: 260px; /* optional: add a bit more room for wrapping */
+  text-align: left;
+
+  font-weight: 700;
+  font-size: 1rem;
+  line-height: 1.4;
+  letter-spacing: 0.3px;
+
+  /* Gradient text effect */
+  background: linear-gradient(90deg, #49e2ff, #43b2ff, #ff5a9f);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+
+  text-shadow:
+    0 0 8px rgba(73, 226, 255, 0.35),
+    0 0 16px rgba(255, 90, 159, 0.25);
+
+  animation: fadeInUp 0.6s ease-out;
+}
+
