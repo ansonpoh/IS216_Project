@@ -1,4 +1,4 @@
-import {check_if_user_email_in_use, get_user_by_id, get_all_users, get_user_by_email, login_user, complete_registration } from "../services/userServices.js";
+import { check_if_user_email_in_use, get_user_by_id, get_all_users, get_user_by_email, login_user, complete_registration, update_user_info } from "../services/userServices.js";
 
 export async function check_if_user_email_in_use_handler (req, res) {
     try {
@@ -70,5 +70,27 @@ export async function get_all_users_handler (req, res) {
     } catch (err) {
         console.error(err);
         throw err;
+    }
+}
+
+export async function update_user_info_handler(req, res) {
+    try {
+        // req.body may contain JSON strings when multipart/form-data is used
+        const body = { ...req.body };
+
+        // Try to parse common json fields
+        ["skills", "languages", "availability", "contact", "emergency"].forEach((k) => {
+            if (body[k] && typeof body[k] === "string") {
+                try { body[k] = JSON.parse(body[k]); } catch { /* leave as string */ }
+            }
+        });
+
+        const profileFile = req.file; // uploaded avatar (multer memory)
+        const updated = await update_user_info(body, profileFile);
+
+        return res.json({ status: true, user: updated });
+    } catch (err) {
+        console.error("update_user_info_handler error:", err);
+        return res.status(500).json({ status: false, message: err.message || "Failed to update user" });
     }
 }

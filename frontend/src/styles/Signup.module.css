@@ -11,18 +11,23 @@
   justify-content: center;
   align-items: center;
   min-height: 90vh;
-  background: linear-gradient(90deg, #e2e2e2, #c9d6ff);
 }
 
 .login_signup_container {
   position: relative;
-  width: 850px;
-  height: 800px;
+  /* responsive width: up to 850px but never exceed viewport */
+  width: min(850px, 95%);
+  max-width: 850px;
+  /* responsive height: cap at 800px but allow viewport-based shrink */
+  height: min(700px, 90vh);
+  max-height: 700px;
   background: #fff;
-  margin: 20px;
+  margin: 20px auto; /* center horizontally */
   border-radius: 30px;
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .login_signup_container h1 {
@@ -203,13 +208,17 @@
 
 @media screen and (max-width: 650px) {
   .login_signup_container {
-    height: calc(100vh - 40px);
+    width: 95%;
+    height: auto;
+    min-height: calc(70vh);
+    border-radius: 16px;
+    padding-bottom: 20px;
   }
 
   .form-box {
     bottom: 0;
     width: 100%;
-    height: 70%;
+    height: auto;
   }
 
   .login_signup_container.active .form-box {

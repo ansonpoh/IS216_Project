@@ -100,28 +100,12 @@ function Navbar() {
       {/* Right Side */}
       <div className="d-flex align-items-center gap-3">
         {auth?.role === "volunteer" && (
-          <>
-            <i className="bi bi-bell fs-5" onClick={() => navigate("/notifications")} style={{ cursor: "pointer" }} />
-            {image ? (
-              <img
-                src={image}
-                alt="Profile"
-                onClick={() => navigate("/VolunteerProfile")}
-                style={{
-                  width: "32px",
-                  height: "32px",
-                  borderRadius: "50%",
-                  objectFit: "cover",
-                  cursor: "pointer",
-                }}
-              />
-            ) : (
-              <i
+          <>              
+          <i
                 className="bi bi-person-circle fs-5"
                 onClick={() => navigate("/VolunteerProfile")}
                 style={{ cursor: "pointer" }}
               />
-            )}
           </>
         )}
 

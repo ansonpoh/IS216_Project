@@ -1,4 +1,3 @@
-// src/components/NewDiscussion.jsx
 import React, { useState, useRef, useEffect } from "react";
 import * as bootstrap from 'bootstrap';  // Add this line
 import styles from "../../../styles/Community.module.css";

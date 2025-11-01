@@ -1,4 +1,3 @@
-
 .navbar_item {
   font-weight: 500;
   color: #333;
@@ -20,4 +19,76 @@
   background-color: rgb(159, 159, 233);
   color: white;
   padding: 10px;
+}
+
+/* Improve spacing when navbar is collapsed on small screens */
+@media (max-width: 991px) {
+  /* show collapse as a stacked panel with a little elevation */
+  .navbar-collapse.show {
+    background: #fff;
+    padding: 0.5rem;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(8, 15, 30, 0.08);
+    margin-bottom: 0.75rem; /* create space between collapse and right actions */
+  }
+
+  /* stack nav links vertically and enlarge tap targets */
+  .navbar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  /* make each link full width and add inner padding */
+  .navbar-nav .nav-link {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+  }
+
+  /* ensure active/hover states remain visible */
+  .navbar-nav .nav-link:hover,
+  .navbar-nav .nav-link.active {
+    background-color: rgba(15, 23, 42, 0.04);
+  }
+
+  /* push the right-side action block down when collapse is open */
+  .navbar .navbar-collapse.show + .d-flex {
+    margin-top: 0.5rem;
+  }
+}
+
+/* Ensure collapse spacing and push right actions down on mobile */
+@media (max-width: 991px) {
+  :global(.navbar-collapse.show) {
+    background: #fff;
+    padding: 0.5rem;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(8, 15, 30, 0.08);
+    margin-bottom: 0.5rem;
+  }
+
+  /* give space between the stacked nav links and the action block inside the collapse */
+  :global(.navbar-collapse.show) :global(.d-flex),
+  :global(.navbar-collapse.show) .navbar-nav + :global(.d-flex) {
+    margin-top: 0.6rem !important;
+  }
+
+  /* enlarge tap targets and stack nav links */
+  :global(.navbar-collapse.show) .navbar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+    margin: 0;
+  }
+
+  :global(.navbar-collapse.show) .navbar-nav .nav-link {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+  }
 }

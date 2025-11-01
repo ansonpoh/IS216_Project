@@ -174,17 +174,17 @@ export default function Landing() {
                     cursor: 'pointer' // Add cursor pointer for better UX
                   }}
                 >
-                  <div className="d-flex align-items-start gap-3" style={{ minHeight: '100px' }}>
+                  <div className="d-flex align-items-start gap-3" style={{ minHeight: '125px' }}>
 
                     <div className="flex-grow-1">
                       {/* Ensure titles are capped or fixed height too for perfect uniformity */}
-                      <h3 className="fs-6 fw-semibold text-gray-800 mb-1" style={{ minHeight: '30px' }}>{opportunities[i].title}</h3>
+                      <h3 className="fs-6 fw-semibold text-gray-800 mb-1 mt-2" style={{ minHeight: '30px' }}>{opportunities[i].title}</h3>
 
                       {/* Ensure the description/location area has a min-height */}
-                      <p className="text-muted small d-flex align-items-center gap-1" style={{ minHeight: '20px' }}>
+                      <p className="text-muted small d-flex align-items-center gap-1 " style={{ minHeight: '20px' }}>
                         <BSIcon name="geo-alt-fill" size="14px" /> {opportunities[i].location}
                       </p>
-                      <div className="d-flex gap-2 mt-2">
+                      <div className="d-flex gap-2 mt-3">
                         {/* CATEGORY BADGE: icon + label */}
                         <span
                           className="d-inline-block px-2 py-1 rounded-pill small fw-medium"
@@ -372,48 +372,48 @@ export default function Landing() {
 
               {/* Visual Column (LEFT)  */}
 
-<div className="col-12 col-lg-6 d-flex justify-content-center">
-  <div
-    className={`${styles.mapCard} bg-white rounded-4 border border-gray-100 w-100 position-relative p-0`}
-    style={{ maxWidth: 600, cursor: 'pointer' }}
-    onClick={() => navigate('/map')}
-    aria-label="Open interactive map"
-    role="button"
-  >
-    <div className={styles.aspect169}>
-      <img
-        src={mapView}
-        alt="Volunteer opportunities across Singapore"
-        loading="lazy"
-        className="rounded-3"
-        style={{
-          position: 'absolute',
-          inset: 0,
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-          display: 'block'
-        }}
-        sizes="(max-width: 576px) 100vw, (max-width: 992px) 90vw, 600px"
-      />
+              <div className="col-12 col-lg-6 d-flex justify-content-center">
+                <div
+                  className={`${styles.mapCard} bg-white rounded-4 border border-gray-100 w-100 position-relative p-0`}
+                  style={{ maxWidth: 600, cursor: 'pointer' }}
+                  onClick={() => navigate('/map')}
+                  aria-label="Open interactive map"
+                  role="button"
+                >
+                  <div className={styles.aspect169}>
+                    <img
+                      src={mapView}
+                      alt="Volunteer opportunities across Singapore"
+                      loading="lazy"
+                      className="rounded-3"
+                      style={{
+                        position: 'absolute',
+                        inset: 0,
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        display: 'block'
+                      }}
+                      sizes="(max-width: 576px) 100vw, (max-width: 992px) 90vw, 600px"
+                    />
 
-      <span className={styles.mapBorder} />
+                    <span className={styles.mapBorder} />
 
-      <div
-        className="position-absolute start-0 end-0 bottom-0 p-3"
-        style={{
-          background: 'linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.45) 100%)',
-          color: '#fff'
-        }}
-      >
-        <div className="d-flex align-items-center gap-2">
-          <span className="ms-auto small d-none d-sm-inline">Open map</span>
-          <i className="bi bi-arrow-right"></i>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+                    <div
+                      className="position-absolute start-0 end-0 bottom-0 p-3"
+                      style={{
+                        background: 'linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.45) 100%)',
+                        color: '#fff'
+                      }}
+                    >
+                      <div className="d-flex align-items-center gap-2">
+                        <span className="ms-auto small d-none d-sm-inline">Open map</span>
+                        <i className="bi bi-arrow-right"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
 
 
@@ -614,7 +614,7 @@ export default function Landing() {
               <p className="text-white-80 lead mb-4 mx-auto" style={{ maxWidth: '600px' }}>
                 Join thousands of volunteers making positive impacts in their communities. Your journey starts here.
               </p>
-              <button className="btn btn-lg fw-bold text-center custom-btn-cta hover-scale-105"
+              <button className="text-white btn btn-lg fw-bold text-center custom-btn-cta hover-scale-105"
                 onClick={() => navigate('/volunteer/auth')}>
                 Get Started Today
               </button>

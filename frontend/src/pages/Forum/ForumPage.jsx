@@ -339,11 +339,11 @@ export default function ForumPage() {
 
                 <div className="d-flex gap-2 flex-wrap">
                   <button
-                    className="btn btn-primary btn-sm"
+                    className={`btn btn-sm ${styles.addPostBtn}`}
                     onClick={() => nav("/community/new")}
                   >
-                    <i className="bi bi-plus-circle me-1"></i>
-                    Add Post
+                    <i className="bi bi-plus-circle me-1" aria-hidden="true" />
+                    <span className={styles.addPostLabel}>Add Post</span>
                   </button>
                 </div>
               </div>
