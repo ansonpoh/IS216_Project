@@ -22,6 +22,7 @@ export default function OrganiserDashboard() {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [loadingModal, setLoadingModal] = useState(null);
   const [registrations, setRegistrations] = useState([]);
+  const [approved, setApproved] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -102,7 +103,7 @@ export default function OrganiserDashboard() {
   }
 
   const capacityPct = (e) => {
-    const filled = Number(e.registration_count || 0);
+    const filled = Number(approved || 0);
     const cap = Math.max(Number(e.capacity || 0), 0);
     if (!cap) return 0;
     return Math.min(100, Math.round((filled / cap) * 100));
@@ -117,6 +118,11 @@ export default function OrganiserDashboard() {
     try {
       const res = await axios.get("http://localhost:3001/events/get_registered_users_for_event", {params: {event_id: event.event_id}})
       setRegistrations(res.data.result);
+      let approved = 0;
+      for(let r of res.data.result) {
+        if(r.status === "approved") approved++;
+      }
+      setApproved(approved);
     } catch(err) {
       console.error("Failed to load registrations.");
     } finally {
@@ -268,7 +274,7 @@ export default function OrganiserDashboard() {
                   <th style={{ minWidth: 220 }}>Title</th>
                   <th>Schedule</th>
                   <th>Location</th>
-                  <th style={{ minWidth: 150 }}>Capacity</th>
+                  {/* <th style={{ minWidth: 150 }}>Capacity</th> */}
                   <th>Status</th>
                   <th style={{ width: 230 }}>Actions</th>
                 </tr>
@@ -286,7 +292,7 @@ export default function OrganiserDashboard() {
                         <div className="text-muted small">{fmtDate(e.start_date, e.end_date)} · {fmtTime(e.start_time, e.end_time)}</div>
                       </td>
                       <td>{e.location || "-"}</td>
-                      <td>
+                      {/* <td>
                         <div className="d-flex justify-content-between small">
                           <span>
                             {e.registration_count || 0}/{e.capacity || 0}
@@ -303,7 +309,7 @@ export default function OrganiserDashboard() {
                             aria-valuemax="100"
                           ></div>
                         </div>
-                      </td>
+                      </td> */}
                       <td>
                         <span
                           className={`badge ${
@@ -358,7 +364,7 @@ export default function OrganiserDashboard() {
 
                   <h6>Capacity</h6>
                   <div className="d-flex justify-content-between mb-2">
-                    <span>{selectedEvent.registration_count || 0} / {selectedEvent.capacity || 0}</span>
+                    <span>{approved || 0} / {selectedEvent.capacity || 0}</span>
                     <span>{capacityPct(selectedEvent)}%</span>
                   </div>
                   <div className="progress mb-3" style={{ height: 8 }}>

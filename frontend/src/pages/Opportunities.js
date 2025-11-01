@@ -36,12 +36,12 @@ export default function Opportunities() {
         setLoading(true);
         const res = await axios.get("http://localhost:3001/events/get_all_events");
         const data = Array.isArray(res.data.result) ? res.data.result : [];
-
         const normalized = data.map((it) => {
           const get = (...keys) => {
             for (const k of keys) if (it[k] != null) return it[k];
             return undefined;
           };
+          if(it.registration_count === it.capacity) return undefined;
           const toNumber = (v) => (v == null || v === "" ? null : (Number.isNaN(Number(v)) ? null : Number(v)));
           return {
             event_id: get("event_id", "id"),
@@ -59,8 +59,9 @@ export default function Opportunities() {
             category: get("category") || "general",
             region: get("region") || null,
             image_url: get("image_url") || null,
+            registration_count: get("registration_count"),
           };
-        });
+        }).filter(Boolean);
 
         setOpportunities(normalized);
       } catch (err) {
