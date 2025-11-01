@@ -3,12 +3,16 @@ import Navbar from "../components/Navbar.js";
 import styles from "../styles/Opportunities.module.css";
 import axios from 'axios';
 import PageTransition from "../components/Animation/PageTransition.jsx";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthProvider.js";
 
 export default function Opportunities() {
 
   const location = useLocation();
   const openEventId = location.state?.eventId;
+  const nav = useNavigate();
+
+  const {auth} = useAuth();
   const [opportunities, setOpportunities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
@@ -20,6 +24,10 @@ export default function Opportunities() {
   const [selectedOpportunity, setSelectedOpportunity] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
+
+  const [confirmModal, setConfirmModal] = useState(false);
+  const [signUpLoading, setSignUpLoading] = useState(false);
+  const [signUpSuccess, setSignUpSuccess] = useState(false);
 
 
   useEffect(() => {
@@ -85,7 +93,6 @@ export default function Opportunities() {
   }, []);
 
   useEffect(() => {
-    console.log(openEventId)
     if(openEventId && opportunities.length > 0) {
       const match = opportunities.find(op => op.event_id === openEventId);
       if(match) {
@@ -107,6 +114,28 @@ export default function Opportunities() {
   window.addEventListener("scroll", handleScroll);
   return () => window.removeEventListener("scroll", handleScroll);
 }, []);
+
+  const handleSignUp = async () => {
+    if(auth.token.length < 1) {
+      nav("/volunteer/auth")
+      return;
+    }
+    setConfirmModal(true);
+  }
+
+  const confirmSignUp = async () => {
+    if(!selectedOpportunity || !auth.id) return;
+    try {
+      setConfirmModal(false);
+      setSignUpLoading(true);
+
+      const res = await axios.post("http://localhost:3001/events/signup_event", {event_id: selectedOpportunity.eventId, })
+    } catch(err) {
+      console.error(err);
+
+    }
+  }
+
 
 
   const resetFilters = () => {
@@ -279,7 +308,7 @@ export default function Opportunities() {
                   <p>Region: {selectedOpportunity.region}</p>
                 </div>
 
-                <button className={styles["modal-signup-btn"]}>
+                <button className={styles["modal-signup-btn"]} onClick={handleSignUp}>
                   Sign Up
                 </button>
               </div>

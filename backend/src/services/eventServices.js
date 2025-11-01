@@ -176,7 +176,7 @@ export async function delete_event(event_id) {
     }
 }
 
-export async function user_register_for_event(user_id, event_id) {
+export async function signup_event(user_id, event_id) {
     try {
         const query = `insert into event_registration (user_id, event_id) values ($1, $2)`;
         const values = [user_id, event_id];

@@ -51,6 +51,12 @@ export default function LoginSignup() {
       return;
     }
 
+    const emailInUse = await axios.get("http://localhost:3001/users/check_email", {params: {email: registerData.email}});
+    if(emailInUse.status) {
+      setRegisterErrors("Email in use.")
+      return;
+    }
+
     try {
       const { data, error } = await supabase.auth.signUp({
         email: registerData.email,
@@ -109,7 +115,7 @@ export default function LoginSignup() {
 
       try {
         const formData = new FormData();
-        formData.append("supabase_id", user.id);
+        formData.append("user_id", user.id);
         formData.append("username", user.user_metadata?.username || "");
         formData.append("email", user.email || "");
         if (registerData.profile_image instanceof File) {
@@ -128,6 +134,7 @@ export default function LoginSignup() {
           token: accessToken || "",
         });
 
+        console.log(res);
         if (res?.data?.status) {
           alert("Login success");
         } else {

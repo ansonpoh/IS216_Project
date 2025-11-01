@@ -1,38 +1,6 @@
 import pool from "../config/db.js";
 import { supabase } from "../config/supabase.js";
 
-export async function register_org(org_name, email, password) {
-  try {
-    const { data, error } = await supabase.auth.admin.createUser({
-      email,
-      password,
-      email_confirm: true,
-      user_metadata: { org_name },
-    });
-
-    if (error) throw new Error(`Supabase error: ${error.message}`);
-
-    const supabase_id = data.user.id;
-
-    const query = `
-      INSERT INTO organisations (org_name, email, supabase_id)
-      VALUES ($1, $2, $3)
-      RETURNING org_id, org_name, email, supabase_id
-    `;
-    const values = [org_name, email, supabase_id];
-    const result = await pool.query(query, values);
-
-    return {
-      status: true,
-      id: result.rows[0].org_id,
-      supabase_id,
-    };
-  } catch (err) {
-    console.error("Register org error:", err.message);
-    return { status: false, error: err.message };
-  }
-}
-
 export async function complete_registration(supabase_id, org_name, email, profile_image) {
     let profile_image_url;
     try {
@@ -56,7 +24,7 @@ export async function complete_registration(supabase_id, org_name, email, profil
             profile_image_url = publicData.publicUrl;
         } 
 
-        const query = `insert into organisations (org_name, email, supabase_id, profile_image) values ($1, $2, $3, $4) returning org_id, org_name, email`;
+        const query = `insert into organisations (org_name, email, org_id, profile_image) values ($1, $2, $3, $4) returning org_id, org_name, email`;
         const values = [org_name, email, supabase_id, profile_image_url];
         const result = await pool.query(query, values);
 
@@ -89,7 +57,7 @@ export async function check_if_org_email_in_use(email) {
 
 export async function get_org_by_id(id) {
     try {
-        const query = `select * from organisations where supabase_id = $1`;
+        const query = `select * from organisations where org_id = $1`;
         const values = [id];
         const result = await pool.query(query, values);
         return result.rows;

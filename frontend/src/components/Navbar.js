@@ -60,36 +60,36 @@ function Navbar() {
       <div className="collapse navbar-collapse justify-content-center" id="navbarNav">
         <ul className="navbar-nav gap-3">
           <li className="nav-item">
-            <a className={`${styles['navbar_item']} nav-link fw-semibold ${isActive("/") ? styles.active : ""}`} href="/ai">
+            <a className={`${styles.navbar_item} nav-link fw-semibold ${isActive("/ai") ? styles.active : ""}`} href="/ai">
               AI Chat
             </a>
           </li>
           <li className="nav-item">
-            <a className={`${styles['navbar_item']} nav-link fw-semibold ${isActive("/map") ? styles.active : ""}`} href="/map">
+            <a className={`${styles.navbar_item} nav-link fw-semibold ${isActive("/map") ? styles.active : ""}`} href="/map">
               Map
             </a>
           </li>
           <li className="nav-item">
-            <a className={`${styles['navbar_item']} nav-link fw-semibold ${isActive("/opportunities") ? styles.active : ""}`} href="/opportunities">
+            <a className={`${styles.navbar_item} nav-link fw-semibold ${isActive("/opportunities") ? styles.active : ""}`} href="/opportunities">
               Opportunities
             </a>
           </li>
           <li className="nav-item">
-            <a className={`${styles['navbar_item']} nav-link fw-semibold ${isActive("/community") ? styles.active : ""}`} href="/community">
+            <a className={`${styles.navbar_item} nav-link fw-semibold ${isActive("/community") ? styles.active : ""}`} href="/community">
               Community
             </a>
           </li>
 
           {auth?.role === "organiser" && (
             <li className="nav-item">
-              <a className={`${styles['navbar_item']} nav-link fw-semibold ${isActive("/organiser/dashboard") ? styles.active : ""}`} href="/organiser/dashboard">
+              <a className={`${styles.navbar_item} nav-link fw-semibold ${isActive("/organiser/dashboard") ? styles.active : ""}`} href="/organiser/dashboard">
                 Dashboard
               </a>
             </li>
           )}
           {auth?.role === "volunteer" && (
             <li className="nav-item">
-              <a className={`${styles['navbar_item']} nav-link fw-semibold ${isActive("/volunteer/dashboard") ? styles.active : ""}`} href="/volunteer/dashboard">
+              <a className={`${styles.navbar_item} nav-link fw-semibold ${isActive("/volunteer/dashboard") ? styles.active : ""}`} href="/volunteer/dashboard">
                 Dashboard
               </a>
             </li>
