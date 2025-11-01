@@ -2,10 +2,11 @@
   font-weight: 500;
   color: #333;
   text-decoration: none;
-  transition: color 0.3s, background-color 0.3s;
   border-radius: 5px;
   cursor: pointer;
   /* margin-top: 10px; */
+  /* transition: transform .12s ease, background-color .12s ease, box-shadow .12s ease; */
+
 }
 
 .navbar_item:hover {
@@ -16,7 +17,7 @@
 }
 
 .navbar_item.active {
-  background-color: rgb(159, 159, 233);
+  background-color: rgb(140, 140, 240);
   color: white;
   padding: 10px;
 }
