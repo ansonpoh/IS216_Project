@@ -37,7 +37,7 @@ export default function LoginSignup() {
     }
   }, [active]);
 
-  const handle_register = async (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
     setRegisterErrors("");
 
@@ -74,7 +74,7 @@ export default function LoginSignup() {
     }
   };
 
-  const handle_login = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setLoginErrors("");
 
@@ -143,6 +143,26 @@ export default function LoginSignup() {
     }
   };
 
+  const handleGoogleLogin = async () => {
+    try {
+      const {data, error} = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/`,
+        },
+      });
+      if(error) {
+        console.error("Google login error", error.message);
+      } else {
+        console.log("Redirecting to Google OAuth...");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  
+
   return (
     <>
       <Navbar />
@@ -151,7 +171,7 @@ export default function LoginSignup() {
         <div className={`${styles.login_signup_container} ${active ? styles.active : ""}`}>
           {/* LOGIN FORM */}
           <div className={styles['form-box']}>
-            <form onSubmit={handle_login} className={styles.form}>
+            <form onSubmit={handleLogin} className={styles.form}>
               <h1>Login for Volunteer</h1>
               {loginErrors && (
                 <div className={`form-alert mt-3`} style={{ color: "red" }}>
@@ -199,12 +219,16 @@ export default function LoginSignup() {
               <button type="submit" className={styles.signup_btn}>
                 Login
               </button>
+
+              <div className={`${styles['social-icons']}`}>
+                <button className={`${styles['social-icons-btn']}`} onClick={handleGoogleLogin}><i class="bx bxl-google"></i></button>
+              </div>
             </form>
           </div>
 
           {/* REGISTER FORM */}
           <div className={`${styles['form-box']} ${styles.register}`}>
-            <form onSubmit={handle_register}>
+            <form onSubmit={handleRegister}>
               <h1>Registration for Volunteer</h1>
               {registerErrors && (
                 <div className={`form-alert mt-3`} style={{ color: "red" }}>
@@ -284,6 +308,10 @@ export default function LoginSignup() {
               <button type="submit" className={styles.signup_btn}>
                 Register
               </button>
+
+              <div className={`${styles['social-icons']}`}>
+                <button className={`${styles['social-icons-btn']}`} onClick={handleGoogleLogin}><i class="bx bxl-google"></i></button>
+              </div>
             </form>
           </div>
 
