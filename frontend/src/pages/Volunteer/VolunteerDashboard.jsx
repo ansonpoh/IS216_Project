@@ -310,7 +310,7 @@ export default function VolunteerDashboard() {
         <div className="col-lg-6">
           <CardCarousel title="Pending Applications" items={pendingEvents} emptyText="Nothing here yet." renderCardFooter={(e) => (
             <>
-              <button className="btn btn-sm btn-primary" onClick={() => approvePending(e.id)}>Approve → Active</button>
+              {/* <button className="btn btn-sm btn-primary" onClick={() => approvePending(e.id)}>Approve → Active</button> */}
               <button className="btn btn-sm btn-outline-danger" onClick={() => withdrawPending(e.id)}>Withdraw</button>
             </>
           )} />

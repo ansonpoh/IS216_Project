@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar";
+import axios from "axios";
 
 export default function VolunteerProfile() {
   const STORAGE_KEY = "volunteer_profile_v1";
+
+  // get auth early so we can seed user_id
+  const auth = JSON.parse(sessionStorage.getItem("auth")) || {};
+
+  const [submitting, setSubmitting] = useState(false);
+  const [status, setStatus] = useState("");
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -19,6 +26,10 @@ export default function VolunteerProfile() {
     contact: { email: "", phone: "" },
     emergency: { name: "", relation: "", phone: "" },
     avatarDataUrl: "",
+    avatarFile: null,        // new: file object when user selects image
+    date_joined: null,
+    hours: null,
+    user_id: auth?.id || null,
   });
 
   // Load saved data from localStorage
@@ -27,11 +38,125 @@ export default function VolunteerProfile() {
     if (saved) setFormData(JSON.parse(saved));
   }, []);
 
-  // Save to localStorage
-  const handleSave = (e) => {
+  // Save to localStorage + backend
+  const handleSave = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
+    setStatus("");
+
+    // keep local copy
     localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
-    alert("✅ Profile saved locally!");
+
+    // require auth
+    if (!auth?.id) {
+      setStatus("Please sign in to save to the server. Local save complete.");
+      alert("Please sign in to save profile to server. Local save complete.");
+      setSubmitting(false);
+      return;
+    }
+
+    // compute simple hours (if start/end present) as decimal hours
+    function computeHours(start, end) {
+      if (!start || !end) return null;
+      try {
+        const [sh, sm] = start.split(":").map(Number);
+        const [eh, em] = end.split(":").map(Number);
+        let startMinutes = sh * 60 + (sm || 0);
+        let endMinutes = eh * 60 + (em || 0);
+        // if end earlier than start assume next day
+        if (endMinutes < startMinutes) endMinutes += 24 * 60;
+        const hours = (endMinutes - startMinutes) / 60;
+        return Number(hours.toFixed(2));
+      } catch {
+        return null;
+      }
+    }
+
+    const hours = computeHours(formData.availability.startTime, formData.availability.endTime);
+
+    // build payload
+    const payloadFields = {
+      user_id: auth.id,
+      username: formData.username || null,
+      email: formData.contact.email || null,
+      bio: formData.bio || null,
+      date_joined: formData.date_joined || new Date().toISOString(),
+      hours: hours,
+      full_name: formData.fullName || null,
+      skills: formData.skills || [],
+      languages: formData.languages || [],
+      availability: formData.availability || {},
+      availability_start_time: formData.availability.startTime || null,
+      availability_end_time: formData.availability.endTime || null,
+      location: formData.location || null,
+      contact: formData.contact || {},
+      contact_phone: formData.contact.phone || null,
+      emergency: formData.emergency || {},
+      emergency_name: formData.emergency.name || null,
+      emergency_relation: formData.emergency.relation || null,
+      emergency_phone: formData.emergency.phone || null,
+      profile_image: formData.avatarDataUrl || null, // data URL; backend can store or decode
+    };
+
+    try {
+      // if there's an avatar file, send multipart/form-data so backend can save file
+      if (formData.avatarFile) {
+        const fd = new FormData();
+        Object.entries(payloadFields).forEach(([k, v]) => {
+          // For objects/arrays encode as JSON string so backend can parse
+          if (v !== null && typeof v === "object") fd.append(k, JSON.stringify(v));
+          else if (v !== null) fd.append(k, String(v));
+          else fd.append(k, "");
+        });
+        fd.append("avatar", formData.avatarFile);
+
+        const resp = await axios.post(
+          "http://localhost:3001/users/update_profile",
+          fd,
+          {
+            withCredentials: true,
+            headers: {
+              Accept: "application/json",
+              // DO NOT set Content-Type when sending FormData — browser will set multipart boundary
+            },
+          }
+        );
+
+        if (resp.data?.status) {
+          alert("✅ saved will work on this later");
+          setStatus("Saved");
+        } else {
+          console.error("Server response:", resp.data);
+          setStatus("Server returned an error. Local copy saved.");
+          alert("Profile saved locally but server reported an error.");
+        }
+      } else {
+        // send JSON
+        const resp = await axios.post(
+          "http://localhost:3001/users/update_profile",
+          payloadFields,
+          {
+            withCredentials: true,
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+
+        if (resp.data?.status) {
+          alert("✅ Profile saved to server and localStorage!");
+          setStatus("Saved");
+        } else {
+          console.error("Server response:", resp.data);
+          setStatus("Server returned an error. Local copy saved.");
+          alert("Profile saved locally but server reported an error.");
+        }
+      }
+    } catch (err) {
+      console.error("Save error:", err);
+      setStatus(err.response?.data?.message || err.message || "Failed to save profile to server.");
+      alert(`Error saving to server: ${status || err.message}. Local copy saved.`);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   // Handle text field changes
@@ -64,10 +189,15 @@ export default function VolunteerProfile() {
 
   // Avatar upload
   const handleAvatarChange = (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
     if (!file) return;
+    // store the File object for upload and the data URL for preview
+    setFormData((prev) => ({ ...prev, avatarFile: file }));
     const reader = new FileReader();
-    reader.onload = (ev) => handleChange("avatarDataUrl", ev.target.result);
+    reader.onload = (ev) => {
+      // update both data url and keep file
+      setFormData((prev) => ({ ...prev, avatarDataUrl: ev.target.result, avatarFile: file }));
+    };
     reader.readAsDataURL(file);
   };
 
@@ -314,8 +444,8 @@ export default function VolunteerProfile() {
             </div>
 
             <div className="d-flex gap-2">
-              <button type="submit" className="btn btn-primary">
-                Save
+              <button type="submit" className="btn btn-primary" disabled={submitting}>
+                {submitting ? "Saving..." : "Save"}
               </button>
               <button type="button" onClick={handleReset} className="btn btn-outline-secondary">
                 Reset
