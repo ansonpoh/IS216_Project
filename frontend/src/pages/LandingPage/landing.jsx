@@ -6,6 +6,9 @@ import axios from 'axios';
 import Navbar from '../../components/Navbar';
 import styles from '../../styles/LandingPage.module.css';
 import mapView from '../../components/images/mapView.png';
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
 // import { Nav } from 'react-bootstrap';
 
 // Helper function to render Bootstrap Icon
@@ -37,7 +40,7 @@ export default function Landing() {
   const [isPaused, setIsPaused] = useState(false);
   const [activeCardIndex, setActiveCardIndex] = useState(null);
   const FACT_SWITCH_MS = 5000;
-
+  
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
     window.addEventListener('scroll', handleScroll);
@@ -83,6 +86,26 @@ export default function Landing() {
     return () => { mounted = false; };
   }, []);
 
+    // Scroll reveal animations using GSAP
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+
+    gsap.utils.toArray(".fade-section").forEach((section) => {
+      gsap.from(section, {
+        opacity: 0,
+        y: 40,
+        duration: 0.8,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: section,
+          start: "top 85%",
+          toggleActions: "play none none reverse",
+        },
+      });
+    });
+  }, []);
+
+
   // rotating fact state (example usage)
   useEffect(() => {
     if (!facts.length || isPaused) return;
@@ -103,9 +126,9 @@ export default function Landing() {
   return (
     <>
       <Navbar />
-      <div className="landing-page landing-page-bg overflow-hidden">
+      <div className="landing-page landing-page-bg">
 
-        <section className="position-relative py-5 py-md-5 overflow-hidden hero-section min-vh-100">
+        <section className="position-relative py-5 py-md-5 hero-section min-vh-100 fade-section">
           {/* Parallax Background Effect */}
           <div
             className="hero-bg-overlay"
@@ -231,7 +254,7 @@ export default function Landing() {
         </section>
 
         {/* ai chat */}
-        <section className="px-3 py-5 py-md-5 position-relative bg-white border-top border-gray-100">
+        <section className="px-3 py-5 py-md-5 position-relative fade-section">
           <div className="container">
             <div className="row g-4 align-items-center">
 
@@ -323,7 +346,7 @@ export default function Landing() {
         </section>
 
         {/* map */}
-        <section className="px-3 py-5 py-md-5 position-relative ">
+        <section className="px-3 py-5 py-md-5 position-relative fade-section">
           <div className="container">
             <div className="row g-4 align-items-center flex-row-reverse">
               {/* Content Column (RIGHT) */}
@@ -422,7 +445,7 @@ export default function Landing() {
         </section>
 
         {/* opportunities */}
-        <section className="px-3 py-5 py-md-5 position-relative bg-white border-top border-gray-100">
+        <section className="px-3 py-5 py-md-5 position-relative fade-section">
           <div className="container">
             <div className="row g-4 align-items-center">
 
@@ -472,7 +495,7 @@ export default function Landing() {
 
               {/* Visual Column (RIGHT) - Mockup Placeholder */}
               <div className="col-12 col-lg-6 d-flex justify-content-center">
-                <div className="opportunities-mockup-container p-3 bg-white rounded-4 shadow-xl border border-gray-100 w-100" style={{ maxWidth: '600px', maxHeight: '400px', overflow: 'hidden' }}>
+                <div className="opportunities-mockup-container p-3 bg-white rounded-4 shadow-xl border border-gray-100 w-100" style={{ maxWidth: '600px', maxHeight: '400px'}}>
 
                   {/* Placeholder for the Opportunities Screenshot */}
                   <div className="opportunities-placeholder-content text-center py-5 rounded-3" style={{
@@ -495,7 +518,7 @@ export default function Landing() {
         </section>
 
         {/* community */}
-        <section className="px-3 py-5 py-md-5 position-relative ">
+        <section className="px-3 py-5 py-md-5 position-relative fade-section">
           <div className="container">
             <div className="row g-4 align-items-center flex-row-reverse">
 
@@ -545,7 +568,7 @@ export default function Landing() {
 
               {/* Visual Column (LEFT) - Mockup Placeholder */}
               <div className="col-12 col-lg-6 d-flex justify-content-center">
-                <div className="community-mockup-container p-3 bg-white rounded-4 shadow-xl border border-gray-100 w-100" style={{ maxWidth: '600px', maxHeight: '400px', overflow: 'hidden' }}>
+                <div className="community-mockup-container p-3 bg-white rounded-4 shadow-xl border border-gray-100 w-100" style={{ maxWidth: '600px', maxHeight: '400px'}}>
 
                   {/* Placeholder for the Community Feed Image */}
                   <div className="community-placeholder-content text-center py-5 rounded-3" style={{
@@ -568,12 +591,12 @@ export default function Landing() {
         </section>
 
         {/* Facts Section */}
-        <section className="px-3 py-5 py-md-5 position-relative">
+        <section className="px-3 py-5 py-md-5 position-relative fade-section">
           <div className="container">
             <div className="row justify-content-center ">
               <div className="col-12 col-md-8">
                 <div
-                  className="text-center bg-white border border-gray-100 shadow-sm p-4 rounded-3 h-100 justify-content-center d-flex flex-column"
+                  className="text-center bg-white border bo shadow-sm p-4 rounded-3 h-100 justify-content-center d-flex flex-column"
                   onMouseEnter={() => setIsPaused(true)}
                   onMouseLeave={() => setIsPaused(false)}
                   style={{ cursor: 'pointer', minHeight: '150px' }}
@@ -605,14 +628,14 @@ export default function Landing() {
         </section>
 
         {/* 5. CTA Section */}
-        <section className="px-3 py-5 py-md-5 position-relative">
+        <section className="px-3 py-5 py-md-5 position-relative fade-section">
           <div className="container">
             <div className="mx-auto text-center bg-gradient-blue-purple rounded-3 p-5 shadow-lg cta-section">
               <h2 className="display-5 fw-bolder text-white mb-4">
                 Ready to Make a Difference?
               </h2>
-              <p className="text-white-80 lead mb-4 mx-auto" style={{ maxWidth: '600px' }}>
-                Join thousands of volunteers making positive impacts in their communities. Your journey starts here.
+              <p className="text-white lead mb-4 mx-auto" style={{ maxWidth: '600px' }}>
+                Join thousands of volunteers making positive impacts in their communities. Your journey starts here, with VolunteerConnect.
               </p>
               <button className="text-white btn btn-lg fw-bold text-center custom-btn-cta hover-scale-105"
                 onClick={() => navigate('/volunteer/auth')}>

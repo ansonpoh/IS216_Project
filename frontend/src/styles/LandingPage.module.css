@@ -1,3 +1,30 @@
+.landing-page section {
+  margin: 0;
+  padding: 0;
+  transition: background 0.8s ease-in-out;
+}
+
+.section-wrapper {
+  position: relative;
+  padding: 80px 0;
+}
+
+/* Remove tiny anti-aliasing gap between gradients */
+.section-wrapper:not(:first-child) {
+  margin-top: -1px;
+}
+
+/* Optional: alternate section backgrounds */
+.hero-section,
+.map-section,
+.community-section
+.meet-vera-section,
+.opportunities-section {
+  background: linear-gradient(180deg, #eaf3ff 0%, #f9fbff 100%);
+}
+
+
+
 .bg-blue-100 { background-color: #dbeafe; }
 
 .bg-purple-100 { background-color: #ede9fe; }
@@ -132,6 +159,19 @@
 :global(.landing-page .animate-fade-in) { animation: fade-in 0.8s ease-out forwards; opacity: 0; }
 :global(.landing-page .animate-gradient) { background-size: 200% 200%; animation: gradient 3s ease infinite; }
 :global(.landing-page .animate-bounce-slow) { animation: bounce-slow 3s infinite ease-in-out; }
+
+
+:global(html, body) {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch; /* for iOS momentum */
+  scroll-padding-top: 80px; /* keeps sections clean when using anchors */
+}
+
+:global(.landing-page) {
+  scroll-behavior: smooth;
+  transition: scroll 0.3s ease-in-out;
+}
+
 
 /* keep your @keyframes as global (no .landing-page prefix needed) */
 @keyframes gradient { 0%,100%{ background-position: 0% 50%; } 50%{ background-position: 100% 50%; } }
