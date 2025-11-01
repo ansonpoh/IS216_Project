@@ -218,7 +218,7 @@ export default function VolunteerDashboard() {
   const round1 = (n) => Math.round(n * 10) / 10;
 
   const syncedTotalHours = useMemo(() => round1(pastEvents.reduce((sum, ev) => sum + hoursBetween(ev.start, ev.end), 0)), [pastEvents]);
-  const displayedTotalHours = manualTotalHours || syncedTotalHours;
+  const displayedTotalHours = manualTotalHours || syncedTotalHours || 0;
 
   const syncedMonthlyHours = useMemo(() => {
     const now = new Date();
