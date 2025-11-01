@@ -17,10 +17,10 @@ export async function check_if_user_email_in_use_handler (req, res) {
 
 export async function complete_registration_handler(req, res) {
     try {
-        const {supabase_id, username, email} = req.body;
+        const {user_id, username, email} = req.body;
         const profile_image = req.file;
 
-        const result = await complete_registration(supabase_id, username, email, profile_image);
+        const result = await complete_registration(user_id, username, email, profile_image);
         return res.json({status: true, user: result});
     } catch (err) {
         console.error(err);

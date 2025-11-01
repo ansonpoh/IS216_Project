@@ -2,12 +2,12 @@ import pool from "../config/db.js";
 import { supabase } from "../config/supabase.js";
 import path from "path";
 
-export async function complete_registration(supabase_id, username, email, profile_image) {
+export async function complete_registration(user_id, username, email, profile_image) {
     let profile_image_url;
     try {
         if (profile_image) {
             const fileExt = path.extname(profile_image.originalname);
-            const fileName = `${supabase_id}_${Date.now()}${fileExt}`;
+            const fileName = `${user_id}_${Date.now()}${fileExt}`;
 
             const { error: uploadError } = await supabase.storage
                 .from("profile_images") // bucket name
@@ -26,7 +26,7 @@ export async function complete_registration(supabase_id, username, email, profil
         } 
 
         const query = `insert into users (username, email, user_id, profile_image) values ($1, $2, $3, $4) returning user_id, username, email`;
-        const values = [username, email, supabase_id, profile_image_url];
+        const values = [username, email, user_id, profile_image_url];
         const result = await pool.query(query, values);
 
         return result.rows[0];

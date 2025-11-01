@@ -11,6 +11,7 @@ import {
   get_events_by_time,
   get_filtered_events,
   get_selectable_options,
+  signup_event,
 } from "../services/eventServices.js";
 import axios from "axios";
 
@@ -190,6 +191,17 @@ export async function event_data_modify_handler(req, res) {
         const results = await Promise.all(promises);
         return res.json(results.filter(Boolean));
         
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+}
+
+export async function signup_event_handler(req, res) {
+  try {
+    const {user_id, event_id} = req.body;
+    const result = await signup_event(user_id, event_id);
+    return res.json({result});
   } catch (err) {
     console.error(err);
     throw err;

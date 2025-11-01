@@ -47,7 +47,7 @@ export default function LoginSignup() {
     }
 
     const emailInUse = await axios.get("http://localhost:3001/orgs/check_email", {params: {email: registerData.email}});
-    if(emailInUse.status) {
+    if(emailInUse.data.status) {
       setRegisterErrors("Email in use.");
       return;
     }
@@ -107,34 +107,44 @@ export default function LoginSignup() {
         return;
       }
 
-      try {
-        const formData = new FormData();
-        formData.append("org_id", org.id);
-        formData.append("org_name", org.user_metadata?.org_name || "");
-        formData.append("email", org.email || "");
-        if (registerData.profile_image instanceof File) {
-          formData.append("profile_image", registerData.profile_image);
-        }
-        const res = await axios.post(
-          "http://localhost:3001/orgs/complete_registration",
-          formData,
-          { headers: { "Content-Type": "multipart/form-data" } }
-        );
+      const orgInDb = await axios.get("http://localhost:3001/orgs/get_org_by_id", {params: {id: org.id}});
+      if(orgInDb.data.result.length === 0) {
+        try {
+          const formData = new FormData();
+          formData.append("org_id", org.id);
+          formData.append("org_name", org.user_metadata?.org_name || "");
+          formData.append("email", org.email || "");
+          if (registerData.profile_image instanceof File) {
+            formData.append("profile_image", registerData.profile_image);
+          }
+          const res = await axios.post(
+            "http://localhost:3001/orgs/complete_registration",
+            formData,
+            { headers: { "Content-Type": "multipart/form-data" } }
+          );
 
-        setAuth({
-          role: "organiser",
-          id: org.id,
-          token: accessToken || "",
-        });
+          setAuth({
+            role: "organiser",
+            id: org.id,
+            token: accessToken || "",
+          });
 
-        if (res?.data?.status) {
-          alert("Login success");
-        } else {
-          console.log(res?.data);
+          if (res?.data?.status) {
+            alert("Login success");
+          } else {
+            console.log(res?.data);
+          }
+          nav("/");
+        } catch (err) {
+          console.error(err);
         }
-        nav("/");
-      } catch (err) {
-        console.log(err);
+      } else {
+          setAuth({
+            role: "organiser",
+            id: org.id,
+            token: accessToken || "",
+          });
+          nav("/")
       }
     } catch (err) {
       console.error(err);

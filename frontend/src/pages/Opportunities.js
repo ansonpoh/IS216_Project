@@ -129,10 +129,14 @@ export default function Opportunities() {
       setConfirmModal(false);
       setSignUpLoading(true);
 
-      const res = await axios.post("http://localhost:3001/events/signup_event", {event_id: selectedOpportunity.eventId, })
+      const res = await axios.post("http://localhost:3001/events/signup_event", {user_id: auth.id, event_id: selectedOpportunity.eventId, })
+
+      console.log(res);
     } catch(err) {
       console.error(err);
-
+      alert("Error occured while signing up.")
+    } finally {
+      setSignUpLoading(false);
     }
   }
 
@@ -318,15 +322,48 @@ export default function Opportunities() {
         </>
       )}
 
+      {confirmModal && (
+        <div className={styles["modal-overlay"]} onClick={() => setConfirmModal(false)}>
+          <div className={styles["confirm-modal"]} onClick={(e) => e.stopPropagation()}>
+            <h3>Confirm Sign Up</h3>
+            <p>Are you sure you want to sign up for <b>{selectedOpportunity.title}</b>?</p>
+            <div className={styles["confirm-buttons"]}>
+              <button onClick={() => setConfirmModal(false)} className={styles["cancel-btn"]}>Cancel</button>
+              <button onClick={confirmSignUp} className={styles["confirm-btn"]}>Yes, Sign Me Up</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {signUpLoading && (
+        <div className={styles["modal-overlay"]}>
+          <div className={styles["loading-modal"]}>
+            <div className={styles["spinner"]}></div>
+            <p>Submitting your application...</p>
+          </div>
+        </div>
+      )}
+
+      {signUpSuccess && (
+        <div className={styles["modal-overlay"]} onClick={() => setSignUpSuccess(false)}>
+          <div className={styles["success-modal"]} onClick={(e) => e.stopPropagation()}>
+            <i className="bi bi-check-circle-fill" style={{ color: "green", fontSize: "48px" }}></i>
+            <h3>Sign Up Successful!</h3>
+            <p>Your application is pending organiser confirmation.</p>
+            <button onClick={() => setSignUpSuccess(false)} className={styles["ok-btn"]}>OK</button>
+          </div>
+        </div>
+      )}
+
       {showScrollTop && (
-  <button 
-    onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} 
-    className={styles.scrollTopButton}
-    aria-label="Scroll to top"
-  >
-    ↑
-  </button>
-)}
+        <button 
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} 
+          className={styles.scrollTopButton}
+          aria-label="Scroll to top"
+        >
+          ↑
+        </button>
+      )}
 
       </PageTransition>
     </>

@@ -27,6 +27,7 @@ function Navbar() {
     const fetch_user = async () => {
       const user = await axios.get("http://localhost:3001/users/get_user_by_id", { params: { id: auth.id } })
       const data = user.data.result[0];
+      console.log(user)
       setImage(data.profile_image);
     }
 

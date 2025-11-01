@@ -52,7 +52,7 @@ export default function LoginSignup() {
     }
 
     const emailInUse = await axios.get("http://localhost:3001/users/check_email", {params: {email: registerData.email}});
-    if(emailInUse.status) {
+    if(emailInUse.data.status) {
       setRegisterErrors("Email in use.")
       return;
     }
@@ -113,36 +113,45 @@ export default function LoginSignup() {
         return;
       }
 
-      try {
-        const formData = new FormData();
-        formData.append("user_id", user.id);
-        formData.append("username", user.user_metadata?.username || "");
-        formData.append("email", user.email || "");
-        if (registerData.profile_image instanceof File) {
-          formData.append("profile_image", registerData.profile_image);
+      const userInDb = await axios.get("http://localhost:3001/users/get_user_by_id", {params: {id: user.id}});
+      if(userInDb.data.result.length === 0) {
+        try {
+          const formData = new FormData();
+          formData.append("user_id", user.id);
+          formData.append("username", user.user_metadata?.username || "");
+          formData.append("email", user.email || "");
+          if (registerData.profile_image instanceof File) {
+            formData.append("profile_image", registerData.profile_image);
+          }
+
+          const res = await axios.post(
+            "http://localhost:3001/users/complete_registration",
+            formData,
+            { headers: { "Content-Type": "multipart/form-data" } }
+          );
+
+          if (res?.data?.status) {
+            alert("Login success");
+          } else {
+            console.log(res?.data);
+          }
+
+          setAuth({
+            role: "volunteer",
+            id: user.id,
+            token: accessToken || "",
+          });
+          nav("/");
+        } catch (err) {
+          console.error(err);
         }
-
-        const res = await axios.post(
-          "http://localhost:3001/users/complete_registration",
-          formData,
-          { headers: { "Content-Type": "multipart/form-data" } }
-        );
-
+      } else {
         setAuth({
           role: "volunteer",
           id: user.id,
           token: accessToken || "",
         });
-
-        console.log(res);
-        if (res?.data?.status) {
-          alert("Login success");
-        } else {
-          console.log(res?.data);
-        }
         nav("/");
-      } catch (err) {
-        console.log(err);
       }
     } catch (err) {
       console.error(err);
