@@ -26,6 +26,7 @@
 .bot-bubble {
   border-bottom-left-radius: 0;
   border-radius: 30%;
+  background-color: white;
 }
 
 .avatar {
@@ -73,10 +74,12 @@
 }
 
 .suggestion-card:hover {
-  background-color: #f5f7ff;
-  border-color: #0d6efd;
-  box-shadow: 0 2px 8px rgba(13, 110, 253, 0.15);
+  background-color: #b4d4ff !important;  /* force white background */
+  color: black !important;              /* make text black */
+  border-color: #ddd !important;        /* optional: lighter border */
+  box-shadow: none !important;           /* remove shadow if any */
 }
+
 
 .suggestion-card i {
   font-size: 1.2rem;

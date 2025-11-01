@@ -48,7 +48,7 @@ export default function ChatBubble({ message, onOptionClick }) {
         className={`${styles['chat-bubble']} p-3 ${
           isUser
             ? `${styles['user-bubble']} bg-primary text-white`
-            : `${styles['bot-bubble']} bg-light`
+            : `${styles['bot-bubble']} bg-white`
         }`}
 
       >
