@@ -182,8 +182,11 @@
   line-height: 1.4;
   letter-spacing: 0.3px;
 
-  background: linear-gradient(90deg, #49E2FF, #43B2FF, #FF5A9F);
+  /* Gradient text effect */
+  background: linear-gradient(90deg, #49e2ff, #43b2ff, #ff5a9f);
+  background-clip: text;
   -webkit-background-clip: text;
+  color: transparent;
   -webkit-text-fill-color: transparent;
 
   text-shadow:
