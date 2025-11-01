@@ -19,21 +19,21 @@ function Navbar() {
 
   useEffect(() => {
     const fetch_org = async () => {
-      const org = await axios.get("http://localhost:3001/orgs/get_org_by_id", {params: {id: auth.id}});
+      const org = await axios.get("http://localhost:3001/orgs/get_org_by_id", { params: { id: auth.id } });
       const data = org.data.result[0];
       setImage(data.profile_image);
     }
 
     const fetch_user = async () => {
-      const user = await axios.get("http://localhost:3001/users/get_user_by_id", {params: {id: auth.id}})
+      const user = await axios.get("http://localhost:3001/users/get_user_by_id", { params: { id: auth.id } })
       const data = user.data.result[0];
       setImage(data.profile_image);
     }
 
-    if(auth.id.length > 0) {
-      if(auth.role === "volunteer") {
+    if (auth.id.length > 0) {
+      if (auth.role === "volunteer") {
         fetch_user();
-      } else if(auth.role === "organiser") {
+      } else if (auth.role === "organiser") {
         fetch_org();
       }
     }
@@ -60,7 +60,7 @@ function Navbar() {
       <div className="collapse navbar-collapse justify-content-center" id="navbarNav">
         <ul className="navbar-nav gap-3">
           <li className="nav-item">
-            <a className={`${styles['navbar_item']} nav-link fw-semibold ${isActive("/") ? styles.active : ""}`} href="/">
+            <a className={`${styles['navbar_item']} nav-link fw-semibold ${isActive("/") ? styles.active : ""}`} href="/ai">
               AI Chat
             </a>
           </li>
@@ -130,9 +130,14 @@ function Navbar() {
             Logout
           </button>
         ) : (
-          <button className="btn btn-primary" onClick={() => navigate("/choose-role")}>
+          <button
+            className="btn rounded-pill px-4 fw-semibold shadow-sm text-white"
+            style={{ background: 'linear-gradient(90deg,#43a1ff,#9b5bff)', border: 0 }}
+            onClick={() => navigate("/choose-role")}
+          >
             Get Started
           </button>
+
         )}
       </div>
     </nav>
