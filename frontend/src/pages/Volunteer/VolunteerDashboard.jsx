@@ -214,19 +214,6 @@ export default function VolunteerDashboard() {
     setPastEvents(past);
   }, [events]);
 
-  // useEffect(() => {
-  //   const saved = JSON.parse(localStorage.getItem(LS_KEY) || "{}");
-  //   if (Array.isArray(saved.activeEvents)) setActiveEvents(saved.activeEvents);
-  //   if (Array.isArray(saved.pendingEvents)) setPendingEvents(saved.pendingEvents);
-  //   if (Array.isArray(saved.pastEvents)) setPastEvents(saved.pastEvents);
-  //   if (typeof saved.goalHours === "number") setGoalHours(saved.goalHours);
-  //   if (typeof saved.manualTotalHours === "number") setManualTotalHours(saved.manualTotalHours);
-  // }, []);
-
-  // useEffect(() => {
-  //   localStorage.setItem(LS_KEY, JSON.stringify({ activeEvents, pendingEvents, pastEvents, goalHours, manualTotalHours }));
-  // }, [activeEvents, pendingEvents, pastEvents, goalHours, manualTotalHours]);
-
   const hoursBetween = (s, e) => Math.max(0, (new Date(e) - new Date(s)) / 36e5);
   const round1 = (n) => Math.round(n * 10) / 10;
 

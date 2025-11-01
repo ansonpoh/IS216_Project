@@ -97,7 +97,7 @@ export async function get_all_published_events() {
 
 export async function get_events_of_org(org_id) {
     try {
-        const query = `select * from events where org_id=$1::uuid`;
+        const query = `select e.*, count(er.user_id) as registration_count from events e left join event_registration er on e.event_id = er.event_id where org_id=$1 group by e.event_id`;
         const values = [org_id];
         const result = await pool.query(query, values);
         return result.rows;
@@ -190,7 +190,7 @@ export async function signup_event(user_id, event_id) {
 
 export async function get_all_registered_users_for_event(event_id) {
     try {
-        const query = `select user_id from event_registration where event_id = $1`;
+        const query = `select er.*, u.username, u.email from event_registration er join users u on er.user_id = u.user_id where er.event_id = $1`;
         const values = [event_id];
         const result = await pool.query(query, values);
         return result.rows;
@@ -230,6 +230,18 @@ export async function get_selectable_options() {
         const categories = (await get_all_categories()).map(c => c.category);
         const availability = ["Weekday", "Weekend", "Any Dates"]
         return {regions, categories, availability}
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
+export async function update_registration_status(user_id, event_id, status) {
+    try {
+        const query = `update event_registration set status = $1 where user_id = $2 and event_id = $3 returning *`;
+        const values = [status, user_id, event_id];
+        const result = await pool.query(query, values);
+        return result.rows;
     } catch (err) {
         console.error(err);
         throw err;

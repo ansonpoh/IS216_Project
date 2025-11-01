@@ -14,6 +14,8 @@ import {
   signup_event,
   check_if_user_signed_up,
   get_registered_events_for_user,
+  get_all_registered_users_for_event,
+  update_registration_status,
 } from "../services/eventServices.js";
 import axios from "axios";
 
@@ -225,6 +227,28 @@ export async function get_registered_events_for_user_handler(req, res) {
   try {
     const {user_id} = req.query;
     const result = await get_registered_events_for_user(user_id);
+    return res.json({result});
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+}
+
+export async function get_registered_users_for_event_handler(req,res) {
+  try {
+    const {event_id} = req.query;
+    const result = await get_all_registered_users_for_event(event_id);
+    return res.json({result});
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+}
+
+export async function update_registration_status_handler(req, res) {
+  try {
+    const {user_id, event_id, status} = req.body;
+    const result = await update_registration_status(user_id, event_id, status);
     return res.json({result});
   } catch (err) {
     console.error(err);

@@ -43,9 +43,9 @@ export default function Opportunities() {
             return undefined;
           };
           const toNumber = (v) => (v == null || v === "" ? null : (Number.isNaN(Number(v)) ? null : Number(v)));
-
           return {
             event_id: get("event_id", "id"),
+            org_name: get("org_name"),
             title: get("title") || "Untitled opportunity",
             description: get("description") || "",
             location: get("location") || "",
@@ -120,6 +120,10 @@ export default function Opportunities() {
       nav("/volunteer/auth")
       return;
     }
+    if(auth.role === "organiser") {
+      alert("Only Volunteers can sign up!")
+      return;
+    }
     setConfirmModal(true);
   }
 
@@ -131,7 +135,6 @@ export default function Opportunities() {
 
       const userSignedUp = await axios.get("http://localhost:3001/events/check_if_user_signed_up", {params: {user_id: auth.id, event_id: selectedOpportunity.event_id}});
 
-      console.log(userSignedUp)
       if(userSignedUp.data.result.length > 0) {
         setAlreadySignedUp(true);
       } else {
@@ -248,6 +251,7 @@ export default function Opportunities() {
 
                 <div className={styles['card-content']}>
                   <h2 className={styles['event-title']}>{op.title}</h2>
+                  <p className="text-muted">{op.org_name}</p>
                   <p>{op.description}</p>
                   <div className={styles['card-info']}>
                     <p>
