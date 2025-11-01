@@ -3,6 +3,7 @@ import Navbar from "../components/Navbar.js";
 import styles from "../styles/Opportunities.module.css";
 import axios from 'axios';
 import PageTransition from "../components/Animation/PageTransition.jsx";
+import { Modal } from "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 export default function Opportunities() {
   const [opportunities, setOpportunities] = useState([]);

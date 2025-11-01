@@ -1,9 +1,10 @@
 import './App.css';
+import Landing from './pages/LandingPage/landing.jsx';
 import VolunteerConnect from './pages/VolunteerConnect';
 import InteractiveMapDashboard from './pages/InteractiveMap/InteractiveMapDashboard.jsx';
 import {Routes, Route, useLocation} from "react-router-dom";
 import { AuthProvider } from './contexts/AuthProvider';
-import Opportunities from './pages/Opportunities';
+import Opportunities from './pages/Opportunities.js';
 import Community from './pages/Forum/ForumPage';
 import NewDiscussion from './pages/Forum/component/NewDiscussion'; 
 import RoleSelect from './pages/Signup/RoleSelect.jsx';
@@ -13,6 +14,9 @@ import OrganiserDashboard from './pages/Organisers/OrganiserDashboard.jsx';
 import OrganiserCreateForm from "./pages/Organisers/OrganiserCreateForm.jsx"
 import VolunteerProfile from "./pages/Volunteer/VolunteerProfile.jsx";
 import VolunteerDashboard from "./pages/Volunteer/VolunteerDashboard.jsx";
+
+// test landing
+// import Landing from "./pages/LandingPage/landing.jsx";
 
 //transition wrapper
 import {AnimatePresence} from "framer-motion";
@@ -25,8 +29,10 @@ function App() {
       <AuthProvider>
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
+            {/* {landingpage} */}
+            <Route path="/" element={<Landing />} />
             {/* AI Landing Page */}
-            <Route path="/" element={<VolunteerConnect />} />
+            <Route path="/ai" element={<VolunteerConnect />} />
             
             {/* Forum Page */}
             <Route path="/community/*" element={<Community />} />
@@ -62,6 +68,8 @@ function App() {
             {/* Volunteer Dashboard Page */}
             <Route path="/volunteer/dashboard" element={<VolunteerDashboard />} />
 
+            {/* Landing Page */}  
+            <Route path="/landing" element={<Landing />} />
           </Routes>
         </AnimatePresence>
       </AuthProvider>
