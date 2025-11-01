@@ -115,7 +115,6 @@ export default function OrganiserDashboard() {
     setShowModal(true);
     setLoadingModal(true);
     try {
-      console.log(event)
       const res = await axios.get("http://localhost:3001/events/get_registered_users_for_event", {params: {event_id: event.event_id}})
       setRegistrations(res.data.result);
     } catch(err) {
