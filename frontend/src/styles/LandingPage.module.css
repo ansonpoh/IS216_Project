@@ -25,7 +25,6 @@
     padding-bottom: 5rem;
 }
 
-
 /* Title underline */
 .title-underline {
     position: absolute;
@@ -75,18 +74,7 @@
 }
 .custom-btn-cta:hover { box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); }
 
-/* Floating Cards */
-.opportunity-card-float {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    width: 320px;
-    transition: all 0.3s;
-    animation: float-card 6s infinite ease-in-out;
-}
 
-.custom-icon-circle { width: 48px; height: 48px; min-width: 48px; min-height: 48px; }
-.custom-icon-circle-lg { width: 56px; height: 56px; min-width: 56px; min-height: 56px; }
 
 @keyframes float { 0%,100%{ transform: translateY(0px) rotate(0deg);} 50%{ transform: translateY(-20px) rotate(5deg);} }
 @keyframes float-card { 0%,100%{ transform: translateX(calc(-50% + var(--x))) translateY(var(--y)) rotate(0deg);} 50%{ transform: translateX(calc(-50% + var(--x))) translateY(calc(var(--y) - 10px)) rotate(2deg);} }
@@ -149,3 +137,40 @@
 @keyframes gradient { 0%,100%{ background-position: 0% 50%; } 50%{ background-position: 100% 50%; } }
 @keyframes fade-in { from { opacity: 0; transform: translateY(20px);} to { opacity: 1; transform: translateY(0);} }
 @keyframes bounce-slow { 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(-10px);} }
+
+/* Map preview card */
+.mapCard {
+  border-radius: 1rem;            /* ~rounded-4 */
+  overflow: hidden;
+  transition: transform .25s ease, box-shadow .25s ease;
+  box-shadow: 0 10px 24px rgba(0,0,0,.08);
+  will-change: transform, box-shadow;
+}
+
+.mapCard:hover {
+  transform: translateY(-1px) scale(1.03);
+  box-shadow: 0 18px 30px rgba(0,0,0,.12);
+}
+
+
+.mapCard:hover .mapBorder {
+  inset: 8px;
+}
+
+/* optional helper for a responsive box (16:9) */
+.aspect169 {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  position: relative;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mapCard,
+  .mapCard:hover,
+  .mapBorder,
+  .mapCard:hover .mapBorder {
+    transition: none;
+    transform: none;
+  }
+}
+

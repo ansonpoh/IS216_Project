@@ -10,6 +10,7 @@ import chatRoutes from "./routes/chatRoutes.js";
 import feedbackRoutes from "./routes/feedbackRoutes.js";
 import communityRoutes from "./routes/communityRoutes.js";
 import { get_all_events } from "./services/eventServices.js";
+import landingRoutes from "./routes/landingPageRoutes.js";
 
 const app = express();
 dotenv.config();
@@ -27,12 +28,14 @@ app.listen(3001, async () => {
     console.log("Server running on port 3001");
 });
 
+app.use("/", landingRoutes);
 app.use("/users", userRoutes);
 app.use("/orgs", orgsRoutes);
 app.use("/events", eventRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/community", communityRoutes);
 app.use("/feedback", feedbackRoutes);
+
 
 // Return config values needed by frontend
 app.get('/config/google-maps-key', (req, res) => {

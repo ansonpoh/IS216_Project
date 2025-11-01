@@ -1,20 +1,38 @@
 import React, { useState, useEffect } from 'react';
+import { mdiPaw, mdiBalloon, mdiHumanCane, mdiTree, mdiCalendar, mdiHuman, mdiHeartPulse, } from '@mdi/js';
+import Icon from '@mdi/react';
 import { useNavigate } from 'react-router-dom';
-// We'll replace lucide-react icons with Bootstrap Icons (using <i> tags)
-// import { Heart, Users, Calendar, Target, ArrowRight, Sparkles, MapPin } from 'lucide-react';
+import axios from 'axios';
 import Navbar from '../../components/Navbar';
-import '../../styles/LandingPage.module.css';
-import { Nav } from 'react-bootstrap';
+import styles from '../../styles/LandingPage.module.css';
+import mapView from '../../components/images/mapView.png';
+// import { Nav } from 'react-bootstrap';
 
 // Helper function to render Bootstrap Icon
 const BSIcon = ({ name, size = '1em', className = '' }) => (
   <i className={`bi bi-${name} ${className}`} style={{ fontSize: size }} />
 );
 
+const getCategoryColors = (category) => {
+  switch (category) {
+    case 'Environment':
+      return { background: '#aaf3dbce', text: '#000000ff', icon: mdiTree };
+    case 'Animals':
+      return { background: '#ffd894ff', text: '#000000ff', icon: mdiPaw };
+    case 'Community':
+      return { background: '#ffb498ff', text: '#000000ff', icon: mdiHumanCane };
+    default:
+      return { background: '#E5E7EB', text: '#000000ff', icon: null };
+  }
+};
+
+
 export default function Landing() {
   const navigate = useNavigate();
+  const [facts, setFacts] = useState([]);
+  const [loadingFacts, setLoadingFacts] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const [scrollY, setScrollY] = useState(0);
-  const [counters, setCounters] = useState({ volunteers: 0, opportunities: 0, hours: 0 });
   const [currentFactIndex, setCurrentFactIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [activeCardIndex, setActiveCardIndex] = useState(null);
@@ -26,35 +44,53 @@ export default function Landing() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Counter animation logic remains the same
   useEffect(() => {
-    const duration = 2000;
-    const steps = 60;
-    const interval = duration / steps;
-    let step = 0;
+    let mounted = true;
+    const fetchFacts = async () => {
+      setLoadingFacts(true);
+      setFetchError(null);
 
-    const timer = setInterval(() => {
-      step++;
-      const progress = step / steps;
-      setCounters({
-        volunteers: Math.floor(15000 * progress),
-        opportunities: Math.floor(450 * progress),
-        hours: Math.floor(50000 * progress)
-      });
-      if (step >= steps) clearInterval(timer);
-    }, interval);
+      try {
+        const response = await axios.get('http://localhost:3001/facts');
+        const data = response.data;
 
-    return () => clearInterval(timer);
+        const rows = Array.isArray(data.facts)
+          ? data.facts
+          : Array.isArray(data.result)
+            ? data.result
+            : Array.isArray(data)
+              ? data
+              : [];
+
+        const parsed = rows.map((r) => ({
+          fact_text: r.fact_text ?? r.fact ?? '',
+          source: r.source ?? ''
+        }));
+
+        if (mounted) {
+          setFacts(parsed);
+          setCurrentFactIndex(0);
+        }
+      } catch (err) {
+        console.error('Error fetching facts:', err);
+        if (mounted) setFetchError(err?.message || 'Fetch failed');
+      } finally {
+        if (mounted) setLoadingFacts(false);
+      }
+    };
+
+    fetchFacts();
+    return () => { mounted = false; };
   }, []);
 
-
-
-  // Converted to use Bootstrap Icon names for clarity
-  const features = [
-    { icon: 'heart-fill', title: "Make an Impact", desc: "Connect with causes that matter to you" },
-    { icon: 'calendar-event-fill', title: "Flexible Schedule", desc: "Find opportunities that fit your time" },
-    { icon: 'bullseye', title: "Track Progress", desc: "See your volunteer journey grow" }
-  ];
+  // rotating fact state (example usage)
+  useEffect(() => {
+    if (!facts.length || isPaused) return;
+    const id = setInterval(() => {
+      setCurrentFactIndex((i) => (i + 1) % facts.length);
+    }, FACT_SWITCH_MS);
+    return () => clearInterval(id);
+  }, [facts.length, isPaused]);
 
   const opportunities = [
     { title: "Ang Mo Kio Nature Trail Cleanup", location: "Ang Mo Kio Nature Trail", date: "Nov 15", category: "Environment" },
@@ -62,27 +98,14 @@ export default function Landing() {
     { title: "Jurong Bird Park Wildlife Education", location: "Jurong Bird Park", date: "Nov 07", category: "Animals" }
   ];
 
-  const facts = [
-    { fact: 'There are over 1 billion volunteers worldwide!  -- VolunteerHub' },
-    { fact: 'Do you know that over 90% of volunteers reported feeling a sense of achievement -- VolunteerHub' },
-    { fact: 'Women volunteer at a higher rate than men -- AmeriCorps' },
-    { fact: 'Approximately 77% stated that volunteering improved their mental and emotional well-being.  -- TRVST' },
-  ];
 
-  useEffect(() => {
-    if (!facts.length || isPaused) return;
-    const id = setInterval(() => {
-      setCurrentFactIndex(i => (i + 1) % facts.length);
-    }, FACT_SWITCH_MS);
-    return () => clearInterval(id);
-  }, [facts.length, isPaused]);
 
   return (
     <>
       <Navbar />
-      <div className="landing-page min-vh-100 landing-page-bg overflow-hidden">
+      <div className="landing-page landing-page-bg overflow-hidden">
 
-        <section className="position-relative py-5 py-md-5 overflow-hidden hero-section">
+        <section className="position-relative py-5 py-md-5 overflow-hidden hero-section min-vh-100">
           {/* Parallax Background Effect */}
           <div
             className="hero-bg-overlay"
@@ -90,15 +113,15 @@ export default function Landing() {
           />
 
           <div className="container position-relative z-10">
-            <div className="text-center space-y-3 animate-fade-in pt-5">
+            <div className="text-center space-y-4 animate-fade-in pt-5">
               {/* Callout Badge */}
-              <div className="d-inline-flex align-items-center gap-2 px-4 py-2 bg-white rounded-pill border border-purple-200 shadow-sm animate-bounce-slow">
-                <BSIcon name="stars" className="text-warning" />
+              <div className="d-inline-flex align-items-center gap-2 px-4 py-3 bg-white rounded-pill border border-purple-200 shadow-sm animate-bounce-slow">
+                <BSIcon name="stars" className="text-warning sparkle-pulse" />
                 <span className="small text-muted fw-medium">Be the change Today!</span>
               </div>
 
               {/* Main Title */}
-              <h1 className="display-3 fw-bolder mb-4 hero-title">
+              <h1 className="display-3 fw-bolder mb-5 hero-title">
                 <span className="gradient-text-blue-purple animate-gradient">
                   Find your cause
                 </span>
@@ -115,7 +138,7 @@ export default function Landing() {
           </div>
 
           {/* floating card */}
-          <div className="container mt-5 position-relative" style={{ height: '300px' }}>
+          <div className="container mt-7 position-relative" >
             {[0, 1, 2].map((i) => {
               // Determine if this card is currently active/focused
               const isFocus = activeCardIndex === i;
@@ -128,6 +151,11 @@ export default function Landing() {
 
               // Focus transform adds a slight shift and scale
               const focusTransform = `translateX(calc(-50% + ${(i - 1) * 120}px)) translateY(${i * 20 - 15}px) scale(1.05) rotate(0deg)`;
+
+              const colors = getCategoryColors(opportunities[i].category);
+              // alias for clarity when rendering icon + colors
+              const details = colors;
+              const iconPath = details.icon;
 
               return (
                 <div
@@ -146,7 +174,7 @@ export default function Landing() {
                     cursor: 'pointer' // Add cursor pointer for better UX
                   }}
                 >
-                  <div className="d-flex align-items-start gap-3" style={{ minHeight: '100px' }}> {/* <--- ADDED MIN-HEIGHT HERE */}
+                  <div className="d-flex align-items-start gap-3" style={{ minHeight: '100px' }}>
 
                     <div className="flex-grow-1">
                       {/* Ensure titles are capped or fixed height too for perfect uniformity */}
@@ -157,10 +185,31 @@ export default function Landing() {
                         <BSIcon name="geo-alt-fill" size="14px" /> {opportunities[i].location}
                       </p>
                       <div className="d-flex gap-2 mt-2">
-                        <span className="badge bg-blue-100 text-blue-700 rounded-pill small fw-medium">
+                        {/* CATEGORY BADGE: icon + label */}
+                        <span
+                          className="d-inline-block px-2 py-1 rounded-pill small fw-medium"
+                          style={{
+                            backgroundColor: details.background,
+                            color: details.text,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '6px'
+                          }}
+                        >
+                          {iconPath && (
+                            <Icon path={iconPath} size={0.7} aria-hidden="true" />
+                          )}
                           {opportunities[i].category}
                         </span>
-                        <span className="badge bg-purple-100 text-purple-700 rounded-pill small fw-medium">
+
+                        {/* DATE BADGE (consistent style) */}
+                        <span
+                          className="d-inline-block px-2 py-1 rounded-pill small fw-medium"
+                          style={{
+                            backgroundColor: '#F3E8FF',
+                            color: '#6B21A8'
+                          }}
+                        >
                           {opportunities[i].date}
                         </span>
                       </div>
@@ -177,6 +226,7 @@ export default function Landing() {
                 onClick={() => setActiveCardIndex(null)}
               />
             )}
+
           </div>
         </section>
 
@@ -193,7 +243,7 @@ export default function Landing() {
 
                   {/* Main Heading */}
                   <h2 className="display-5 fw-bolder mb-3 ">
-                    Not sure where to start?  <br />
+                    <h3>Not sure where to start?</h3>
                     <span className="gradient-text-blue-purple">
                       Meet Vera:
                     </span>
@@ -221,13 +271,13 @@ export default function Landing() {
                         <p className="small text-muted mb-0">Match with micro-volunteering or short-term commitments.</p>
                       </div>
                     </li>
-                    <li className="d-flex align-items-start gap-2">
+                    {/* <li className="d-flex align-items-start gap-2">
                       <BSIcon name="lightbulb-fill" className="text-primary mt-1" size="1.2em" />
                       <div>
                         <h4 className="fs-6 fw-semibold mb-0">Use my professional skills</h4>
                         <p className="small text-muted mb-0">Leverage your expertise for maximum impact (e.g., design, coding).</p>
                       </div>
-                    </li>
+                    </li> */}
                   </ul>
 
                   {/* Primary CTA */}
@@ -271,6 +321,7 @@ export default function Landing() {
             </div>
           </div>
         </section>
+
         {/* map */}
         <section className="px-3 py-5 py-md-5 position-relative ">
           <div className="container">
@@ -319,26 +370,52 @@ export default function Landing() {
                 </div>
               </div>
 
-              {/* Visual Column (LEFT) - Mockup Placeholder */}
-              <div className="col-12 col-lg-6 d-flex justify-content-center">
-                <div className="map-mockup-container p-3 bg-white rounded-4 shadow-xl border border-gray-100 w-100" style={{ maxWidth: '600px', maxHeight: '400px', overflow: 'hidden' }}>
+              {/* Visual Column (LEFT)  */}
 
-                  {/* Placeholder for the Map Screenshot */}
-                  {/* In a real environment, you'd replace this with a static map image or an actual small map widget */}
-                  <div className="map-placeholder-content text-center py-5 rounded-3" style={{
-                    backgroundColor: '#f8f9fa',
-                    height: '100%',
-                    backgroundImage: `url(${process.env.PUBLIC_URL}/map_preview.jpg)`, /* Use an image if available */
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    border: '1px solid #dee2e6'
-                  }}>
-                    <BSIcon name="geo-alt-fill" className="text-secondary" size="3em" />
-                    <p className="text-muted mt-2 fw-semibold">Interactive Map Preview</p>
-                  </div>
+<div className="col-12 col-lg-6 d-flex justify-content-center">
+  <div
+    className={`${styles.mapCard} bg-white rounded-4 border border-gray-100 w-100 position-relative p-0`}
+    style={{ maxWidth: 600, cursor: 'pointer' }}
+    onClick={() => navigate('/map')}
+    aria-label="Open interactive map"
+    role="button"
+  >
+    <div className={styles.aspect169}>
+      <img
+        src={mapView}
+        alt="Volunteer opportunities across Singapore"
+        loading="lazy"
+        className="rounded-3"
+        style={{
+          position: 'absolute',
+          inset: 0,
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          display: 'block'
+        }}
+        sizes="(max-width: 576px) 100vw, (max-width: 992px) 90vw, 600px"
+      />
 
-                </div>
-              </div>
+      <span className={styles.mapBorder} />
+
+      <div
+        className="position-absolute start-0 end-0 bottom-0 p-3"
+        style={{
+          background: 'linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.45) 100%)',
+          color: '#fff'
+        }}
+      >
+        <div className="d-flex align-items-center gap-2">
+          <span className="ms-auto small d-none d-sm-inline">Open map</span>
+          <i className="bi bi-arrow-right"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 
             </div>
           </div>
@@ -490,8 +567,6 @@ export default function Landing() {
           </div>
         </section>
 
-        {/*  Features Section */}
-
         {/* Facts Section */}
         <section className="px-3 py-5 py-md-5 position-relative">
           <div className="container">
@@ -501,15 +576,28 @@ export default function Landing() {
                   className="text-center bg-white border border-gray-100 shadow-sm p-4 rounded-3 h-100 justify-content-center d-flex flex-column"
                   onMouseEnter={() => setIsPaused(true)}
                   onMouseLeave={() => setIsPaused(false)}
-                  style={{ cursor: 'pointer' }}
+                  style={{ cursor: 'pointer', minHeight: '150px' }}
                 >
-                  <h3
-                    key={currentFactIndex}
-                    className="fs-5 fw-bold mt-3 mb-2 animate-fade-in"
-                    style={{ minHeight: 56 }}
-                  >
-                    {facts[currentFactIndex].fact}
-                  </h3>
+                  {loadingFacts ? (
+                    <h3 className="fs-5 fw-bold mt-3 mb-2">Loading fact...</h3>
+                  ) : fetchError ? (
+                    <h3 className="fs-5 fw-bold mt-3 mb-2">Failed to load facts</h3>
+                  ) : facts.length ? (
+                    <>
+                      <h3
+                        key={currentFactIndex}
+                        className="fs-5 fw-bold mt-4 mb-1 animate-fade-in"
+                        style={{ maxHeight: '64px' }}
+                      >
+                        {facts[currentFactIndex]?.fact_text}
+                      </h3>
+                      <div className="small mt-3 text-muted">
+                        {facts[currentFactIndex]?.source ? `Source: ${facts[currentFactIndex].source}` : null}
+                      </div>
+                    </>
+                  ) : (
+                    <h3 className="fs-5 fw-bold mt-3 mb-2">No facts available</h3>
+                  )}
                 </div>
               </div>
             </div>
@@ -526,8 +614,8 @@ export default function Landing() {
               <p className="text-white-80 lead mb-4 mx-auto" style={{ maxWidth: '600px' }}>
                 Join thousands of volunteers making positive impacts in their communities. Your journey starts here.
               </p>
-              <button className="btn  btn-lg fw-bold text-center custom-btn-cta hover-scale-105"
-              onClick={() => navigate('/volunteer/auth')}>
+              <button className="btn btn-lg fw-bold text-center custom-btn-cta hover-scale-105"
+                onClick={() => navigate('/volunteer/auth')}>
                 Get Started Today
               </button>
             </div>
