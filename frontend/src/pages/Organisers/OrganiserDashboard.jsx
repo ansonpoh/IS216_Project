@@ -18,6 +18,11 @@ export default function OrganiserDashboard() {
   const [sort, setSort] = useState("startAt"); // startAt | createdAt | capacity
   const [org, setOrg] = useState(null);
 
+  const [showModal, setShowModal] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [loadingModal, setLoadingModal] = useState(null);
+  const [registrations, setRegistrations] = useState([]);
+
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -26,8 +31,7 @@ export default function OrganiserDashboard() {
         setErr("");
         const org = await axios.get("http://localhost:3001/orgs/get_org_by_id", {params: {id}})
         setOrg(org.data.result[0]);
-        const org_id = org.data.result[0].org_id;
-        const res = await axios.get("http://localhost:3001/events/get_events_of_org", {params: {org_id}});
+        const res = await axios.get("http://localhost:3001/events/get_events_of_org", {params: {org_id: id}});
         setEvents(res.data.result);
         setFilteredEvents(res.data.result);
       } catch (e) {
@@ -66,31 +70,84 @@ export default function OrganiserDashboard() {
       const bv = b[sort];
       return (av || "").localeCompare?.(bv || "") || new Date(av) - new Date(bv);
     });
-    console.log(events);
     setFilteredEvents(list);
   }, [events, query, status, sort]);
 
-  const fmtDate = (iso) => {
-    if (!iso) return "-";
+  function fmtDate(startDate, endDate) {
+    if (!startDate) return "—";
+    const s = new Date(startDate);
+    const e = endDate ? new Date(endDate) : null;
+
+    const sStr = s.toLocaleDateString(undefined, { day: "2-digit", month: "short", year: "numeric" });
+    const eStr = e ? e.toLocaleDateString(undefined, { day: "2-digit", month: "short", year: "numeric" }) : null;
+
+    if (!eStr || sStr === eStr) return sStr;
+    return `${sStr} → ${eStr}`;
+  }
+
+  function fmtTime(startTime, endTime) {
+    if (!startTime) return "—";
     try {
-      return new Intl.DateTimeFormat(undefined, {
-        dateStyle: "medium",
-        timeStyle: "short",
-      }).format(new Date(iso));
+      const s = new Date(`1970-01-01T${startTime}`);
+      const e = endTime ? new Date(`1970-01-01T${endTime}`) : null;
+
+      const sStr = s.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      const eStr = e ? e.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : null;
+
+      if (!eStr) return sStr;
+      return `${sStr} → ${eStr}`;
     } catch {
-      return iso;
+      return "—";
     }
-  };
+  }
 
   const capacityPct = (e) => {
-    const filled = Number(e.approvedCount || 0);
+    const filled = Number(e.registration_count || 0);
     const cap = Math.max(Number(e.capacity || 0), 0);
     if (!cap) return 0;
     return Math.min(100, Math.round((filled / cap) * 100));
   };
 
+  const goCreate = () => nav("/organiser/opportunities/new");
 
-  const goCreate = () => nav("/organiser/opportunities/new"); // <-- point this to your actual form route
+  const openModal = async (event) => {
+    setSelectedEvent(event);
+    setShowModal(true);
+    setLoadingModal(true);
+    try {
+      const res = await axios.get("http://localhost:3001/events/get_registered_users_for_event", {params: {event_id: event.event_id}})
+      setRegistrations(res.data.result);
+    } catch(err) {
+      console.error("Failed to load registrations.");
+    } finally {
+      setLoadingModal(false);
+    }
+  };
+
+  const handleUpdate = async (user_id, event_id, newStatus) => {
+    try {
+      setRegistrations((prev) =>
+        prev.map((r) =>
+          r.user_id === user_id ? { ...r, status: newStatus } : r
+        )
+      );
+
+      await axios.post("http://localhost:3001/events/update_registration_status", {
+        user_id,
+        event_id,
+        status: newStatus,
+      });
+    } catch (err) {
+      console.error(err);
+      alert("Error updating registration");
+
+      setRegistrations((prev) =>
+        prev.map((r) =>
+          r.user_id === user_id ? { ...r, status: "pending" } : r
+        )
+      );
+    }
+  }
 
   const togglePublish = async (ev) => {
     const id = ev.id;
@@ -129,7 +186,6 @@ export default function OrganiserDashboard() {
       prompt("Copy this link:", url);
     }
   };
-
 
 
   // ---- UI ------------------------------------------------------------------
@@ -212,7 +268,7 @@ export default function OrganiserDashboard() {
                   <th style={{ minWidth: 220 }}>Title</th>
                   <th>Schedule</th>
                   <th>Location</th>
-                  <th style={{ minWidth: 220 }}>Capacity</th>
+                  <th style={{ minWidth: 150 }}>Capacity</th>
                   <th>Status</th>
                   <th style={{ width: 230 }}>Actions</th>
                 </tr>
@@ -227,14 +283,13 @@ export default function OrganiserDashboard() {
                         <div className="text-muted small">{e.description?.slice(0, 80)}</div>
                       </td>
                       <td>
-                        <div>{fmtDate(e.startAt)}</div>
-                        <div className="text-muted small">Ends: {fmtDate(e.endAt)}</div>
+                        <div className="text-muted small">{fmtDate(e.start_date, e.end_date)} · {fmtTime(e.start_time, e.end_time)}</div>
                       </td>
                       <td>{e.location || "-"}</td>
                       <td>
                         <div className="d-flex justify-content-between small">
                           <span>
-                            {e.approvedCount || 0}/{e.capacity || 0}
+                            {e.registration_count || 0}/{e.capacity || 0}
                           </span>
                           <span>{pct}%</span>
                         </div>
@@ -264,11 +319,8 @@ export default function OrganiserDashboard() {
                       </td>
                       <td>
                         <div className="btn-group">
-                          <button className="btn btn-outline-primary btn-sm" onClick={() => nav(`/organiser/opportunities/${e.id}`)}>
+                          <button className="btn btn-outline-primary btn-sm" onClick={() => openModal(e)}>
                             View
-                          </button>
-                          <button className="btn btn-outline-secondary btn-sm" onClick={() => duplicate(e)}>
-                            Duplicate
                           </button>
                           <button
                             className={`btn btn-sm ${
@@ -278,9 +330,6 @@ export default function OrganiserDashboard() {
                           >
                             {e.status === "published" ? "Unpublish" : "Publish"}
                           </button>
-                          <button className="btn btn-outline-dark btn-sm" onClick={() => copyLink(e)}>
-                            Copy Link
-                          </button>
                         </div>
                       </td>
                     </tr>
@@ -288,6 +337,95 @@ export default function OrganiserDashboard() {
                 })}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {showModal && selectedEvent && (
+          <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+            <div className="modal-dialog modal-lg modal-dialog-centered">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title">{selectedEvent.title}</h5>
+                  <button type="button" className="btn-close" onClick={() => setShowModal(false)}></button>
+                </div>
+
+                <div className="modal-body">
+                  <p><strong>Description:</strong> {selectedEvent.description || "No description"}</p>
+                  <p><strong>Location:</strong> {selectedEvent.location}</p>
+                  <p><strong>Schedule:</strong> {fmtDate(selectedEvent.start_date, selectedEvent.end_date)} · {fmtTime(selectedEvent.start_time, selectedEvent.end_time)}</p>
+                  
+                  <hr />
+
+                  <h6>Capacity</h6>
+                  <div className="d-flex justify-content-between mb-2">
+                    <span>{selectedEvent.registration_count || 0} / {selectedEvent.capacity || 0}</span>
+                    <span>{capacityPct(selectedEvent)}%</span>
+                  </div>
+                  <div className="progress mb-3" style={{ height: 8 }}>
+                    <div
+                      className={`progress-bar ${capacityPct(selectedEvent) >= 100 ? "bg-success" : "bg-primary"}`}
+                      style={{ width: `${capacityPct(selectedEvent)}%` }}
+                    ></div>
+                  </div>
+
+                  <h6>Registered Volunteers</h6>
+                  {loadingModal ? (
+                    <div>Loading...</div>
+                  ) : registrations.length > 0 ? (
+                    <ul className="list-group">
+                      {registrations.map((r) => (
+                        <li key={r.user_id} className="list-group-item d-flex justify-content-between align-items-center">
+                          <div>
+                            <strong>{r.username}&nbsp; &nbsp;</strong> 
+                            <span className="text-muted small">{r.email}</span>
+                          </div>
+                          <span
+                            className={`badge ${
+                              r.status === "approved"
+                                ? "bg-success"
+                                : r.status === "pending"
+                                ? "bg-warning text-dark"
+                                : "bg-danger"
+                            }`}
+                          >
+                            {r.status}
+                          </span>
+
+                          {r.status === "pending" && (
+                            <div className="btn-group btn-group-sm">
+                              <button
+                                className="btn btn-outline-success"
+                                onClick={() =>
+                                  handleUpdate(r.user_id, selectedEvent.event_id, "approved")
+                                }
+                              >
+                                Approve
+                              </button>
+                              <button
+                                className="btn btn-outline-danger"
+                                onClick={() =>
+                                  handleUpdate(r.user_id, selectedEvent.event_id, "denied")
+                                }
+                              >
+                                Deny
+                              </button>
+                            </div>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <div className="text-muted">No volunteers yet.</div>
+                  )}
+                </div>
+
+                <div className="modal-footer">
+                  <button className="btn btn-secondary" onClick={() => setShowModal(false)}>
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>

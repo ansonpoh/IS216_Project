@@ -121,9 +121,10 @@
 .social-icons {
   display: flex;
   justify-content: center;
+  margin-top: 5px;
 }
 
-.social-icons a {
+.social-icons-btn {
   display: inline-flex;
   padding: 10px;
   border: 2px solid #ccc;

@@ -3,12 +3,16 @@ import Navbar from "../components/Navbar.js";
 import styles from "../styles/Opportunities.module.css";
 import axios from 'axios';
 import PageTransition from "../components/Animation/PageTransition.jsx";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthProvider.js";
 
 export default function Opportunities() {
 
   const location = useLocation();
   const openEventId = location.state?.eventId;
+  const nav = useNavigate();
+
+  const {auth} = useAuth();
   const [opportunities, setOpportunities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
@@ -21,6 +25,10 @@ export default function Opportunities() {
   const [showModal, setShowModal] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
+  const [confirmModal, setConfirmModal] = useState(false);
+  const [signUpLoading, setSignUpLoading] = useState(false);
+  const [signUpSuccess, setSignUpSuccess] = useState(false);
+  const [alreadySignedUp, setAlreadySignedUp] = useState(false);
 
   useEffect(() => {
     const fetchOpportunities = async () => {
@@ -35,9 +43,9 @@ export default function Opportunities() {
             return undefined;
           };
           const toNumber = (v) => (v == null || v === "" ? null : (Number.isNaN(Number(v)) ? null : Number(v)));
-
           return {
             event_id: get("event_id", "id"),
+            org_name: get("org_name"),
             title: get("title") || "Untitled opportunity",
             description: get("description") || "",
             location: get("location") || "",
@@ -85,7 +93,6 @@ export default function Opportunities() {
   }, []);
 
   useEffect(() => {
-    console.log(openEventId)
     if(openEventId && opportunities.length > 0) {
       const match = opportunities.find(op => op.event_id === openEventId);
       if(match) {
@@ -108,6 +115,44 @@ export default function Opportunities() {
   return () => window.removeEventListener("scroll", handleScroll);
 }, []);
 
+  const handleSignUp = async () => {
+    if(auth.token.length < 1) {
+      nav("/volunteer/auth")
+      return;
+    }
+    if(auth.role === "organiser") {
+      alert("Only Volunteers can sign up!")
+      return;
+    }
+    setConfirmModal(true);
+  }
+
+  const confirmSignUp = async () => {
+    if(!selectedOpportunity || !auth.id) return;
+    try {
+      setConfirmModal(false);
+      setSignUpLoading(true);
+
+      const userSignedUp = await axios.get("http://localhost:3001/events/check_if_user_signed_up", {params: {user_id: auth.id, event_id: selectedOpportunity.event_id}});
+
+      if(userSignedUp.data.result.length > 0) {
+        setAlreadySignedUp(true);
+      } else {
+        const res = await axios.post("http://localhost:3001/events/signup_event", {user_id: auth.id, event_id: selectedOpportunity.event_id, })
+
+        if(res.data.result) {
+          setSignUpSuccess(true);
+        } else {
+          alert("Somethin went wrong.");
+        }
+      }
+      setSignUpLoading(false);
+    } catch(err) {
+      console.error(err);
+      alert("Error occured while signing up.")
+      setSignUpLoading(false);
+    }
+  }
 
   const resetFilters = () => {
     setCategoryFilter("");
@@ -206,6 +251,7 @@ export default function Opportunities() {
 
                 <div className={styles['card-content']}>
                   <h2 className={styles['event-title']}>{op.title}</h2>
+                  <p className="text-muted">{op.org_name}</p>
                   <p>{op.description}</p>
                   <div className={styles['card-info']}>
                     <p>
@@ -279,7 +325,7 @@ export default function Opportunities() {
                   <p>Region: {selectedOpportunity.region}</p>
                 </div>
 
-                <button className={styles["modal-signup-btn"]}>
+                <button className={styles["modal-signup-btn"]} onClick={handleSignUp}>
                   Sign Up
                 </button>
               </div>
@@ -289,15 +335,59 @@ export default function Opportunities() {
         </>
       )}
 
+      {confirmModal && (
+        <div className={styles["modal-overlay"]} onClick={() => setConfirmModal(false)}>
+          <div className={styles["confirm-modal"]} onClick={(e) => e.stopPropagation()}>
+            <h3>Confirm Sign Up</h3>
+            <p>Are you sure you want to sign up for <b>{selectedOpportunity.title}</b>?</p>
+            <div className={styles["confirm-buttons"]}>
+              <button onClick={() => setConfirmModal(false)} className={styles["cancel-btn"]}>Cancel</button>
+              <button onClick={confirmSignUp} className={styles["confirm-btn"]}>Yes, Sign Me Up</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {signUpLoading && (
+        <div className={styles["modal-overlay"]}>
+          <div className={styles["loading-modal"]}>
+            <div className={styles["spinner"]}></div>
+            <p>Submitting your application...</p>
+          </div>
+        </div>
+      )}
+
+      {signUpSuccess && (
+        <div className={styles["modal-overlay"]} onClick={() => setSignUpSuccess(false)}>
+          <div className={styles["success-modal"]} onClick={(e) => e.stopPropagation()}>
+            <i className="bi bi-check-circle-fill" style={{ color: "green", fontSize: "48px" }}></i>
+            <h3>Sign Up Successful!</h3>
+            <p>Your application is pending organiser confirmation.</p>
+            <button onClick={() => setSignUpSuccess(false)} className={styles["ok-btn"]}>OK</button>
+          </div>
+        </div>
+      )}
+
+      {alreadySignedUp && (
+        <div className={styles["modal-overlay"]} onClick={() => setAlreadySignedUp(false)}>
+          <div className={styles["success-modal"]} onClick={(e) => e.stopPropagation()}>
+            <i className="bi bi-ban" style={{ color: "red", fontSize: "48px" }}></i>
+            <h3>Sign Up Failed</h3>
+            <p>You have already signed up for this event!</p>
+            <button onClick={() => setAlreadySignedUp(false)} className={styles["ok-btn"]}>OK</button>
+          </div>
+        </div>
+      )}
+
       {showScrollTop && (
-  <button 
-    onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} 
-    className={styles.scrollTopButton}
-    aria-label="Scroll to top"
-  >
-    ↑
-  </button>
-)}
+        <button 
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} 
+          className={styles.scrollTopButton}
+          aria-label="Scroll to top"
+        >
+          ↑
+        </button>
+      )}
 
       </PageTransition>
     </>

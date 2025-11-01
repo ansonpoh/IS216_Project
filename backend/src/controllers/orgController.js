@@ -1,4 +1,4 @@
-import { register_org, login_org, check_if_org_email_in_use, get_org_by_id, get_org_by_email, get_all_orgs, complete_registration } from "../services/orgServices.js";
+import {login_org, check_if_org_email_in_use, get_org_by_id, get_org_by_email, get_all_orgs, complete_registration } from "../services/orgServices.js";
 import {check_if_user_email_in_use} from "../services/userServices.js"
 
 
@@ -17,37 +17,16 @@ export async function check_if_org_email_in_use_handler (req, res) {
     }
 }
 
-export async function register_org_handler (req, res) {
-    try {
-        const {org_name, email, password} = req.body;
-        const org_email_in_use = await check_if_org_email_in_use(email);
-        const user_email_in_use = await check_if_user_email_in_use(email);
-        if(org_email_in_use|| user_email_in_use) {
-            return res.json({status: false, message:"Email in use"});
-        }
-
-        const result = await register_org(org_name, email, password);
-        if(result) {
-            return res.json({status: true, id: result.id, supabase_id: result.supabase_id});
-        } else {
-            return res.json({status: false});
-        }
-    } catch (err) {
-        console.error(err);
-        throw err;
-    }
-}
-
 export async function complete_registration_handler(req, res) {
     try {
-        const {supabase_id, org_name, email} = req.body;
+        const {org_id, org_name, email} = req.body;
         const profile_image = req.file;
         const email_in_use = await check_if_user_email_in_use(email);
         if(email_in_use) {
             return res.json({status: false, message:"Email in use"})
         }
 
-        const result = await complete_registration(supabase_id, org_name, email, profile_image);
+        const result = await complete_registration(org_id, org_name, email, profile_image);
         return res.json({status: true, user: result});
     } catch (err) {
         console.error(err);
