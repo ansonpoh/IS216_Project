@@ -142,7 +142,6 @@ export default function ForumPage() {
         );
         const data = response.data.result || [];
         console.log("Posts data:", data);
-
         const normalised = data.map((item) => ({
           feedback_id: item.feedback_id,
           user_id: item.user_id,

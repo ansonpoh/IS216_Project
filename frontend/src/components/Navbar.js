@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, NavLink } from "react-router-dom";
 import styles from "../styles/Navbar.module.css";
 import axios from "axios";
 import { useAuth } from "../contexts/AuthProvider";
@@ -60,38 +60,38 @@ function Navbar() {
       <div className="collapse navbar-collapse justify-content-center" id="navbarNav">
         <ul className="navbar-nav gap-3">
           <li className="nav-item">
-            <a className={`${styles['navbar_item']} nav-link fw-semibold ${isActive("/") ? styles.active : ""}`} href="/ai">
+            <NavLink to="/ai" className={({ isActive }) => `${styles['navbar_item']} nav-link fw-semibold ${isActive ? styles.active : ''}`}>
               AI Chat
-            </a>
+            </NavLink>
           </li>
           <li className="nav-item">
-            <a className={`${styles['navbar_item']} nav-link fw-semibold ${isActive("/map") ? styles.active : ""}`} href="/map">
+            <NavLink to="/map" className={({ isActive }) => `${styles['navbar_item']} nav-link fw-semibold ${isActive ? styles.active : ''}`}>
               Map
-            </a>
+            </NavLink>
           </li>
           <li className="nav-item">
-            <a className={`${styles['navbar_item']} nav-link fw-semibold ${isActive("/opportunities") ? styles.active : ""}`} href="/opportunities">
+            <NavLink to="/opportunities" className={({ isActive }) => `${styles['navbar_item']} nav-link fw-semibold ${isActive ? styles.active : ''}`}>
               Opportunities
-            </a>
+            </NavLink>
           </li>
           <li className="nav-item">
-            <a className={`${styles['navbar_item']} nav-link fw-semibold ${isActive("/community") ? styles.active : ""}`} href="/community">
+            <NavLink to="/community" className={({ isActive }) => `${styles['navbar_item']} nav-link fw-semibold ${isActive ? styles.active : ''}`}>
               Community
-            </a>
+            </NavLink>
           </li>
 
           {auth?.role === "organiser" && (
             <li className="nav-item">
-              <a className={`${styles['navbar_item']} nav-link fw-semibold ${isActive("/organiser/dashboard") ? styles.active : ""}`} href="/organiser/dashboard">
+              <NavLink to="/organiser/dashboard" className={({ isActive }) => `${styles['navbar_item']} nav-link fw-semibold ${isActive ? styles.active : ''}`}>
                 Dashboard
-              </a>
+              </NavLink>
             </li>
           )}
           {auth?.role === "volunteer" && (
             <li className="nav-item">
-              <a className={`${styles['navbar_item']} nav-link fw-semibold ${isActive("/volunteer/dashboard") ? styles.active : ""}`} href="/volunteer/dashboard">
+              <NavLink to="/volunteer/dashboard" className={({ isActive }) => `${styles['navbar_item']} nav-link fw-semibold ${isActive ? styles.active : ''}`}>
                 Dashboard
-              </a>
+              </NavLink>
             </li>
           )}
         </ul>
