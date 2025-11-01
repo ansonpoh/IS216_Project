@@ -138,114 +138,184 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
   const [mappedEvents, setMappedEvents] = useState([]);
   const [showingRecommended, setShowingRecommended] = useState(false);
   const nav = useNavigate();
+  const [userLocation, setUserLocation] = useState(null);
+  const [radius, setRadius] = useState(5000); // default 5km
+  const [radiusCircle, setRadiusCircle] = useState(null);
+  const [showNearbyOnly, setShowNearbyOnly] = useState(false);
+
+  function getDistance(lat1, lng1, lat2, lng2) {
+    const R = 6371e3; // metres
+    const φ1 = lat1 * Math.PI / 180;
+    const φ2 = lat2 * Math.PI / 180;
+    const Δφ = (lat2 - lat1) * Math.PI / 180;
+    const Δλ = (lng2 - lng1) * Math.PI / 180;
+    const a = Math.sin(Δφ / 2) ** 2 +
+              Math.cos(φ1) * Math.cos(φ2) *
+              Math.sin(Δλ / 2) ** 2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // in meters
+  }
+
+  const handleShowNearby = () => {
+    if (!navigator.geolocation) {
+      alert("Geolocation not supported by your browser.");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        const loc = { lat: latitude, lng: longitude };
+        setUserLocation(loc);
+        setShowNearbyOnly(true);
+
+        // Center map
+        mapInstanceRef.current?.setCenter(loc);
+        mapInstanceRef.current?.setZoom(13);
+
+        // Remove old circle if exists
+        if (radiusCircle) radiusCircle.setMap(null);
+
+        // Draw new circle
+        const circle = new window.google.maps.Circle({
+          strokeColor: "#4285F4",
+          strokeOpacity: 0.8,
+          strokeWeight: 2,
+          fillColor: "#4285F4",
+          fillOpacity: 0.15,
+          map: mapInstanceRef.current,
+          center: loc,
+          radius: radius,
+        });
+
+        setRadiusCircle(circle);
+      },
+      (err) => {
+        console.error(err);
+        alert("Unable to retrieve your location.");
+      }
+    );
+  };
 
   // Filter opportunities based on active filters
   const filteredOpportunities = useMemo(() => {
+    let base = opportunities;
     if (activeFilters.length === 0) return opportunities;
-
-    const regions = ['central', 'north', 'north-east', 'east', 'west', 'south'];
-    const categories = ['animal', 'children', 'elderly', 'environment', 'event support', 'mental health', 'pwds'];
     
-    const regionFilters = activeFilters.filter(f => 
-      regions.includes(f.toLowerCase())
-    );
-    const categoryFilters = activeFilters.filter(f => 
-      categories.includes(f.toLowerCase())
-    );
+    if(activeFilters.length > 0) {
+      const regions = ['central', 'north', 'north-east', 'east', 'west', 'south'];
+      const categories = ['animal', 'children', 'elderly', 'environment', 'event support', 'mental health', 'pwds'];
+      
+      const regionFilters = activeFilters.filter(f => 
+        regions.includes(f.toLowerCase())
+      );
+      const categoryFilters = activeFilters.filter(f => 
+        categories.includes(f.toLowerCase())
+      );
 
-    return opportunities.filter(opp => {
-      const category = (opp.category || '').toLowerCase().trim();
-      const region = (opp.region || '').toLowerCase().trim();
-      const title = (opp.title || '').toLowerCase().trim();
-      const description = (opp.description || '').toLowerCase().trim();
+      return opportunities.filter(opp => {
+        const category = (opp.category || '').toLowerCase().trim();
+        const region = (opp.region || '').toLowerCase().trim();
+        const title = (opp.title || '').toLowerCase().trim();
+        const description = (opp.description || '').toLowerCase().trim();
 
-      let regionMatch = regionFilters.length === 0;
-      if (regionFilters.length > 0) {
-        regionMatch = regionFilters.some(filter => {
-          const filterLower = filter.toLowerCase().trim();
-          
-          switch (filterLower) {
-            case 'north-east':
-              return region === 'north-east' || 
-                     region.includes('north-east') ||
-                     title.includes('north-east') ||
-                     title.includes('northeast') ||
-                     description.includes('north-east') ||
-                     description.includes('northeast');
-            case 'north':
-              return region === 'north' || 
-                     title.includes('north') ||
-                     description.includes('north');
-            case 'south':
-              return region === 'south' || 
-                     title.includes('south') ||
-                     description.includes('south');
-            case 'east':
-              return region === 'east' || 
-                     title.includes('east') ||
-                     description.includes('east');
-            case 'west':
-              return region === 'west' || 
-                     title.includes('west') ||
-                     description.includes('west');
-            case 'central':
-              return region === 'central' || 
-                     title.includes('central') ||
-                     description.includes('central');
-            default:
-              return region === filterLower;
-          }
-        });
+        let regionMatch = regionFilters.length === 0;
+        if (regionFilters.length > 0) {
+          regionMatch = regionFilters.some(filter => {
+            const filterLower = filter.toLowerCase().trim();
+            
+            switch (filterLower) {
+              case 'north-east':
+                return region === 'north-east' || 
+                      region.includes('north-east') ||
+                      title.includes('north-east') ||
+                      title.includes('northeast') ||
+                      description.includes('north-east') ||
+                      description.includes('northeast');
+              case 'north':
+                return region === 'north' || 
+                      title.includes('north') ||
+                      description.includes('north');
+              case 'south':
+                return region === 'south' || 
+                      title.includes('south') ||
+                      description.includes('south');
+              case 'east':
+                return region === 'east' || 
+                      title.includes('east') ||
+                      description.includes('east');
+              case 'west':
+                return region === 'west' || 
+                      title.includes('west') ||
+                      description.includes('west');
+              case 'central':
+                return region === 'central' || 
+                      title.includes('central') ||
+                      description.includes('central');
+              default:
+                return region === filterLower;
+            }
+          });
+        }
+
+        let categoryMatch = categoryFilters.length === 0;
+        if (categoryFilters.length > 0) {
+          categoryMatch = categoryFilters.some(filter => {
+            const filterLower = filter.toLowerCase().trim();
+
+            // PRIORITY: Match category field first (most reliable)
+            switch (filterLower) {
+              case 'pwds':
+                return category.includes('pwd') || 
+                      category.includes('disability') || 
+                      category.includes('disabled');
+              case 'mental health':
+                return category.includes('mental') || 
+                      category.includes('mental health') || 
+                      category.includes('psychology') ||
+                      category.includes('wellbeing');
+              case 'event support':
+                // Only match if category explicitly contains these keywords
+                return category.includes('event support') || 
+                      category.includes('event') ||
+                      (category.includes('carnival') && !category.includes('children')) ||
+                      (category.includes('fair') && !category.includes('environment'));
+              case 'children':
+                return category.includes('youth') || 
+                      category.includes('children') || 
+                      category.includes('child');
+              case 'elderly':
+              case 'seniors':
+                return category.includes('senior') || 
+                      category.includes('elderly');
+              case 'animal':
+              case 'animals':
+                return category.includes('animal') || 
+                      category.includes('pet');
+              case 'environment':
+                return category.includes('environment') || 
+                      category.includes('conservation') ||
+                      category.includes('green') ||
+                      category.includes('nature');
+              default:
+                return category.includes(filterLower);
+            }
+          });
+        }
+
+        return regionMatch && categoryMatch;
+      });
+    } else {
+      if (showNearbyOnly && userLocation) {
+        base = base.filter(ev =>
+          ev.lat && ev.lng &&
+          getDistance(userLocation.lat, userLocation.lng, ev.lat, ev.lng) <= radius
+        );
       }
-
-      let categoryMatch = categoryFilters.length === 0;
-      if (categoryFilters.length > 0) {
-        categoryMatch = categoryFilters.some(filter => {
-          const filterLower = filter.toLowerCase().trim();
-
-          // PRIORITY: Match category field first (most reliable)
-          switch (filterLower) {
-            case 'pwds':
-              return category.includes('pwd') || 
-                     category.includes('disability') || 
-                     category.includes('disabled');
-            case 'mental health':
-              return category.includes('mental') || 
-                     category.includes('mental health') || 
-                     category.includes('psychology') ||
-                     category.includes('wellbeing');
-            case 'event support':
-              // Only match if category explicitly contains these keywords
-              return category.includes('event support') || 
-                     category.includes('event') ||
-                     (category.includes('carnival') && !category.includes('children')) ||
-                     (category.includes('fair') && !category.includes('environment'));
-            case 'children':
-              return category.includes('youth') || 
-                     category.includes('children') || 
-                     category.includes('child');
-            case 'elderly':
-            case 'seniors':
-              return category.includes('senior') || 
-                     category.includes('elderly');
-            case 'animal':
-            case 'animals':
-              return category.includes('animal') || 
-                     category.includes('pet');
-            case 'environment':
-              return category.includes('environment') || 
-                     category.includes('conservation') ||
-                     category.includes('green') ||
-                     category.includes('nature');
-            default:
-              return category.includes(filterLower);
-          }
-        });
-      }
-
-      return regionMatch && categoryMatch;
-    });
-  }, [opportunities, activeFilters]);
+    }
+    return base;
+    
+  }, [opportunities, activeFilters, showNearbyOnly, userLocation, radius]);
 
   // Fetch opportunities from backend
   const fetchOpportunities = async () => {
@@ -752,7 +822,7 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
         }}
       />
       
-      {(activeFilters.length > 0 || showingRecommended) && (
+      {(activeFilters.length > 0 || showingRecommended || showNearbyOnly) && (
         <button
           // onClick={onResetFilters}
           onClick={() => {
@@ -762,6 +832,8 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
               fetchOpportunities();
             } else {
               onResetFilters();
+              setShowNearbyOnly(false);
+              if (radiusCircle) radiusCircle.setMap(null);
             }
           }}
           className="btn btn-sm btn-light position-absolute m-2"
@@ -815,6 +887,70 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
       >
         <i className="bi bi-compass" style={{ fontSize: '18px', color: 'white' }}></i>
       </button>
+
+      <button
+        onClick={handleShowNearby}
+        className="btn position-absolute"
+        title="Show nearby opportunities"
+        style={{
+          top: '10px',
+          left: '242px',
+          zIndex: 1000,
+          backgroundColor: '#28a745',
+          border: '2px solid #1e7e34',
+          borderRadius: '2px',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          width: '40px',
+          height: '40px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'white',
+          padding: 0
+        }}
+      >
+        <i className="bi bi-geo-alt" style={{ fontSize: '18px', color: 'white' }}></i>
+      </button>
+
+      {/* Radius Selector (1–10 km) */}
+      {showNearbyOnly && (
+        <div
+          className="position-absolute"
+          style={{
+            top: '60px',
+            left: '192px',
+            zIndex: 1000,
+            background: 'white',
+            borderRadius: '8px',
+            padding: '6px 10px',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+            fontSize: '12px',
+            color: '#333',
+          }}
+        >
+          <label htmlFor="radius" style={{ marginRight: '4px', fontWeight: 600 }}>Radius:</label>
+          <select
+            id="radius"
+            value={radius}
+            onChange={(e) => {
+              const newRadius = Number(e.target.value);
+              setRadius(newRadius);
+
+              // update existing circle radius if any
+              if (radiusCircle) radiusCircle.setRadius(newRadius);
+            }}
+            style={{
+              border: '1px solid #ccc',
+              borderRadius: '4px',
+              padding: '2px 4px'
+            }}
+          >
+            {[1000, 3000, 5000, 8000, 10000].map(r => (
+              <option key={r} value={r}>{r / 1000} km</option>
+            ))}
+          </select>
+        </div>
+      )}
 
       {loading && (
         <div

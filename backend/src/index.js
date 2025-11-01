@@ -12,6 +12,7 @@ import communityRoutes from "./routes/communityRoutes.js";
 import { get_all_events } from "./services/eventServices.js";
 import landingRoutes from "./routes/landingPageRoutes.js";
 
+
 const app = express();
 dotenv.config();
 
