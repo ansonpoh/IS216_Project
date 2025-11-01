@@ -181,7 +181,7 @@ export async function signup_event(user_id, event_id) {
         const query = `insert into event_registration (user_id, event_id) values ($1, $2)`;
         const values = [user_id, event_id];
         const result = await pool.query(query, values);
-        return result.rows > 0;
+        return result.rowCount > 0;
     } catch (err) {
         console.error(err);
         throw err;
@@ -192,6 +192,30 @@ export async function get_all_registered_users_for_event(event_id) {
     try {
         const query = `select user_id from event_registration where event_id = $1`;
         const values = [event_id];
+        const result = await pool.query(query, values);
+        return result.rows;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
+export async function check_if_user_signed_up(user_id, event_id) {
+    try {
+        const query = `select * from event_registration where user_id = $1 and event_id = $2`;
+        const values = [user_id, event_id];
+        const result = await pool.query(query, values);
+        return result.rows;
+    } catch(err) {
+        console.error(err);
+        throw err;
+    }
+}
+
+export async function get_registered_events_for_user(user_id) {
+    try {
+        const query = `select e1.status, e2.* from event_registration e1 join events e2 on e1.event_id = e2.event_id where e1.user_id = $1`;
+        const values = [user_id];
         const result = await pool.query(query, values);
         return result.rows;
     } catch (err) {

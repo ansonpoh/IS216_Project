@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useState, useCallback, useRef } from "react";
 import styles from "../../styles/VolunteerDashboard.module.css";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthProvider";
+import axios from "axios";
 
 const LS_KEY = "volunteer_dashboard_circular_carousel_v3";
-
 /* ---------- Helpers ---------- */
 const useAutoplay = (enabled, cb, delay = 4500) => {
   useEffect(() => {
@@ -171,7 +172,7 @@ function CarouselCard({ event, style, footer }) {
   return (
     <div className={`position-absolute top-50 start-50 translate-middle p-3 rounded-4 ${styles.vdSlide}`} style={{ width: 420, maxWidth: "94%", transformStyle: "preserve-3d", ...style }}>
       <div className="fw-semibold">{event.title}</div>
-      <div className="small text-muted">{fmtDT(event.start)} → {fmtDT(event.end)}{event.location ? ` · ${event.location}` : ""} · {dur(event.start, event.end)} hrs</div>
+      <div className="small text-muted">{fmtDate(event.start_date, event.end_date)} · {fmtTime(event.start_time, event.end_time)}{event.location ? ` · ${event.location}` : ""} · {event.hours} hrs</div>
       {!!footer && <div className="mt-3 d-flex gap-2 flex-wrap">{footer}</div>}
     </div>
   );
@@ -181,24 +182,50 @@ function CarouselCard({ event, style, footer }) {
 export default function VolunteerDashboard() {
   const navigate = useNavigate();
 
+  const [events, setEvents] = useState([]);
   const [activeEvents, setActiveEvents] = useState([]);
   const [pendingEvents, setPendingEvents] = useState([]);
   const [pastEvents, setPastEvents] = useState([]);
   const [goalHours, setGoalHours] = useState(36);
   const [manualTotalHours, setManualTotalHours] = useState(0);
+  const {auth} = useAuth();
 
   useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem(LS_KEY) || "{}");
-    if (Array.isArray(saved.activeEvents)) setActiveEvents(saved.activeEvents);
-    if (Array.isArray(saved.pendingEvents)) setPendingEvents(saved.pendingEvents);
-    if (Array.isArray(saved.pastEvents)) setPastEvents(saved.pastEvents);
-    if (typeof saved.goalHours === "number") setGoalHours(saved.goalHours);
-    if (typeof saved.manualTotalHours === "number") setManualTotalHours(saved.manualTotalHours);
-  }, []);
+    const fetchEvents = async () => {
+      const result = await axios.get("http://localhost:3001/events/get_registered_events_for_user", {params:{user_id: auth.id}});
+      setEvents(result.data.result);
+    }
+    fetchEvents();
+  }, [])
 
   useEffect(() => {
-    localStorage.setItem(LS_KEY, JSON.stringify({ activeEvents, pendingEvents, pastEvents, goalHours, manualTotalHours }));
-  }, [activeEvents, pendingEvents, pastEvents, goalHours, manualTotalHours]);
+    let pending = [];
+    let active = [];
+    let past = [];
+
+    for(let e of events) {
+      if(e.status === "pending") pending.push(e);
+      else if(e.status === "approved") active.push(e);
+      else past.push(e);
+    }
+
+    setPendingEvents(pending);
+    setActiveEvents(active);
+    setPastEvents(past);
+  }, [events]);
+
+  // useEffect(() => {
+  //   const saved = JSON.parse(localStorage.getItem(LS_KEY) || "{}");
+  //   if (Array.isArray(saved.activeEvents)) setActiveEvents(saved.activeEvents);
+  //   if (Array.isArray(saved.pendingEvents)) setPendingEvents(saved.pendingEvents);
+  //   if (Array.isArray(saved.pastEvents)) setPastEvents(saved.pastEvents);
+  //   if (typeof saved.goalHours === "number") setGoalHours(saved.goalHours);
+  //   if (typeof saved.manualTotalHours === "number") setManualTotalHours(saved.manualTotalHours);
+  // }, []);
+
+  // useEffect(() => {
+  //   localStorage.setItem(LS_KEY, JSON.stringify({ activeEvents, pendingEvents, pastEvents, goalHours, manualTotalHours }));
+  // }, [activeEvents, pendingEvents, pastEvents, goalHours, manualTotalHours]);
 
   const hoursBetween = (s, e) => Math.max(0, (new Date(e) - new Date(s)) / 36e5);
   const round1 = (n) => Math.round(n * 10) / 10;
@@ -313,5 +340,31 @@ export default function VolunteerDashboard() {
 }
 
 /* ---------- Utils ---------- */
-function fmtDT(iso) { if (!iso) return "—"; return new Date(iso).toLocaleString(); }
-function dur(start, end) { return Math.round(Math.max(0, (new Date(end) - new Date(start)) / 36e5) * 10) / 10; }
+// function fmtDT(iso) { if (!iso) return "—"; return new Date(iso).toLocaleString(); }
+function fmtDate(startDate, endDate) {
+  if (!startDate) return "—";
+  const s = new Date(startDate);
+  const e = endDate ? new Date(endDate) : null;
+
+  const sStr = s.toLocaleDateString(undefined, { day: "2-digit", month: "short", year: "numeric" });
+  const eStr = e ? e.toLocaleDateString(undefined, { day: "2-digit", month: "short", year: "numeric" }) : null;
+
+  if (!eStr || sStr === eStr) return sStr;
+  return `${sStr} → ${eStr}`;
+}
+
+function fmtTime(startTime, endTime) {
+  if (!startTime) return "—";
+  try {
+    const s = new Date(`1970-01-01T${startTime}`);
+    const e = endTime ? new Date(`1970-01-01T${endTime}`) : null;
+
+    const sStr = s.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    const eStr = e ? e.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : null;
+
+    if (!eStr) return sStr;
+    return `${sStr} → ${eStr}`;
+  } catch {
+    return "—";
+  }
+}

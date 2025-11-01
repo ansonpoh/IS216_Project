@@ -28,7 +28,7 @@ export default function Opportunities() {
   const [confirmModal, setConfirmModal] = useState(false);
   const [signUpLoading, setSignUpLoading] = useState(false);
   const [signUpSuccess, setSignUpSuccess] = useState(false);
-
+  const [alreadySignedUp, setAlreadySignedUp] = useState(false);
 
   useEffect(() => {
     const fetchOpportunities = async () => {
@@ -129,18 +129,27 @@ export default function Opportunities() {
       setConfirmModal(false);
       setSignUpLoading(true);
 
-      const res = await axios.post("http://localhost:3001/events/signup_event", {user_id: auth.id, event_id: selectedOpportunity.eventId, })
+      const userSignedUp = await axios.get("http://localhost:3001/events/check_if_user_signed_up", {params: {user_id: auth.id, event_id: selectedOpportunity.event_id}});
 
-      console.log(res);
+      console.log(userSignedUp)
+      if(userSignedUp.data.result.length > 0) {
+        setAlreadySignedUp(true);
+      } else {
+        const res = await axios.post("http://localhost:3001/events/signup_event", {user_id: auth.id, event_id: selectedOpportunity.event_id, })
+
+        if(res.data.result) {
+          setSignUpSuccess(true);
+        } else {
+          alert("Somethin went wrong.");
+        }
+      }
+      setSignUpLoading(false);
     } catch(err) {
       console.error(err);
       alert("Error occured while signing up.")
-    } finally {
       setSignUpLoading(false);
     }
   }
-
-
 
   const resetFilters = () => {
     setCategoryFilter("");
@@ -351,6 +360,17 @@ export default function Opportunities() {
             <h3>Sign Up Successful!</h3>
             <p>Your application is pending organiser confirmation.</p>
             <button onClick={() => setSignUpSuccess(false)} className={styles["ok-btn"]}>OK</button>
+          </div>
+        </div>
+      )}
+
+      {alreadySignedUp && (
+        <div className={styles["modal-overlay"]} onClick={() => setAlreadySignedUp(false)}>
+          <div className={styles["success-modal"]} onClick={(e) => e.stopPropagation()}>
+            <i className="bi bi-ban" style={{ color: "red", fontSize: "48px" }}></i>
+            <h3>Sign Up Failed</h3>
+            <p>You have already signed up for this event!</p>
+            <button onClick={() => setAlreadySignedUp(false)} className={styles["ok-btn"]}>OK</button>
           </div>
         </div>
       )}

@@ -12,6 +12,8 @@ import {
   get_filtered_events,
   get_selectable_options,
   signup_event,
+  check_if_user_signed_up,
+  get_registered_events_for_user,
 } from "../services/eventServices.js";
 import axios from "axios";
 
@@ -201,6 +203,28 @@ export async function signup_event_handler(req, res) {
   try {
     const {user_id, event_id} = req.body;
     const result = await signup_event(user_id, event_id);
+    return res.json({result});
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+}
+
+export async function check_if_user_signed_up_handler(req,res) {
+  try {
+    const {user_id, event_id} = req.query;
+    const result = await check_if_user_signed_up(user_id, event_id);
+    return res.json({result});
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+}
+
+export async function get_registered_events_for_user_handler(req, res) {
+  try {
+    const {user_id} = req.query;
+    const result = await get_registered_events_for_user(user_id);
     return res.json({result});
   } catch (err) {
     console.error(err);
