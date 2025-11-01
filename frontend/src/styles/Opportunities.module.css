@@ -1,6 +1,11 @@
 /* Opportunities.css (replace/merge) */
 
 /* Container */
+.h1 {
+  padding-left: 32px;
+
+}
+
 .opportunities-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -14,27 +19,26 @@
   gap: 1rem;
   padding: 1rem;
   justify-content: space-between;
-  align-items: center;
-  background-color: #f9fafb;
+  background-color: transparent 50%;
   border-radius: 12px;
   margin-bottom: 1.5rem;
   box-shadow: 0 2px 8px rgba(18, 18, 18, 0.04);
+  align-items: flex-end;
 }
 
-/* Left group (category + region + search if added) */
-.filters .group-left {
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-/* Right group (dates + reset) */
+.filters .group-left,
 .filters .group-right {
   display: flex;
   gap: 0.75rem;
-  align-items: center;
+  align-items: flex-end;
   flex-wrap: wrap;
+}
+
+.filters .group-left {
+  display: grid;
+  grid-auto-flow: column;
+  gap: 0.75rem;
+  align-items: end; /* aligns items to bottom */
 }
 
 /* Standard controls */
@@ -44,8 +48,8 @@
   font-size: 0.95rem;
   border-radius: 8px;
   border: 1px solid #d0d7de;
-  background-color: #fff;
-  color: #222;
+  background-color: transparent 50%;
+  color: #333;
   min-width: 150px;
   transition: border-color .18s ease, box-shadow .18s ease, transform .08s ease;
   cursor: pointer;
@@ -73,9 +77,13 @@
   letter-spacing: .03em;
 }
 
+.date-filter input[type="date"] {
+  align-self: center; /* vertically center inside its label container */
+}
+
 /* Reset button */
 .reset-btn {
-  padding: 0.5rem 0.9rem;
+  padding: 0.55rem 0.9rem; /* match select/input height */
   font-size: 0.92rem;
   border-radius: 8px;
   border: none;
@@ -84,6 +92,7 @@
   cursor: pointer;
   display: inline-flex;
   align-items: center;
+  justify-content: center; /* ensures text/icon centered */
   gap: 0.45rem;
   transition: transform .12s ease, background-color .12s ease, box-shadow .12s ease;
 }
@@ -99,6 +108,35 @@
   animation: fadeIn .22s ease;
 }
 
+.scrollTopButton {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2); /* glassy effect */
+  backdrop-filter: blur(10px); /* blurs background behind button */
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #333;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.25);
+  transition: transform 0.2s, background 0.2s;
+  z-index: 1000;
+}
+
+.scrollTopButton:hover {
+  transform: translateY(-3px);
+  background: rgba(255, 255, 255, 0.3);
+}
+
+
+
 /* Card visual - stronger shadow & nicer radius */
 .event-card {
   border-radius: 12px;
@@ -111,6 +149,7 @@
   box-shadow: 0 6px 18px rgba(7, 12, 20, 0.06);
   transition: transform .16s ease, box-shadow .16s ease;
   min-height: 260px;
+  cursor: pointer;
 }
 .event-card:hover {
   transform: translateY(-6px);
@@ -146,11 +185,30 @@
   box-shadow: 0 6px 14px rgba(2,6,23,0.08);
 }
 
+.active {
+  background-color: #16a34a; /* green */
+}
+
+.pending {
+  background-color: #facc15; /* yellow */
+  color: #111; /* dark text for contrast */
+}
+
+.upcoming {
+  background-color: #3b82f6; /* blue */
+}
+
+
 /* Content */
 .card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem; /* equal spacing between title → description → details */
   padding: 1rem;
   flex: 1 1 auto;
+
 }
+
 .event-title {
   font-weight: 700;
   margin: 0;
@@ -162,6 +220,7 @@
   color: #334155;
   margin: 0 0 0.6rem 0;
   line-height: 1.35;
+   gap: 6px; 
 }
 
 /* Info lines */
@@ -175,6 +234,7 @@
   margin: 0.3rem 0;
   color: #475569;
   font-size: 0.95rem;
+  
 }
 .card-info .icon { font-size: 1rem; color: #64748b; }
 
@@ -186,23 +246,38 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.85rem 1rem;
-  background-color: #fcfdff;
+  padding: 1rem;
+  background: transparent;
+  font-size: 0.875rem;
+  color: var(--muted);
+  padding-top: 2px;
 }
 
 /* Category tag as pill on left */
 .category-tag {
-  display: inline-block;
-  background: linear-gradient(180deg, #2563eb, #1d4ed8);
   color: #fff;
-  padding: 0.35rem 0.75rem;
-  border-radius: 999px;
-  font-size: 0.82rem;
-  font-weight: 600;
-  box-shadow: 0 6px 14px rgba(29,78,216,0.12);
-  white-space: nowrap;
+  border: none;
+  padding: 0.45rem 0.95rem;
+  font-size: 0.92rem;
+  border-radius: 10px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  transition: transform .12s ease, box-shadow .12s ease, background-color .12s ease;
+  box-shadow: 0 8px 22px rgba(16,185,129,0.12);
 }
+
+/* Category colors */
+.category-animal { background-color: #c58f30; }
+.category-children { background-color: #d76ba1; }
+.category-elderly { background-color: #d35f35; }
+.category-environment { background-color: #30896b; }
+.category-event-support { background-color: #3f73c6; }
+.category-mental-health { background-color: #ef4444; }
+.category-pwds { background-color: #6366f1; }
+.category-general { background-color: #106db9; } /* fallback/general */
+
+
 
 /* Sign up btn aligned right with slight elevation */
 .signup-btn {
@@ -213,6 +288,8 @@
   font-size: 0.92rem;
   border-radius: 10px;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
   transition: transform .12s ease, box-shadow .12s ease, background-color .12s ease;
   box-shadow: 0 8px 22px rgba(16,185,129,0.12);
 }
@@ -262,4 +339,176 @@
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
+}
+/* Modal stylings */
+
+/* Overlay backdrop */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 16px; /* ensures modal doesn't touch viewport edges */
+  overflow-y: auto;
+}
+
+/* Wrapper for the modal box */
+.modal-wrapper {
+  background: #fff;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 950px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  animation: fadeIn 0.25s ease-in-out;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+/* Close button */
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 1.8rem;
+  color: #333;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 10;
+}
+
+/* Content row */
+.modal-content-row {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  padding: 24px;
+  flex-wrap: wrap;
+  overflow: hidden;
+}
+
+/* Left side image */
+.modal-left {
+  flex: 1 1 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 250px;
+}
+
+.modal-large-image {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+/* Right side details */
+.modal-right {
+  flex: 1 1 45%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 16px; /* spacing between title, description, details, and button */
+  min-width: 250px;
+  overflow-y: auto;
+  padding: 0;
+}
+
+/* Title */
+.modal-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #111;
+  margin: 0;
+}
+
+/* Description */
+.modal-desc {
+  font-size: 0.95rem;
+  color: #333;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Details list */
+.modal-detail-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.modal-detail-list p {
+  font-size: 0.92rem;
+  color: #444;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+}
+
+.modal-detail-list i {
+  font-size: 1rem;
+  color: #444;
+}
+
+/* Modal signup button */
+.modal-signup-btn {
+  background-color: #10b981;
+  color: #fff;
+  border: none;
+  padding: 0.45rem 0.95rem;
+  font-size: 0.92rem;
+  font-weight: 500;
+  border-radius: 10px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 16px; /* spacing from details */
+  align-self: flex
+}
+
+/* Signup button */
+.modal-signup-btn {
+  background-color: #10b981;
+  color: #fff;
+  border: none;
+  padding: 0.45rem 0.95rem;       
+  font-size: 0.92rem;             
+  font-weight: 500;               
+  border-radius: 10px;            
+  cursor: pointer;
+  /* align-items:start; */
+  box-shadow: .12s ease, background-color .12s ease;
+  box-shadow: 0 8px 22px rgba(16,185,129,0.12);
+  padding: 0.45rem;
+  box-shadow: 0 6px 18px rgba(16,185,129,0.1);
+}
+
+.modal-signup-btn:hover {
+  transform: translateY(-2px);
+  background: #0f9a6c;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .modal-content-row {
+    flex-direction: column;
+  }
+  .modal-left {
+    flex: 0 0 auto;
+    height: 250px;
+  }
+  .modal-right {
+    padding: 1.5rem;
+  }
 }

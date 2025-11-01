@@ -3,19 +3,24 @@ import Navbar from "../components/Navbar.js";
 import styles from "../styles/Opportunities.module.css";
 import axios from 'axios';
 import PageTransition from "../components/Animation/PageTransition.jsx";
-import { Modal } from "bootstrap/dist/js/bootstrap.bundle.min.js";
+import { useLocation } from "react-router-dom";
 
 export default function Opportunities() {
+
+  const location = useLocation();
+  const openEventId = location.state?.eventId;
   const [opportunities, setOpportunities] = useState([]);
   const [loading, setLoading] = useState(true);
-
   const [categories, setCategories] = useState([]);
   const [regions, setRegions] = useState([]);
-
   const [categoryFilter, setCategoryFilter] = useState("");
   const [regionFilter, setRegionFilter] = useState("");
   const [dateFromFilter, setDateFromFilter] = useState("");
   const [dateToFilter, setDateToFilter] = useState("");
+  const [selectedOpportunity, setSelectedOpportunity] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
 
   useEffect(() => {
     const fetchOpportunities = async () => {
@@ -78,6 +83,31 @@ export default function Opportunities() {
     fetchCategories();
     fetchRegions();
   }, []);
+
+  useEffect(() => {
+    console.log(openEventId)
+    if(openEventId && opportunities.length > 0) {
+      const match = opportunities.find(op => op.event_id === openEventId);
+      if(match) {
+        setSelectedOpportunity(match);
+        setShowModal(true);
+      }
+    }
+  }, [openEventId, opportunities])
+
+  useEffect(() => {
+  const handleScroll = () => {
+    if (window.scrollY > 300) {  // show button after scrolling 300px
+      setShowScrollTop(true);
+    } else {
+      setShowScrollTop(false);
+    }
+  };
+
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, []);
+
 
   const resetFilters = () => {
     setCategoryFilter("");
@@ -168,10 +198,10 @@ export default function Opportunities() {
             </div>
           ) : (
             filteredOpportunities.map((op) => (
-              <div className={styles['event-card']} key={op.event_id}>
+              <div className={styles['event-card']} key={op.event_id} onClick={() => {setShowModal(true); setSelectedOpportunity(op);}}>
                 <div className={styles['card-image']}>
                   {op.image_url && <img src={op.image_url} alt={op.title} />}
-                  <span className={`${styles['status-badge']} ${styles[op.status]}`}>{op.status}</span>
+                  {/* <span className={`${styles['status-badge']} ${styles[op.status]}`}>{op.status}</span> */}
                 </div>
 
                 <div className={styles['card-content']}>
@@ -183,7 +213,7 @@ export default function Opportunities() {
                       <span className={styles['info-text']}>{op.location || "N/A"}</span>
                     </p>
                     <p>
-                      <i className="bi bi-calendar-event" style={{ marginRight: "5px" }}></i>
+                      <i className="bi bi-calendar-event" style={{ marginRight: "7px" }}></i>
                       <span className={styles['info-text']}>
                         {formatDate(op.start_date)} - {formatTime(op.start_time)} - {formatTime(op.end_time)}
                       </span>
@@ -198,7 +228,9 @@ export default function Opportunities() {
                 <hr className={styles['card-divider']} />
 
                 <div className={styles['card-footer']}>
-                  <span className={styles['category-tag']}>{op.category ?? "Uncategorized"}</span>
+                <span className={`${styles['category-tag']} ${styles[`category-${op.category?.toLowerCase().replace(/\s+/g, "-")}`] || styles['category-general']}`}>
+                {op.category ?? "Uncategorized"}
+                </span>
                   <button className={styles['signup-btn']}>Sign Up</button>
                 </div>
               </div>
@@ -206,6 +238,67 @@ export default function Opportunities() {
           )}
         </div>
       </div>
+
+      {showModal && selectedOpportunity && (
+        <>
+        <div className={styles["modal-overlay"]} onClick={() => setShowModal(false)}>
+          <div className={styles["modal-wrapper"]}onClick={(e) => e.stopPropagation()}>
+            <button className={styles["modal-close"]} onClick={() => setShowModal(false)}>
+              &times;
+            </button>
+
+            <div className={styles["modal-content-row"]}>
+              <div className={styles["modal-left"]}>
+                <img
+                  src={selectedOpportunity.image_url}
+                  alt={selectedOpportunity.title}
+                  className={styles["modal-large-image"]}
+                />
+              </div>
+
+              <div className={styles["modal-right"]}>
+                <h2 className={styles["modal-title"]}>{selectedOpportunity.title}</h2>
+                <p className={styles["modal-desc"]}>{selectedOpportunity.description}</p>
+
+                <div className={styles["modal-detail-list"]}>
+                  <p>
+                    <i className="bi bi-geo-alt-fill"></i>{" "}
+                    {selectedOpportunity.location || "N/A"}
+                  </p>
+                  <p>
+                    <i className="bi bi-calendar-event"></i>{" "}
+                    {formatDate(selectedOpportunity.start_date)}{" "}
+                    {formatTime(selectedOpportunity.start_time)} –{" "}
+                    {formatTime(selectedOpportunity.end_time)}
+                  </p>
+                  <p>
+                    <i className="bi bi-people-fill"></i> Capacity:{" "}
+                    {selectedOpportunity.capacity ?? "N/A"}
+                  </p>
+                  <p>Category: {selectedOpportunity.category}</p>
+                  <p>Region: {selectedOpportunity.region}</p>
+                </div>
+
+                <button className={styles["modal-signup-btn"]}>
+                  Sign Up
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        </>
+      )}
+
+      {showScrollTop && (
+  <button 
+    onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} 
+    className={styles.scrollTopButton}
+    aria-label="Scroll to top"
+  >
+    ↑
+  </button>
+)}
+
       </PageTransition>
     </>
   );

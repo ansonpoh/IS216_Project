@@ -2,92 +2,118 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar.js";
 import FeaturedCard from "./component/FeaturedCard";
 import CommunitySpotlight from "./component/CommunitySpotlight";
-import axios from 'axios';
+import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import PageTransition from "../../components/Animation/PageTransition.jsx";
 import NewDiscussion from "./component/NewDiscussion.jsx";
+import styles from "../../styles/Community.module.css";
 
 const PostModal = ({ post, onClose, onLike }) => {
   if (!post) return null;
 
+   const handleOverlayClick = (e) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   return (
-    <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
-      <div className="modal-dialog modal-xl modal-dialog-centered">
-        <div className="modal-content">
-          <div className="modal-header border-0">
-            <button type="button" className="btn-close" onClick={onClose}></button>
+    <div className={styles["modal-overlay"]} onClick={handleOverlayClick}>
+      <div className={styles["modal-wrapper"]}>
+        {/* Close button */}
+        <button className={styles["modal-close"]} onClick={onClose}>
+          ×
+        </button>
+
+        {/* Modal content */}
+        <div className={styles["modal-content-row"]}>
+          {/* Left side - Image */}
+          <div className={styles["modal-left"]}>
+            {post.img ? (
+              <img
+                src={post.img}
+                alt={post.subject}
+                className={styles["modal-large-image"]}
+              />
+            ) : (
+              <div className="text-muted" style={{ textAlign: "center" }}>
+                <i className="bi bi-image" style={{ fontSize: "4rem" }}></i>
+                <p className="mt-3">No image available</p>
+              </div>
+            )}
           </div>
-          <div className="modal-body p-0">
-            <div className="row g-0">
-              {/* Left side - Image */}
-              <div className="col-lg-7 bg-dark d-flex align-items-center justify-content-center">
-                {post.img ? (
+
+          {/* Right side - Details */}
+          <div className={styles["modal-right"]}>
+            {/* User info */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginBottom: "16px",
+                gap: "12px",
+              }}
+            >
+              <div
+                style={{
+                  width: "48px",
+                  height: "48px",
+                  borderRadius: "50%",
+                  backgroundColor: "#0d6efd",
+                  color: "#fff",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  overflow: "hidden",
+                  fontSize: "1.2rem",
+                }}
+              >
+                {post.profile_image ? (
                   <img
-                    src={post.img}
-                    alt={post.subject}
-                    className="img-fluid"
-                    style={{ maxHeight: "70vh", objectFit: "contain" }}
+                    src={post.profile_image}
+                    alt={post.username}
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
                   />
                 ) : (
-                  <div className="text-white p-5">
-                    <i className="bi bi-image" style={{ fontSize: "4rem" }}></i>
-                    <p className="mt-3">No image available</p>
-                  </div>
+                  post.username?.substring(0, 1).toUpperCase() || "U"
                 )}
               </div>
-
-              {/* Right side - Details */}
-              <div className="col-lg-5">
-                <div className="p-4">
-                  {/* User info */}
-                  <div className="d-flex align-items-center mb-3">
-                    <div className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3"
-                      style={{ width: "48px", height: "48px", fontSize: "1.2rem", overflow: 'hidden' }}>
-                      {post.profile_image ? (
-                        <img
-                          src={post.profile_image}
-                          alt={post.username}
-                          className="w-100 h-100 object-fit-cover"
-                        />
-                      ) : (
-                        post.username?.substring(0, 1).toUpperCase() || "U"
-                      )}
-                    </div>
-                    <div>
-                      <h6 className="mb-0">{post.username}</h6>
-                      <small className="text-muted">
-                        {new Date(post.created_at).toLocaleDateString()}
-                      </small>
-                    </div>
-                  </div>
-
-                  {/* Post content */}
-                  <h5 className="mb-3">{post.subject}</h5>
-                  <p className="text-muted mb-4">{post.body}</p>
-
-                  {/* Actions */}
-                  <div className="d-flex gap-2 mb-4">
-                    <button
-                      className={`btn ${post.isLiked ? 'btn-primary' : 'btn-outline-primary'} d-flex align-items-center gap-2`}
-                      onClick={() => onLike(post.feedback_id)}
-                    >
-                      <i className={`bi ${post.isLiked ? 'bi-heart-fill' : 'bi-heart'}`}></i>
-                      <span>{post.liked_count || 0}</span>
-                    </button>
-                  </div>
-
-                  {/* Event/Org info if available */}
-                  {(post.event_id || post.org_id) && (
-                    <div className="border-top pt-3">
-                      <small className="text-muted">
-                        {post.event_id && <div>Event ID: {post.event_id}</div>}
-                        {post.org_id && <div>Organization ID: {post.org_id}</div>}
-                      </small>
-                    </div>
-                  )}
-                </div>
+              <div>
+                <h6 style={{ margin: 0 }}>{post.username}</h6>
+                <small style={{ color: "#6c757d" }}>
+                  {new Date(post.created_at).toLocaleDateString()}
+                </small>
               </div>
             </div>
+
+            {/* Post content */}
+            <h3 className={styles["modal-title"]}>{post.subject}</h3>
+            <p className={styles["modal-desc"]}>{post.body}</p>
+
+            {/* Actions */}
+            <button
+              className={styles["modal-signup-btn"]}
+              style={{
+                backgroundColor: post.isLiked ? "#0d6efd" : "#fff",
+                color: post.isLiked ? "#fff" : "#0d6efd",
+                border: "1px solid #0d6efd",
+                
+              }}
+              onClick={() => onLike(post.feedback_id)}
+            >
+              <i className={`bi ${post.isLiked ? "bi-heart-fill" : "bi-heart"}`}></i>
+              {post.liked_count || 0}
+            </button>
+
+            {/* Event/Org info */}
+            {(post.event_id || post.org_id) && (
+              <div style={{ marginTop: "16px", borderTop: "1px solid #ddd", paddingTop: "12px" }}>
+                <small style={{ color: "#6c757d" }}>
+                  {post.event_id && <div>Event ID: {post.event_id}</div>}
+                  {post.org_id && <div>Organization ID: {post.org_id}</div>}
+                </small>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -96,7 +122,6 @@ const PostModal = ({ post, onClose, onLike }) => {
 };
 
 export default function ForumPage() {
-
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [slides, setSlides] = useState([]);
@@ -108,17 +133,17 @@ export default function ForumPage() {
 
   const nav = useNavigate();
 
-
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:3001/community/get_all_posts');
-        const responseData = await response.json();
-        const data = responseData.result || [];
+        const response = await axios.get(
+          "http://localhost:3001/community/get_all_posts"
+        );
+        const data = response.data.result || [];
         console.log("Posts data:", data);
 
-        const normalised = data.map(item => ({
+        const normalised = data.map((item) => ({
           feedback_id: item.feedback_id,
           user_id: item.user_id,
           username: item.username || "Anonymous",
@@ -127,12 +152,11 @@ export default function ForumPage() {
           body: item.body,
           img: item.image,
           created_at: item.created_at,
-          liked_count: 0
+          liked_count: 0,
         }));
 
         setPosts(normalised);
         setFilteredPosts(normalised);
-
       } catch (err) {
         console.error("Error fetching posts:", err);
         setPosts([]);
@@ -149,22 +173,20 @@ export default function ForumPage() {
   useEffect(() => {
     const fetchHighlights = async () => {
       try {
-        const response = await fetch('http://localhost:3001/community/get_all_highlights');
-        const data = await response.json();
+        const response = await axios.get(
+          "http://localhost:3001/community/get_all_highlights"
+        );
+        const data = response.data;
 
-        console.log('Highlights response:', data); // Debug log
-
-        if (data.result) {  // Changed from data.status && data.result
-          const mappedSlides = data.result.map(highlight => ({
+        if (data.result) {
+          const mappedSlides = data.result.map((highlight) => ({
             image: highlight.image,
-            caption: highlight.caption
+            caption: highlight.caption,
           }));
-          console.log('Mapped slides:', mappedSlides); // Debug log
           setSlides(mappedSlides);
         }
       } catch (err) {
-        console.error("Error fetching highlights:");
-        // Fallback slides
+        console.error("Error fetching highlights:", err);
       }
     };
 
@@ -201,8 +223,6 @@ export default function ForumPage() {
   //   }
   // };
 
-
-
   // // Handle like/unlike
   // const handleLike = async (postId) => {
   //   const userId = getCurrentUserId();
@@ -220,8 +240,8 @@ export default function ForumPage() {
   //     const response = await fetch('http://localhost:3001/community/user_likes_post', {
   //       method: 'POST',
   //       headers: { 'Content-Type': 'application/json' },
-  //       body: JSON.stringify({ 
-  //         feedback_id: postId, 
+  //       body: JSON.stringify({
+  //         feedback_id: postId,
   //         user_id: userId,
   //         action: post.isLiked ? 'unlike' : 'like' // Add action to determine like/unlike
   //       })
@@ -239,8 +259,8 @@ export default function ForumPage() {
   // };
 
   // const updatePostLikeState = (postId, isLiked, countChange) => {
-  //   const updatePosts = (postsList) => postsList.map(post => 
-  //     post.feedback_id === postId 
+  //   const updatePosts = (postsList) => postsList.map(post =>
+  //     post.feedback_id === postId
   //       ? { ...post, isLiked, liked_count: (post.liked_count || 0) + countChange }
   //       : post
   //   );
@@ -264,9 +284,10 @@ export default function ForumPage() {
     // Apply search filter
     if (query.trim()) {
       const lowerQuery = query.toLowerCase();
-      result = result.filter(post =>
-        post.subject?.toLowerCase().includes(lowerQuery) ||
-        post.body?.toLowerCase().includes(lowerQuery)
+      result = result.filter(
+        (post) =>
+          post.subject?.toLowerCase().includes(lowerQuery) ||
+          post.body?.toLowerCase().includes(lowerQuery)
       );
     }
 
@@ -281,9 +302,9 @@ export default function ForumPage() {
   }, [query, sortBy, posts]);
 
   return (
-    <><Navbar />
+    <>
+      <Navbar />
       <div className="container-fluid vh-100 d-flex flex-column page-community">
-
         <PageTransition>
           <div className="container py-4 flex-grow-1">
             {/* Spotlight carousel */}
@@ -326,8 +347,6 @@ export default function ForumPage() {
                     Add Post
                   </button>
                 </div>
-
-
               </div>
             </div>
 
@@ -341,13 +360,18 @@ export default function ForumPage() {
             ) : filteredPosts.length === 0 ? (
               <div className="text-center py-5">
                 <p className="text-muted">
-                  {query ? "No posts found matching your search." : "No posts yet. Be the first to share!"}
+                  {query
+                    ? "No posts found matching your search."
+                    : "No posts yet. Be the first to share!"}
                 </p>
               </div>
             ) : (
-              <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+              <div className="d-flex flex-wrap gap-4 justify-content-start">
                 {filteredPosts.map((post) => (
-                  <div key={post.feedback_id} className="col">
+                  <div
+                    key={post.feedback_id}
+                    style={{ flex: "1 1 300px", maxWidth: "350px" }}
+                  >
                     <FeaturedCard
                       feedback_id={post.feedback_id}
                       user_id={post.user_id}
@@ -372,7 +396,7 @@ export default function ForumPage() {
           <PostModal
             post={selectedPost}
             onClose={() => setSelectedPost(null)}
-          // onLike={handleLike}
+            // onLike={handleLike}
           />
         )}
       </div>

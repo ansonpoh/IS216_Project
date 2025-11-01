@@ -1,17 +1,18 @@
 // src/components/component/FeaturedCard.jsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import styles from "../../../styles/Community.module.css";
 
 export default function FeaturedCard({
   feedback_id,
   user_id,
-  
+
   subject = "",
   body = "",
   created_at = "",
   image = null,
   likes = 0,
-  onClick
+  onClick,
 }) {
   const navigate = useNavigate();
 
@@ -26,22 +27,26 @@ export default function FeaturedCard({
   };
 
   return (
-    <div className="card h-100 shadow-sm" onClick={handleClick} style={{ cursor: "pointer" }}>
-      {image && (
+    <div
+      className={`card h-100 shadow-sm ${styles["featured-card"]}`}
+      onClick={handleClick}
+      style={{ cursor: "pointer" }}
+    >
+ {image && (
         <img
           src={image}
-          className="card-img-top"
+          className={styles['card-image']}
           alt={subject}
           style={{ height: "200px", objectFit: "cover" }}
         />
       )}
-      <div className="card-body">
-        <h5 className="card-title">{subject}</h5>
-        <p className="card-text text-muted small">
+      <div className={styles['card-body']}>
+        <h5 className={styles['card-title']}>{subject}</h5>
+        <p className={styles['card-text']}>
           {body.substring(0, 100)}...
         </p>
       </div>
-      <div className="card-footer bg-transparent d-flex justify-content-between align-items-center">
+      <div className={`card-footer bg-transparent d-flex justify-content-between align-items-center`}>
         <small className="text-muted">
           {new Date(created_at).toLocaleDateString()}
         </small>
@@ -53,5 +58,3 @@ export default function FeaturedCard({
     </div>
   );
 }
-
-

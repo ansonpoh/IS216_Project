@@ -30,9 +30,6 @@ export default function OrganiserDashboard() {
         const res = await axios.get("http://localhost:3001/events/get_events_of_org", {params: {org_id}});
         setEvents(res.data.result);
         setFilteredEvents(res.data.result);
-        // if (!cancelled) {
-        //   setEvents(Array.isArray(res.data) ? res.data : res.data?.events || []);
-        // }
       } catch (e) {
         if (!cancelled) setErr(e?.response?.data?.message || "Failed to load events.");
       } finally {
