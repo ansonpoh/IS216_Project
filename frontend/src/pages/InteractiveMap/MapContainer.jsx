@@ -3,6 +3,58 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 
+// Helper function to get category colors for pills
+const getCategoryPillColors = (category) => {
+  const cat = (category || '').toLowerCase().trim();
+
+  const categoryColors = {
+    'animal': { bg: 'rgba(245, 158, 11, 0.2)', color: '#333' },
+    'children': { bg: 'rgba(236, 72, 153, 0.2)', color: '#333' },
+    'youth': { bg: 'rgba(236, 72, 153, 0.2)', color: '#333' },
+    'elderly': { bg: 'rgba(255, 107, 53, 0.2)', color: '#333' },
+    'senior': { bg: 'rgba(255, 107, 53, 0.2)', color: '#333' },
+    'environment': { bg: 'rgba(16, 185, 129, 0.2)', color: '#333' },
+    'event support': { bg: 'rgba(59, 130, 246, 0.2)', color: '#333' },
+    'carnival': { bg: 'rgba(59, 130, 246, 0.2)', color: '#333' },
+    'mental health': { bg: 'rgba(239, 68, 68, 0.2)', color: '#333' },
+    'pwds': { bg: 'rgba(99, 102, 241, 0.2)', color: '#333' },
+    'disability': { bg: 'rgba(99, 102, 241, 0.2)', color: '#333' },
+    'healthcare': { bg: 'rgba(239, 68, 68, 0.2)', color: '#333' },
+    'education': { bg: 'rgba(59, 130, 246, 0.2)', color: '#333' }
+  };
+
+  // Check for exact matches first
+  if (categoryColors[cat]) {
+    return categoryColors[cat];
+  }
+
+  // Check for partial matches
+  const matchPriority = [
+    'mental health',
+    'event support',
+    'pwds',
+    'disability',
+    'animal',
+    'children',
+    'youth',
+    'elderly',
+    'senior',
+    'environment',
+    'carnival',
+    'healthcare',
+    'education'
+  ];
+
+  for (const key of matchPriority) {
+    if (cat.includes(key) || key.includes(cat)) {
+      return categoryColors[key];
+    }
+  }
+
+  // Default color
+  return { bg: 'rgba(59, 130, 246, 0.2)', color: '#333' };
+};
+
 // Helper function to create custom marker icons based on category
 const getCategoryMarkerIcon = (category) => {
   // Normalize category name
@@ -158,6 +210,24 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
   }
 
   const handleShowNearby = () => {
+    // If already showing nearby, toggle it off
+    if (showNearbyOnly) {
+      setShowNearbyOnly(false);
+      setUserLocation(null);
+
+      // Remove circle and marker
+      if (radiusCircle) {
+        radiusCircle.setMap(null);
+        setRadiusCircle(null);
+      }
+      if (userLocationMarker) {
+        userLocationMarker.setMap(null);
+        setUserLocationMarker(null);
+      }
+      return;
+    }
+
+    // Otherwise, activate nearby filtering
     if (!navigator.geolocation) {
       alert("Geolocation not supported by your browser.");
       return;
@@ -194,10 +264,10 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
 
         // Create custom human greeting variant icon using MDI with button color scheme
         const humanIconSvg = `
-          <svg width="60" height="60" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60">
-            <circle cx="30" cy="30" r="24" fill="rgb(159, 159, 233)" stroke="rgba(113, 113, 232, 1)" stroke-width="2"/>
-            <g transform="translate(14, 14)">
-              <svg width="32" height="32" viewBox="0 0 24 24">
+          <svg width="51" height="51" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 51 51">
+            <circle cx="25.5" cy="25.5" r="20.4" fill="rgb(159, 159, 233)" stroke="rgba(113, 113, 232, 1)" stroke-width="2"/>
+            <g transform="translate(11.9, 11.9)">
+              <svg width="27.2" height="27.2" viewBox="0 0 24 24">
                 <path d="${mdiHumanGreetingVariant}" fill="white"/>
               </svg>
             </g>
@@ -211,8 +281,8 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
           title: "Your Location",
           icon: {
             url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(humanIconSvg),
-            scaledSize: new window.google.maps.Size(60, 60),
-            anchor: new window.google.maps.Point(30, 30),
+            scaledSize: new window.google.maps.Size(51, 51),
+            anchor: new window.google.maps.Point(25.5, 25.5),
           },
           zIndex: 10000, // Ensure it appears on top
         });
@@ -417,15 +487,16 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
       const imageUrl = ev.image_url;
       const hasImage = imageUrl && imageUrl.trim() !== '';
       const buttonId = `learn-more-${ev.event_id}`;
+      const categoryColors = getCategoryPillColors(ev.category);
 
       const infoWindow = new window.google.maps.InfoWindow({
         content: `
           <div style="padding: 8px; max-width: 300px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
             ${hasImage ? `
               <div style="margin: -8px -8px 12px -8px; overflow: hidden; border-radius: 8px 8px 0 0;">
-                <img 
-                  src="${ev.image_url}" 
-                  alt="${ev.title || 'Opportunity'}" 
+                <img
+                  src="${ev.image_url}"
+                  alt="${ev.title || 'Opportunity'}"
                   style="width: 100%; height: 180px; object-fit: cover; display: block;"
                   onerror="this.style.display='none'; this.parentElement.style.display='none';"
                 />
@@ -436,7 +507,6 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
             </div>
             ${ev.organization ? `
               <div style="font-size: 13px; margin-bottom: 10px; color: #666; display: flex; align-items: center;">
-                <span style="margin-right: 6px;">🏢</span>
                 <span style="font-weight: 500;">${ev.organization}</span>
               </div>
             ` : ''}
@@ -446,16 +516,15 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
               </div>
             ` : ''}
             ${ev.category ? `
-              <div style="font-size: 11px; color: #0066cc; margin-bottom: 10px; display: inline-block; background: #e6f2ff; padding: 5px 12px; border-radius: 14px; font-weight: 600;">
-                🗃️ ${(ev.category)}
+              <div style="font-size: 11px; color: ${categoryColors.color}; margin-bottom: 10px; display: inline-block; background: ${categoryColors.bg}; padding: 5px 12px; border-radius: 14px; font-weight: 600;">
+                ${(ev.category)}
               </div>
             ` : ''}
-            <div style="font-size: 13px; color: #555; margin-top: 10px; display: flex; align-items: flex-start; padding: 8px 0; border-top: 1px solid #eee;">
-              <strong style="margin-right: 6px; font-size: 16px;">📍</strong>
-              <span style="line-height: 1.4;">${ev.postalcode}</span>
+            <div style="font-size: 14px; color: #555; margin-top: 10px; display: flex; align-items: flex-start; padding: 8px 0; border-top: 1px solid #eee;">
+              <span style="line-height: 1.4;"><strong>Location:</strong> ${ev.postalcode}</span>
             </div>
             ${ev.event_id ? `
-              <a 
+              <a
                 id=${buttonId}
                 style="display: block; margin-top: 12px; padding: 10px 16px; background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 600; text-align: center; box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3); transition: transform 0.2s;"
                 onmouseover="this.style.transform='translateY(-2px)'"
@@ -584,15 +653,16 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
       const imageUrl = item.image_url || item.image || item.imageUrl || item.img;
       const hasImage = imageUrl && imageUrl.trim() !== '';
       const buttonId = `learn-more-${item.event_id}`;
+      const categoryColors = getCategoryPillColors(item.category);
 
       const infoWindow = new window.google.maps.InfoWindow({
         content: `
           <div style="padding: 8px; max-width: 300px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
             ${hasImage ? `
               <div style="margin: -8px -8px 12px -8px; overflow: hidden; border-radius: 8px 8px 0 0;">
-                <img 
-                  src="${imageUrl}" 
-                  alt="${item.title || 'Opportunity'}" 
+                <img
+                  src="${imageUrl}"
+                  alt="${item.title || 'Opportunity'}"
                   style="width: 100%; height: 180px; object-fit: cover; display: block;"
                   onerror="this.style.display='none'; this.parentElement.style.display='none';"
                 />
@@ -603,7 +673,6 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
             </div>
             ${item.organization ? `
               <div style="font-size: 13px; margin-bottom: 10px; color: #666; display: flex; align-items: center;">
-                <span style="margin-right: 6px;">🏢</span>
                 <span style="font-weight: 500;">${item.organization}</span>
               </div>
             ` : ''}
@@ -613,16 +682,15 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
               </div>
             ` : ''}
             ${item.category ? `
-              <div style="font-size: 11px; color: #0066cc; margin-bottom: 10px; display: inline-block; background: #e6f2ff; padding: 5px 12px; border-radius: 14px; font-weight: 600;">
-                🗃️ ${capitalizeCategory(item.category)}
+              <div style="font-size: 11px; color: ${categoryColors.color}; margin-bottom: 10px; display: inline-block; background: ${categoryColors.bg}; padding: 5px 12px; border-radius: 14px; font-weight: 600;">
+                ${capitalizeCategory(item.category)}
               </div>
             ` : ''}
-            <div style="font-size: 13px; color: #555; margin-top: 10px; display: flex; align-items: flex-start; padding: 8px 0; border-top: 1px solid #eee;">
-              <strong style="margin-right: 6px; font-size: 16px;">📍</strong>
-              <span style="line-height: 1.4;">${item.postalcode}</span>
+            <div style="font-size: 14px; color: #555; margin-top: 10px; display: flex; align-items: flex-start; padding: 8px 0; border-top: 1px solid #eee;">
+              <span style="line-height: 1.4;"><strong>Location:</strong> ${item.postalcode}</span>
             </div>
             ${item.event_id ? `
-              <a 
+              <a
                 id=${buttonId}
                 style="display: block; margin-top: 12px; padding: 10px 16px; background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 600; text-align: center; box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3); transition: transform 0.2s; cursor: pointer;"
                 onmouseover="this.style.transform='translateY(-2px)'"
@@ -867,7 +935,7 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
               if (userLocationMarker) userLocationMarker.setMap(null);
             }
           }}
-          className="btn btn-sm btn-light position-absolute m-2"
+          className="btn btn-sm position-absolute m-2"
           style={{
             color: '#fff',
             top: '2px',
@@ -880,9 +948,17 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
             display: 'flex',
             alignItems: 'center'
           }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = '#fff';
+            e.currentTarget.style.backgroundColor = '#3a7de8';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = '#fff';
+            e.currentTarget.style.backgroundColor = '#4891ffff';
+          }}
         >
-          <i className="bi bi-x-circle me-1"></i>
-          Reset Filters
+          <i className="bi bi-x-circle me-1" style={{ color: '#fff' }}></i>
+          <span style={{ color: '#fff' }}>Reset Filters</span>
         </button>
       )}
 
@@ -894,8 +970,8 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
           top: '10px',
           left: '192px',
           zIndex: 1000,
-          backgroundColor: 'rgb(159, 159, 233)',
-          border: '2px solid rgba(113, 113, 232, 1)',
+          backgroundColor: showNearbyOnly ? 'rgb(113, 113, 232)' : 'rgb(159, 159, 233)',
+          border: showNearbyOnly ? '2px solid rgb(80, 80, 200)' : '2px solid rgba(113, 113, 232, 1)',
           borderRadius: '2px',
           boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
           width: '40px',
