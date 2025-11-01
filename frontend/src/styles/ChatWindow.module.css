@@ -25,6 +25,7 @@
 
 .bot-bubble {
   border-bottom-left-radius: 0;
+  border-radius: 30%;
 }
 
 .avatar {
