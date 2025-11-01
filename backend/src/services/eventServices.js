@@ -28,7 +28,7 @@ export async function get_event_by_id(event_id) {
 
 export async function get_all_events() {
     try {
-        const query = `select e.*, o.org_name from events e join organisations o on e.org_id = o.org_id`;
+        const query = `select e.*, o.org_name, count(er.user_id) as registration_count from events e join organisations o on e.org_id = o.org_id left join event_registration er on e.event_id = er.event_id group by e.event_id, o.org_name`;
         const result = await pool.query(query);
         return result.rows;
     } catch (err) {
