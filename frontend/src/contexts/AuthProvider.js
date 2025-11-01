@@ -1,5 +1,5 @@
 import React, { useState, useEffect, createContext, useMemo, useContext } from "react";
-
+import { supabase } from "../config/supabaseClient";
 const DEFAULT_AUTH = {role: "", id: "", token: ""};
 
 const AuthContext = createContext({
@@ -25,7 +25,8 @@ export const AuthProvider = ({ children }) => {
     sessionStorage.setItem("auth", JSON.stringify(auth));
   }, [auth]);
 
-  const logout = () => {
+  const logout = async () => {
+    await supabase.auth.signOut();
     setAuth(DEFAULT_AUTH);
     sessionStorage.removeItem("auth");
   }
