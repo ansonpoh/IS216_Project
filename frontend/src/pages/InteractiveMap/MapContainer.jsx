@@ -1,7 +1,59 @@
-import { mdiPaw, mdiBalloon, mdiHumanCane, mdiTree, mdiCalendar, mdiHuman, mdiHeartPulse, } from '@mdi/js';
+import { mdiPaw, mdiBalloon, mdiHumanCane, mdiTree, mdiCalendar, mdiHuman, mdiHeartPulse, mdiHumanHandsup, mdiHumanGreetingVariant } from '@mdi/js';
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
+
+// Helper function to get category colors for pills
+const getCategoryPillColors = (category) => {
+  const cat = (category || '').toLowerCase().trim();
+
+  const categoryColors = {
+    'animal': { bg: 'rgba(245, 158, 11, 0.2)', color: '#333' },
+    'children': { bg: 'rgba(236, 72, 153, 0.2)', color: '#333' },
+    'youth': { bg: 'rgba(236, 72, 153, 0.2)', color: '#333' },
+    'elderly': { bg: 'rgba(255, 107, 53, 0.2)', color: '#333' },
+    'senior': { bg: 'rgba(255, 107, 53, 0.2)', color: '#333' },
+    'environment': { bg: 'rgba(16, 185, 129, 0.2)', color: '#333' },
+    'event support': { bg: 'rgba(59, 130, 246, 0.2)', color: '#333' },
+    'carnival': { bg: 'rgba(59, 130, 246, 0.2)', color: '#333' },
+    'mental health': { bg: 'rgba(239, 68, 68, 0.2)', color: '#333' },
+    'pwds': { bg: 'rgba(99, 102, 241, 0.2)', color: '#333' },
+    'disability': { bg: 'rgba(99, 102, 241, 0.2)', color: '#333' },
+    'healthcare': { bg: 'rgba(239, 68, 68, 0.2)', color: '#333' },
+    'education': { bg: 'rgba(59, 130, 246, 0.2)', color: '#333' }
+  };
+
+  // Check for exact matches first
+  if (categoryColors[cat]) {
+    return categoryColors[cat];
+  }
+
+  // Check for partial matches
+  const matchPriority = [
+    'mental health',
+    'event support',
+    'pwds',
+    'disability',
+    'animal',
+    'children',
+    'youth',
+    'elderly',
+    'senior',
+    'environment',
+    'carnival',
+    'healthcare',
+    'education'
+  ];
+
+  for (const key of matchPriority) {
+    if (cat.includes(key) || key.includes(cat)) {
+      return categoryColors[key];
+    }
+  }
+
+  // Default color
+  return { bg: 'rgba(59, 130, 246, 0.2)', color: '#333' };
+};
 
 // Helper function to create custom marker icons based on category
 const getCategoryMarkerIcon = (category) => {
@@ -128,7 +180,7 @@ const getCategoryMarkerIcon = (category) => {
   };
 };
 
-const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, recommendedEvents, onCurrentLocation }, ref) => {
+const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, recommendedEvents }, ref) => {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markersRef = useRef([]);
@@ -142,6 +194,7 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
   const [radius, setRadius] = useState(5000); // default 5km
   const [radiusCircle, setRadiusCircle] = useState(null);
   const [showNearbyOnly, setShowNearbyOnly] = useState(false);
+  const [userLocationMarker, setUserLocationMarker] = useState(null);
 
   function getDistance(lat1, lng1, lat2, lng2) {
     const R = 6371e3; // metres
@@ -157,6 +210,24 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
   }
 
   const handleShowNearby = () => {
+    // If already showing nearby, toggle it off
+    if (showNearbyOnly) {
+      setShowNearbyOnly(false);
+      setUserLocation(null);
+
+      // Remove circle and marker
+      if (radiusCircle) {
+        radiusCircle.setMap(null);
+        setRadiusCircle(null);
+      }
+      if (userLocationMarker) {
+        userLocationMarker.setMap(null);
+        setUserLocationMarker(null);
+      }
+      return;
+    }
+
+    // Otherwise, activate nearby filtering
     if (!navigator.geolocation) {
       alert("Geolocation not supported by your browser.");
       return;
@@ -176,6 +247,9 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
         // Remove old circle if exists
         if (radiusCircle) radiusCircle.setMap(null);
 
+        // Remove old user location marker if exists
+        if (userLocationMarker) userLocationMarker.setMap(null);
+
         // Draw new circle
         const circle = new window.google.maps.Circle({
           strokeColor: "#4285F4",
@@ -188,7 +262,33 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
           radius: radius,
         });
 
+        // Create custom human greeting variant icon using MDI with button color scheme
+        const humanIconSvg = `
+          <svg width="51" height="51" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 51 51">
+            <circle cx="25.5" cy="25.5" r="20.4" fill="rgb(159, 159, 233)" stroke="rgba(113, 113, 232, 1)" stroke-width="2"/>
+            <g transform="translate(11.9, 11.9)">
+              <svg width="27.2" height="27.2" viewBox="0 0 24 24">
+                <path d="${mdiHumanGreetingVariant}" fill="white"/>
+              </svg>
+            </g>
+          </svg>
+        `;
+
+        // Create user location marker
+        const marker = new window.google.maps.Marker({
+          position: loc,
+          map: mapInstanceRef.current,
+          title: "Your Location",
+          icon: {
+            url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(humanIconSvg),
+            scaledSize: new window.google.maps.Size(51, 51),
+            anchor: new window.google.maps.Point(25.5, 25.5),
+          },
+          zIndex: 10000, // Ensure it appears on top
+        });
+
         setRadiusCircle(circle);
+        setUserLocationMarker(marker);
       },
       (err) => {
         console.error(err);
@@ -200,121 +300,121 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
   // Filter opportunities based on active filters
   const filteredOpportunities = useMemo(() => {
     let base = opportunities;
-    if (activeFilters.length === 0) return opportunities;
-    
-    if(activeFilters.length > 0) {
-      const regions = ['central', 'north', 'north-east', 'east', 'west', 'south'];
-      const categories = ['animal', 'children', 'elderly', 'environment', 'event support', 'mental health', 'pwds'];
-      
-      const regionFilters = activeFilters.filter(f => 
-        regions.includes(f.toLowerCase())
+
+    // First, apply nearby filter if active
+    if (showNearbyOnly && userLocation) {
+      base = base.filter(ev =>
+        ev.lat && ev.lng &&
+        getDistance(userLocation.lat, userLocation.lng, ev.lat, ev.lng) <= radius
       );
-      const categoryFilters = activeFilters.filter(f => 
-        categories.includes(f.toLowerCase())
-      );
-
-      return opportunities.filter(opp => {
-        const category = (opp.category || '').toLowerCase().trim();
-        const region = (opp.region || '').toLowerCase().trim();
-        const title = (opp.title || '').toLowerCase().trim();
-        const description = (opp.description || '').toLowerCase().trim();
-
-        let regionMatch = regionFilters.length === 0;
-        if (regionFilters.length > 0) {
-          regionMatch = regionFilters.some(filter => {
-            const filterLower = filter.toLowerCase().trim();
-            
-            switch (filterLower) {
-              case 'north-east':
-                return region === 'north-east' || 
-                      region.includes('north-east') ||
-                      title.includes('north-east') ||
-                      title.includes('northeast') ||
-                      description.includes('north-east') ||
-                      description.includes('northeast');
-              case 'north':
-                return region === 'north' || 
-                      title.includes('north') ||
-                      description.includes('north');
-              case 'south':
-                return region === 'south' || 
-                      title.includes('south') ||
-                      description.includes('south');
-              case 'east':
-                return region === 'east' || 
-                      title.includes('east') ||
-                      description.includes('east');
-              case 'west':
-                return region === 'west' || 
-                      title.includes('west') ||
-                      description.includes('west');
-              case 'central':
-                return region === 'central' || 
-                      title.includes('central') ||
-                      description.includes('central');
-              default:
-                return region === filterLower;
-            }
-          });
-        }
-
-        let categoryMatch = categoryFilters.length === 0;
-        if (categoryFilters.length > 0) {
-          categoryMatch = categoryFilters.some(filter => {
-            const filterLower = filter.toLowerCase().trim();
-
-            // PRIORITY: Match category field first (most reliable)
-            switch (filterLower) {
-              case 'pwds':
-                return category.includes('pwd') || 
-                      category.includes('disability') || 
-                      category.includes('disabled');
-              case 'mental health':
-                return category.includes('mental') || 
-                      category.includes('mental health') || 
-                      category.includes('psychology') ||
-                      category.includes('wellbeing');
-              case 'event support':
-                // Only match if category explicitly contains these keywords
-                return category.includes('event support') || 
-                      category.includes('event') ||
-                      (category.includes('carnival') && !category.includes('children')) ||
-                      (category.includes('fair') && !category.includes('environment'));
-              case 'children':
-                return category.includes('youth') || 
-                      category.includes('children') || 
-                      category.includes('child');
-              case 'elderly':
-              case 'seniors':
-                return category.includes('senior') || 
-                      category.includes('elderly');
-              case 'animal':
-              case 'animals':
-                return category.includes('animal') || 
-                      category.includes('pet');
-              case 'environment':
-                return category.includes('environment') || 
-                      category.includes('conservation') ||
-                      category.includes('green') ||
-                      category.includes('nature');
-              default:
-                return category.includes(filterLower);
-            }
-          });
-        }
-
-        return regionMatch && categoryMatch;
-      });
-    } else {
-      if (showNearbyOnly && userLocation) {
-        base = base.filter(ev =>
-          ev.lat && ev.lng &&
-          getDistance(userLocation.lat, userLocation.lng, ev.lat, ev.lng) <= radius
-        );
-      }
     }
-    return base;
-    
+
+    // If no region/category filters, return the base (possibly filtered by nearby)
+    if (activeFilters.length === 0) return base;
+
+    // Apply region and category filters
+    const regions = ['central', 'north', 'north-east', 'east', 'west', 'south'];
+    const categories = ['animal', 'children', 'elderly', 'environment', 'event support', 'mental health', 'pwds'];
+
+    const regionFilters = activeFilters.filter(f =>
+      regions.includes(f.toLowerCase())
+    );
+    const categoryFilters = activeFilters.filter(f =>
+      categories.includes(f.toLowerCase())
+    );
+
+    return base.filter(opp => {
+      const category = (opp.category || '').toLowerCase().trim();
+      const region = (opp.region || '').toLowerCase().trim();
+      const title = (opp.title || '').toLowerCase().trim();
+      const description = (opp.description || '').toLowerCase().trim();
+
+      let regionMatch = regionFilters.length === 0;
+      if (regionFilters.length > 0) {
+        regionMatch = regionFilters.some(filter => {
+          const filterLower = filter.toLowerCase().trim();
+
+          switch (filterLower) {
+            case 'north-east':
+              return region === 'north-east' ||
+                    region.includes('north-east') ||
+                    title.includes('north-east') ||
+                    title.includes('northeast') ||
+                    description.includes('north-east') ||
+                    description.includes('northeast');
+            case 'north':
+              return region === 'north' ||
+                    title.includes('north') ||
+                    description.includes('north');
+            case 'south':
+              return region === 'south' ||
+                    title.includes('south') ||
+                    description.includes('south');
+            case 'east':
+              return region === 'east' ||
+                    title.includes('east') ||
+                    description.includes('east');
+            case 'west':
+              return region === 'west' ||
+                    title.includes('west') ||
+                    description.includes('west');
+            case 'central':
+              return region === 'central' ||
+                    title.includes('central') ||
+                    description.includes('central');
+            default:
+              return region === filterLower;
+          }
+        });
+      }
+
+      let categoryMatch = categoryFilters.length === 0;
+      if (categoryFilters.length > 0) {
+        categoryMatch = categoryFilters.some(filter => {
+          const filterLower = filter.toLowerCase().trim();
+
+          // PRIORITY: Match category field first (most reliable)
+          switch (filterLower) {
+            case 'pwds':
+              return category.includes('pwd') ||
+                    category.includes('disability') ||
+                    category.includes('disabled');
+            case 'mental health':
+              return category.includes('mental') ||
+                    category.includes('mental health') ||
+                    category.includes('psychology') ||
+                    category.includes('wellbeing');
+            case 'event support':
+              // Only match if category explicitly contains these keywords
+              return category.includes('event support') ||
+                    category.includes('event') ||
+                    (category.includes('carnival') && !category.includes('children')) ||
+                    (category.includes('fair') && !category.includes('environment'));
+            case 'children':
+              return category.includes('youth') ||
+                    category.includes('children') ||
+                    category.includes('child');
+            case 'elderly':
+            case 'seniors':
+              return category.includes('senior') ||
+                    category.includes('elderly');
+            case 'animal':
+            case 'animals':
+              return category.includes('animal') ||
+                    category.includes('pet');
+            case 'environment':
+              return category.includes('environment') ||
+                    category.includes('conservation') ||
+                    category.includes('green') ||
+                    category.includes('nature');
+            default:
+              return category.includes(filterLower);
+          }
+        });
+      }
+
+      return regionMatch && categoryMatch;
+    });
   }, [opportunities, activeFilters, showNearbyOnly, userLocation, radius]);
 
   // Fetch opportunities from backend
@@ -387,15 +487,16 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
       const imageUrl = ev.image_url;
       const hasImage = imageUrl && imageUrl.trim() !== '';
       const buttonId = `learn-more-${ev.event_id}`;
+      const categoryColors = getCategoryPillColors(ev.category);
 
       const infoWindow = new window.google.maps.InfoWindow({
         content: `
           <div style="padding: 8px; max-width: 300px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
             ${hasImage ? `
               <div style="margin: -8px -8px 12px -8px; overflow: hidden; border-radius: 8px 8px 0 0;">
-                <img 
-                  src="${ev.image_url}" 
-                  alt="${ev.title || 'Opportunity'}" 
+                <img
+                  src="${ev.image_url}"
+                  alt="${ev.title || 'Opportunity'}"
                   style="width: 100%; height: 180px; object-fit: cover; display: block;"
                   onerror="this.style.display='none'; this.parentElement.style.display='none';"
                 />
@@ -406,7 +507,6 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
             </div>
             ${ev.organization ? `
               <div style="font-size: 13px; margin-bottom: 10px; color: #666; display: flex; align-items: center;">
-                <span style="margin-right: 6px;">🏢</span>
                 <span style="font-weight: 500;">${ev.organization}</span>
               </div>
             ` : ''}
@@ -416,16 +516,15 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
               </div>
             ` : ''}
             ${ev.category ? `
-              <div style="font-size: 11px; color: #0066cc; margin-bottom: 10px; display: inline-block; background: #e6f2ff; padding: 5px 12px; border-radius: 14px; font-weight: 600;">
-                🗃️ ${(ev.category)}
+              <div style="font-size: 11px; color: ${categoryColors.color}; margin-bottom: 10px; display: inline-block; background: ${categoryColors.bg}; padding: 5px 12px; border-radius: 14px; font-weight: 600;">
+                ${(ev.category)}
               </div>
             ` : ''}
-            <div style="font-size: 13px; color: #555; margin-top: 10px; display: flex; align-items: flex-start; padding: 8px 0; border-top: 1px solid #eee;">
-              <strong style="margin-right: 6px; font-size: 16px;">📍</strong>
-              <span style="line-height: 1.4;">${ev.postalcode}</span>
+            <div style="font-size: 14px; color: #555; margin-top: 10px; display: flex; align-items: flex-start; padding: 8px 0; border-top: 1px solid #eee;">
+              <span style="line-height: 1.4;"><strong>Location:</strong> ${ev.postalcode}</span>
             </div>
             ${ev.event_id ? `
-              <a 
+              <a
                 id=${buttonId}
                 style="display: block; margin-top: 12px; padding: 10px 16px; background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 600; text-align: center; box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3); transition: transform 0.2s;"
                 onmouseover="this.style.transform='translateY(-2px)'"
@@ -554,15 +653,16 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
       const imageUrl = item.image_url || item.image || item.imageUrl || item.img;
       const hasImage = imageUrl && imageUrl.trim() !== '';
       const buttonId = `learn-more-${item.event_id}`;
+      const categoryColors = getCategoryPillColors(item.category);
 
       const infoWindow = new window.google.maps.InfoWindow({
         content: `
           <div style="padding: 8px; max-width: 300px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
             ${hasImage ? `
               <div style="margin: -8px -8px 12px -8px; overflow: hidden; border-radius: 8px 8px 0 0;">
-                <img 
-                  src="${imageUrl}" 
-                  alt="${item.title || 'Opportunity'}" 
+                <img
+                  src="${imageUrl}"
+                  alt="${item.title || 'Opportunity'}"
                   style="width: 100%; height: 180px; object-fit: cover; display: block;"
                   onerror="this.style.display='none'; this.parentElement.style.display='none';"
                 />
@@ -573,7 +673,6 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
             </div>
             ${item.organization ? `
               <div style="font-size: 13px; margin-bottom: 10px; color: #666; display: flex; align-items: center;">
-                <span style="margin-right: 6px;">🏢</span>
                 <span style="font-weight: 500;">${item.organization}</span>
               </div>
             ` : ''}
@@ -583,16 +682,15 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
               </div>
             ` : ''}
             ${item.category ? `
-              <div style="font-size: 11px; color: #0066cc; margin-bottom: 10px; display: inline-block; background: #e6f2ff; padding: 5px 12px; border-radius: 14px; font-weight: 600;">
-                🗃️ ${capitalizeCategory(item.category)}
+              <div style="font-size: 11px; color: ${categoryColors.color}; margin-bottom: 10px; display: inline-block; background: ${categoryColors.bg}; padding: 5px 12px; border-radius: 14px; font-weight: 600;">
+                ${capitalizeCategory(item.category)}
               </div>
             ` : ''}
-            <div style="font-size: 13px; color: #555; margin-top: 10px; display: flex; align-items: flex-start; padding: 8px 0; border-top: 1px solid #eee;">
-              <strong style="margin-right: 6px; font-size: 16px;">📍</strong>
-              <span style="line-height: 1.4;">${item.postalcode}</span>
+            <div style="font-size: 14px; color: #555; margin-top: 10px; display: flex; align-items: flex-start; padding: 8px 0; border-top: 1px solid #eee;">
+              <span style="line-height: 1.4;"><strong>Location:</strong> ${item.postalcode}</span>
             </div>
             ${item.event_id ? `
-              <a 
+              <a
                 id=${buttonId}
                 style="display: block; margin-top: 12px; padding: 10px 16px; background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 600; text-align: center; box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3); transition: transform 0.2s; cursor: pointer;"
                 onmouseover="this.style.transform='translateY(-2px)'"
@@ -808,7 +906,7 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
   }, []);
 
   return (
-    <div className="position-relative flex-grow-1">
+    <div className="position-relative flex-grow-1" style={{ boxShadow: '0 0 8px 2px #0066ff4d', borderRadius: '0.375rem' }}>
       <div
         ref={mapRef}
         id="map"
@@ -834,9 +932,10 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
               onResetFilters();
               setShowNearbyOnly(false);
               if (radiusCircle) radiusCircle.setMap(null);
+              if (userLocationMarker) userLocationMarker.setMap(null);
             }
           }}
-          className="btn btn-sm btn-light position-absolute m-2"
+          className="btn btn-sm position-absolute m-2"
           style={{
             color: '#fff',
             top: '2px',
@@ -849,44 +948,19 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
             display: 'flex',
             alignItems: 'center'
           }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = '#fff';
+            e.currentTarget.style.backgroundColor = '#3a7de8';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = '#fff';
+            e.currentTarget.style.backgroundColor = '#4891ffff';
+          }}
         >
-          <i className="bi bi-x-circle me-1"></i>
-          Reset Filters
+          <i className="bi bi-x-circle me-1" style={{ color: '#fff' }}></i>
+          <span style={{ color: '#fff' }}>Reset Filters</span>
         </button>
       )}
-
-      {/* Current Location Button */}
-      <button
-        onClick={onCurrentLocation}
-        className="btn position-absolute"
-        title="Center on my location"
-        style={{
-          top: '10px',
-          left: '192px',
-          zIndex: 1000,
-          backgroundColor: '#4891ffff',
-          border: '2px solid #0066ffff',
-          borderRadius: '2px',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-          width: '40px',
-          height: '40px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: 'white',
-          padding: 0
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = '#3a7de8';
-          e.currentTarget.style.color = 'white';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = '#4891ffff';
-          e.currentTarget.style.color = 'white';
-        }}
-      >
-        <i className="bi bi-compass" style={{ fontSize: '18px', color: 'white' }}></i>
-      </button>
 
       <button
         onClick={handleShowNearby}
@@ -894,10 +968,10 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
         title="Show nearby opportunities"
         style={{
           top: '10px',
-          left: '242px',
+          left: '192px',
           zIndex: 1000,
-          backgroundColor: '#28a745',
-          border: '2px solid #1e7e34',
+          backgroundColor: showNearbyOnly ? 'rgb(113, 113, 232)' : 'rgb(159, 159, 233)',
+          border: showNearbyOnly ? '2px solid rgb(80, 80, 200)' : '2px solid rgba(113, 113, 232, 1)',
           borderRadius: '2px',
           boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
           width: '40px',
@@ -909,7 +983,7 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
           padding: 0
         }}
       >
-        <i className="bi bi-geo-alt" style={{ fontSize: '18px', color: 'white' }}></i>
+        <i className="bi bi-geo-alt" style={{ fontSize: '22px', color: 'white' }}></i>
       </button>
 
       {/* Radius Selector (1–10 km) */}
@@ -917,18 +991,22 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
         <div
           className="position-absolute"
           style={{
-            top: '60px',
-            left: '192px',
+            top: '10px',
+            left: '238px',
             zIndex: 1000,
-            background: 'white',
-            borderRadius: '8px',
+            background: 'rgb(159, 159, 233)',
+            borderRadius: '20px',
             padding: '6px 10px',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+            border: '2px solid rgba(113, 113, 232, 1)',
             fontSize: '12px',
-            color: '#333',
+            color: 'white',
+            height: '40px',
+            display: 'flex',
+            alignItems: 'center',
           }}
         >
-          <label htmlFor="radius" style={{ marginRight: '4px', fontWeight: 600 }}>Radius:</label>
+          <label htmlFor="radius" style={{ marginRight: '4px', fontWeight: 600, color: 'white' }}>Radius:</label>
           <select
             id="radius"
             value={radius}
@@ -940,9 +1018,12 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
               if (radiusCircle) radiusCircle.setRadius(newRadius);
             }}
             style={{
-              border: '1px solid #ccc',
+              border: '1px solid rgba(113, 113, 232, 1)',
               borderRadius: '4px',
-              padding: '2px 4px'
+              padding: '2px 4px',
+              backgroundColor: 'white',
+              color: 'rgb(159, 159, 233)',
+              fontWeight: 600
             }}
           >
             {[1000, 3000, 5000, 8000, 10000].map(r => (
@@ -979,7 +1060,7 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
         </div>
       )}
 
-      {!loading && filteredOpportunities.length === 0 && activeFilters.length > 0 && (
+      {!loading && filteredOpportunities.length === 0 && activeFilters.length > 0 && !showNearbyOnly && (
         <div
           style={{
             position: 'absolute',
@@ -1000,6 +1081,31 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
           </p>
           <p style={{ marginBottom: 0, fontSize: '12px', color: '#666' }}>
             Try selecting different regions or features.
+          </p>
+        </div>
+      )}
+
+      {!loading && filteredOpportunities.length === 0 && showNearbyOnly && (
+        <div
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 50,
+            backgroundColor: 'white',
+            padding: '24px',
+            borderRadius: '12px',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+            maxWidth: '300px',
+            textAlign: 'center'
+          }}
+        >
+          <p style={{ marginBottom: '8px', fontSize: '14px', fontWeight: 600 }}>
+            No opportunities found within {radius / 1000} km
+          </p>
+          <p style={{ marginBottom: 0, fontSize: '12px', color: '#666' }}>
+            Try increasing the radius or moving to a different location.
           </p>
         </div>
       )}
