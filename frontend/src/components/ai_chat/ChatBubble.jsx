@@ -111,7 +111,7 @@ export default function ChatBubble({ message, onOptionClick }) {
               </div>
             ))}
             <div className={`${styles['view-all-container']} text-center mt-3`}>
-              <button className={`${styles['view-all-btn']} btn btn-outline-secondary`} onClick={() => nav("/maps", {state: {events}})}>
+              <button className={`${styles['view-all-btn']} btn btn-outline-secondary`} onClick={() => nav("/map", {state: {events}})}>
                 <i className="bi bi-map me-2"></i>View All on Map
               </button>
             </div>
