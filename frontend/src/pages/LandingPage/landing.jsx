@@ -113,19 +113,25 @@ export default function Landing() {
   // Scroll reveal animations using GSAP
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
-
-    gsap.utils.toArray(".fade-section").forEach((section) => {
-      gsap.from(section, {
-        opacity: 0,
-        y: 40,
-        duration: 0.8,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: section,
-          start: "top 85%",
-          toggleActions: "play none none reverse",
-        },
-      });
+    const sections = gsap.utils.toArray(".fade-section");
+      requestAnimationFrame(() => {
+        sections.forEach((section) => {
+          gsap.fromTo(
+            section,
+            { opacity: 0, y: 40 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.8,
+              ease: "power2.out",
+              scrollTrigger: {
+                trigger: section,
+                start: "top 85%",
+                toggleActions: "play none none reverse",
+              },
+            }
+          );
+        });
     });
   }, []);
 
@@ -326,14 +332,17 @@ export default function Landing() {
                   {/* New: Eye-catching introductory phrase */}
 
                   {/* Main Heading */}
-                  <h2 className="display-5 fw-bolder mb-3 ">
-                    Not sure where to start?
-                    <span className="gradient-text-blue-purple">
-                      Meet Vera:
-                    </span>
-                    <br />
-                    Your Personal Volunteer Guide
-                  </h2>
+                  <div className="mb-4">
+                    <p className="subheading">Not sure where to start?</p>
+                    <h2 className="display-5 fw-bolder mb-3 ">
+                      <span className="gradient-text-blue-purple">
+                        Meet Vera:
+                      </span>
+                      <br />
+                      Your Personal Volunteer Guide
+                    </h2>
+                  </div>
+  
 
                   <p className="lead text-muted mb-4">
                     Stop endlessly scrolling. Vera uses smart AI to instantly
