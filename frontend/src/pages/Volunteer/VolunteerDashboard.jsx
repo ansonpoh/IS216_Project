@@ -486,6 +486,7 @@ export default function VolunteerDashboard() {
           <CardCarousel title="Active (Joined) Events" items={activeEvents} emptyText="Nothing here yet." renderCardFooter={(e) => (
             <>
               <button className="btn btn-sm btn-success" onClick={() => markAttended(e.id)}>Mark Attended → Past</button>
+              <button className="btn btn-sm btn-outline-danger" onClick={() => deleteActive(e.id)}>Did not attend</button>
             </>
           )} />
         </div>
