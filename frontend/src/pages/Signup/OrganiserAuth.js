@@ -12,6 +12,7 @@ export default function LoginSignup() {
   const [loginErrors, setLoginErrors] = useState(false);
   const { setAuth } = useAuth();
   const nav = useNavigate();
+  const API_BASE = process.env.REACT_APP_API_URL;
 
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [registerData, setRegisterData] = useState({
@@ -46,7 +47,7 @@ export default function LoginSignup() {
       return;
     }
 
-    const emailInUse = await axios.get("http://localhost:3001/orgs/check_email", {params: {email: registerData.email}});
+    const emailInUse = await axios.get(`${API_BASE}/orgs/check_email`, {params: {email: registerData.email}});
     if(emailInUse.data.status) {
       setRegisterErrors("Email in use.");
       return;
@@ -107,7 +108,7 @@ export default function LoginSignup() {
         return;
       }
 
-      const orgInDb = await axios.get("http://localhost:3001/orgs/get_org_by_id", {params: {id: org.id}});
+      const orgInDb = await axios.get(`${API_BASE}/orgs/get_org_by_id`, {params: {id: org.id}});
       if(orgInDb.data.result.length === 0) {
         try {
           const formData = new FormData();
@@ -118,7 +119,7 @@ export default function LoginSignup() {
             formData.append("profile_image", registerData.profile_image);
           }
           const res = await axios.post(
-            "http://localhost:3001/orgs/complete_registration",
+            `${API_BASE}/orgs/complete_registration`,
             formData,
             { headers: { "Content-Type": "multipart/form-data" } }
           );

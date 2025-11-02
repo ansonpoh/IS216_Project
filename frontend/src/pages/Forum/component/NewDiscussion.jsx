@@ -3,8 +3,6 @@ import * as bootstrap from 'bootstrap';  // Add this line
 import styles from "../../../styles/Community.module.css";
 import SplitText from "../../../components/Animation/SplitText.jsx";
 import axios from "axios";
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import { useNavigate } from "react-router-dom";
 
 // validation constants
@@ -18,7 +16,7 @@ export default function NewDiscussion({ initialBoard = "" }) {
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState("");
-
+  const API_BASE = process.env.REACT_APP_API_URL;
   const auth = JSON.parse(sessionStorage.getItem("auth"));
 
   const [formData, setFormData] = useState({
@@ -138,7 +136,7 @@ export default function NewDiscussion({ initialBoard = "" }) {
       // Make the API call with detailed error logging
       try {
         const response = await axios.post(
-          "http://localhost:3001/community/create_post",
+          `${API_BASE}/community/create_post`,
           fd,
           {
             headers: {

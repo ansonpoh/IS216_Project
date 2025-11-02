@@ -130,7 +130,7 @@ export default function ForumPage() {
   const [query, setQuery] = useState("");
   const [sortBy, setSortBy] = useState("date"); // date, likes
   const [selectedPost, setSelectedPost] = useState(null);
-
+  const API_BASE = process.env.REACT_APP_API_URL;
   const nav = useNavigate();
 
   useEffect(() => {
@@ -138,7 +138,7 @@ export default function ForumPage() {
       try {
         setLoading(true);
         const response = await axios.get(
-          "http://localhost:3001/community/get_all_posts"
+          `${API_BASE}/community/get_all_posts`
         );
         const data = response.data.result || [];
         console.log("Posts data:", data);
@@ -173,7 +173,7 @@ export default function ForumPage() {
     const fetchHighlights = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:3001/community/get_all_highlights"
+          `${API_BASE}/community/get_all_highlights`
         );
         const data = response.data;
 

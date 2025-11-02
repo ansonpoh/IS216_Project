@@ -276,10 +276,11 @@ export default function VolunteerDashboard() {
   const [goalHours, setGoalHours] = useState(36);
   const [manualTotalHours, setManualTotalHours] = useState(0);
   const {auth} = useAuth();
-
+  const API_BASE = process.env.REACT_APP_API_URL;
+  
   useEffect(() => {
     const fetchEvents = async () => {
-      const result = await axios.get("http://localhost:3001/events/get_registered_events_for_user", {params:{user_id: auth.id}});
+      const result = await axios.get(`${API_BASE}/events/get_registered_events_for_user`, {params:{user_id: auth.id}});
       setEvents(result.data.result);
     }
     fetchEvents();
