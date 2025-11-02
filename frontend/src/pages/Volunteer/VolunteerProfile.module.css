@@ -1,0 +1,93 @@
+/* Styles for VolunteerProfile component (visual styles separated from inline JS) */
+.pageBackground {
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #f0f4ff 0%, #e5e7ff 100%);
+  padding: 80px 20px 60px;
+}
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.header {
+  margin-bottom: 48px;
+}
+.title {
+  display: inline-block;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 48px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+.subtitle {
+  font-size: 18px;
+  color: #6b7280;
+  margin: 0;
+}
+.grid {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: 32px;
+  align-items: start;
+}
+.previewCard {
+  background: white;
+  border-radius: 24px;
+  padding: 32px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  position: sticky;
+  top: 20px;
+}
+.avatarWrap {
+  width: 160px;
+  height: 160px;
+  margin: 0 auto 24px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid transparent;
+  background: linear-gradient(white, white) padding-box, linear-gradient(135deg, #667eea 0%, #764ba2 100%) border-box;
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.2);
+}
+.avatar { width: 100%; height: 100%; object-fit: cover; }
+.previewText { text-align: center; margin-bottom: 24px; }
+.previewName { font-size: 24px; font-weight: 700; color: #1f2937; margin-bottom: 4px; }
+.previewHandle { font-size: 15px; color: #9ca3af; font-weight: 500; }
+.bio {
+  font-size: 14px; color: #6b7280; line-height: 1.6; text-align: center; margin-bottom: 24px;
+  padding: 16px; background: linear-gradient(135deg, rgba(102,126,234,0.05) 0%, rgba(118,75,162,0.05) 100%);
+  border-radius: 12px;
+}
+.divider { border-top: 1px solid #e5e7eb; padding-top: 20px; margin-bottom: 12px; }
+.sectionTitle { font-size: 13px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.tagsRow { display:flex; flex-wrap:wrap; gap:6px; }
+.tagPrimary { padding: 4px 12px; background: linear-gradient(135deg,#667eea 0%,#764ba2 100%); color: white; border-radius: 6px; font-size: 12px; font-weight: 600; }
+.tag { padding: 4px 12px; background: #f3f4f6; color: #4b5563; border-radius: 6px; font-size: 12px; font-weight: 600; }
+.availabilityText { font-size: 14px; color: #4b5563; line-height: 1.8; }
+.simpleText { font-size: 14px; color: #4b5563; }
+
+.formColumn { display:flex; flex-direction:column; gap:24px; }
+.uploadBox {
+  display:block; width:100%; padding:20px; background: linear-gradient(135deg, rgba(102,126,234,0.05) 0%, rgba(118,75,162,0.05) 100%);
+  border: 2px dashed rgba(102,126,234,0.3); border-radius:12px; text-align:center; cursor:pointer; margin-bottom:16px; transition:all .2s;
+}
+.uploadEmoji { font-size:32px; margin-bottom:8px; }
+.uploadText { font-size:14px; color:#6b7280; font-weight:600; }
+
+.daysRow { display:flex; flex-wrap:wrap; gap:12px; margin-bottom:20px; }
+.day, .dayActive { display:flex; align-items:center; gap:8px; padding:10px 16px; border-radius:10px; font-size:14px; font-weight:600; cursor:pointer; user-select:none; }
+.day { background:#f3f4f6; color:#4b5563; }
+.dayActive { background: linear-gradient(135deg,#667eea 0%,#764ba2 100%); color:white; }
+.timeGrid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+
+.actionsRow { display:flex; gap:12px; justify-content:flex-end; }
+
+/* FormCard / inputs styling */
+.formCard { background:white; border-radius:20px; padding:28px; box-shadow:0 4px 12px rgba(0,0,0,0.08); }
+.formCard h3 { font-size:20px; font-weight:700; color:#1f2937; margin-bottom:20px; }
+.inputBase { width:100%; padding:12px 16px; border:2px solid #e5e7eb; border-radius:10px; font-size:15px; box-sizing:border-box; }
+.textareaBase { width:100%; padding:12px 16px; border:2px solid #e5e7eb; border-radius:10px; font-size:15px; resize:vertical; box-sizing:border-box; font-family:inherit; }
+
+/* small helpers */
+.tagsRow .tag button { margin-left:6px; }

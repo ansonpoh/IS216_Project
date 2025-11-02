@@ -1,177 +1,102 @@
-import React, { useState, useEffect } from "react";
-import Navbar from "../../components/Navbar";
-import axios from "axios";
+import React, { useState } from "react";
+import api from "../../utils/api";
+import styles from "./VolunteerProfile.module.css";
 
 export default function VolunteerProfile() {
-  const STORAGE_KEY = "volunteer_profile_v1";
-  const API_BASE = process.env.REACT_APP_API_URL;
-  // get auth early so we can seed user_id
-  const auth = JSON.parse(sessionStorage.getItem("auth")) || {};
-
   const [submitting, setSubmitting] = useState(false);
-  const [status, setStatus] = useState("");
-
   const [formData, setFormData] = useState({
-    fullName: "",
-    username: "",
-    bio: "",
-    skills: [],
-    languages: [],
+    fullName: "John Doe",
+    username: "johndoe",
+    bio: "Passionate about making a difference in my community through volunteer work.",
+    skills: ["Event Planning", "Photography", "Teaching"],
+    languages: ["English", "Mandarin"],
     availability: {
-      days: { mon: false, tue: false, wed: false, thu: false, fri: false, sat: false, sun: false },
-      startTime: "",
-      endTime: "",
+      days: { mon: true, tue: false, wed: true, thu: false, fri: true, sat: true, sun: false },
+      startTime: "09:00",
+      endTime: "17:00",
     },
-    location: "",
-    contact: { email: "", phone: "" },
-    emergency: { name: "", relation: "", phone: "" },
-    avatarDataUrl: "",
-    avatarFile: null,        // new: file object when user selects image
-    date_joined: null,
-    hours: null,
-    user_id: auth?.id || null,
+    location: "Central Singapore",
+    contact: { email: "john@example.com", phone: "+65 9123 4567" },
+    emergency: { name: "Jane Doe", relation: "Sister", phone: "+65 9876 5432" },
+    avatarDataUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop",
+    avatarFile: null,
   });
 
-  // Load saved data from localStorage
-  useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) setFormData(JSON.parse(saved));
-  }, []);
-
-  // Save to localStorage + backend
   const handleSave = async (e) => {
-    e.preventDefault();
+    e?.preventDefault?.();
     setSubmitting(true);
-    setStatus("");
-
-    // keep local copy
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
-
-    // require auth
-    if (!auth?.id) {
-      setStatus("Please sign in to save to the server. Local save complete.");
-      alert("Please sign in to save profile to server. Local save complete.");
-      setSubmitting(false);
-      return;
-    }
-
-    // compute simple hours (if start/end present) as decimal hours
-    function computeHours(start, end) {
-      if (!start || !end) return null;
-      try {
-        const [sh, sm] = start.split(":").map(Number);
-        const [eh, em] = end.split(":").map(Number);
-        let startMinutes = sh * 60 + (sm || 0);
-        let endMinutes = eh * 60 + (em || 0);
-        // if end earlier than start assume next day
-        if (endMinutes < startMinutes) endMinutes += 24 * 60;
-        const hours = (endMinutes - startMinutes) / 60;
-        return Number(hours.toFixed(2));
-      } catch {
-        return null;
-      }
-    }
-
-    const hours = computeHours(formData.availability.startTime, formData.availability.endTime);
-
-    // build payload
-    const payloadFields = {
-      user_id: auth.id,
-      username: formData.username || null,
-      email: formData.contact.email || null,
-      bio: formData.bio || null,
-      date_joined: formData.date_joined || new Date().toISOString(),
-      hours: hours,
-      full_name: formData.fullName || null,
-      skills: formData.skills || [],
-      languages: formData.languages || [],
-      availability: formData.availability || {},
-      availability_start_time: formData.availability.startTime || null,
-      availability_end_time: formData.availability.endTime || null,
-      location: formData.location || null,
-      contact: formData.contact || {},
-      contact_phone: formData.contact.phone || null,
-      emergency: formData.emergency || {},
-      emergency_name: formData.emergency.name || null,
-      emergency_relation: formData.emergency.relation || null,
-      emergency_phone: formData.emergency.phone || null,
-      profile_image: formData.avatarDataUrl || null, // data URL; backend can store or decode
-    };
 
     try {
-      // if there's an avatar file, send multipart/form-data so backend can save file
-      if (formData.avatarFile) {
-        const fd = new FormData();
-        Object.entries(payloadFields).forEach(([k, v]) => {
-          // For objects/arrays encode as JSON string so backend can parse
-          if (v !== null && typeof v === "object") fd.append(k, JSON.stringify(v));
-          else if (v !== null) fd.append(k, String(v));
-          else fd.append(k, "");
-        });
-        fd.append("avatar", formData.avatarFile);
+      const auth = JSON.parse(sessionStorage.getItem("auth") || "{}");
+      const userId = auth.id || auth.user_id || "";
 
-        const resp = await axios.post(
-          `${API_BASE}/users/update_profile`,
-          fd,
-          {
-            withCredentials: true,
-            headers: {
-              Accept: "application/json",
-              // DO NOT set Content-Type when sending FormData — browser will set multipart boundary
-            },
-          }
-        );
+      const payload = new FormData();
+      payload.append("user_id", userId);
+      payload.append("username", formData.username || "");
+      payload.append("email", formData.contact.email || "");
+      payload.append("full_name", formData.fullName || "");
+      payload.append("bio", formData.bio || "");
+      payload.append("skills", JSON.stringify(formData.skills || []));
+      payload.append("languages", JSON.stringify(formData.languages || []));
+      payload.append("availability", JSON.stringify(formData.availability || {}));
+      payload.append("availability_start_time", formData.availability.startTime || "");
+      payload.append("availability_end_time", formData.availability.endTime || "");
+      payload.append("location", formData.location || "");
+      payload.append("contact", JSON.stringify(formData.contact || {}));
+      payload.append("contact_phone", formData.contact.phone || "");
+      payload.append("emergency", JSON.stringify(formData.emergency || {}));
+      payload.append("emergency_name", formData.emergency.name || "");
+      payload.append("emergency_relation", formData.emergency.relation || "");
+      payload.append("emergency_phone", formData.emergency.phone || "");
 
-        if (resp.data?.status) {
-          alert("✅ saved will work on this later");
-          setStatus("Saved");
-        } else {
-          console.error("Server response:", resp.data);
-          setStatus("Server returned an error. Local copy saved.");
-          alert("Profile saved locally but server reported an error.");
+      if (formData.avatarFile) payload.append("avatar", formData.avatarFile);
+
+      const res = await api.post("/update_profile", payload);
+
+      if (res?.data?.status) {
+        alert("✅ Profile saved successfully!");
+        const updatedUser = res.data.user;
+        // If backend returned updated user, update preview fields conservatively
+        if (updatedUser) {
+          setFormData((prev) => ({
+            ...prev,
+            fullName: updatedUser.full_name || prev.fullName,
+            username: updatedUser.username || prev.username,
+            bio: updatedUser.bio || prev.bio,
+            avatarDataUrl: updatedUser.profile_image || prev.avatarDataUrl,
+            skills: updatedUser.skills ? JSON.parse(updatedUser.skills) : prev.skills,
+            languages: updatedUser.languages ? JSON.parse(updatedUser.languages) : prev.languages,
+            availability: updatedUser.availability ? JSON.parse(updatedUser.availability) : prev.availability,
+            location: updatedUser.location || prev.location,
+            contact: updatedUser.contact ? JSON.parse(updatedUser.contact) : prev.contact,
+            emergency: updatedUser.emergency ? JSON.parse(updatedUser.emergency) : prev.emergency,
+          }));
         }
       } else {
-        // send JSON
-        const resp = await axios.post(
-          "${API_BASE}/users/update_profile",
-          payloadFields,
-          {
-            withCredentials: true,
-            headers: { "Content-Type": "application/json" },
-          }
-        );
-
-        if (resp.data?.status) {
-          alert("✅ Profile saved to server and localStorage!");
-          setStatus("Saved");
-        } else {
-          console.error("Server response:", resp.data);
-          setStatus("Server returned an error. Local copy saved.");
-          alert("Profile saved locally but server reported an error.");
-        }
+        alert(res?.data?.message || "Failed to save profile");
       }
     } catch (err) {
-      console.error("Save error:", err);
-      setStatus(err.response?.data?.message || err.message || "Failed to save profile to server.");
-      alert(`Error saving to server: ${status || err.message}. Local copy saved.`);
+      console.error(err);
+      alert("Failed to save profile. See console for details.");
     } finally {
       setSubmitting(false);
     }
   };
 
-  // Handle text field changes
   const handleChange = (path, value) => {
     setFormData((prev) => {
       const updated = { ...prev };
       const keys = path.split(".");
       let obj = updated;
-      keys.slice(0, -1).forEach((k) => (obj = obj[k]));
+      keys.slice(0, -1).forEach((k) => {
+        if (obj[k] === undefined) obj[k] = {};
+        obj = obj[k];
+      });
       obj[keys[keys.length - 1]] = value;
       return updated;
     });
   };
 
-  // Add/remove tag
   const addTag = (type, tag) => {
     if (!tag.trim()) return;
     setFormData((prev) => ({
@@ -187,314 +112,298 @@ export default function VolunteerProfile() {
     }));
   };
 
-  // Avatar upload
   const handleAvatarChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    // store the File object for upload and the data URL for preview
-    setFormData((prev) => ({ ...prev, avatarFile: file }));
     const reader = new FileReader();
     reader.onload = (ev) => {
-      // update both data url and keep file
       setFormData((prev) => ({ ...prev, avatarDataUrl: ev.target.result, avatarFile: file }));
     };
     reader.readAsDataURL(file);
   };
 
-  // Reset form
   const handleReset = () => {
-    setFormData({
-      fullName: "",
-      username: "",
-      bio: "",
-      skills: [],
-      languages: [],
-      availability: {
-        days: { mon: false, tue: false, wed: false, thu: false, fri: false, sat: false, sun: false },
-        startTime: "",
-        endTime: "",
-      },
-      location: "",
-      contact: { email: "", phone: "" },
-      emergency: { name: "", relation: "", phone: "" },
-      avatarDataUrl: "",
-    });
+    if (window.confirm("Reset all fields to default?")) {
+      setFormData({
+        fullName: "",
+        username: "",
+        bio: "",
+        skills: [],
+        languages: [],
+        availability: {
+          days: { mon: false, tue: false, wed: false, thu: false, fri: false, sat: false, sun: false },
+          startTime: "",
+          endTime: "",
+        },
+        location: "",
+        contact: { email: "", phone: "" },
+        emergency: { name: "", relation: "", phone: "" },
+        avatarDataUrl: "",
+        avatarFile: null,
+      });
+    }
   };
 
   return (
-    <>
-    <Navbar/>
-    <div className="container py-4">
-      <div className="row g-4">
-        {/* === LEFT PREVIEW === */}
-        <div className="col-lg-4">
-          <div className="card shadow-sm text-center p-3">
-            <img
-              src={
-                formData.avatarDataUrl ||
-                "https://via.placeholder.com/140x140?text=No+Photo"
-              }
-              alt="Avatar"
-              className="rounded-circle mb-3"
-              style={{ width: "140px", height: "140px", objectFit: "cover" }}
-            />
-            <h5>{formData.fullName || "Your Name"}</h5>
-            <small className="text-muted">@{formData.username || "username"}</small>
-            <p className="mt-3 small text-muted">{formData.bio || "Your short bio appears here."}</p>
-            <hr />
-            <div className="text-start">
-              <strong>Skills:</strong>{" "}
-              {formData.skills.map((s) => (
-                <span key={s} className="badge bg-light text-dark me-1">{s}</span>
-              ))}
-              <br />
-              <strong>Languages:</strong>{" "}
-              {formData.languages.map((l) => (
-                <span key={l} className="badge bg-light text-dark me-1">{l}</span>
-              ))}
-              <br />
-              <strong>Availability:</strong>{" "}
-              {Object.entries(formData.availability.days)
-                .filter(([_, v]) => v)
-                .map(([k]) => k.toUpperCase())
-                .join(", ") || "—"}{" "}
-              | {formData.availability.startTime || "—"}–
-              {formData.availability.endTime || "—"}
-              <br />
-              <strong>Location:</strong> {formData.location || "—"} <br />
-              <strong>Contact:</strong>{" "}
-              {formData.contact.email || "—"} {formData.contact.phone && `· ${formData.contact.phone}`}
-              <br />
-              <strong>Emergency:</strong>{" "}
-              {[formData.emergency.name, formData.emergency.relation, formData.emergency.phone]
-                .filter(Boolean)
-                .join(" · ") || "—"}
-            </div>
-          </div>
-        </div>
+    <div className={styles.pageBackground}>
+      <div className={styles.container}>
+        <header className={styles.header}>
+          <h1 className={styles.title}>Volunteer Profile</h1>
+          <p className={styles.subtitle}>Manage your volunteer information and preferences</p>
+        </header>
 
-        {/* === RIGHT FORM === */}
-        <div className="col-lg-8">
-          <form onSubmit={handleSave}>
-            {/* Profile Photo & Name */}
-            <div className="card shadow-sm mb-4">
-              <div className="card-body">
-                <h5>Profile Photo & Name</h5>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleAvatarChange}
-                  className="form-control mb-3"
-                />
-                <input
-                  type="text"
-                  className="form-control mb-2"
-                  placeholder="Full Name"
-                  value={formData.fullName}
-                  onChange={(e) => handleChange("fullName", e.target.value)}
-                />
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Username"
-                  value={formData.username}
-                  onChange={(e) => handleChange("username", e.target.value)}
-                />
-              </div>
+        <div className={styles.grid}>
+          <aside className={styles.previewCard}>
+            <div className={styles.avatarWrap}>
+              <img
+                src={formData.avatarDataUrl || "https://via.placeholder.com/160x160?text=No+Photo"}
+                alt="Avatar"
+                className={styles.avatar}
+              />
             </div>
 
-            {/* Bio */}
-            <div className="card shadow-sm mb-4">
-              <div className="card-body">
-                <h5>Bio / Short Description</h5>
-                <textarea
-                  className="form-control"
-                  rows="2"
-                  value={formData.bio}
-                  onChange={(e) => handleChange("bio", e.target.value)}
-                />
-              </div>
+            <div className={styles.previewText}>
+              <h2 className={styles.previewName}>{formData.fullName || "Your Name"}</h2>
+              <div className={styles.previewHandle}>@{formData.username || "username"}</div>
             </div>
 
-            {/* Skills & Languages */}
-            <div className="card shadow-sm mb-4">
-              <div className="card-body">
-                <h5>Skills & Languages</h5>
-                <TagInput
-                  title="Skills"
-                  items={formData.skills}
-                  onAdd={(v) => addTag("skills", v)}
-                  onRemove={(v) => removeTag("skills", v)}
-                />
-                <TagInput
-                  title="Languages"
-                  items={formData.languages}
-                  onAdd={(v) => addTag("languages", v)}
-                  onRemove={(v) => removeTag("languages", v)}
-                />
-              </div>
-            </div>
+            {formData.bio && <p className={styles.bio}>{formData.bio}</p>}
 
-            {/* Availability */}
-            <div className="card shadow-sm mb-4">
-              <div className="card-body">
-                <h5>Availability</h5>
-                <div className="d-flex flex-wrap gap-2 mb-2">
-                  {Object.keys(formData.availability.days).map((day) => (
-                    <div key={day} className="form-check">
-                      <input
-                        className="form-check-input"
-                        type="checkbox"
-                        checked={formData.availability.days[day]}
-                        onChange={(e) =>
-                          handleChange(`availability.days.${day}`, e.target.checked)
-                        }
-                        id={day}
-                      />
-                      <label htmlFor={day} className="form-check-label">
-                        {day.charAt(0).toUpperCase() + day.slice(1)}
-                      </label>
-                    </div>
+            <div className={styles.divider} />
+
+            {formData.skills.length > 0 && (
+              <section>
+                <div className={styles.sectionTitle}>Skills</div>
+                <div className={styles.tagsRow}>
+                  {formData.skills.map((s) => (
+                    <span key={s} className={styles.tagPrimary}>{s}</span>
                   ))}
                 </div>
-                <div className="row">
-                  <div className="col">
-                    <label>Start Time</label>
-                    <input
-                      type="time"
-                      className="form-control"
-                      value={formData.availability.startTime}
-                      onChange={(e) => handleChange("availability.startTime", e.target.value)}
-                    />
-                  </div>
-                  <div className="col">
-                    <label>End Time</label>
-                    <input
-                      type="time"
-                      className="form-control"
-                      value={formData.availability.endTime}
-                      onChange={(e) => handleChange("availability.endTime", e.target.value)}
-                    />
-                  </div>
+              </section>
+            )}
+
+            {formData.languages.length > 0 && (
+              <section>
+                <div className={styles.sectionTitle}>Languages</div>
+                <div className={styles.tagsRow}>
+                  {formData.languages.map((l) => (
+                    <span key={l} className={styles.tag}>{l}</span>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            <section>
+              <div className={styles.sectionTitle}>Availability</div>
+              <div className={styles.availabilityText}>
+                <div>📅 {Object.entries(formData.availability.days).filter(([_, v]) => v).map(([k]) => k.charAt(0).toUpperCase() + k.slice(1)).join(", ") || "—"}</div>
+                <div>⏰ {formData.availability.startTime || '—'} – {formData.availability.endTime || '—'}</div>
+              </div>
+            </section>
+
+            {formData.location && (
+              <section>
+                <div className={styles.sectionTitle}>Location</div>
+                <div className={styles.simpleText}>📍 {formData.location}</div>
+              </section>
+            )}
+
+            {(formData.contact.email || formData.contact.phone) && (
+              <section>
+                <div className={styles.sectionTitle}>Contact</div>
+                <div className={styles.simpleText}>
+                  {formData.contact.email && <div>📧 {formData.contact.email}</div>}
+                  {formData.contact.phone && <div>📱 {formData.contact.phone}</div>}
+                </div>
+              </section>
+            )}
+
+            {(formData.emergency.name || formData.emergency.phone) && (
+              <section>
+                <div className={styles.sectionTitle}>Emergency Contact</div>
+                <div className={styles.simpleText}>
+                  {formData.emergency.name && <div>👤 {formData.emergency.name}{formData.emergency.relation ? ` (${formData.emergency.relation})` : ''}</div>}
+                  {formData.emergency.phone && <div>📞 {formData.emergency.phone}</div>}
+                </div>
+              </section>
+            )}
+          </aside>
+
+          <main className={styles.formColumn}>
+            <FormCard title="Profile Photo & Name">
+              <label className={styles.uploadBox}>
+                <div className={styles.uploadEmoji}>📸</div>
+                <div className={styles.uploadText}>Click to upload profile photo</div>
+                <input type="file" accept="image/*" onChange={handleAvatarChange} style={{ display: 'none' }} />
+              </label>
+              <Input placeholder="Full Name" value={formData.fullName} onChange={(e) => handleChange("fullName", e.target.value)} />
+              <div style={{ height: 12 }} />
+              <Input placeholder="Username" value={formData.username} onChange={(e) => handleChange("username", e.target.value)} />
+            </FormCard>
+
+            <FormCard title="Bio">
+              <TextArea rows={4} placeholder="Tell us about yourself and your volunteer interests..." value={formData.bio} onChange={(e) => handleChange("bio", e.target.value)} />
+            </FormCard>
+
+            <FormCard title="Skills & Languages">
+              <TagInput title="Skills" items={formData.skills} onAdd={(v) => addTag("skills", v)} onRemove={(v) => removeTag("skills", v)} />
+              <TagInput title="Languages" items={formData.languages} onAdd={(v) => addTag("languages", v)} onRemove={(v) => removeTag("languages", v)} />
+            </FormCard>
+
+            <FormCard title="Availability">
+              <div className={styles.daysRow}>
+                {Object.keys(formData.availability.days).map((day) => (
+                  <label key={day} className={formData.availability.days[day] ? styles.dayActive : styles.day}>
+                    <input type="checkbox" checked={formData.availability.days[day]} onChange={(e) => handleChange(`availability.days.${day}`, e.target.checked)} />
+                    {day.charAt(0).toUpperCase() + day.slice(1)}
+                  </label>
+                ))}
+              </div>
+
+              <div className={styles.timeGrid}>
+                <div>
+                  <Label>Start Time</Label>
+                  <Input type="time" value={formData.availability.startTime} onChange={(e) => handleChange("availability.startTime", e.target.value)} />
+                </div>
+                <div>
+                  <Label>End Time</Label>
+                  <Input type="time" value={formData.availability.endTime} onChange={(e) => handleChange("availability.endTime", e.target.value)} />
                 </div>
               </div>
-            </div>
+            </FormCard>
 
-            {/* Location */}
-            <div className="card shadow-sm mb-4">
-              <div className="card-body">
-                <h5>Location / Preferred Area</h5>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="e.g. Central, East, etc."
-                  value={formData.location}
-                  onChange={(e) => handleChange("location", e.target.value)}
-                />
-              </div>
-            </div>
+            <FormCard title="Location">
+              <Input placeholder="e.g. Central, East, West Singapore" value={formData.location} onChange={(e) => handleChange("location", e.target.value)} />
+            </FormCard>
 
-            {/* Contact */}
-            <div className="card shadow-sm mb-4">
-              <div className="card-body">
-                <h5>Contact Info</h5>
-                <input
-                  type="email"
-                  className="form-control mb-2"
-                  placeholder="Email"
-                  value={formData.contact.email}
-                  onChange={(e) => handleChange("contact.email", e.target.value)}
-                />
-                <input
-                  type="tel"
-                  className="form-control"
-                  placeholder="Phone"
-                  value={formData.contact.phone}
-                  onChange={(e) => handleChange("contact.phone", e.target.value)}
-                />
-              </div>
-            </div>
+            <FormCard title="Contact Information">
+              <Input type="email" placeholder="Email" value={formData.contact.email} onChange={(e) => handleChange("contact.email", e.target.value)} />
+              <div style={{ height: 12 }} />
+              <Input type="tel" placeholder="Phone" value={formData.contact.phone} onChange={(e) => handleChange("contact.phone", e.target.value)} />
+            </FormCard>
 
-            {/* Emergency Contact */}
-            <div className="card shadow-sm mb-4">
-              <div className="card-body">
-                <h5>Emergency Contact</h5>
-                <input
-                  type="text"
-                  className="form-control mb-2"
-                  placeholder="Name"
-                  value={formData.emergency.name}
-                  onChange={(e) => handleChange("emergency.name", e.target.value)}
-                />
-                <input
-                  type="text"
-                  className="form-control mb-2"
-                  placeholder="Relationship"
-                  value={formData.emergency.relation}
-                  onChange={(e) => handleChange("emergency.relation", e.target.value)}
-                />
-                <input
-                  type="tel"
-                  className="form-control"
-                  placeholder="Phone"
-                  value={formData.emergency.phone}
-                  onChange={(e) => handleChange("emergency.phone", e.target.value)}
-                />
-              </div>
-            </div>
+            <FormCard title="Emergency Contact">
+              <Input placeholder="Name" value={formData.emergency.name} onChange={(e) => handleChange("emergency.name", e.target.value)} />
+              <div style={{ height: 12 }} />
+              <Input placeholder="Relationship" value={formData.emergency.relation} onChange={(e) => handleChange("emergency.relation", e.target.value)} />
+              <div style={{ height: 12 }} />
+              <Input type="tel" placeholder="Phone" value={formData.emergency.phone} onChange={(e) => handleChange("emergency.phone", e.target.value)} />
+            </FormCard>
 
-            <div className="d-flex gap-2">
-              <button type="submit" className="btn btn-primary" disabled={submitting}>
-                {submitting ? "Saving..." : "Save"}
-              </button>
-              <button type="button" onClick={handleReset} className="btn btn-outline-secondary">
-                Reset
-              </button>
+            <div className={styles.actionsRow}>
+              <Button onClick={handleReset} variant="secondary">Reset</Button>
+              <Button onClick={handleSave} disabled={submitting}>{submitting ? 'Saving...' : 'Save Profile'}</Button>
             </div>
-          </form>
+          </main>
         </div>
       </div>
     </div>
-    </>
-
   );
 }
 
-// === Subcomponent: TagInput ===
+// Reusable Components
+function FormCard({ title, children }) {
+  return (
+    <div className={styles.formCard}>
+      <h3>{title}</h3>
+      {children}
+    </div>
+  );
+}
+
+function Label({ children }) {
+  return (
+    <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#4b5563', marginBottom: '8px' }}>{children}</label>
+  );
+}
+
+function Input({ style = {}, ...props }) {
+  return (
+    <input
+      {...props}
+      className={styles.inputBase}
+      style={style}
+      onFocus={(e) => e.currentTarget.style.borderColor = '#6366f1'}
+      onBlur={(e) => e.currentTarget.style.borderColor = '#e5e7eb'}
+    />
+  );
+}
+
+function TextArea({ style = {}, ...props }) {
+  return (
+    <textarea
+      {...props}
+      className={styles.textareaBase}
+      style={style}
+      onFocus={(e) => e.currentTarget.style.borderColor = '#6366f1'}
+      onBlur={(e) => e.currentTarget.style.borderColor = '#e5e7eb'}
+    />
+  );
+}
+
+function Button({ children, variant = 'primary', disabled = false, ...props }) {
+  const isPrimary = variant === 'primary';
+  return (
+    <button
+      {...props}
+      disabled={disabled}
+      style={{
+        padding: '14px 32px',
+        background: disabled ? '#9ca3af' : (isPrimary ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 'white'),
+        border: isPrimary ? 'none' : '2px solid #e5e7eb',
+        borderRadius: '12px',
+        fontSize: '15px',
+        fontWeight: '600',
+        cursor: disabled ? 'not-allowed' : 'pointer',
+        transition: 'all 0.2s',
+        color: isPrimary ? 'white' : '#6b7280'
+      }}
+      onMouseOver={(e) => {
+        if (!disabled && isPrimary) {
+          e.currentTarget.style.transform = 'scale(1.02)';
+          e.currentTarget.style.boxShadow = '0 8px 20px rgba(99, 102, 241, 0.3)';
+        } else if (!disabled) {
+          e.currentTarget.style.borderColor = '#9ca3af';
+          e.currentTarget.style.color = '#4b5563';
+        }
+      }}
+      onMouseOut={(e) => {
+        if (isPrimary) {
+          e.currentTarget.style.transform = 'scale(1)';
+          e.currentTarget.style.boxShadow = 'none';
+        } else {
+          e.currentTarget.style.borderColor = '#e5e7eb';
+          e.currentTarget.style.color = '#6b7280';
+        }
+      }}
+    >
+      {children}
+    </button>
+  );
+}
+
 function TagInput({ title, items, onAdd, onRemove }) {
   const [input, setInput] = useState("");
+
   const handleAdd = () => {
-    onAdd(input);
-    setInput("");
+    if (input.trim()) {
+      onAdd(input);
+      setInput("");
+    }
   };
 
   return (
-    <div className="mb-3">
-      <label className="form-label">{title}</label>
-      <div className="input-group mb-2">
-        <input
-          type="text"
-          className="form-control"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleAdd())}
-          placeholder={`Add ${title.toLowerCase()}...`}
-        />
-        <button type="button" className="btn btn-outline-primary" onClick={handleAdd}>
-          Add
-        </button>
+    <div style={{ marginBottom: '24px' }}>
+      <Label>{title}</Label>
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+        <Input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAdd(); } }} placeholder={`Add ${title.toLowerCase()}...`} style={{ flex: 1 }} />
+        <button type="button" onClick={handleAdd} style={{ padding: '10px 20px', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white', border: 'none', borderRadius: '10px', fontSize: '14px', fontWeight: '600', cursor: 'pointer' }} onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}>Add</button>
       </div>
-      <div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
         {items.map((t) => (
-          <span key={t} className="badge bg-light text-dark me-1 mb-1">
-            {t}{" "}
-            <button
-              type="button"
-              className="btn btn-sm btn-link p-0 text-danger"
-              onClick={() => onRemove(t)}
-            >
-              ×
-            </button>
+          <span key={t} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 12px', background: '#f3f4f6', borderRadius: '8px', fontSize: '13px', fontWeight: '600', color: '#4b5563' }}>
+            {t}
+            <button type="button" onClick={() => onRemove(t)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '18px', lineHeight: '1', padding: '0 2px', fontWeight: '700' }}>×</button>
           </span>
         ))}
       </div>
