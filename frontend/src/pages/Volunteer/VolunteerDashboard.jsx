@@ -369,17 +369,25 @@ export default function VolunteerDashboard() {
     let pending = [];
     let active = [];
     let past = [];
-
+    let hours = 0;
     for(let e of events) {
       if(e.status === "pending") pending.push(e);
       else if(e.status === "approved") active.push(e);
-      else past.push(e);
+      else if(e.status === "attended") {
+        past.push(e);
+        hours += e.hours;
+      }
     }
-
+    setManualTotalHours(hours);
     setPendingEvents(pending);
     setActiveEvents(active);
     setPastEvents(past);
   }, [events]);
+
+  useEffect(() => {
+    const hours = pastEvents.reduce((sum, e) => sum + (e.hours || 0), 0);
+    setManualTotalHours(hours);
+  }, [pastEvents]);
 
   const hoursBetween = (s, e) => Math.max(0, (new Date(e) - new Date(s)) / 36e5);
   const round1 = (n) => Math.round(n * 10) / 10;
@@ -410,7 +418,7 @@ export default function VolunteerDashboard() {
     try {
       await axios.post(`${API_BASE}/events/update_registration_status`, {
         user_id: auth.id,
-        event_id: id,
+        event_id: ev.event_id,
         status: 'attended'
       });
       // success: backend increments user hours (handled server-side)
