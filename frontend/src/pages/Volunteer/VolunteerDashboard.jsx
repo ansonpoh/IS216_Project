@@ -371,13 +371,16 @@ export default function VolunteerDashboard() {
     let pending = [];
     let active = [];
     let past = [];
-
+    let hours = 0;
     for(let e of events) {
       if(e.status === "pending") pending.push(e);
       else if(e.status === "approved") active.push(e);
-      else past.push(e);
+      else if(e.status === "attended") {
+        past.push(e);
+        hours += e.hours;
+      }
     }
-
+    setManualTotalHours(hours);
     setPendingEvents(pending);
     setActiveEvents(active);
     setPastEvents(past);
@@ -403,24 +406,22 @@ export default function VolunteerDashboard() {
   const markAttended = async (id) => {
     const ev = activeEvents.find((e) => e.id === id);
     if (!ev) return;
-
     // Optimistically move local state
     setPastEvents((arr) => [{ ...ev }, ...arr]);
     setActiveEvents((arr) => arr.filter((e) => e.id !== id));
 
-    // Notify backend to mark registration as 'attended' and increment hours.
     try {
-      await axios.post(`${LOCAL_BASE}/events/update_registration_status`, {
+      const res = await axios.post(`${LOCAL_BASE}/events/update_registration_status`, {
         user_id: auth.id,
-        event_id: id,
+        event_id: ev.event_id,
         status: 'attended'
       });
-      // success: backend increments user hours (handled server-side)
+      console.log(res);
     } catch (err) {
       console.error('Failed to mark attended on server:', err?.response?.data || err.message || err);
-      // If backend failed, we could roll back UI change or notify user. For now, keep optimistic update but console log.
     }
   };
+
   const approvePending = (id) => {
     const ev = pendingEvents.find((e) => e.id === id);
     if (!ev) return;
