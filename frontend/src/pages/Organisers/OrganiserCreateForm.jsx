@@ -66,7 +66,6 @@ export default function OrganiserCreateForm() {
     end_time: "",
     capacity: "",
     hours: "",
-    status: "draft",
     longitude: "",
     latitude: "",
     is_published: false,
@@ -265,7 +264,7 @@ export default function OrganiserCreateForm() {
                 required
               />
             </div>
-
+{/* 
             <div className="col-md-4">
               <label className="form-label">Status</label>
               <select
@@ -278,7 +277,7 @@ export default function OrganiserCreateForm() {
                 <option value="published">Published</option>
                 <option value="closed">Closed</option>
               </select>
-            </div>
+            </div> */}
 
             <div className="col-12">
               <div className="form-check">

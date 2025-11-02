@@ -2,9 +2,9 @@ import pool from "../config/db.js";
 
 export async function create_event(org_id, title, category, description, location, region, start_date, end_date, start_time, end_time, capacity, hours, status, longitude, latitude) {
     try {
-        const query = `insert into events (org_id, title, category, description, location, region, start_date, end_date, start_time, end_time, capacity, hours, status, longitude, latitude) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`;
+        const query = `insert into events (org_id, title, category, description, location, region, start_date, end_date, start_time, end_time, capacity, hours, longitude, latitude) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`;
 
-        const values = [org_id, title, category, description, location, region, start_date, end_date, start_time, end_time, capacity, hours, status, longitude, latitude];
+        const values = [org_id, title, category, description, location, region, start_date, end_date, start_time, end_time, capacity, hours, longitude, latitude];
 
         const result = await pool.query(query, values);
         return result.rowCount > 0;
