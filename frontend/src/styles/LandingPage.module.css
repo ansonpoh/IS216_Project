@@ -240,3 +240,24 @@
   }
 }
 
+/* Ensure the subheading used in Landing is larger than normal text but smaller than the H2 (Meet Vera).
+   Use a global selector so the class works when applied as a plain string in JSX. */
+:global(.subheading_1) {
+  font-size: 1.5rem; /* base size */
+  line-height: 1.15;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 768px) {
+  :global(.subheading_1) {
+    font-size: 1.75rem; /* slightly larger on tablet / desktop */
+  }
+}
+
+@media (min-width: 1200px) {
+  :global(.subheading_1) {
+    font-size: 2rem; /* still smaller than display-5 heading */
+  }
+}
+

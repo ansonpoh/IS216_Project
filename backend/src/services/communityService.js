@@ -4,9 +4,12 @@ import path from "path";
 
 export async function create_post(supabase_id, subject, body, image) {
     try {
-        // First get the user_id from users table using supabase_id
-        const userQuery = `SELECT user_id FROM users WHERE supabase_id = $1`;
-        const userResult = await pool.query(userQuery, [supabase_id]);
+        console.log('create_post - supabase_id:', supabase_id);
+        console.log('create_post - subject length:', subject ? subject.length : 0);
+        console.log('create_post - has image:', !!image);
+        if (image && image.size) console.log('create_post - image size:', image.size, 'type:', image.mimetype);
+    const userQuery = `SELECT user_id FROM users WHERE user_id = $1`;
+    const userResult = await pool.query(userQuery, [supabase_id]);
 
         if (!userResult.rows.length) {
             throw new Error(`User not found with supabase_id: ${supabase_id}`);

@@ -16,6 +16,8 @@ import styles from "../../styles/LandingPage.module.css";
 import mapView from "../../components/images/mapView.png";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import ScrollMouse from "../../components/Animation/AnimatedMouseIcon";
+
 
 // import { Nav } from 'react-bootstrap';
 
@@ -320,6 +322,13 @@ export default function Landing() {
               />
             )}
           </div>
+          <ScrollMouse
+            size={36}
+            stroke="rgba(117, 97, 231, 0.85)"
+            fill="rgba(136, 47, 121, 0.85)"
+            bottom={80}
+            z={999}
+          />
         </section>
 
         {/* ai chat */}
@@ -333,7 +342,7 @@ export default function Landing() {
 
                   {/* Main Heading */}
                   <div className="mb-4">
-                    <p className="subheading">Not sure where to start?</p>
+                    <p className="subheading_1">Not sure where to start?</p>
                     <h2 className="display-5 fw-bolder mb-3 ">
                       <span className="gradient-text-blue-purple">
                         Meet Vera:

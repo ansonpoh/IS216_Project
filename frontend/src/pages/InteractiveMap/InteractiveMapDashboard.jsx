@@ -85,8 +85,8 @@ const InteractiveMapDashboard = () => {
         <div className="container-fluid vh-100 d-flex flex-column">
           <div className="flex-grow-1 d-flex flex-column p-4">
             {/* Filter Section */}
-            <div className="card mb-4" style={{ boxShadow: '0 0 8px 2px #0066ff4d', border: 'none' }}>
-              <div className="card-body">
+            <div className={`card mb-4 ${styles['map-filter-card']}`}>
+              <div className={`card-body`}>
                 <div className="row">
                   {/* Region Filters */}
                   <div className="col-md-6 mb-3 mb-md-0">

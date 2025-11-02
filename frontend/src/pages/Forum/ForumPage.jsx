@@ -11,7 +11,7 @@ import styles from "../../styles/Community.module.css";
 const PostModal = ({ post, onClose, onLike }) => {
   if (!post) return null;
 
-   const handleOverlayClick = (e) => {
+  const handleOverlayClick = (e) => {
     if (e.target === e.currentTarget) {
       onClose();
     }
@@ -97,7 +97,7 @@ const PostModal = ({ post, onClose, onLike }) => {
                 backgroundColor: post.isLiked ? "#0d6efd" : "#fff",
                 color: post.isLiked ? "#fff" : "#0d6efd",
                 border: "1px solid #0d6efd",
-                
+
               }}
               onClick={() => onLike(post.feedback_id)}
             >
@@ -306,48 +306,77 @@ export default function ForumPage() {
       <div className="container-fluid vh-100 d-flex flex-column page-community">
         <PageTransition>
           <div className="container py-4 flex-grow-1">
-            {/* Spotlight carousel */}
-            <div className="col-lg-12 mb-4">
+            {/* Hero Section */}
+            <div style={{ textAlign: 'center', marginBottom: '60px' }}>
+              <div style={{
+                display: 'inline-block',
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                fontSize: '56px',
+                fontWeight: '800',
+                marginBottom: '16px',
+                lineHeight: '1.2'
+              }}>
+                Share the Joy
+              </div>
+              <p style={{
+                fontSize: '20px',
+                color: '#6b7280',
+                maxWidth: '600px',
+                margin: '0 auto'
+              }}>
+                Connect with our community and share your volunteer experiences
+              </p>
+            </div>
+
+            {/* Spotlight Carousel */}
+            <div style={{ marginBottom: '60px' }}>
               <CommunitySpotlight slides={slides} interval={4500} />
             </div>
 
             {/* Header with search and controls */}
-            <div className="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-3">
-              <h3 className="mb-0">Share the Joy</h3>
+            <div className={`d-flex align-items-center justify-content-between mb-4 px-4 py-3 ${styles['community-posts-header']}`}>
+              {/* Left Group - Community Posts Title */}
+              <h1 className={`${styles.title}`}>Community Posts</h1>
 
-              <div className="d-flex gap-2 flex-wrap">
-                {/* Search */}
-                <input
-                  type="search"
-                  className="form-control form-control-sm"
-                  placeholder="Search posts..."
-                  style={{ width: 220 }}
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                />
+              {/* Right Group - Filters and Button */}
+              <div className={styles['group-right']}>
+                {/* Search and Sort */}
+                <div className={styles.filtersContainer}>
+                  {/* Search */}
+                  <input
+                    type="search"
+                    placeholder="Search posts..."
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    className={styles.searchInput} // Use CSS module for styles
+                  />
 
-                {/* Sort dropdown */}
-                <select
-                  className="form-select form-select-sm"
-                  style={{ width: 160 }}
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                >
-                  <option value="date">Sort by Date</option>
-                  <option value="likes">Sort by Likes</option>
-                </select>
-
-                <div className="d-flex gap-2 flex-wrap">
-                  <button
-                    className={`btn btn-sm ${styles.addPostBtn}`}
-                    onClick={() => nav("/community/new")}
+                  {/* Sort */}
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className={styles.sortSelect} // Use CSS module for styles
                   >
-                    <i className="bi bi-plus-circle me-1" aria-hidden="true" />
-                    <span className={styles.addPostLabel}>Add Post</span>
-                  </button>
+                    <option value="date">Sort by Date</option>
+                    <option value="likes">Sort by Likes</option>
+                  </select>
                 </div>
+
+                {/* Add Post Button */}
+                <button
+                  className={styles.addPostButton} // Use CSS module for styles
+                  onClick={() => nav('/community/new')}
+                >
+                  <span style={{ fontSize: '18px' }}>+</span>
+                  <span>Add Post</span>
+                </button>
               </div>
             </div>
+
+            {/* Posts grid remains the same below... */}
 
             {/* Posts grid */}
             {loading ? (
@@ -395,7 +424,7 @@ export default function ForumPage() {
           <PostModal
             post={selectedPost}
             onClose={() => setSelectedPost(null)}
-            // onLike={handleLike}
+          // onLike={handleLike}
           />
         )}
       </div>

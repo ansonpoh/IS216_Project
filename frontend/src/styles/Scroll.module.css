@@ -1,0 +1,51 @@
+/* container: bottom-center of the section */
+.scrollMouse {
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	pointer-events: none; /* decorative */
+}
+
+/* sizes & colors via CSS vars */
+.body {
+	--size: 36px;
+	/* --stroke: rgba(255,255,255,.85);
+	--fill: #fff; */
+	--speed: 1.6s;
+
+	width: calc(var(--size) * .65);
+	height: var(--size);
+	border: 2px solid var(--stroke);
+	border-radius: calc(var(--size) * .5);
+	position: relative;
+	display: inline-block;
+	box-shadow: 0 0 0 1px rgba(255,255,255,.08) inset;
+}
+
+/* moving “wheel” */
+.wheel {
+	position: absolute;
+	left: 50%;
+	top: 22%;
+	width: 3px;
+	height: 8px;
+	background: var(--fill);
+	border-radius: 2px;
+	transform: translateX(-50%);
+	opacity: .9;
+	animation: wheelMove var(--speed) cubic-bezier(.25,.46,.45,.94) infinite;
+}
+
+/* keyframes */
+@keyframes wheelMove {
+	0%   { transform: translate(-50%, 0);   opacity: 1; }
+	60%  { transform: translate(-50%, 9px); opacity: .25; }
+	61%  { transform: translate(-50%, -2px); opacity: 0; }
+	100% { transform: translate(-50%, 0);   opacity: 1; }
+}
+
+/* respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+	.wheel { animation: none; }
+}
+

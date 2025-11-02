@@ -1,34 +1,24 @@
-import React, { useState, useRef, useEffect } from "react";
-import * as bootstrap from 'bootstrap';  // Add this line
-import styles from "../../../styles/Community.module.css";
-import SplitText from "../../../components/Animation/SplitText.jsx";
+import React, { useState, useRef } from "react";
 import axios from "axios";
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import { useNavigate } from "react-router-dom";
 
-// validation constants
+// Validation constants
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5MB
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
-export default function NewDiscussion({ initialBoard = "" }) {
+export default function NewDiscussion() {
   const [imagePreview, setImagePreview] = useState(null);
-  const [imageError, setImageError] = useState("");
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [errors, setErrors] = useState({});
   const [status, setStatus] = useState("");
-
-  const auth = JSON.parse(sessionStorage.getItem("auth"));
+  const [showGuidelines, setShowGuidelines] = useState(false);
 
   const [formData, setFormData] = useState({
-    supabase_id: auth.id,
     subject: "",
     body: "",
     image_file: null,
   });
 
-  // refs
   const fileInputRef = useRef(null);
   const nav = useNavigate();
 
@@ -48,14 +38,14 @@ export default function NewDiscussion({ initialBoard = "" }) {
       return;
     }
     if (file.size > MAX_IMAGE_BYTES) {
-      setStatus("Image is too large (max 5MB).");
+      setStatus("Image is too large (max 5MB). Please choose a smaller image.");
       return;
     }
 
     setFormData((prev) => ({ ...prev, image_file: file }));
-
     const previewUrl = URL.createObjectURL(file);
     setImagePreview(previewUrl);
+    setStatus("");
   };
 
   const onImageChange = (e) => {
@@ -75,19 +65,6 @@ export default function NewDiscussion({ initialBoard = "" }) {
     e.preventDefault();
   }
 
-  function onPaste(e) {
-    const items = e.clipboardData?.items;
-    if (!items) return;
-    for (let i = 0; i < items.length; i++) {
-      const it = items[i];
-      if (it.kind === "file" && it.type.startsWith("image/")) {
-        const file = it.getAsFile();
-        handleImageFile(file);
-        break;
-      }
-    }
-  }
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -100,289 +77,276 @@ export default function NewDiscussion({ initialBoard = "" }) {
     setStatus("");
 
     try {
-      // Auth check
+      const auth = JSON.parse(sessionStorage.getItem("auth"));
       if (!auth?.id) {
         setStatus("Please sign in to post");
-        alert("Please sign in to create a post");
+        // alert("Please sign in to create a post");
         nav("/volunteer/auth");
         return;
       }
 
-      // Form validation
       if (!formData.subject.trim() || !formData.body.trim()) {
         setStatus("Subject and body are required");
         return;
       }
 
-      // Debug log
-      console.log("Sending data:", {
-        supabase_id: auth.id,
-        user_id: auth.id,
-        subject: formData.subject,
-        body: formData.body,
-        hasImage: !!formData.image_file
-      });
-
       const fd = new FormData();
-      fd.append("supabase_id", auth.id);
-      fd.append("user_id", auth.id)
+      // fd.append("supabase_id", auth.id);
+      fd.append("user_id", auth.id);
       fd.append("subject", formData.subject.trim());
       fd.append("body", formData.body.trim());
 
       if (formData.image_file) {
         fd.append("image_file", formData.image_file);
-        console.log("Image file type:", formData.image_file.type);
-        console.log("Image file size:", formData.image_file.size);
       }
 
-      // Make the API call with detailed error logging
-      try {
-        const response = await axios.post(
-          "http://localhost:3001/community/create_post",
-          fd,
-          {
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'multipart/form-data'
-            },
-            withCredentials: true
-          }
-        );
+      setUploading(!!formData.image_file);
 
-        console.log("Server response:", response.data);
-
-        if (response.data.status) {
-          alert("Post Created Successfully!");
-          nav("/community");
+      const response = await axios.post(
+        "http://localhost:3001/community/create_post",
+        fd,
+        {
+          headers: { 'Content-Type': 'multipart/form-data' },
+          withCredentials: true,
+          timeout: 30000
         }
-      } catch (axiosError) {
-        console.error("Axios error details:", {
-          message: axiosError.message,
-          status: axiosError.response?.status,
-          statusText: axiosError.response?.statusText,
-          responseData: axiosError.response?.data
-        });
-        throw axiosError;
+      );
+
+      if (response?.data?.status) {
+        alert("Post Created Successfully!");
+        // reset
+        setFormData({ subject: "", body: "", image_file: null });
+        clearImage();
+        nav("/community");
+      } else {
+        const msg = response?.data?.message || "Failed to create post";
+        setStatus(msg);
+        alert(`Error: ${msg}`);
       }
 
     } catch (err) {
-      console.error("Full error object:", err);
-
-      const errorMessage = err.response?.data?.message
-        || err.message
-        || "Failed to create post";
-
+      console.error("Create post error:", err);
+      const errorMessage = err.response?.data?.message || err.message || "Failed to create post";
       setStatus(errorMessage);
       alert(`Error: ${errorMessage}`);
 
-      if (err.response?.status === 413) {
-        setStatus("Image file is too large");
-      } else if (err.response?.status === 415) {
-        setStatus("Unsupported image format");
-      }
+      if (err.response?.status === 413) setStatus("Image file is too large");
+      if (err.response?.status === 415) setStatus("Unsupported image format");
+
     } finally {
-      setSubmitting(false);
       setUploading(false);
+      setSubmitting(false);
     }
   }
 
-
   function handleCancel() {
-    window.history.back();
+    if (window.confirm("Discard your post?")) {
+      setFormData({ subject: "", body: "", image_file: null });
+      clearImage();
+    }
   }
 
-  // Add useEffect for tooltip initialization
-  useEffect(() => {
-    // Initialize all tooltips
-    const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-    tooltips.forEach(tooltip => {
-      new bootstrap.Tooltip(tooltip);
-    });
-
-    // Cleanup on unmount
-    return () => {
-      tooltips.forEach(tooltip => {
-        const instance = bootstrap.Tooltip.getInstance(tooltip);
-        if (instance) {
-          instance.dispose();
-        }
-      });
-    };
-  }, []);
-
   return (
-    <div className={`${styles.My_moment}`}>
-      {/* Enhanced Header with SplitText */}
-      <div className="text-center mb-2 mt-5 ">
-        <SplitText
-          text="My Moment"
-          tag="h1"
-          className="display-4 fw-bold mb-3"
-          delay={150}
-          duration={0.8}
-          from={{ opacity: 0, y: 50 }}
-          to={{ opacity: 1, y: 0 }}
-          splitType="chars"
-        />
-        <nav className={`${styles.breadcrumb} d-inline-flex`}>
-          <SplitText
-            text="Share with the Community"
-            delay={50}
-            duration={0.6}
-            from={{ opacity: 0, y: 20 }}
-            to={{ opacity: 1, y: 0 }}
-            splitType="words"
-            className="text-muted"
-          />
-        </nav>
-      </div>
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(to bottom, #f0f4ff 0%, #e5e7ff 100%)',
+      padding: '80px 20px 60px'
+    }}>
+      <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+        {/* Header */}
+        <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+          <div style={{
+            display: 'inline-block',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            fontSize: '52px',
+            fontWeight: '800',
+            marginBottom: '12px',
+            lineHeight: '1.2'
+          }}>
+            My Moment
+          </div>
+          <p style={{ fontSize: '18px', color: '#6b7280', margin: 0 }}>
+            Share your volunteer experience with the community
+          </p>
+        </div>
 
-
-
-      <div className={styles.card}>
-        <div className={styles['card-body']}>
-          {/* Policy notice with icon */}
-          <div className="alert alert-light border d-flex align-items-center mb-4">
-            <i 
-              className={`bi bi-info-circle me-2 ${styles.info_icon}`}
-              style={{ cursor: 'pointer' }}
-              data-bs-toggle="tooltip"
-              data-bs-placement="right"
-              data-bs-html="true"
-              title='<div class="guidelines_title">Community Guidelines:</div>• Be respectful and kind<br/>• No personal attacks or bullying<br/>• Keep content family-friendly<br/>• No spam or self-promotion<br/>• Respect privacy and confidentiality'
-            ></i>
-            <p className="mb-0">Remember that posts are subject to the Community Policy.</p>
+        {/* Main Card */}
+        <div style={{
+          position: 'relative',
+          background: 'white',
+          borderRadius: '24px',
+          padding: '40px',
+          boxShadow: '0 20px 60px rgba(99, 102, 241, 0.15)'
+        }}>
+          {/* Close button (top-right) */}
+          <button
+            type="button"
+            onClick={() => nav('/community')}
+            aria-label="Close and return to community"
+            style={{
+              position: 'absolute',
+              top: 12,
+              right: 12,
+              width: 40,
+              height: 40,
+              borderRadius: '50%',
+              background: 'white',
+              border: '1px solid #e5e7eb',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              boxShadow: '0 6px 18px rgba(16,24,40,0.06)'
+            }}
+            onMouseOver={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.boxShadow = '0 10px 28px rgba(16,24,40,0.08)'; }}
+            onMouseOut={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 6px 18px rgba(16,24,40,0.06)'; }}
+          >
+            ✕
+          </button>
+          {/* Guidelines Notice */}
+          <div style={{
+            background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%)',
+            border: '2px solid rgba(102, 126, 234, 0.2)',
+            borderRadius: '16px',
+            padding: '20px',
+            marginBottom: '32px',
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: '16px'
+          }}>
+            <div
+              onClick={() => setShowGuidelines(!showGuidelines)}
+              style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                color: 'white',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '20px',
+                cursor: 'pointer',
+                flexShrink: 0,
+                transition: 'transform 0.2s ease'
+              }}
+              onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+              onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+            >
+              ℹ️
+            </div>
+            <div style={{ flex: 1 }}>
+              <p style={{ margin: 0, fontSize: '14px', color: '#4b5563', lineHeight: '1.6' }}>
+                Remember that posts are subject to the Community Policy.
+                <span onClick={() => setShowGuidelines(!showGuidelines)} style={{ color: '#6366f1', cursor: 'pointer', marginLeft: '4px', fontWeight: '600' }}>
+                  {showGuidelines ? 'Hide' : 'View'} guidelines
+                </span>
+              </p>
+              {showGuidelines && (
+                <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid rgba(102, 126, 234, 0.2)', fontSize: '13px', color: '#6b7280', lineHeight: '1.8' }}>
+                  <strong style={{ color: '#4b5563', display: 'block', marginBottom: '8px' }}>Community Guidelines:</strong>
+                  • Be respectful and kind<br/>
+                  • No personal attacks or bullying<br/>
+                  • Keep content family-friendly<br/>
+                  • No spam or self-promotion<br/>
+                  • Respect privacy and confidentiality
+                </div>
+              )}
+            </div>
           </div>
 
           <form onSubmit={handlePost}>
-            {/* Subject with enhanced styling */}
-            <div className="mb-4">
-              <label htmlFor="subjectInput" className={`form-label fw-bold ${styles.form_label}`}>
+            {/* Subject */}
+            <div style={{ marginBottom: '28px' }}>
+              <label style={{ display: 'block', fontSize: '16px', fontWeight: '700', color: '#1f2937', marginBottom: '10px' }}>
                 Subject
               </label>
               <input
-                id="subjectInput"
                 name="subject"
                 type="text"
-                className={`form-control ${errors.subject ? "is-invalid" : ""} ${styles['subject-highlight']}`}
-                placeholder="Enter a subject"
+                placeholder="What's your story about?"
                 value={formData.subject}
                 onChange={handleChange}
-                autoComplete="off"
                 required
+                style={{ width: '100%', padding: '14px 18px', fontSize: '15px', border: '2px solid #e5e7eb', borderRadius: '12px', outline: 'none', transition: 'all 0.2s ease', fontFamily: 'inherit' }}
+                onFocus={(e) => { e.target.style.borderColor = '#6366f1'; e.target.style.boxShadow = '0 0 0 4px rgba(99, 102, 241, 0.1)'; }}
+                onBlur={(e) => { e.target.style.borderColor = '#e5e7eb'; e.target.style.boxShadow = 'none'; }}
               />
-              {errors.subject && <div className="invalid-feedback">{errors.subject}</div>}
             </div>
 
-            {/* Body with enhanced styling */}
-            <div className="mb-4">
-              <label
-                htmlFor="body"
-                className={`form-label fw-bold ${styles.form_label}`}
-              >
-                Body
+            {/* Body */}
+            <div style={{ marginBottom: '28px' }}>
+              <label style={{ display: 'block', fontSize: '16px', fontWeight: '700', color: '#1f2937', marginBottom: '10px' }}>
+                Share Your Experience
               </label>
               <textarea
-                id="body"
                 name="body"
-                className={`form-control ${errors.body ? "is-invalid" : ""}`}
-                rows={10}
-                placeholder="Write your post here..."
+                rows={8}
+                placeholder="Tell us about your volunteer experience, what you learned, and how it made you feel..."
                 value={formData.body}
                 onChange={handleChange}
                 required
-                aria-invalid={errors.body ? "true" : "false"}
-                aria-describedby={errors.body ? "body-error" : undefined}
+                style={{ width: '100%', padding: '14px 18px', fontSize: '15px', border: '2px solid #e5e7eb', borderRadius: '12px', outline: 'none', transition: 'all 0.2s ease', fontFamily: 'inherit', resize: 'vertical' }}
+                onFocus={(e) => { e.target.style.borderColor = '#6366f1'; e.target.style.boxShadow = '0 0 0 4px rgba(99, 102, 241, 0.1)'; }}
+                onBlur={(e) => { e.target.style.borderColor = '#e5e7eb'; e.target.style.boxShadow = 'none'; }}
               />
-              {errors.body && (
-                <div id="body-error" className="invalid-feedback d-block">
-                  {errors.body}
-                </div>
-              )}
             </div>
 
-            {/* Enhanced image upload area */}
-            <div
-              className={`${styles['image-upload-area']} mb-4`}
-              onDrop={onDrop}
-              onDragOver={onDragOver}
-            >
-              <div className="d-flex align-items-center justify-content-between">
-                <div className="d-flex align-items-center">
-                  <i className="bi bi-image me-2 text-primary"></i>
-                  <small>Attach an image (optional)</small>
-                </div>
-                <div>
-                  <label className={`btn ${styles['btn-sm']} btn-outline-secondary mb-0`}>
-                    Choose file
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="image/*"
-                      onChange={onImageChange}
-                      style={{ display: "none" }}
-                    />
-                  </label>
-
-                  {formData.image_file && (
-                    <button
-                      type="button"
-                      className={`btn ${styles['btn-sm']} btn-outline-danger ms-2`}
-                      onClick={clearImage}
-                      disabled={uploading || submitting}
-                    >
-                      Remove
-                    </button>
-                  )}
-                </div>
+            {/* Image Upload */}
+            <div style={{ marginBottom: '32px' }}>
+              <label style={{ display: 'block', fontSize: '16px', fontWeight: '700', color: '#1f2937', marginBottom: '10px' }}>
+                Add a Photo <span style={{ color: '#9ca3af', fontWeight: '400', fontSize: '14px' }}>(optional)</span>
+              </label>
+              <div onDrop={onDrop} onDragOver={onDragOver} style={{ border: '2px dashed #d1d5db', borderRadius: '16px', padding: '32px', textAlign: 'center', background: imagePreview ? 'transparent' : '#f9fafb', transition: 'all 0.2s ease', cursor: 'pointer' }}
+                onMouseOver={(e) => { if (!imagePreview) { e.currentTarget.style.borderColor = '#6366f1'; e.currentTarget.style.background = '#f0f4ff'; } }}
+                onMouseOut={(e) => { if (!imagePreview) { e.currentTarget.style.borderColor = '#d1d5db'; e.currentTarget.style.background = '#f9fafb'; } }}
+              >
+                {imagePreview ? (
+                  <div style={{ position: 'relative' }}>
+                    <img src={imagePreview} alt="preview" style={{ width: '100%', maxHeight: '400px', objectFit: 'contain', borderRadius: '12px' }} />
+                    <div style={{ marginTop: '16px', display: 'flex', gap: '12px', justifyContent: 'center' }}>
+                      <label style={{ padding: '10px 20px', background: 'white', border: '2px solid #e5e7eb', borderRadius: '10px', fontSize: '14px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.2s ease', color: '#4b5563' }} onMouseOver={(e) => { e.currentTarget.style.borderColor = '#6366f1'; e.currentTarget.style.color = '#6366f1'; }} onMouseOut={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; e.currentTarget.style.color = '#4b5563'; }}>
+                        Change Image
+                        <input ref={fileInputRef} type="file" accept="image/*" onChange={onImageChange} style={{ display: "none" }} />
+                      </label>
+                      <button type="button" onClick={clearImage} disabled={uploading || submitting} style={{ padding: '10px 20px', background: 'white', border: '2px solid #ef4444', borderRadius: '10px', fontSize: '14px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.2s ease', color: '#ef4444' }} onMouseOver={(e) => { e.currentTarget.style.background = '#ef4444'; e.currentTarget.style.color = 'white'; }} onMouseOut={(e) => { e.currentTarget.style.background = 'white'; e.currentTarget.style.color = '#ef4444'; }}>Remove</button>
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <div style={{ width: '64px', height: '64px', margin: '0 auto 16px', borderRadius: '50%', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px' }}>📷</div>
+                    <p style={{ fontSize: '16px', color: '#4b5563', marginBottom: '8px', fontWeight: '600' }}>Drop your image here, or click to browse</p>
+                    <p style={{ fontSize: '13px', color: '#9ca3af', margin: 0 }}>PNG, JPG, WEBP or GIF up to 5MB</p>
+                    <label style={{ display: 'inline-block', marginTop: '16px', padding: '10px 24px', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white', borderRadius: '10px', fontSize: '14px', fontWeight: '600', cursor: 'pointer', transition: 'transform 0.2s ease' }} onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}>
+                      Choose File
+                      <input ref={fileInputRef} type="file" accept="image/*" onChange={onImageChange} style={{ display: "none" }} />
+                    </label>
+                  </div>
+                )}
               </div>
 
-              {imageError && <div className="text-danger small mt-2">{imageError}</div>}
-
-              {imagePreview && (
-                <div className={styles['preview-container']}>
-                  <img
-                    src={imagePreview}
-                    alt="preview"
-                    className="w-100"
-                    style={{ height: 220, objectFit: "cover" }}
-                  />
-                  <div className="small text-muted mt-2 text-center">
-                    <i className="bi bi-eye me-1"></i>Preview
-                  </div>
-                </div>
+              {status && (
+                <div style={{ marginTop: '12px', padding: '12px 16px', background: '#fee2e2', color: '#991b1b', borderRadius: '10px', fontSize: '14px' }}>{status}</div>
               )}
             </div>
 
-            {/* Enhanced action buttons */}
-            <div className="d-flex justify-content-end gap-3 mt-4">
-              <button
-                type="button"
-                className="btn btn-outline-secondary px-4"
-                onClick={handleCancel}
-                disabled={submitting}
-              >
-                <i className="bi bi-x me-2"></i>Cancel
-              </button>
-              <button
-                type="submit"
-                className="btn btn-primary px-4"
-                disabled={submitting || uploading}
-              >
+            {/* Action Buttons */}
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', paddingTop: '24px', borderTop: '1px solid #e5e7eb' }}>
+              <button type="button" onClick={handleCancel} disabled={submitting} style={{ padding: '14px 32px', background: 'white', border: '2px solid #e5e7eb', borderRadius: '12px', fontSize: '15px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.2s ease', color: '#6b7280' }} onMouseOver={(e) => { e.currentTarget.style.borderColor = '#9ca3af'; e.currentTarget.style.color = '#4b5563'; }} onMouseOut={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; e.currentTarget.style.color = '#6b7280'; }}>Cancel</button>
+              <button type="submit" disabled={submitting || uploading} style={{ padding: '14px 32px', background: submitting ? '#9ca3af' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', border: 'none', borderRadius: '12px', fontSize: '15px', fontWeight: '600', cursor: submitting ? 'not-allowed' : 'pointer', transition: 'all 0.2s ease', color: 'white', display: 'flex', alignItems: 'center', gap: '8px' }} onMouseOver={(e) => { if (!submitting) { e.currentTarget.style.transform = 'scale(1.02)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(99, 102, 241, 0.3)'; } }} onMouseOut={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = 'none'; }}>
                 {submitting ? (
                   <>
-                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                    Posting...
-                  </>
-                ) : uploading ? (
-                  <>
-                    <i className="bi bi-cloud-upload me-2"></i>
-                    Uploading...
+                    <div style={{ width: '16px', height: '16px', border: '2px solid white', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.6s linear infinite' }} />
+                    <span>Posting...</span>
+                    <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
                   </>
                 ) : (
                   <>
-                    <i className="bi bi-send me-2"></i>
-                    Post
+                    <span>✨</span>
+                    <span>Share Your Story</span>
                   </>
                 )}
               </button>

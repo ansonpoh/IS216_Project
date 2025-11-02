@@ -1,51 +1,39 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styles from "../../../styles/Community.module.css";
 
 /**
  * CommunitySpotlight
- * props:
- *  - slides: array of { image: string, caption?: string, alt?: string, author?: string }
- *  - interval: number (ms) carousel auto-advance interval (default 4000)
+ * A simple image carousel that uses the module CSS in `Community.module.css`.
+ * Props:
+ *  - slides: [{ image, caption, alt }]
+ *  - interval: number ms auto-advance
  */
 export default function CommunitySpotlight({ slides = [], interval = 4000 }) {
-  const id = "communityCarousel-" + Math.random().toString(36).slice(2, 9);
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    if (!slides || slides.length <= 1) return undefined;
+    const t = setInterval(() => setCurrent((s) => (s + 1) % slides.length), interval);
+    return () => clearInterval(t);
+  }, [slides, interval]);
+
+  if (!slides || slides.length === 0) return null;
+
+  const next = () => setCurrent((s) => (s + 1) % slides.length);
+  const prev = () => setCurrent((s) => (s - 1 + slides.length) % slides.length);
+  const goTo = (i) => setCurrent(i);
 
   return (
-    <div
-      id={id}
-      className={`${styles['carousel-wrapper']} carousel slide`}
-      data-bs-ride="carousel"
-      data-bs-interval={interval}
-    >
-      {/* Carousel indicators */}
-            <div className={`${styles['carousel-inner']} carousel-indicators`}>
-        {slides.map((_, index) => (
-          <button
-            key={index}
-            type="button"
-            data-bs-target={`#${id}`}
-            data-bs-slide-to={index}
-            className={index === 0 ? "active" : ""}
-            aria-current={index === 0 ? "true" : "false"}
-            aria-label={`Slide ${index + 1}`}
-          />
-        ))}
-      </div>
-
-      {/* Carousel slides */}
-            <div className="carousel-inner">
-        {slides.map((slide, index) => (
-          <div
-            key={index}
-            className={`carousel-item ${index === 0 ? "active" : ""} ${styles['carousel-item']}`}
-          >
-            <img
-              src={slide.image}
-              alt={slide.alt || `Slide ${index + 1}`}
-              className="d-block w-100"
-            />
+    <div className={styles["carousel-wrapper"]}>
+      <div
+        className={styles["carousel-inner"]}
+        style={{ transform: `translateX(-${current * 100}%)` }}
+      >
+        {slides.map((slide, i) => (
+          <div key={i} className={styles["carousel-item"]}>
+            <img src={slide.image} alt={slide.alt || slide.caption || `Slide ${i + 1}`} />
             {slide.caption && (
-              <div className={`${styles['carousel-caption']} carousel-caption d-none d-md-block`}>
+              <div className={styles["carousel-caption"]}>
                 <h5>{slide.caption}</h5>
                 {slide.author && <p>By {slide.author}</p>}
               </div>
@@ -53,25 +41,26 @@ export default function CommunitySpotlight({ slides = [], interval = 4000 }) {
           </div>
         ))}
       </div>
-      {/* Navigation controls */}
-      <button
-        className="carousel-control-prev"
-        type="button"
-        data-bs-target={`#${id}`}
-        data-bs-slide="prev"
-      >
-        <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span className="visually-hidden">Previous</span>
+
+      {/* Controls */}
+      <button className={styles["carousel-control-prev"]} onClick={prev} aria-label="Previous slide">
+        <span className={styles["carousel-control-prev-icon"]} aria-hidden="true" />
       </button>
-      <button
-        className="carousel-control-next"
-        type="button"
-        data-bs-target={`#${id}`}
-        data-bs-slide="next"
-      >
-        <span className="carousel-control-next-icon" aria-hidden="true"></span>
-        <span className="visually-hidden">Next</span>
+      <button className={styles["carousel-control-next"]} onClick={next} aria-label="Next slide">
+        <span className={styles["carousel-control-next-icon"]} aria-hidden="true" />
       </button>
+
+      {/* Indicators */}
+      <div className={styles["carousel-indicators"]}>
+        {slides.map((_, i) => (
+          <button
+            key={i}
+            className={i === current ? styles.active : undefined}
+            onClick={() => goTo(i)}
+            aria-label={`Go to slide ${i + 1}`}
+          />
+        ))}
+      </div>
     </div>
   );
 }

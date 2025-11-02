@@ -8,20 +8,134 @@
   --gutter: 20px;
 }
 
-/* -------- Page Layout -------- */
-/* .page-community {
-  background: var(--bg);
-  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-  color: #111;
-  min-height: 100vh;
-  padding: 2rem 1rem;
-} */
+/* Styling for the main header/control panel area */
+.community-posts-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: transparent 50%;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 18px 40px rgba(2,6,23,0.12), 0 8px 20px rgba(2,6,23,0.06);
+}
 
-/* .community-container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 0 1rem;
-} */
+/* Style for the "Community Posts" title */
+.title {
+  font-size: 1.5rem; /* Adjust as needed */
+  font-weight: 700;
+  color: #000000; /* Dark text color */
+  margin: 0;
+  padding: 0;
+}
+
+/* Right-side container for filters and button */
+.group-right {
+  display: flex;
+  align-items: center; /* Align items vertically in the center */
+  gap: 1rem;
+}
+
+/* Container for the Search and Sort fields */
+.filtersContainer {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* --- Shared Input/Select Styles --- */
+.searchInput,
+.sortSelect {
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 2px solid #e5e7eb;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.searchInput {
+  width: 220px; /* Specific width for the search input on large screens */
+}
+.searchInput:focus {
+  border-color: #6366f1; /* Tailwind's indigo-500 equivalent */
+}
+.sortSelect {
+  cursor: pointer;
+}
+
+/* --- Add Post Button Styles --- */
+.addPostButton {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform 0.2s ease;
+}
+.addPostButton:hover {
+  transform: scale(1.02);
+}
+
+/* --- Media Query for Medium Screens (e.g., max-width: 768px) --- */
+@media (max-width: 768px) {
+  .community-posts-header {
+    /* Aligning the title to the left on top (as seen in the smaller screen image) */
+    flex-direction: column; 
+    align-items: flex-start;
+  }
+  
+  .title {
+    /* Add some bottom margin to separate the title from the controls */
+    margin-bottom: 1rem; 
+  }
+  
+  .group-right {
+    /* The search, sort, and button wrap onto a new line and align to the left */
+    width: 100%;
+    flex-wrap: wrap; 
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+  
+  .filtersContainer {
+    /* Search and Sort should take up available space, but maintain layout */
+    width: 100%;
+    /* They should still display next to each other */
+    flex-wrap: wrap; 
+  }
+
+  .searchInput {
+    /* Search input takes more width on medium screens to fill the space */
+    width: 100%; 
+    max-width: 280px; /* Optionally cap the max width */
+  }
+  
+  .sortSelect {
+    /* Sort dropdown takes a fixed width or fills remaining space */
+    width: auto; /* Let content dictate width */
+  }
+  
+  .addPostButton {
+    /* Button moves to its own line/position, but we'll let it flow after the filtersContainer */
+    margin-top: 0.25rem; /* Small space above the button if it wraps */
+  }
+}
+
+/* --- Media Query for Mobile (Optional, e.g., max-width: 480px) --- */
+@media (max-width: 480px) {
+  .filtersContainer {
+    flex-direction: column; /* Stack search and sort vertically */
+  }
+  .searchInput,
+  .sortSelect {
+    width: 100%; /* Both take full width */
+    max-width: none;
+  }
+}
 
 /* -------- Featured Card -------- */
 .featured-card {
@@ -95,14 +209,15 @@
 .addPostBtn {
   /* force a flat background and remove any gradient */
   background-image: none !important;
-  background-color: rgb(159, 159, 233) !important; 
-  border: 1px solid rgba(0,0,0,0.06);
+  background-color: rgb(159, 159, 233) !important;
+  border: 1px solid rgba(0, 0, 0, 0.06);
   padding: 0.35rem 0.75rem;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
-  box-shadow: 0 6px 18px rgba(99,102,241,0.08); /* subtle contrast */
+  box-shadow: 0 6px 18px rgba(99, 102, 241, 0.08);
+  /* subtle contrast */
 }
 
 /* Icon and label inherit color */
@@ -160,49 +275,72 @@
 }
 
 /* Caption overlay */
+
 .carousel-caption {
   position: absolute;
-  bottom: 1rem;
-  left: 1rem;
-  right: 1rem;
-  background: rgba(0, 0, 0, 0.5);
+  bottom: 0;
+  left: 0;
+  right: 0;
+  /* larger caption area that covers the bottom portion of the image with a dark->light gradient */
+  background: linear-gradient(to top,
+      rgba(0, 0, 0, 0.95) 0%,
+      rgba(0, 0, 0, 0.6) 20%,
+      rgba(0, 0, 0, 0.25) 45%,
+      rgba(0, 0, 0, 0.05) 70%,
+      rgba(0, 0, 0, 0) 100%);
   color: #fff;
-  padding: 1rem;
-  border-radius: 0.5rem;
+  /* reduced top padding to lower the visible caption area */
+  padding: 1rem 1.25rem 1.25rem;
+  border-radius: 0;
+  /* flush with image edges */
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  z-index: 10;
 }
 
 .carousel-caption h5 {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 1.35rem;
+  line-height: 1.05;
+  font-weight: 700;
 }
 
 .carousel-caption p {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 1rem;
+  opacity: 0.9;
 }
 
 /* Indicators */
 .carousel-indicators {
   position: absolute;
-  bottom: 0.5rem;
+  bottom: 12px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 0.5rem;
-  z-index: 5;
+  gap: 8px;
+  z-index: 20;
+  /* sit above the caption gradient */
 }
 
 .carousel-indicators button {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
   border: none;
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(255, 255, 255, 0.6);
   cursor: pointer;
+  transition: all 0.25s ease;
 }
 
 .carousel-indicators button.active {
-  background-color: #0a66c2;
+  width: 28px;
+  /* pill-shaped active indicator */
+  height: 8px;
+  border-radius: 6px;
+  background-color: #6366f1;
+  /* desired blue/purple color */
 }
 
 /* Navigation controls */
@@ -382,7 +520,7 @@
   justify-content: center;
   gap: 6px;
   margin-top: 16px;
-  box-shadow: 0 6px 18px rgba(16,185,129,0.1);
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.1);
   transition: all 0.12s ease;
 }
 
@@ -393,8 +531,15 @@
 
 /* Fade-in animation */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 
@@ -415,8 +560,15 @@
 
 /* -------- Fade In Animation -------- */
 @keyframes fade-in {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* -------- Responsive -------- */
@@ -424,11 +576,11 @@
   .card-body {
     padding: 0.6rem;
   }
-  
+
   .card-title {
     font-size: 0.95rem;
   }
-  
+
   .card-image {
     height: clamp(100px, 20vh, 180px);
   }

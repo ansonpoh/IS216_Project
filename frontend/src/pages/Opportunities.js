@@ -12,7 +12,7 @@ export default function Opportunities() {
   const openEventId = location.state?.eventId;
   const nav = useNavigate();
 
-  const {auth} = useAuth();
+  const { auth } = useAuth();
   const [opportunities, setOpportunities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
@@ -41,7 +41,7 @@ export default function Opportunities() {
             for (const k of keys) if (it[k] != null) return it[k];
             return undefined;
           };
-          if(it.registration_count === it.capacity) return undefined;
+          if (it.registration_count === it.capacity) return undefined;
           const toNumber = (v) => (v == null || v === "" ? null : (Number.isNaN(Number(v)) ? null : Number(v)));
           return {
             event_id: get("event_id", "id"),
@@ -94,9 +94,9 @@ export default function Opportunities() {
   }, []);
 
   useEffect(() => {
-    if(openEventId && opportunities.length > 0) {
+    if (openEventId && opportunities.length > 0) {
       const match = opportunities.find(op => op.event_id === openEventId);
-      if(match) {
+      if (match) {
         setSelectedOpportunity(match);
         setShowModal(true);
       }
@@ -104,24 +104,24 @@ export default function Opportunities() {
   }, [openEventId, opportunities])
 
   useEffect(() => {
-  const handleScroll = () => {
-    if (window.scrollY > 300) {  // show button after scrolling 300px
-      setShowScrollTop(true);
-    } else {
-      setShowScrollTop(false);
-    }
-  };
+    const handleScroll = () => {
+      if (window.scrollY > 300) {  // show button after scrolling 300px
+        setShowScrollTop(true);
+      } else {
+        setShowScrollTop(false);
+      }
+    };
 
-  window.addEventListener("scroll", handleScroll);
-  return () => window.removeEventListener("scroll", handleScroll);
-}, []);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleSignUp = async () => {
-    if(auth.token.length < 1) {
+    if (auth.token.length < 1) {
       nav("/volunteer/auth")
       return;
     }
-    if(auth.role === "organiser") {
+    if (auth.role === "organiser") {
       alert("Only Volunteers can sign up!")
       return;
     }
@@ -129,26 +129,26 @@ export default function Opportunities() {
   }
 
   const confirmSignUp = async () => {
-    if(!selectedOpportunity || !auth.id) return;
+    if (!selectedOpportunity || !auth.id) return;
     try {
       setConfirmModal(false);
       setSignUpLoading(true);
 
-      const userSignedUp = await axios.get("http://localhost:3001/events/check_if_user_signed_up", {params: {user_id: auth.id, event_id: selectedOpportunity.event_id}});
+      const userSignedUp = await axios.get("http://localhost:3001/events/check_if_user_signed_up", { params: { user_id: auth.id, event_id: selectedOpportunity.event_id } });
 
-      if(userSignedUp.data.result.length > 0) {
+      if (userSignedUp.data.result.length > 0) {
         setAlreadySignedUp(true);
       } else {
-        const res = await axios.post("http://localhost:3001/events/signup_event", {user_id: auth.id, event_id: selectedOpportunity.event_id, })
+        const res = await axios.post("http://localhost:3001/events/signup_event", { user_id: auth.id, event_id: selectedOpportunity.event_id, })
 
-        if(res.data.result) {
+        if (res.data.result) {
           setSignUpSuccess(true);
         } else {
           alert("Somethin went wrong.");
         }
       }
       setSignUpLoading(false);
-    } catch(err) {
+    } catch (err) {
       console.error(err);
       alert("Error occured while signing up.")
       setSignUpLoading(false);
@@ -190,205 +190,218 @@ export default function Opportunities() {
 
   return (
     <>
-    
+
       <Navbar />
       <PageTransition>
-      <div className={styles['opportunities-container']}>
-        <h1>Opportunities</h1>
-
-        <div className={styles.filters}>
-          <div className={styles['group-left']}>
-            <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} aria-label="Filter by category">
-              <option value="">All Categories</option>
-              {categories.map((catObj, idx) => (
-                <option key={catObj.id ?? catObj.category ?? idx} value={catObj.category ?? catObj.name ?? ""}>
-                  {catObj.category ?? catObj.name ?? "Unknown"}
-                </option>
-              ))}
-            </select>
-
-            <select value={regionFilter} onChange={(e) => setRegionFilter(e.target.value)} aria-label="Filter by region">
-              <option value="">All Regions</option>
-              {regions.map((regObj, idx) => (
-                <option key={regObj.id ?? regObj.region ?? idx} value={regObj.region ?? regObj.name ?? ""}>
-                  {regObj.region ?? regObj.name ?? "Unknown"}
-                </option>
-              ))}
-            </select>
+        <div className={styles['opportunities-container']}>
+          <div style={{
+            display: 'block',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            fontSize: '56px',
+            fontWeight: '800',
+            margin: '12px auto 16px',
+            textAlign: 'center',
+            lineHeight: '1.2',
+          }}>
+            Opportunities
           </div>
 
-          <div className={styles['group-right']}>
-            <div className={styles['date-filter']}>
-              <label>
-                <span className={styles['date-label']}>Start</span>
-                <input type="date" value={dateFromFilter} onChange={(e) => setDateFromFilter(e.target.value)} />
-              </label>
-              <label>
-                <span className={styles['date-label']}>End</span>
-                <input type="date" value={dateToFilter} onChange={(e) => setDateToFilter(e.target.value)} />
-              </label>
+          <div className={styles.filters}>
+            <div className={styles['group-left']}>
+              <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} aria-label="Filter by category">
+                <option value="">All Categories</option>
+                {categories.map((catObj, idx) => (
+                  <option key={catObj.id ?? catObj.category ?? idx} value={catObj.category ?? catObj.name ?? ""}>
+                    {catObj.category ?? catObj.name ?? "Unknown"}
+                  </option>
+                ))}
+              </select>
+
+              <select value={regionFilter} onChange={(e) => setRegionFilter(e.target.value)} aria-label="Filter by region">
+                <option value="">All Regions</option>
+                {regions.map((regObj, idx) => (
+                  <option key={regObj.id ?? regObj.region ?? idx} value={regObj.region ?? regObj.name ?? ""}>
+                    {regObj.region ?? regObj.name ?? "Unknown"}
+                  </option>
+                ))}
+              </select>
             </div>
-            <button className={styles['reset-btn']} onClick={resetFilters}>
-              <i className="bi bi-arrow-counterclockwise" style={{ marginRight: "6px" }}></i>
-              Reset
-            </button>
+
+            <div className={styles['group-right']}>
+              <div className={styles['date-filter']}>
+                <label>
+                  <span className={styles['date-label']}>Start</span>
+                  <input type="date" value={dateFromFilter} onChange={(e) => setDateFromFilter(e.target.value)} />
+                </label>
+                <label>
+                  <span className={styles['date-label']}>End</span>
+                  <input type="date" value={dateToFilter} onChange={(e) => setDateToFilter(e.target.value)} />
+                </label>
+              </div>
+              <button className={styles['reset-btn']} onClick={resetFilters}>
+                <i className="bi bi-arrow-counterclockwise" style={{ marginRight: "6px" }}></i>
+                Reset
+              </button>
+            </div>
           </div>
-        </div>
 
-        <div className={styles['card-grid']}>
-          {filteredOpportunities.length === 0 ? (
-            <div className={styles['empty-state-card']}>
-              <div className={styles['empty-icon']}></div>
-              <h3>No opportunities found</h3>
-              <p>Try adjusting your filters or reset to see all available opportunities.</p>
-            </div>
-          ) : (
-            filteredOpportunities.map((op) => (
-              <div className={styles['event-card']} key={op.event_id} onClick={() => {setShowModal(true); setSelectedOpportunity(op);}}>
-                <div className={styles['card-image']}>
-                  {op.image_url && <img src={op.image_url} alt={op.title} />}
-                  {/* <span className={`${styles['status-badge']} ${styles[op.status]}`}>{op.status}</span> */}
-                </div>
+          <div className={styles['card-grid']}>
+            {filteredOpportunities.length === 0 ? (
+              <div className={styles['empty-state-card']}>
+                <div className={styles['empty-icon']}></div>
+                <h3>No opportunities found</h3>
+                <p>Try adjusting your filters or reset to see all available opportunities.</p>
+              </div>
+            ) : (
+              filteredOpportunities.map((op) => (
+                <div className={styles['event-card']} key={op.event_id} onClick={() => { setShowModal(true); setSelectedOpportunity(op); }}>
+                  <div className={styles['card-image']}>
+                    {op.image_url && <img src={op.image_url} alt={op.title} />}
+                    {/* <span className={`${styles['status-badge']} ${styles[op.status]}`}>{op.status}</span> */}
+                  </div>
 
-                <div className={styles['card-content']}>
-                  <h2 className={styles['event-title']}>{op.title}</h2>
-                  <p className="text-muted">{op.org_name}</p>
-                  <p>{op.description}</p>
-                  <div className={styles['card-info']}>
-                    <p>
-                      <i className="bi bi-geo-alt-fill" style={{ marginRight: "5px" }}></i>
-                      <span className={styles['info-text']}>{op.location || "N/A"}</span>
-                    </p>
-                    <p>
-                      <i className="bi bi-calendar-event" style={{ marginRight: "7px" }}></i>
-                      <span className={styles['info-text']}>
-                        {formatDate(op.start_date)} - {formatTime(op.start_time)} - {formatTime(op.end_time)}
-                      </span>
-                    </p>
-                    <p>
-                      <i className="bi bi-people-fill" style={{ marginRight: "5px" }}></i>
-                      Capacity: {op.capacity ?? "N/A"}
-                    </p>
+                  <div className={styles['card-content']}>
+                    <h2 className={styles['event-title']}>{op.title}</h2>
+                    <p className="text-muted">{op.org_name}</p>
+                    <p>{op.description}</p>
+                    <div className={styles['card-info']}>
+                      <p>
+                        <i className="bi bi-geo-alt-fill" style={{ marginRight: "5px" }}></i>
+                        <span className={styles['info-text']}>{op.location || "N/A"}</span>
+                      </p>
+                      <p>
+                        <i className="bi bi-calendar-event" style={{ marginRight: "7px" }}></i>
+                        <span className={styles['info-text']}>
+                          {formatDate(op.start_date)} - {formatTime(op.start_time)} - {formatTime(op.end_time)}
+                        </span>
+                      </p>
+                      <p>
+                        <i className="bi bi-people-fill" style={{ marginRight: "5px" }}></i>
+                        Capacity: {op.capacity ?? "N/A"}
+                      </p>
+                    </div>
+                  </div>
+
+                  <hr className={styles['card-divider']} />
+
+                  <div className={styles['card-footer']}>
+                    <span className={`${styles['category-tag']} ${styles[`category-${op.category?.toLowerCase().replace(/\s+/g, "-")}`] || styles['category-general']}`}>
+                      {op.category ?? "Uncategorized"}
+                    </span>
+                    <button className={styles['signup-btn']}>Sign Up</button>
                   </div>
                 </div>
-
-                <hr className={styles['card-divider']} />
-
-                <div className={styles['card-footer']}>
-                <span className={`${styles['category-tag']} ${styles[`category-${op.category?.toLowerCase().replace(/\s+/g, "-")}`] || styles['category-general']}`}>
-                {op.category ?? "Uncategorized"}
-                </span>
-                  <button className={styles['signup-btn']}>Sign Up</button>
-                </div>
-              </div>
-            ))
-          )}
+              ))
+            )}
+          </div>
         </div>
-      </div>
 
-      {showModal && selectedOpportunity && (
-        <>
-        <div className={styles["modal-overlay"]} onClick={() => setShowModal(false)}>
-          <div className={styles["modal-wrapper"]}onClick={(e) => e.stopPropagation()}>
-            <button className={styles["modal-close"]} onClick={() => setShowModal(false)}>
-              &times;
-            </button>
-
-            <div className={styles["modal-content-row"]}>
-              <div className={styles["modal-left"]}>
-                <img
-                  src={selectedOpportunity.image_url}
-                  alt={selectedOpportunity.title}
-                  className={styles["modal-large-image"]}
-                />
-              </div>
-
-              <div className={styles["modal-right"]}>
-                <h2 className={styles["modal-title"]}>{selectedOpportunity.title}</h2>
-                <p className={styles["modal-desc"]}>{selectedOpportunity.description}</p>
-
-                <div className={styles["modal-detail-list"]}>
-                  <p>
-                    <i className="bi bi-geo-alt-fill"></i>{" "}
-                    {selectedOpportunity.location || "N/A"}
-                  </p>
-                  <p>
-                    <i className="bi bi-calendar-event"></i>{" "}
-                    {formatDate(selectedOpportunity.start_date)}{" "}
-                    {formatTime(selectedOpportunity.start_time)} –{" "}
-                    {formatTime(selectedOpportunity.end_time)}
-                  </p>
-                  <p>
-                    <i className="bi bi-people-fill"></i> Capacity:{" "}
-                    {selectedOpportunity.capacity ?? "N/A"}
-                  </p>
-                  <p>Category: {selectedOpportunity.category}</p>
-                  <p>Region: {selectedOpportunity.region}</p>
-                </div>
-
-                <button className={styles["modal-signup-btn"]} onClick={handleSignUp}>
-                  Sign Up
+        {showModal && selectedOpportunity && (
+          <>
+            <div className={styles["modal-overlay"]} onClick={() => setShowModal(false)}>
+              <div className={styles["modal-wrapper"]} onClick={(e) => e.stopPropagation()}>
+                <button className={styles["modal-close"]} onClick={() => setShowModal(false)}>
+                  &times;
                 </button>
+
+                <div className={styles["modal-content-row"]}>
+                  <div className={styles["modal-left"]}>
+                    <img
+                      src={selectedOpportunity.image_url}
+                      alt={selectedOpportunity.title}
+                      className={styles["modal-large-image"]}
+                    />
+                  </div>
+
+                  <div className={styles["modal-right"]}>
+                    <h2 className={styles["modal-title"]}>{selectedOpportunity.title}</h2>
+                    <p className={styles["modal-desc"]}>{selectedOpportunity.description}</p>
+
+                    <div className={styles["modal-detail-list"]}>
+                      <p>
+                        <i className="bi bi-geo-alt-fill"></i>{" "}
+                        {selectedOpportunity.location || "N/A"}
+                      </p>
+                      <p>
+                        <i className="bi bi-calendar-event"></i>{" "}
+                        {formatDate(selectedOpportunity.start_date)}{" "}
+                        {formatTime(selectedOpportunity.start_time)} –{" "}
+                        {formatTime(selectedOpportunity.end_time)}
+                      </p>
+                      <p>
+                        <i className="bi bi-people-fill"></i> Capacity:{" "}
+                        {selectedOpportunity.capacity ?? "N/A"}
+                      </p>
+                      <p>Category: {selectedOpportunity.category}</p>
+                      <p>Region: {selectedOpportunity.region}</p>
+                    </div>
+
+                    <button className={styles["modal-signup-btn"]} onClick={handleSignUp}>
+                      Sign Up
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
+        {confirmModal && (
+          <div className={styles["modal-overlay"]} onClick={() => setConfirmModal(false)}>
+            <div className={styles["confirm-modal"]} onClick={(e) => e.stopPropagation()}>
+              <h3>Confirm Sign Up</h3>
+              <p>Are you sure you want to sign up for <b>{selectedOpportunity.title}</b>?</p>
+              <div className={styles["confirm-buttons"]}>
+                <button onClick={() => setConfirmModal(false)} className={styles["cancel-btn"]}>Cancel</button>
+                <button onClick={confirmSignUp} className={styles["confirm-btn"]}>Yes, Sign Me Up</button>
               </div>
             </div>
           </div>
-        </div>
-        </>
-      )}
+        )}
 
-      {confirmModal && (
-        <div className={styles["modal-overlay"]} onClick={() => setConfirmModal(false)}>
-          <div className={styles["confirm-modal"]} onClick={(e) => e.stopPropagation()}>
-            <h3>Confirm Sign Up</h3>
-            <p>Are you sure you want to sign up for <b>{selectedOpportunity.title}</b>?</p>
-            <div className={styles["confirm-buttons"]}>
-              <button onClick={() => setConfirmModal(false)} className={styles["cancel-btn"]}>Cancel</button>
-              <button onClick={confirmSignUp} className={styles["confirm-btn"]}>Yes, Sign Me Up</button>
+        {signUpLoading && (
+          <div className={styles["modal-overlay"]}>
+            <div className={styles["loading-modal"]}>
+              <div className={styles["spinner"]}></div>
+              <p>Submitting your application...</p>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {signUpLoading && (
-        <div className={styles["modal-overlay"]}>
-          <div className={styles["loading-modal"]}>
-            <div className={styles["spinner"]}></div>
-            <p>Submitting your application...</p>
+        {signUpSuccess && (
+          <div className={styles["modal-overlay"]} onClick={() => setSignUpSuccess(false)}>
+            <div className={styles["success-modal"]} onClick={(e) => e.stopPropagation()}>
+              <i className="bi bi-check-circle-fill" style={{ color: "green", fontSize: "48px" }}></i>
+              <h3>Sign Up Successful!</h3>
+              <p>Your application is pending organiser confirmation.</p>
+              <button onClick={() => setSignUpSuccess(false)} className={styles["ok-btn"]}>OK</button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {signUpSuccess && (
-        <div className={styles["modal-overlay"]} onClick={() => setSignUpSuccess(false)}>
-          <div className={styles["success-modal"]} onClick={(e) => e.stopPropagation()}>
-            <i className="bi bi-check-circle-fill" style={{ color: "green", fontSize: "48px" }}></i>
-            <h3>Sign Up Successful!</h3>
-            <p>Your application is pending organiser confirmation.</p>
-            <button onClick={() => setSignUpSuccess(false)} className={styles["ok-btn"]}>OK</button>
+        {alreadySignedUp && (
+          <div className={styles["modal-overlay"]} onClick={() => setAlreadySignedUp(false)}>
+            <div className={styles["success-modal"]} onClick={(e) => e.stopPropagation()}>
+              <i className="bi bi-ban" style={{ color: "red", fontSize: "48px" }}></i>
+              <h3>Sign Up Failed</h3>
+              <p>You have already signed up for this event!</p>
+              <button onClick={() => setAlreadySignedUp(false)} className={styles["ok-btn"]}>OK</button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {alreadySignedUp && (
-        <div className={styles["modal-overlay"]} onClick={() => setAlreadySignedUp(false)}>
-          <div className={styles["success-modal"]} onClick={(e) => e.stopPropagation()}>
-            <i className="bi bi-ban" style={{ color: "red", fontSize: "48px" }}></i>
-            <h3>Sign Up Failed</h3>
-            <p>You have already signed up for this event!</p>
-            <button onClick={() => setAlreadySignedUp(false)} className={styles["ok-btn"]}>OK</button>
-          </div>
-        </div>
-      )}
-
-      {showScrollTop && (
-        <button 
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} 
-          className={styles.scrollTopButton}
-          aria-label="Scroll to top"
-        >
-          ↑
-        </button>
-      )}
+        {showScrollTop && (
+          <button
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            className={styles.scrollTopButton}
+            aria-label="Scroll to top"
+          >
+            ↑
+          </button>
+        )}
 
       </PageTransition>
     </>
