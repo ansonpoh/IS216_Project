@@ -501,9 +501,8 @@ export default function VolunteerDashboard() {
         </div>
 
         <div className="col-12">
-          <CardCarousel title="Past Events" items={pastEvents} emptyText="Nothing here yet." renderCardFooter={(e) => (
-            <button className="btn btn-sm btn-outline-danger" onClick={() => deletePast(e.id)}>Delete</button>
-          )} />
+          <CardCarousel title="Past Events" items={pastEvents} emptyText="Nothing here yet." 
+          />
         </div>
       </div>
     </div>
