@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar.js";
 import FeaturedCard from "./component/FeaturedCard";
 import CommunitySpotlight from "./component/CommunitySpotlight";
+import Title from '../../components/ui/Title';
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import PageTransition from "../../components/Animation/PageTransition.jsx";
@@ -308,27 +309,7 @@ export default function ForumPage() {
           <div className="container py-4 flex-grow-1">
             {/* Hero Section */}
             <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-              <div style={{
-                display: 'inline-block',
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-                fontSize: '56px',
-                fontWeight: '800',
-                marginBottom: '16px',
-                lineHeight: '1.2'
-              }}>
-                Share the Joy
-              </div>
-              <p style={{
-                fontSize: '20px',
-                color: '#6b7280',
-                maxWidth: '600px',
-                margin: '0 auto'
-              }}>
-                Connect with our community and share your volunteer experiences
-              </p>
+              <Title text="Share the Joy" subtitle="Connect with our community and share your volunteer experiences" />
             </div>
 
             {/* Spotlight Carousel */}

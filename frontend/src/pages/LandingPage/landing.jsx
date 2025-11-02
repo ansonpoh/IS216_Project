@@ -16,7 +16,7 @@ import styles from "../../styles/LandingPage.module.css";
 import mapView from "../../components/images/mapView.png";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import ScrollMouse from "../../components/Animation/AnimatedMouseIcon";
+import ScrollMouse from "../../components/ui/AnimatedMouseIcon";
 
 
 // import { Nav } from 'react-bootstrap';

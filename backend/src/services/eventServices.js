@@ -241,6 +241,26 @@ export async function update_registration_status(user_id, event_id, status) {
         const query = `update event_registration set status = $1 where user_id = $2 and event_id = $3 returning *`;
         const values = [status, user_id, event_id];
         const result = await pool.query(query, values);
+
+        // If the registration was marked as attended, increment the user's hours
+        // by the event's hours value. This keeps logic centralized and requires
+        // only the existing endpoint to be called from the frontend.
+        if (status && String(status).toLowerCase() === 'attended') {
+            try {
+                const incQuery = `
+                    update users
+                    set hours = coalesce(hours, 0) + coalesce((select hours from events where event_id = $1), 0)
+                    where user_id = $2
+                    returning hours
+                `;
+                const incValues = [event_id, user_id];
+                await pool.query(incQuery, incValues);
+            } catch (err) {
+                // Log but don't throw: marking attendance succeeded; hours increment is best-effort
+                console.error('Failed to increment user hours for attended event:', err);
+            }
+        }
+
         return result.rows;
     } catch (err) {
         console.error(err);

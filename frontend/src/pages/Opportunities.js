@@ -5,6 +5,7 @@ import axios from 'axios';
 import PageTransition from "../components/Animation/PageTransition.jsx";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthProvider.js";
+import Title from '../components/ui/Title';
 
 export default function Opportunities() {
 
@@ -195,20 +196,7 @@ export default function Opportunities() {
       <Navbar />
       <PageTransition>
         <div className={styles['opportunities-container']}>
-          <div style={{
-            display: 'block',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-            fontSize: '56px',
-            fontWeight: '800',
-            margin: '12px auto 16px',
-            textAlign: 'center',
-            lineHeight: '1.2',
-          }}>
-            Opportunities
-          </div>
+          <Title text="Opportunities" />
 
           <div className={styles.filters}>
             <div className={styles['group-left']}>
