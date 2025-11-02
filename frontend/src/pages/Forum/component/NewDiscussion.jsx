@@ -12,6 +12,8 @@ export default function NewDiscussion() {
   const [submitting, setSubmitting] = useState(false);
   const [status, setStatus] = useState("");
   const [showGuidelines, setShowGuidelines] = useState(false);
+  const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:3001";
+  const auth = JSON.parse(sessionStorage.getItem("auth"));
 
   const [formData, setFormData] = useState({
     subject: "",
@@ -70,51 +72,54 @@ export default function NewDiscussion() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  function handleCancel() {
+    if (window.confirm("Discard your post?")) {
+      setFormData({ subject: "", body: "", image_file: null });
+      clearImage();
+    }
+  }
   /* ========== Submit ========== */
   async function handlePost(e) {
     e.preventDefault();
     setSubmitting(true);
     setStatus("");
 
+    // Ensure user is signed in
+    const currentAuth = auth || JSON.parse(sessionStorage.getItem("auth"));
+    if (!currentAuth?.id) {
+      setStatus("Please sign in to post");
+      nav("/volunteer/auth");
+      setSubmitting(false);
+      return;
+    }
+
+    if (!formData.subject.trim() || !formData.body.trim()) {
+      setStatus("Subject and body are required");
+      setSubmitting(false);
+      return;
+    }
+
+    const fd = new FormData();
+    fd.append("user_id", currentAuth.id);
+    fd.append("subject", formData.subject.trim());
+    fd.append("body", formData.body.trim());
+    if (formData.image_file) fd.append("image_file", formData.image_file);
+
+    setUploading(!!formData.image_file);
+
     try {
-      const auth = JSON.parse(sessionStorage.getItem("auth"));
-      if (!auth?.id) {
-        setStatus("Please sign in to post");
-        // alert("Please sign in to create a post");
-        nav("/volunteer/auth");
-        return;
-      }
-
-      if (!formData.subject.trim() || !formData.body.trim()) {
-        setStatus("Subject and body are required");
-        return;
-      }
-
-      const fd = new FormData();
-      // fd.append("supabase_id", auth.id);
-      fd.append("user_id", auth.id);
-      fd.append("subject", formData.subject.trim());
-      fd.append("body", formData.body.trim());
-
-      if (formData.image_file) {
-        fd.append("image_file", formData.image_file);
-      }
-
-      setUploading(!!formData.image_file);
-
       const response = await axios.post(
-        "http://localhost:3001/community/create_post",
+        `${API_BASE}/community/create_post`,
         fd,
         {
-          headers: { 'Content-Type': 'multipart/form-data' },
+          headers: { Accept: "application/json", "Content-Type": "multipart/form-data" },
           withCredentials: true,
-          timeout: 30000
+          timeout: 30000,
         }
       );
 
       if (response?.data?.status) {
         alert("Post Created Successfully!");
-        // reset
         setFormData({ subject: "", body: "", image_file: null });
         clearImage();
         nav("/community");
@@ -123,28 +128,20 @@ export default function NewDiscussion() {
         setStatus(msg);
         alert(`Error: ${msg}`);
       }
-
     } catch (err) {
       console.error("Create post error:", err);
       const errorMessage = err.response?.data?.message || err.message || "Failed to create post";
       setStatus(errorMessage);
       alert(`Error: ${errorMessage}`);
-
       if (err.response?.status === 413) setStatus("Image file is too large");
       if (err.response?.status === 415) setStatus("Unsupported image format");
-
     } finally {
       setUploading(false);
       setSubmitting(false);
     }
   }
 
-  function handleCancel() {
-    if (window.confirm("Discard your post?")) {
-      setFormData({ subject: "", body: "", image_file: null });
-      clearImage();
-    }
-  }
+
 
   return (
     <div style={{

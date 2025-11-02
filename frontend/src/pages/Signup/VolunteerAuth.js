@@ -13,7 +13,7 @@ export default function LoginSignup() {
   const [registerErrors, setRegisterErrors] = useState(false);
   const { setAuth } = useAuth();
   const nav = useNavigate();
-
+  const API_BASE = process.env.REACT_APP_API_URL;
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [registerData, setRegisterData] = useState({
     username: "",
@@ -51,7 +51,7 @@ export default function LoginSignup() {
       return;
     }
 
-    const emailInUse = await axios.get("http://localhost:3001/users/check_email", {params: {email: registerData.email}});
+    const emailInUse = await axios.get(`${API_BASE}/users/check_email`, {params: {email: registerData.email}});
     if(emailInUse.data.status) {
       setRegisterErrors("Email in use.")
       return;
@@ -113,7 +113,7 @@ export default function LoginSignup() {
         return;
       }
 
-      const userInDb = await axios.get("http://localhost:3001/users/get_user_by_id", {params: {id: user.id}});
+      const userInDb = await axios.get(`${API_BASE}/users/get_user_by_id`, {params: {id: user.id}});
       if(userInDb.data.result.length === 0) {
         try {
           const formData = new FormData();
@@ -125,7 +125,7 @@ export default function LoginSignup() {
           }
 
           const res = await axios.post(
-            "http://localhost:3001/users/complete_registration",
+            `${API_BASE}/users/complete_registration`,
             formData,
             { headers: { "Content-Type": "multipart/form-data" } }
           );
@@ -176,8 +176,6 @@ export default function LoginSignup() {
       console.error(err);
     }
   }
-
-  
 
   return (
     <>

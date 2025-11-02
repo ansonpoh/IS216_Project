@@ -8,6 +8,7 @@ import { useAuth } from "../contexts/AuthProvider.js";
 
 export default function Opportunities() {
 
+  const API_BASE = process.env.REACT_APP_API_URL;
   const location = useLocation();
   const openEventId = location.state?.eventId;
   const nav = useNavigate();
@@ -34,7 +35,7 @@ export default function Opportunities() {
     const fetchOpportunities = async () => {
       try {
         setLoading(true);
-        const res = await axios.get("http://localhost:3001/events/get_all_events");
+        const res = await axios.get(`${API_BASE}/events/get_all_events`);
         const data = Array.isArray(res.data.result) ? res.data.result : [];
         const normalized = data.map((it) => {
           const get = (...keys) => {
@@ -78,13 +79,13 @@ export default function Opportunities() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await axios.get("http://localhost:3001/events/get_all_categories");
+        const res = await axios.get(`${API_BASE}/events/get_all_categories`);
         setCategories(Array.isArray(res.data.result) ? res.data.result : []);
       } catch (err) { console.error("Error loading categories", err); }
     };
     const fetchRegions = async () => {
       try {
-        const res = await axios.get("http://localhost:3001/events/get_all_regions");
+        const res = await axios.get(`${API_BASE}/events/get_all_regions`);
         setRegions(Array.isArray(res.data.result) ? res.data.result : []);
       } catch (err) { console.error("Error loading regions", err); }
     };
@@ -134,12 +135,12 @@ export default function Opportunities() {
       setConfirmModal(false);
       setSignUpLoading(true);
 
-      const userSignedUp = await axios.get("http://localhost:3001/events/check_if_user_signed_up", { params: { user_id: auth.id, event_id: selectedOpportunity.event_id } });
+      const userSignedUp = await axios.get(`${API_BASE}/events/check_if_user_signed_up`, {params: {user_id: auth.id, event_id: selectedOpportunity.event_id}});
 
       if (userSignedUp.data.result.length > 0) {
         setAlreadySignedUp(true);
       } else {
-        const res = await axios.post("http://localhost:3001/events/signup_event", { user_id: auth.id, event_id: selectedOpportunity.event_id, })
+        const res = await axios.post(`${API_BASE}/events/signup_event`, {user_id: auth.id, event_id: selectedOpportunity.event_id, })
 
         if (res.data.result) {
           setSignUpSuccess(true);
