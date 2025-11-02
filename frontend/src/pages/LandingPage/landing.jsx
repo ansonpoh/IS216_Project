@@ -266,7 +266,7 @@ export default function Landing() {
 
                   {/* Main Heading */}
                   <h2 className="display-5 fw-bolder mb-3 ">
-                    <h3>Not sure where to start?</h3>
+                    Not sure where to start?
                     <span className="gradient-text-blue-purple">
                       Meet Vera:
                     </span>
