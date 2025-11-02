@@ -290,11 +290,11 @@ export default function VolunteerDashboard() {
     let active = [];
     let past = [];
 
-    // for(let e of events) {
-    //   if(e.status === "pending") pending.push(e);
-    //   else if(e.status === "approved") active.push(e);
-    //   else past.push(e);
-    // }
+    for(let e of events) {
+      if(e.status === "pending") pending.push(e);
+      else if(e.status === "approved") active.push(e);
+      else past.push(e);
+    }
 
     setPendingEvents(pending);
     setActiveEvents(active);
