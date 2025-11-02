@@ -16,15 +16,27 @@ export default function ChatBubble({ message, onOptionClick }) {
 
   useEffect(() => {
     const fetch_org = async () => {
-      const org = await axios.get(`${API_BASE}1/orgs/get_org_by_id`, {params: {id: auth.id}});
-      const data = org.data.result[0];
-      setImage(data.profile_image);
+      try {
+        const org = await axios.get(`${API_BASE}/orgs/get_org_by_id`, {params: {id: auth.id}});
+        const data = org.data.result?.[0];
+        if (data && data.profile_image) {
+          setImage(data.profile_image);
+        }
+      } catch (err) {
+        console.error("Error fetching org profile:", err);
+      }
     }
 
     const fetch_user = async () => {
-      const user = await axios.get(`${API_BASE}/users/get_user_by_id`, {params: {id: auth.id}})
-      const data = user.data.result[0];
-      setImage(data.profile_image);
+      try {
+        const user = await axios.get(`${API_BASE}/users/get_user_by_id`, {params: {id: auth.id}})
+        const data = user.data.result?.[0];
+        if (data && data.profile_image) {
+          setImage(data.profile_image);
+        }
+      } catch (err) {
+        console.error("Error fetching user profile:", err);
+      }
     }
 
     if(auth.id.length > 0) {

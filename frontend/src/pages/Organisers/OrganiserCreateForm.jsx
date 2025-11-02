@@ -39,9 +39,11 @@ export default function OrganiserCreateForm() {
     const fetch_org = async () => {
       try {
         const res = await axios.get(`${API_BASE}/orgs/get_org_by_id`, {params: {id: auth.id}})
-        const data = res.data.result[0];
-        setOrg(data);
-        setForm(prev => ({ ...prev, org_id: data.org_id }));
+        const data = res.data.result?.[0];
+        if (data) {
+          setOrg(data);
+          setForm(prev => ({ ...prev, org_id: data.org_id }));
+        }
       } catch (err) {
         console.error(err);
       }

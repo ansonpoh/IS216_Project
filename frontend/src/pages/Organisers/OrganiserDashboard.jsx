@@ -16,7 +16,7 @@ export default function OrganiserDashboard() {
   const [err, setErr] = useState("");
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("all"); // all | draft | published | closed
-  const [sort, setSort] = useState("startAt"); // startAt | createdAt | capacity
+  const [sort, setSort] = useState("title"); // title | startAt | createdAt | capacity
   const [org, setOrg] = useState(null);
 
   const [showModal, setShowModal] = useState(false);
@@ -32,10 +32,13 @@ export default function OrganiserDashboard() {
         setLoading(true);
         setErr("");
         const org = await axios.get(`${API_BASE}/orgs/get_org_by_id`, {params: {id}})
-        setOrg(org.data.result[0]);
+        const orgData = org.data.result?.[0];
+        if (orgData) {
+          setOrg(orgData);
+        }
         const res = await axios.get(`${API_BASE}/events/get_events_of_org`, {params: {org_id: id}});
-        setEvents(res.data.result);
-        setFilteredEvents(res.data.result);
+        setEvents(res.data.result || []);
+        setFilteredEvents(res.data.result || []);
       } catch (e) {
         if (!cancelled) setErr(e?.response?.data?.message || "Failed to load events.");
       } finally {
@@ -67,6 +70,11 @@ export default function OrganiserDashboard() {
         const pa = capacityPct(a);
         const pb = capacityPct(b);
         return pb - pa; // most filled first
+      }
+      if (sort === "title") {
+        const titleA = (a.title || "").toLowerCase();
+        const titleB = (b.title || "").toLowerCase();
+        return titleA.localeCompare(titleB);
       }
       const av = a[sort];
       const bv = b[sort];
@@ -233,6 +241,7 @@ export default function OrganiserDashboard() {
           </div>
           <div className="col-md-3">
             <select className="form-select" value={sort} onChange={(e) => setSort(e.target.value)}>
+              <option value="title">Sort by A-Z</option>
               <option value="startAt">Sort by start time</option>
               <option value="createdAt">Sort by created time</option>
               <option value="capacity">Sort by capacity filled</option>
