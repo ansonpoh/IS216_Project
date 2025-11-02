@@ -237,7 +237,7 @@ export default function LoginSignup() {
               </button>
 
               <div className={`${styles['social-icons']}`}>
-                <button className={`${styles['social-icons-btn']}`} onClick={handleGoogleLogin}><i class="bx bxl-google"></i></button>
+                <button className={`${styles['social-icons-btn']}`} onClick={handleGoogleLogin}><i className="bx bxl-google"></i></button>
               </div>
             </form>
           </div>
@@ -326,7 +326,7 @@ export default function LoginSignup() {
               </button>
 
               <div className={`${styles['social-icons']}`}>
-                <button className={`${styles['social-icons-btn']}`} onClick={handleGoogleLogin}><i class="bx bxl-google"></i></button>
+                <button className={`${styles['social-icons-btn']}`} onClick={handleGoogleLogin}><i className="bx bxl-google"></i></button>
               </div>
             </form>
           </div>
