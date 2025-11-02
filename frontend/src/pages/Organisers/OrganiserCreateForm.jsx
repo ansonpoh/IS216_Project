@@ -14,11 +14,14 @@ export default function OrganiserCreateForm() {
   const [regions, setRegions] = useState([]);
   const [categories, setCategories] = useState([]);
   const [org, setOrg] = useState(null);
+
   const API_BASE = process.env.REACT_APP_API_URL;
+  const LOCAL_BASE = "http://localhost:3001"
+
   useEffect(() => {
     const fetch_regions = async () => {
       try {
-        const res = await axios.get(`${API_BASE}/events/get_all_regions`);
+        const res = await axios.get(`${LOCAL_BASE}/events/get_all_regions`);
         const data = Array.isArray(res.data.result) ? res.data.result : [];
         setRegions(data);
       } catch (err) {
@@ -28,7 +31,7 @@ export default function OrganiserCreateForm() {
 
     const fetch_categories = async () => {
       try {
-        const res = await axios.get(`${API_BASE}/events/get_all_categories`);
+        const res = await axios.get(`${LOCAL_BASE}/events/get_all_categories`);
         const data = Array.isArray(res.data.result) ? res.data.result : [];
         setCategories(data);
       } catch (err) {
@@ -38,7 +41,7 @@ export default function OrganiserCreateForm() {
 
     const fetch_org = async () => {
       try {
-        const res = await axios.get(`${API_BASE}/orgs/get_org_by_id`, {params: {id: auth.id}})
+        const res = await axios.get(`${LOCAL_BASE}/orgs/get_org_by_id`, {params: {id: auth.id}})
         const data = res.data.result[0];
         setOrg(data);
         setForm(prev => ({ ...prev, org_id: data.org_id }));
@@ -105,7 +108,7 @@ export default function OrganiserCreateForm() {
     setSaving(true);
 
     try {
-      await axios.post(`${API_BASE}/events/create_event`, form)
+      await axios.post(`${LOCAL_BASE}/events/create_event`, form)
         .then((res) => {
           const data = res.data;
           if(data.status) {

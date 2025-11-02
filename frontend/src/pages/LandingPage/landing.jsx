@@ -50,7 +50,10 @@ export default function Landing() {
   const [activeCardIndex, setActiveCardIndex] = useState(null);
   const FACT_SWITCH_MS = 5000;
   const [showScrollTop, setShowScrollTop] = useState(false);
+
   const API_BASE = process.env.REACT_APP_API_URL; 
+  const LOCAL_BASE = "http://localhost:3001"
+
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
     window.addEventListener("scroll", handleScroll);
@@ -78,7 +81,7 @@ export default function Landing() {
       setFetchError(null);
 
       try {
-        const response = await axios.get(`${API_BASE}/facts`);
+        const response = await axios.get(`${LOCAL_BASE}/facts`);
         const data = response.data;
 
         const rows = Array.isArray(data.facts)

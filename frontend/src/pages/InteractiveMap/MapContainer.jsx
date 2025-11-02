@@ -196,7 +196,9 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
   const [showNearbyOnly, setShowNearbyOnly] = useState(false);
   const [userLocationMarker, setUserLocationMarker] = useState(null);
   const [isStreetViewActive, setIsStreetViewActive] = useState(false);
+
   const API_BASE = process.env.REACT_APP_API_URL;
+  const LOCAL_BASE = "http://localhost:3001"
 
   function getDistance(lat1, lng1, lat2, lng2) {
     const R = 6371e3; // metres
@@ -424,8 +426,8 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
     try {
       const backendBase = process.env.REACT_APP_API_URL || 'http://localhost:3001';
       // const res = await fetch(`${backendBase}/api/opportunities`);
-      const opportunities = await axios.get(`${API_BASE}/events/get_all_events`);
-      const res = await axios.post(`${API_BASE}/events/event_data_modify`, {events: opportunities.data.result});
+      const opportunities = await axios.get(`${LOCAL_BASE}/events/get_all_events`);
+      const res = await axios.post(`${LOCAL_BASE}/events/event_data_modify`, {events: opportunities.data.result});
 
       const data = res.data;
       console.log('Fetched opportunities:', data);
@@ -446,7 +448,7 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
         const backendBase = process.env.REACT_APP_API_URL || 'http://localhost:3001';
         console.log("Sending recommendedEvents to event_data_modify...");
         
-        const res = await axios.post(`${API_BASE}/events/event_data_modify`, {
+        const res = await axios.post(`${LOCAL_BASE}/events/event_data_modify`, {
           events: recommendedEvents
         });
 

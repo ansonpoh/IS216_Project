@@ -14,6 +14,7 @@ export default function NewDiscussion() {
   const [status, setStatus] = useState("");
   const [showGuidelines, setShowGuidelines] = useState(false);
   const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:3001";
+  const LOCAL_BASE = "http://localhost:3001"
   const auth = JSON.parse(sessionStorage.getItem("auth"));
 
   const [formData, setFormData] = useState({
@@ -118,7 +119,7 @@ export default function NewDiscussion() {
 
     try {
       const response = await axios.post(
-        `${API_BASE}/community/create_post`,
+        `${LOCAL_BASE}/community/create_post`,
         fd,
         {
           headers: { Accept: "application/json", "Content-Type": "multipart/form-data" },

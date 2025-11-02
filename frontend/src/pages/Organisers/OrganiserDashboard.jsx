@@ -9,6 +9,7 @@ export default function OrganiserDashboard() {
   const { auth } = useAuth?.() || {}; // safe in case hook shape differs
   const id = auth.id;
   const API_BASE = process.env.REACT_APP_API_URL;
+  const LOCAL_BASE = "http://localhost:3001"
 
   const [events, setEvents] = useState([]);
   const [filteredEvents, setFilteredEvents] = useState([]);
@@ -31,9 +32,9 @@ export default function OrganiserDashboard() {
       try {
         setLoading(true);
         setErr("");
-        const org = await axios.get(`${API_BASE}/orgs/get_org_by_id`, {params: {id}})
+        const org = await axios.get(`${LOCAL_BASE}/orgs/get_org_by_id`, {params: {id}})
         setOrg(org.data.result[0]);
-        const res = await axios.get(`${API_BASE}/events/get_events_of_org`, {params: {org_id: id}});
+        const res = await axios.get(`${LOCAL_BASE}/events/get_events_of_org`, {params: {org_id: id}});
         setEvents(res.data.result);
         setFilteredEvents(res.data.result);
       } catch (e) {
@@ -117,7 +118,7 @@ export default function OrganiserDashboard() {
     setShowModal(true);
     setLoadingModal(true);
     try {
-      const res = await axios.get(`${API_BASE}/events/get_registered_users_for_event`, {params: {event_id: event.event_id}})
+      const res = await axios.get(`${LOCAL_BASE}/events/get_registered_users_for_event`, {params: {event_id: event.event_id}})
       setRegistrations(res.data.result);
       let approved = 0;
       for(let r of res.data.result) {
@@ -139,7 +140,7 @@ export default function OrganiserDashboard() {
         )
       );
 
-      await axios.post(`${API_BASE}/events/update_registration_status`, {
+      await axios.post(`${LOCAL_BASE}/events/update_registration_status`, {
         user_id,
         event_id,
         status: newStatus,

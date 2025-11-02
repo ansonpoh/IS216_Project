@@ -5,6 +5,8 @@ import axios from "axios";
 export default function VolunteerProfile() {
   const STORAGE_KEY = "volunteer_profile_v1";
   const API_BASE = process.env.REACT_APP_API_URL;
+  const LOCAL_BASE = "http://localhost:3001"
+
   // get auth early so we can seed user_id
   const auth = JSON.parse(sessionStorage.getItem("auth")) || {};
 
@@ -111,7 +113,7 @@ export default function VolunteerProfile() {
         fd.append("avatar", formData.avatarFile);
 
         const resp = await axios.post(
-          `${API_BASE}/users/update_profile`,
+          `${LOCAL_BASE}/users/update_profile`,
           fd,
           {
             withCredentials: true,
@@ -133,7 +135,7 @@ export default function VolunteerProfile() {
       } else {
         // send JSON
         const resp = await axios.post(
-          "${API_BASE}/users/update_profile",
+          `${LOCAL_BASE}/users/update_profile`,
           payloadFields,
           {
             withCredentials: true,

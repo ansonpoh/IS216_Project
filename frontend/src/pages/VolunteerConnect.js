@@ -10,6 +10,7 @@ import { useAuth } from "../contexts/AuthProvider";
 function VolunteerConnect() {
   const { setAuth, auth } = useAuth();
   const API_BASE = process.env.REACT_APP_API_URL;
+  const LOCAL_BASE = "http://localhost:3001"
 
   useEffect(() => {
     const checkGoogleRedirect = async () => {
@@ -27,7 +28,7 @@ function VolunteerConnect() {
         formData.append("supabase_id", supabaseId);
         formData.append("username", username);
         formData.append("email", email);
-        await axios.post(`${API_BASE}/users/complete_registration`, formData, {headers: {"Content-Type":"multipart/form-data"}});
+        await axios.post(`${LOCAL_BASE}/users/complete_registration`, formData, {headers: {"Content-Type":"multipart/form-data"}});
       } catch (err) {
         console.error(err);
       }

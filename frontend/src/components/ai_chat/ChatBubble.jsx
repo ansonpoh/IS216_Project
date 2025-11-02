@@ -12,17 +12,18 @@ export default function ChatBubble({ message, onOptionClick }) {
   const [image, setImage] = useState(null);
   const events = message.events
   const API_BASE = process.env.REACT_APP_API_URL;
+  const LOCAL_BASE = "http://localhost:3001"
   const {auth} = useAuth();
 
   useEffect(() => {
     const fetch_org = async () => {
-      const org = await axios.get(`${API_BASE}1/orgs/get_org_by_id`, {params: {id: auth.id}});
+      const org = await axios.get(`${LOCAL_BASE}/orgs/get_org_by_id`, {params: {id: auth.id}});
       const data = org.data.result[0];
       setImage(data.profile_image);
     }
 
     const fetch_user = async () => {
-      const user = await axios.get(`${API_BASE}/users/get_user_by_id`, {params: {id: auth.id}})
+      const user = await axios.get(`${LOCAL_BASE}/users/get_user_by_id`, {params: {id: auth.id}})
       const data = user.data.result[0];
       setImage(data.profile_image);
     }

@@ -355,11 +355,13 @@ export default function VolunteerDashboard() {
   const [goalHours, setGoalHours] = useState(36);
   const [manualTotalHours, setManualTotalHours] = useState(0);
   const {auth} = useAuth();
-  const API_BASE = process.env.REACT_APP_API_URL;
   
+  const API_BASE = process.env.REACT_APP_API_URL;
+  const LOCAL_BASE = "http://localhost:3001"
+
   useEffect(() => {
     const fetchEvents = async () => {
-      const result = await axios.get(`${API_BASE}/events/get_registered_events_for_user`, {params:{user_id: auth.id}});
+      const result = await axios.get(`${LOCAL_BASE}/events/get_registered_events_for_user`, {params:{user_id: auth.id}});
       setEvents(result.data.result);
     }
     fetchEvents();
@@ -408,7 +410,7 @@ export default function VolunteerDashboard() {
 
     // Notify backend to mark registration as 'attended' and increment hours.
     try {
-      await axios.post(`${API_BASE}/events/update_registration_status`, {
+      await axios.post(`${LOCAL_BASE}/events/update_registration_status`, {
         user_id: auth.id,
         event_id: id,
         status: 'attended'
