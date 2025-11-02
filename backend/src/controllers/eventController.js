@@ -21,9 +21,9 @@ import axios from "axios";
 
 export async function create_event_handler (req, res) {
   try {
-    const {org_id, title, category, description, location, region, start_date, end_date, start_time, end_time, capacity, hours, status, longitude, latitude} = req.body
+    const {org_id, title, category, description, location, region, start_date, end_date, start_time, end_time, capacity, hours, longitude, latitude} = req.body
 
-    const result = await create_event(org_id, title, category, description, location, region, start_date, end_date, start_time, end_time, capacity, hours, status, longitude, latitude);
+    const result = await create_event(org_id, title, category, description, location, region, start_date, end_date, start_time, end_time, capacity, hours, longitude, latitude);
 
     if(result) {
       return res.json({status: true});

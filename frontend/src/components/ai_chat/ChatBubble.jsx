@@ -13,11 +13,11 @@ export default function ChatBubble({ message, onOptionClick }) {
   const events = message.events
   const API_BASE = process.env.REACT_APP_API_URL;
   const {auth} = useAuth();
+
   useEffect(() => {
     const fetch_org = async () => {
       const org = await axios.get(`${API_BASE}1/orgs/get_org_by_id`, {params: {id: auth.id}});
       const data = org.data.result[0];
-      console.log(data.profile_image)
       setImage(data.profile_image);
     }
 
@@ -30,7 +30,9 @@ export default function ChatBubble({ message, onOptionClick }) {
     if(auth.id.length > 0) {
       if(auth.role === "volunteer") {
         fetch_user();
+        console.log("vol")
       } else if(auth.role === "organiser") {
+        console.log("org")
         fetch_org();
       }
     }
@@ -111,7 +113,7 @@ export default function ChatBubble({ message, onOptionClick }) {
               </div>
             ))}
             <div className={`${styles['view-all-container']} text-center mt-3`}>
-              <button className={`${styles['view-all-btn']} btn btn-outline-secondary`} onClick={() => nav("/maps", {state: {events}})}>
+              <button className={`${styles['view-all-btn']} btn btn-outline-secondary`} onClick={() => nav("/map", {state: {events}})}>
                 <i className="bi bi-map me-2"></i>View All on Map
               </button>
             </div>

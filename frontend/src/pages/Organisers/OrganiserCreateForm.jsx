@@ -66,9 +66,6 @@ export default function OrganiserCreateForm() {
     end_time: "",
     capacity: "",
     hours: "",
-    status: "draft",
-    longitude: "",
-    latitude: "",
     is_published: false,
     image: null, // optional image file
   });
@@ -240,7 +237,7 @@ export default function OrganiserCreateForm() {
             </div>
 
             {/* OTHER DETAILS */}
-            <div className="col-md-4">
+            <div className="col-md-6">
               <label className="form-label">Capacity *</label>
               <input
                 type="number"
@@ -253,7 +250,7 @@ export default function OrganiserCreateForm() {
               />
             </div>
 
-            <div className="col-md-4">
+            <div className="col-md-6">
               <label className="form-label">Hours *</label>
               <input
                 type="number"
@@ -265,7 +262,7 @@ export default function OrganiserCreateForm() {
                 required
               />
             </div>
-
+{/* 
             <div className="col-md-4">
               <label className="form-label">Status</label>
               <select
@@ -278,9 +275,9 @@ export default function OrganiserCreateForm() {
                 <option value="published">Published</option>
                 <option value="closed">Closed</option>
               </select>
-            </div>
+            </div> */}
 
-            <div className="col-12">
+            {/* <div className="col-12">
               <div className="form-check">
                 <input
                   id="is_published"
@@ -294,9 +291,9 @@ export default function OrganiserCreateForm() {
                   Publish immediately
                 </label>
               </div>
-            </div>
+            </div> */}
 
-            <div className="col-md-6">
+            {/* <div className="col-md-6">
               <label className="form-label">Latitude</label>
               <input
                 name="latitude"
@@ -314,7 +311,7 @@ export default function OrganiserCreateForm() {
                 onChange={onChange}
                 className="form-control"
               />
-            </div>
+            </div> */}
 
             <div className="col-12">
               <label className="form-label">Upload Event Image (optional)</label>
