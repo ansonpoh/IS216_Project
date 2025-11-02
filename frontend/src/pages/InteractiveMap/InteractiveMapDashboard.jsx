@@ -90,7 +90,7 @@ const InteractiveMapDashboard = () => {
                 <div className="row">
                   {/* Region Filters */}
                   <div className="col-md-6 mb-3 mb-md-0">
-                    <h6 className="fw-semibold text-dark mb-3">Region</h6>
+                    <h6 className="fw-semibold mb-3" style={{ display: 'inline-block', background: 'linear-gradient(135deg, rgb(102, 126, 234) 0%, rgb(118, 75, 162) 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', fontSize: '1.1rem' }}>Region</h6>
                     <div className="d-flex flex-wrap gap-2">
                       {regions.map((region) => {
                         const regionClass = styles[`btn-region-${region.name.toLowerCase().replace(' ', '-')}`];
@@ -111,7 +111,7 @@ const InteractiveMapDashboard = () => {
 
                   {/* Category Filters */}
                   <div className="col-md-6">
-                    <h6 className="fw-semibold text-dark mb-3">Categories</h6>
+                    <h6 className="fw-semibold mb-3" style={{ display: 'inline-block', background: 'linear-gradient(135deg, rgb(102, 126, 234) 0%, rgb(118, 75, 162) 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', fontSize: '1.1rem' }}>Category</h6>
                     <div className="d-flex flex-wrap gap-2">
                       {categories.map((category) => {
                         const categoryClass = styles[`btn-category-${category.name.toLowerCase().replace(' ', '-')}`];
