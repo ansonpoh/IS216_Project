@@ -386,6 +386,11 @@ export default function VolunteerDashboard() {
     setPastEvents(past);
   }, [events]);
 
+  useEffect(() => {
+    const hours = pastEvents.reduce((sum, e) => sum + (e.hours || 0), 0);
+    setManualTotalHours(hours);
+  }, [pastEvents]);
+
   const hoursBetween = (s, e) => Math.max(0, (new Date(e) - new Date(s)) / 36e5);
   const round1 = (n) => Math.round(n * 10) / 10;
 
