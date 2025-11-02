@@ -17,7 +17,7 @@
 }
 
 .navbar_item.active {
-  background-color: rgb(140, 140, 240);
+  background-color: #7494ec;
   color: white;
   padding: 10px;
 }

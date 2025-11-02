@@ -88,7 +88,7 @@
   font-size: 0.92rem;
   border-radius: 8px;
   border: none;
-  background-color: rgb(140, 140, 240);
+  background-color: #7494ec;
   color: #ffffff;
   cursor: pointer;
   display: inline-flex;
@@ -497,31 +497,33 @@
 .loading-modal,
 .success-modal {
   background: #fff;
-  padding: 2rem;
-  border-radius: 1rem;
-  max-width: 400px;
-  width: 90%;
+  /* match NewDiscussion modal sizing and spacing */
+  padding: 28px;
+  border-radius: 12px;
+  max-width: 520px;
+  width: min(520px, 92%);
   text-align: center;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  box-shadow: 0 20px 60px rgba(16,24,40,0.2);
 }
 
 .confirm-buttons {
   display: flex;
   justify-content: center;
   gap: 1rem;
-  margin-top: 1.5rem;
+  margin-top: 1.25rem;
 }
 
 .cancel-btn {
-  background: #ddd;
-  border: none;
+  background: #ffffff;
+  color: #374151;
+  border: 1px solid #e5e7eb;
   padding: 0.6rem 1.2rem;
   border-radius: 8px;
   cursor: pointer;
 }
 
 .confirm-btn {
-  background: #007bff;
+  background: #7494ec; /* primary color from NewDiscussion */
   color: white;
   border: none;
   padding: 0.6rem 1.2rem;
@@ -530,7 +532,7 @@
 }
 
 .ok-btn {
-  background: #28a745;
+  background: #7494ec; /* primary color for OK actions */
   color: white;
   border: none;
   padding: 0.6rem 1.2rem;
@@ -541,7 +543,7 @@
 
 .spinner {
   border: 4px solid #f3f3f3;
-  border-top: 4px solid #007bff;
+  border-top: 4px solid #7494ec; /* use primary color */
   border-radius: 50%;
   width: 40px;
   height: 40px;

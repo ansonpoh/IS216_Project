@@ -63,7 +63,7 @@
 
 /* --- Add Post Button Styles --- */
 .addPostButton {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #7494ec;
   color: white;
   border: none;
   border-radius: 10px;
@@ -584,4 +584,17 @@
   .card-image {
     height: clamp(100px, 20vh, 180px);
   }
+}
+
+/* Posts grid (match Opportunities grid behaviour) */
+.postsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+  padding: 0.25rem;
+}
+
+.emptyStateCenter {
+  grid-column: 1 / -1;
+  text-align: center;
 }

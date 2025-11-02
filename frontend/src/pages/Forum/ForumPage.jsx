@@ -394,25 +394,21 @@ export default function ForumPage() {
                 </p>
               </div>
             ) : (
-              <div className="d-flex flex-wrap gap-4 justify-content-start">
+              <div className={styles.postsGrid}>
                 {filteredPosts.map((post) => (
-                  <div
+                  <FeaturedCard
                     key={post.feedback_id}
-                    style={{ flex: "1 1 300px", maxWidth: "350px" }}
-                  >
-                    <FeaturedCard
-                      feedback_id={post.feedback_id}
-                      user_id={post.user_id}
-                      username={post.username}
-                      profile_picture={post.profile_image}
-                      subject={post.subject}
-                      body={post.body}
-                      created_at={post.created_at}
-                      image={post.img}
-                      likes={post.liked_count || 0}
-                      onClick={() => setSelectedPost(post)}
-                    />
-                  </div>
+                    feedback_id={post.feedback_id}
+                    user_id={post.user_id}
+                    username={post.username}
+                    profile_picture={post.profile_image}
+                    subject={post.subject}
+                    body={post.body}
+                    created_at={post.created_at}
+                    image={post.img}
+                    likes={post.liked_count || 0}
+                    onClick={() => setSelectedPost(post)}
+                  />
                 ))}
               </div>
             )}

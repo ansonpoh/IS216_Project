@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import modalStyles from '../../../styles/Modals.module.css';
 
 // Validation constants
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5MB
@@ -20,6 +21,9 @@ export default function NewDiscussion() {
     body: "",
     image_file: null,
   });
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showSignInModal, setShowSignInModal] = useState(false);
+  const [showDiscardModal, setShowDiscardModal] = useState(false);
 
   const fileInputRef = useRef(null);
   const nav = useNavigate();
@@ -73,10 +77,14 @@ export default function NewDiscussion() {
   };
 
   function handleCancel() {
-    if (window.confirm("Discard your post?")) {
-      setFormData({ subject: "", body: "", image_file: null });
-      clearImage();
-    }
+    // open discard confirmation modal instead of native confirm
+    setShowDiscardModal(true);
+  }
+
+  function handleDiscardConfirm() {
+    setFormData({ subject: "", body: "", image_file: null });
+    clearImage();
+    setShowDiscardModal(false);
   }
   /* ========== Submit ========== */
   async function handlePost(e) {
@@ -87,8 +95,9 @@ export default function NewDiscussion() {
     // Ensure user is signed in
     const currentAuth = auth || JSON.parse(sessionStorage.getItem("auth"));
     if (!currentAuth?.id) {
+      // show sign-in modal instead of navigating away immediately
       setStatus("Please sign in to post");
-      nav("/volunteer/auth");
+      setShowSignInModal(true);
       setSubmitting(false);
       return;
     }
@@ -119,10 +128,10 @@ export default function NewDiscussion() {
       );
 
       if (response?.data?.status) {
-        alert("Post Created Successfully!");
+        // show a success modal (instead of alert) and navigate when user dismisses
+        setShowSuccessModal(true);
         setFormData({ subject: "", body: "", image_file: null });
         clearImage();
-        nav("/community");
       } else {
         const msg = response?.data?.message || "Failed to create post";
         setStatus(msg);
@@ -139,6 +148,16 @@ export default function NewDiscussion() {
       setUploading(false);
       setSubmitting(false);
     }
+  }
+
+  function handleSuccessOk() {
+    setShowSuccessModal(false);
+    nav('/community');
+  }
+
+  function handleSignInOk() {
+    setShowSignInModal(false);
+    nav('/volunteer/auth');
   }
 
 
@@ -317,7 +336,7 @@ export default function NewDiscussion() {
                     <div style={{ width: '64px', height: '64px', margin: '0 auto 16px', borderRadius: '50%', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px' }}>📷</div>
                     <p style={{ fontSize: '16px', color: '#4b5563', marginBottom: '8px', fontWeight: '600' }}>Drop your image here, or click to browse</p>
                     <p style={{ fontSize: '13px', color: '#9ca3af', margin: 0 }}>PNG, JPG, WEBP or GIF up to 5MB</p>
-                    <label style={{ display: 'inline-block', marginTop: '16px', padding: '10px 24px', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white', borderRadius: '10px', fontSize: '14px', fontWeight: '600', cursor: 'pointer', transition: 'transform 0.2s ease' }} onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}>
+                    <label style={{ display: 'inline-block', marginTop: '16px', padding: '10px 24px', background: '#7494ec', color: 'white', borderRadius: '10px', fontSize: '14px', fontWeight: '600', cursor: 'pointer', transition: 'transform 0.2s ease' }} onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}>
                       Choose File
                       <input ref={fileInputRef} type="file" accept="image/*" onChange={onImageChange} style={{ display: "none" }} />
                     </label>
@@ -333,7 +352,7 @@ export default function NewDiscussion() {
             {/* Action Buttons */}
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', paddingTop: '24px', borderTop: '1px solid #e5e7eb' }}>
               <button type="button" onClick={handleCancel} disabled={submitting} style={{ padding: '14px 32px', background: 'white', border: '2px solid #e5e7eb', borderRadius: '12px', fontSize: '15px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.2s ease', color: '#6b7280' }} onMouseOver={(e) => { e.currentTarget.style.borderColor = '#9ca3af'; e.currentTarget.style.color = '#4b5563'; }} onMouseOut={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; e.currentTarget.style.color = '#6b7280'; }}>Cancel</button>
-              <button type="submit" disabled={submitting || uploading} style={{ padding: '14px 32px', background: submitting ? '#9ca3af' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', border: 'none', borderRadius: '12px', fontSize: '15px', fontWeight: '600', cursor: submitting ? 'not-allowed' : 'pointer', transition: 'all 0.2s ease', color: 'white', display: 'flex', alignItems: 'center', gap: '8px' }} onMouseOver={(e) => { if (!submitting) { e.currentTarget.style.transform = 'scale(1.02)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(99, 102, 241, 0.3)'; } }} onMouseOut={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = 'none'; }}>
+              <button type="submit" disabled={submitting || uploading} style={{ padding: '14px 32px', background: submitting ? '#9ca3af' : '#7494ec', border: 'none', borderRadius: '12px', fontSize: '15px', fontWeight: '600', cursor: submitting ? 'not-allowed' : 'pointer', transition: 'all 0.2s ease', color: 'white', display: 'flex', alignItems: 'center', gap: '8px' }} onMouseOver={(e) => { if (!submitting) { e.currentTarget.style.transform = 'scale(1.02)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(99, 102, 241, 0.3)'; } }} onMouseOut={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = 'none'; }}>
                 {submitting ? (
                   <>
                     <div style={{ width: '16px', height: '16px', border: '2px solid white', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.6s linear infinite' }} />
@@ -351,6 +370,48 @@ export default function NewDiscussion() {
           </form>
         </div>
       </div>
+
+      {showSuccessModal && (
+        <div className={modalStyles.overlay} onClick={() => { setShowSuccessModal(false); nav('/community'); }}>
+          <div className={modalStyles.dialog} role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+            <div className={modalStyles.icon} style={{ color: 'green' }}>✓</div>
+            <div className={modalStyles.title}>Post Created Successfully!</div>
+            <div className={modalStyles.body}>Your post is live in the community.</div>
+            <div className={modalStyles.buttons}>
+              <button className={modalStyles.btnPrimary} onClick={handleSuccessOk}>OK</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showSignInModal && (
+        <div className={modalStyles.overlay} onClick={() => { setShowSignInModal(false); nav('/volunteer/auth'); }}>
+          <div className={modalStyles.dialog} role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+            <div className={modalStyles.icon} style={{ color: '#f59e0b' }}>⚠️</div>
+            <div className={modalStyles.title}>Please sign in to continue</div>
+            <div className={modalStyles.body}>You need to sign in before posting. Would you like to go to the sign in page?</div>
+            <div className={modalStyles.buttons}>
+              <button className={modalStyles.btnCancel} onClick={() => setShowSignInModal(false)}>Cancel</button>
+              <button className={modalStyles.btnPrimary} onClick={handleSignInOk}>Sign In</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showDiscardModal && (
+        <div className={modalStyles.overlay} onClick={() => setShowDiscardModal(false)}>
+          <div className={modalStyles.dialog} role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+            <div className={modalStyles.icon} style={{ color: '#f59e0b' }}>⚠️</div>
+            <div className={modalStyles.title}>Discard your post?</div>
+            <div className={modalStyles.body}>Are you sure you want to discard this post? This action cannot be undone.</div>
+            <div className={modalStyles.buttons}>
+              <button className={modalStyles.btnCancel} onClick={() => setShowDiscardModal(false)}>Cancel</button>
+              <button className={modalStyles.btnPrimary} onClick={handleDiscardConfirm}>Discard</button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
