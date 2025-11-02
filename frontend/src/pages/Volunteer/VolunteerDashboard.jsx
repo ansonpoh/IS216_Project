@@ -486,7 +486,6 @@ export default function VolunteerDashboard() {
           <CardCarousel title="Active (Joined) Events" items={activeEvents} emptyText="Nothing here yet." renderCardFooter={(e) => (
             <>
               <button className="btn btn-sm btn-success" onClick={() => markAttended(e.id)}>Mark Attended → Past</button>
-              <button className="btn btn-sm btn-outline-danger" onClick={() => deleteActive(e.id)}>Delete</button>
             </>
           )} />
         </div>
@@ -495,7 +494,6 @@ export default function VolunteerDashboard() {
           <CardCarousel title="Pending Applications" items={pendingEvents} emptyText="Nothing here yet." renderCardFooter={(e) => (
             <>
               {/* <button className="btn btn-sm btn-primary" onClick={() => approvePending(e.id)}>Approve → Active</button> */}
-              <button className="btn btn-sm btn-outline-danger" onClick={() => withdrawPending(e.id)}>Withdraw</button>
             </>
           )} />
         </div>
