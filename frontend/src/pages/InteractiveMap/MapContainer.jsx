@@ -195,6 +195,7 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
   const [radiusCircle, setRadiusCircle] = useState(null);
   const [showNearbyOnly, setShowNearbyOnly] = useState(false);
   const [userLocationMarker, setUserLocationMarker] = useState(null);
+  const [isStreetViewActive, setIsStreetViewActive] = useState(false);
   const API_BASE = process.env.REACT_APP_API_URL;
 
   function getDistance(lat1, lng1, lat2, lng2) {
@@ -746,6 +747,12 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
         display: none !important;
       }
 
+      /* Hide numbered Street View control buttons */
+      button[aria-label="1"],
+      button[aria-label="2"] {
+        display: none !important;
+      }
+
       /* Show zoom control divider with proper styling */
       .gmnoprint > div[style*="background-color: rgb(230, 230, 230)"] {
         width: 36px !important;
@@ -824,6 +831,21 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
           fullscreenControlOptions: {
             position: window.google.maps.ControlPosition.TOP_RIGHT
           }
+        });
+
+        // Add Street View visibility listener and configure controls
+        const streetView = mapInstanceRef.current.getStreetView();
+        streetView.setOptions({
+          zoomControl: false,
+          panControl: false,
+          linksControl: true,
+          addressControl: true,
+          fullscreenControl: true,
+          enableCloseButton: true
+        });
+        streetView.addListener('visible_changed', () => {
+          const isVisible = streetView.getVisible();
+          setIsStreetViewActive(isVisible);
         });
 
         window.mapInstance = mapInstanceRef.current;
@@ -963,32 +985,34 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
         </button>
       )}
 
-      <button
-        onClick={handleShowNearby}
-        className="btn position-absolute"
-        title="Show nearby opportunities"
-        style={{
-          top: '10px',
-          left: '192px',
-          zIndex: 1000,
-          backgroundColor: showNearbyOnly ? 'rgb(113, 113, 232)' : 'rgb(159, 159, 233)',
-          border: showNearbyOnly ? '2px solid rgb(80, 80, 200)' : '2px solid rgba(113, 113, 232, 1)',
-          borderRadius: '2px',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-          width: '40px',
-          height: '40px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: 'white',
-          padding: 0
-        }}
-      >
-        <i className="bi bi-geo-alt" style={{ fontSize: '22px', color: 'white' }}></i>
-      </button>
+      {!isStreetViewActive && (
+        <button
+          onClick={handleShowNearby}
+          className="btn position-absolute"
+          title="Show nearby opportunities"
+          style={{
+            top: '10px',
+            left: '192px',
+            zIndex: 1000,
+            backgroundColor: showNearbyOnly ? 'rgb(113, 113, 232)' : 'rgb(159, 159, 233)',
+            border: showNearbyOnly ? '2px solid rgb(80, 80, 200)' : '2px solid rgba(113, 113, 232, 1)',
+            borderRadius: '2px',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+            width: '40px',
+            height: '40px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'white',
+            padding: 0
+          }}
+        >
+          <i className="bi bi-geo-alt" style={{ fontSize: '22px', color: 'white' }}></i>
+        </button>
+      )}
 
       {/* Radius Selector (1–10 km) */}
-      {showNearbyOnly && (
+      {showNearbyOnly && !isStreetViewActive && (
         <div
           className="position-absolute"
           style={{
