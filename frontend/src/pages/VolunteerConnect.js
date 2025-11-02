@@ -8,7 +8,7 @@ import axios from "axios";
 import { useAuth } from "../contexts/AuthProvider";
 
 function VolunteerConnect() {
-  const { setAuth } = useAuth();
+  const { setAuth, auth } = useAuth();
   const API_BASE = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
@@ -38,8 +38,9 @@ function VolunteerConnect() {
         token: accessToken
       })
     }
-
-    checkGoogleRedirect();
+    if(auth.id.length < 1) {
+      checkGoogleRedirect();
+    }
   }, [setAuth])
 
   return (
