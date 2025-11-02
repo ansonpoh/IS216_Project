@@ -523,7 +523,7 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
               </div>
             ` : ''}
             <div style="font-size: 14px; color: #555; margin-top: 10px; display: flex; align-items: flex-start; padding: 8px 0; border-top: 1px solid #eee;">
-              <span style="line-height: 1.4;"><strong>Location:</strong> ${ev.postalcode}</span>
+              <span style="line-height: 1.4;">📍 ${ev.postalcode}</span>
             </div>
             ${ev.event_id ? `
               <a
@@ -689,7 +689,7 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
               </div>
             ` : ''}
             <div style="font-size: 14px; color: #555; margin-top: 10px; display: flex; align-items: flex-start; padding: 8px 0; border-top: 1px solid #eee;">
-              <span style="line-height: 1.4;"><strong>Location:</strong> ${item.postalcode}</span>
+              <span style="line-height: 1.4;">📍 ${item.postalcode}</span>
             </div>
             ${item.event_id ? `
               <a
@@ -929,7 +929,7 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
   }, []);
 
   return (
-    <div className="position-relative flex-grow-1" style={{ boxShadow: '0 0 8px 2px #0066ff4d', borderRadius: '0.375rem' }}>
+    <div className="position-relative flex-grow-1" style={{ boxShadow: '0 0 12px 3px rgba(159, 159, 233, 0.5)', borderRadius: '0.375rem' }}>
       <div
         ref={mapRef}
         id="map"
