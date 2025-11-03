@@ -493,51 +493,55 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
 
       const infoWindow = new window.google.maps.InfoWindow({
         content: `
-          <div style="padding: 8px; max-width: 300px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-            ${hasImage ? `
-              <div style="margin: -8px -8px 12px -8px; overflow: hidden; border-radius: 8px 8px 0 0;">
-                <img
-                  src="${ev.image_url}"
-                  alt="${ev.title || 'Opportunity'}"
-                  style="width: 100%; height: 180px; object-fit: cover; display: block;"
-                  onerror="this.style.display='none'; this.parentElement.style.display='none';"
-                />
+          <div style="display: flex;">
+            <div style="padding: 8px; max-width: 300px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; overflow: visible; flex: 1;">
+              ${hasImage ? `
+                <div style="margin: -8px -8px 12px -8px; overflow: hidden; border-radius: 8px 8px 0 0;">
+                  <img
+                    src="${ev.image_url}"
+                    alt="${ev.title || 'Opportunity'}"
+                    style="width: 100%; height: 180px; object-fit: cover; display: block;"
+                    onerror="this.style.display='none'; this.parentElement.style.display='none';"
+                  />
+                </div>
+              ` : ''}
+              <div style="font-weight: 600; font-size: 17px; margin-bottom: 8px; color: #1a1a1a; line-height: 1.3;">
+                ${ev.title || 'Opportunity'}
               </div>
-            ` : ''}
-            <div style="font-weight: 600; font-size: 17px; margin-bottom: 8px; color: #1a1a1a; line-height: 1.3;">
-              ${ev.title || 'Opportunity'}
+              ${ev.organization ? `
+                <div style="font-size: 13px; margin-bottom: 10px; color: #666; display: flex; align-items: center;">
+                  <span style="font-weight: 500;">${ev.organization}</span>
+                </div>
+              ` : ''}
+              ${ev.description ? `
+                <div style="font-size: 13px; margin-bottom: 12px; color: #444; line-height: 1.5;">
+                  ${ev.description.substring(0, 150)}${ev.description.length > 150 ? '...' : ''}
+                </div>
+              ` : ''}
+              ${ev.category ? `
+                <div style="font-size: 11px; color: ${categoryColors.color}; margin-bottom: 10px; display: inline-block; background: ${categoryColors.bg}; padding: 5px 12px; border-radius: 14px; font-weight: 600;">
+                  ${(ev.category)}
+                </div>
+              ` : ''}
+              <div style="font-size: 14px; color: #555; margin-top: 10px; display: flex; align-items: flex-start; padding: 8px 0; border-top: 1px solid #eee;">
+                <span style="line-height: 1.4;">📍 ${ev.postalcode}</span>
+              </div>
+              ${ev.event_id ? `
+                <a
+                  id=${buttonId}
+                  style="display: block; margin-top: 12px; padding: 10px 16px; background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 600; text-align: center; box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3); transition: transform 0.2s;"
+                  onmouseover="this.style.transform='translateY(-2px)'"
+                  onmouseout="this.style.transform='translateY(0)'"
+                >
+                  Learn More →
+                </a>
+              ` : ''}
             </div>
-            ${ev.organization ? `
-              <div style="font-size: 13px; margin-bottom: 10px; color: #666; display: flex; align-items: center;">
-                <span style="font-weight: 500;">${ev.organization}</span>
-              </div>
-            ` : ''}
-            ${ev.description ? `
-              <div style="font-size: 13px; margin-bottom: 12px; color: #444; line-height: 1.5;">
-                ${ev.description.substring(0, 150)}${ev.description.length > 150 ? '...' : ''}
-              </div>
-            ` : ''}
-            ${ev.category ? `
-              <div style="font-size: 11px; color: ${categoryColors.color}; margin-bottom: 10px; display: inline-block; background: ${categoryColors.bg}; padding: 5px 12px; border-radius: 14px; font-weight: 600;">
-                ${(ev.category)}
-              </div>
-            ` : ''}
-            <div style="font-size: 14px; color: #555; margin-top: 10px; display: flex; align-items: flex-start; padding: 8px 0; border-top: 1px solid #eee;">
-              <span style="line-height: 1.4;">📍 ${ev.postalcode}</span>
-            </div>
-            ${ev.event_id ? `
-              <a
-                id=${buttonId}
-                style="display: block; margin-top: 12px; padding: 10px 16px; background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 600; text-align: center; box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3); transition: transform 0.2s;"
-                onmouseover="this.style.transform='translateY(-2px)'"
-                onmouseout="this.style.transform='translateY(0)'"
-              >
-                Learn More →
-              </a>
-            ` : ''}
+            <div style="width: 12px; flex-shrink: 0;"></div>
           </div>
         `,
-        maxWidth: 320
+        maxWidth: 320,
+        disableAutoPan: false
       });
 
       infoWindow.addListener("domready", () => {
@@ -659,51 +663,55 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
 
       const infoWindow = new window.google.maps.InfoWindow({
         content: `
-          <div style="padding: 8px; max-width: 300px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-            ${hasImage ? `
-              <div style="margin: -8px -8px 12px -8px; overflow: hidden; border-radius: 8px 8px 0 0;">
-                <img
-                  src="${imageUrl}"
-                  alt="${item.title || 'Opportunity'}"
-                  style="width: 100%; height: 180px; object-fit: cover; display: block;"
-                  onerror="this.style.display='none'; this.parentElement.style.display='none';"
-                />
+          <div style="display: flex;">
+            <div style="padding: 8px; max-width: 300px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; overflow: visible; flex: 1;">
+              ${hasImage ? `
+                <div style="margin: -8px -8px 12px -8px; overflow: hidden; border-radius: 8px 8px 0 0;">
+                  <img
+                    src="${imageUrl}"
+                    alt="${item.title || 'Opportunity'}"
+                    style="width: 100%; height: 180px; object-fit: cover; display: block;"
+                    onerror="this.style.display='none'; this.parentElement.style.display='none';"
+                  />
+                </div>
+              ` : ''}
+              <div style="font-weight: 600; font-size: 17px; margin-bottom: 8px; color: #1a1a1a; line-height: 1.3;">
+                ${item.title || 'Opportunity'}
               </div>
-            ` : ''}
-            <div style="font-weight: 600; font-size: 17px; margin-bottom: 8px; color: #1a1a1a; line-height: 1.3;">
-              ${item.title || 'Opportunity'}
+              ${item.organization ? `
+                <div style="font-size: 13px; margin-bottom: 10px; color: #666; display: flex; align-items: center;">
+                  <span style="font-weight: 500;">${item.organization}</span>
+                </div>
+              ` : ''}
+              ${item.description ? `
+                <div style="font-size: 13px; margin-bottom: 12px; color: #444; line-height: 1.5;">
+                  ${item.description.substring(0, 150)}${item.description.length > 150 ? '...' : ''}
+                </div>
+              ` : ''}
+              ${item.category ? `
+                <div style="font-size: 11px; color: ${categoryColors.color}; margin-bottom: 10px; display: inline-block; background: ${categoryColors.bg}; padding: 5px 12px; border-radius: 14px; font-weight: 600;">
+                  ${capitalizeCategory(item.category)}
+                </div>
+              ` : ''}
+              <div style="font-size: 14px; color: #555; margin-top: 10px; display: flex; align-items: flex-start; padding: 8px 0; border-top: 1px solid #eee;">
+                <span style="line-height: 1.4;">📍 ${item.postalcode}</span>
+              </div>
+              ${item.event_id ? `
+                <a
+                  id=${buttonId}
+                  style="display: block; margin-top: 12px; padding: 10px 16px; background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 600; text-align: center; box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3); transition: transform 0.2s; cursor: pointer;"
+                  onmouseover="this.style.transform='translateY(-2px)'"
+                  onmouseout="this.style.transform='translateY(0)'"
+                >
+                  Learn More →
+                </a>
+              ` : ''}
             </div>
-            ${item.organization ? `
-              <div style="font-size: 13px; margin-bottom: 10px; color: #666; display: flex; align-items: center;">
-                <span style="font-weight: 500;">${item.organization}</span>
-              </div>
-            ` : ''}
-            ${item.description ? `
-              <div style="font-size: 13px; margin-bottom: 12px; color: #444; line-height: 1.5;">
-                ${item.description.substring(0, 150)}${item.description.length > 150 ? '...' : ''}
-              </div>
-            ` : ''}
-            ${item.category ? `
-              <div style="font-size: 11px; color: ${categoryColors.color}; margin-bottom: 10px; display: inline-block; background: ${categoryColors.bg}; padding: 5px 12px; border-radius: 14px; font-weight: 600;">
-                ${capitalizeCategory(item.category)}
-              </div>
-            ` : ''}
-            <div style="font-size: 14px; color: #555; margin-top: 10px; display: flex; align-items: flex-start; padding: 8px 0; border-top: 1px solid #eee;">
-              <span style="line-height: 1.4;">📍 ${item.postalcode}</span>
-            </div>
-            ${item.event_id ? `
-              <a
-                id=${buttonId}
-                style="display: block; margin-top: 12px; padding: 10px 16px; background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 600; text-align: center; box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3); transition: transform 0.2s; cursor: pointer;"
-                onmouseover="this.style.transform='translateY(-2px)'"
-                onmouseout="this.style.transform='translateY(0)'"
-              >
-                Learn More →
-              </a>
-            ` : ''}
+            <div style="width: 12px; flex-shrink: 0;"></div>
           </div>
         `,
-        maxWidth: 320
+        maxWidth: 320,
+        disableAutoPan: false
       });
 
       infoWindow.addListener("domready", () => {
@@ -786,6 +794,21 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
       /* Keep current location button icon white on hover */
       .btn.position-absolute:hover i.bi-compass {
         color: white !important;
+      }
+
+      /* Remove scrollbars from InfoWindow and auto-adjust height */
+      .gm-style .gm-style-iw-c {
+        max-height: none !important;
+        overflow: visible !important;
+      }
+
+      .gm-style .gm-style-iw-d {
+        max-height: none !important;
+        overflow: visible !important;
+      }
+
+      .gm-style-iw {
+        overflow: visible !important;
       }
     `;
     document.head.appendChild(style);
