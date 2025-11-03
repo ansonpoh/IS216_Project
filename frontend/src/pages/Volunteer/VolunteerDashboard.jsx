@@ -201,9 +201,9 @@ function CardCarousel({ title, items, renderCardFooter, emptyText = "Nothing her
           <div style={{
             position: 'relative',
             background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%)',
-            borderRadius: '16px',
-            padding: '32px 24px',
-            minHeight: '200px',
+            borderRadius: '14px',
+            padding: '20px 28px',
+            minHeight: '160px',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center'
@@ -259,24 +259,25 @@ function CardCarousel({ title, items, renderCardFooter, emptyText = "Nothing her
                   onClick={prev}
                   style={{
                     position: 'absolute',
-                    left: '8px',
+                    left: '-8px',
                     top: '50%',
                     transform: 'translateY(-50%)',
-                    width: '36px',
-                    height: '36px',
+                    width: '32px',
+                    height: '32px',
                     borderRadius: '50%',
                     border: 'none',
                     background: 'white',
-                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
                     cursor: 'pointer',
-                    fontSize: '20px',
+                    fontSize: '18px',
                     color: '#6366f1',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    transition: 'all 0.2s ease'
+                    transition: 'all 0.16s ease',
+                    zIndex: 5
                   }}
-                  onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-50%) scale(1.1)'}
+                  onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-50%) scale(1.06)'}
                   onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(-50%) scale(1)'}
                 >
                   ‹
@@ -285,24 +286,25 @@ function CardCarousel({ title, items, renderCardFooter, emptyText = "Nothing her
                   onClick={next}
                   style={{
                     position: 'absolute',
-                    right: '8px',
+                    right: '-8px',
                     top: '50%',
                     transform: 'translateY(-50%)',
-                    width: '36px',
-                    height: '36px',
+                    width: '32px',
+                    height: '32px',
                     borderRadius: '50%',
                     border: 'none',
                     background: 'white',
-                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
                     cursor: 'pointer',
-                    fontSize: '20px',
+                    fontSize: '18px',
                     color: '#6366f1',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    transition: 'all 0.2s ease'
+                    transition: 'all 0.16s ease',
+                    zIndex: 5
                   }}
-                  onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-50%) scale(1.1)'}
+                  onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-50%) scale(1.06)'}
                   onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(-50%) scale(1)'}
                 >
                   ›
@@ -355,6 +357,7 @@ export default function VolunteerDashboard() {
   const [goalHours, setGoalHours] = useState(36);
   const [manualTotalHours, setManualTotalHours] = useState(0);
   const {auth} = useAuth();
+  const [serverTotalHours, setServerTotalHours] = useState(null);
   
   const API_BASE = process.env.REACT_APP_API_URL;
   const LOCAL_BASE = "http://localhost:3001"
@@ -366,6 +369,25 @@ export default function VolunteerDashboard() {
     }
     fetchEvents();
   }, [])
+
+  // Fetch stored total hours from users table (by user id)
+  useEffect(() => {
+    async function fetchUserHours() {
+      try {
+        if (!auth?.id) return;
+        const resp = await axios.get(`${LOCAL_BASE}/users/get_user_by_id`, { params: { id: auth.id } });
+        const rows = resp.data?.result;
+        if (rows && rows.length > 0) {
+          const u = rows[0];
+          // may be null in DB
+          setServerTotalHours(u.hours ?? null);
+        }
+      } catch (err) {
+        console.error('Failed to load user hours:', err?.response?.data || err.message || err);
+      }
+    }
+    fetchUserHours();
+  }, [auth?.id]);
 
   useEffect(() => {
     let pending = [];
@@ -395,7 +417,8 @@ export default function VolunteerDashboard() {
   const round1 = (n) => Math.round(n * 10) / 10;
 
   const syncedTotalHours = useMemo(() => round1(pastEvents.reduce((sum, ev) => sum + hoursBetween(ev.start, ev.end), 0)), [pastEvents]);
-  const displayedTotalHours = manualTotalHours || syncedTotalHours || 0;
+  // Display priority: manual override (if >0) -> server value from users table -> computed synced value -> 0
+  const displayedTotalHours = manualTotalHours > 0 ? manualTotalHours : (serverTotalHours ?? syncedTotalHours ?? 0);
 
   const syncedMonthlyHours = useMemo(() => {
     const now = new Date();
@@ -444,9 +467,9 @@ export default function VolunteerDashboard() {
     <>
     <Navbar />
     <div className={`container py-4 ${styles.vdash}`}>
-      <div className="d-flex align-items-center mb-3">
+      <div className="d-flex flex-column align-items-center mb-3 text-center">
         {/* <button className={`btn btn-outline-primary btn-sm me-2 ${styles.vdBack}`} onClick={() => navigate(-1)}>← Back</button> */}
-        <Title text="Volunteer Dashboard" subtitle="Track your volunteering hours and manage your events." />
+        <Title text="My Impact" subtitle="Track your volunteering hours and manage your events." />
         {/* <div className="ms-auto d-flex gap-2">
           <button className="btn btn-outline-primary btn-sm" onClick={syncHours}>Sync Hours from Past Events</button>
           {manualTotalHours > 0 && <button className="btn btn-outline-secondary btn-sm" onClick={clearManual}>Clear Manual Override</button>}
@@ -493,7 +516,13 @@ export default function VolunteerDashboard() {
         <div className="col-lg-6">
           <CardCarousel title="Active (Joined) Events" items={activeEvents} emptyText="Nothing here yet." renderCardFooter={(e) => (
             <>
-              <button className="btn btn-sm btn-success" onClick={() => markAttended(e.id)}>Mark Attended → Past</button>
+              <button
+                className="btn btn-sm"
+                onClick={() => markAttended(e.id)}
+                style={{ background: '#7494ec', borderColor: '#7494ec', color: '#fff' }}
+              >
+                Mark Attended → Past
+              </button>
               <button className="btn btn-sm btn-outline-danger" onClick={() => deleteActive(e.id)}>Did not attend</button>
             </>
           )} />

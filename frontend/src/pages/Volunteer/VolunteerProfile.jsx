@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar";
-import axios from "axios";
+import api from "../../utils/api";
+import modalStyles from "../../styles/Modals.module.css";
+import "../../styles/VolunteerProfile.css";
 
 export default function VolunteerProfile() {
   const STORAGE_KEY = "volunteer_profile_v1";
-  const API_BASE = process.env.REACT_APP_API_URL;
-  const LOCAL_BASE = "http://localhost:3001"
-
   // get auth early so we can seed user_id
   const auth = JSON.parse(sessionStorage.getItem("auth")) || {};
 
   const [submitting, setSubmitting] = useState(false);
   const [status, setStatus] = useState("");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -39,6 +39,70 @@ export default function VolunteerProfile() {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) setFormData(JSON.parse(saved));
   }, []);
+
+  // Fetch user profile from backend when authenticated
+  useEffect(() => {
+    async function fetchUser() {
+      try {
+        if (!auth?.id) return;
+        setStatus("Loading profile from server...");
+        const resp = await api.get(`/users/get_user_by_id`, { params: { id: auth.id } });
+        const rows = resp.data?.result;
+        if (!rows || rows.length === 0) {
+          setStatus("No profile found on server");
+          return;
+        }
+
+        const u = rows[0];
+
+        // helper to safely parse JSON strings returned from DB
+        const parseMaybeJson = (v) => {
+          if (v === null || v === undefined) return null;
+          if (typeof v === "object") return v;
+          try {
+            return JSON.parse(v);
+          } catch {
+            return v;
+          }
+        };
+
+        const availability = parseMaybeJson(u.availability) || {
+          days: { mon: false, tue: false, wed: false, thu: false, fri: false, sat: false, sun: false },
+          startTime: u.availability_start_time || "",
+          endTime: u.availability_end_time || "",
+        };
+
+        // Map backend fields to formData shape
+        const mapped = {
+          fullName: u.full_name || u.fullName || "",
+          username: u.username || "",
+          bio: u.bio || "",
+          skills: parseMaybeJson(u.skills) || [],
+          languages: parseMaybeJson(u.languages) || [],
+          availability: {
+            days: (availability.days) || { mon: false, tue: false, wed: false, thu: false, fri: false, sat: false, sun: false },
+            startTime: u.availability_start_time || availability.startTime || "",
+            endTime: u.availability_end_time || availability.endTime || "",
+          },
+          location: u.location || "",
+          contact: parseMaybeJson(u.contact) || { email: u.email || "", phone: u.contact_phone || "" },
+          emergency: parseMaybeJson(u.emergency) || { name: u.emergency_name || "", relation: u.emergency_relation || "", phone: u.emergency_phone || "" },
+          avatarDataUrl: u.profile_image || u.profileImage || "",
+          date_joined: u.date_joined || null,
+          hours: u.hours || null,
+          user_id: u.user_id || auth.id,
+        };
+
+        setFormData((prev) => ({ ...prev, ...mapped }));
+        setStatus("");
+      } catch (err) {
+        console.error("Failed to load profile:", err);
+        setStatus("Failed to load profile from server");
+      }
+    }
+
+    fetchUser();
+  }, [auth?.id]);
 
   // Save to localStorage + backend
   const handleSave = async (e) => {
@@ -78,7 +142,8 @@ export default function VolunteerProfile() {
 
     // build payload
     const payloadFields = {
-      user_id: auth.id,
+      // keep user_id as the auth value (string UUID) or null
+      user_id: auth.id || null,
       username: formData.username || null,
       email: formData.contact.email || null,
       bio: formData.bio || null,
@@ -105,27 +170,27 @@ export default function VolunteerProfile() {
       if (formData.avatarFile) {
         const fd = new FormData();
         Object.entries(payloadFields).forEach(([k, v]) => {
+          // skip null/undefined and invalid numbers
+          if (v === null || v === undefined) return;
+          if (typeof v === 'number' && Number.isNaN(v)) return;
+
           // For objects/arrays encode as JSON string so backend can parse
-          if (v !== null && typeof v === "object") fd.append(k, JSON.stringify(v));
-          else if (v !== null) fd.append(k, String(v));
-          else fd.append(k, "");
+          if (typeof v === "object") fd.append(k, JSON.stringify(v));
+          else fd.append(k, String(v));
         });
         fd.append("avatar", formData.avatarFile);
 
-        const resp = await axios.post(
-          `${LOCAL_BASE}/users/update_profile`,
-          fd,
-          {
-            withCredentials: true,
-            headers: {
-              Accept: "application/json",
-              // DO NOT set Content-Type when sending FormData — browser will set multipart boundary
-            },
-          }
-        );
+        const resp = await api.post(`/users/update_profile`, fd, {
+          withCredentials: true,
+          headers: {
+            Accept: "application/json",
+            // DO NOT set Content-Type when sending FormData — browser will set multipart boundary
+          },
+        });
 
         if (resp.data?.status) {
-          alert("✅ saved will work on this later");
+          // show success modal instead of alert
+          setShowSuccessModal(true);
           setStatus("Saved");
         } else {
           console.error("Server response:", resp.data);
@@ -134,17 +199,14 @@ export default function VolunteerProfile() {
         }
       } else {
         // send JSON
-        const resp = await axios.post(
-          `${LOCAL_BASE}/users/update_profile`,
-          payloadFields,
-          {
-            withCredentials: true,
-            headers: { "Content-Type": "application/json" },
-          }
-        );
+        const resp = await api.post(`/users/update_profile`, payloadFields, {
+          withCredentials: true,
+          headers: { "Content-Type": "application/json" },
+        });
 
         if (resp.data?.status) {
-          alert("✅ Profile saved to server and localStorage!");
+          // show success modal instead of alert
+          setShowSuccessModal(true);
           setStatus("Saved");
         } else {
           console.error("Server response:", resp.data);
@@ -153,13 +215,20 @@ export default function VolunteerProfile() {
         }
       }
     } catch (err) {
+      // improved logging: print server response body when available
       console.error("Save error:", err);
-      setStatus(err.response?.data?.message || err.message || "Failed to save profile to server.");
-      alert(`Error saving to server: ${status || err.message}. Local copy saved.`);
+      console.error("axios error response data:", err.response?.data);
+      const serverMessage = err.response?.data?.message;
+      setStatus(serverMessage || err.message || "Failed to save profile to server.");
+      alert(`Error saving to server: ${serverMessage || err.message}. Local copy saved.`);
     } finally {
       setSubmitting(false);
     }
   };
+
+  function handleSuccessOk() {
+    setShowSuccessModal(false);
+  }
 
   // Handle text field changes
   const handleChange = (path, value) => {
@@ -203,264 +272,180 @@ export default function VolunteerProfile() {
     reader.readAsDataURL(file);
   };
 
-  // Reset form
-  const handleReset = () => {
-    setFormData({
-      fullName: "",
-      username: "",
-      bio: "",
-      skills: [],
-      languages: [],
-      availability: {
-        days: { mon: false, tue: false, wed: false, thu: false, fri: false, sat: false, sun: false },
-        startTime: "",
-        endTime: "",
-      },
-      location: "",
-      contact: { email: "", phone: "" },
-      emergency: { name: "", relation: "", phone: "" },
-      avatarDataUrl: "",
-    });
-  };
+  // fixed display order for days to ensure Mon -> Sun
+  const DAY_ORDER = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 
   return (
-    <>
-    <Navbar/>
-    <div className="container py-4">
-      <div className="row g-4">
-        {/* === LEFT PREVIEW === */}
-        <div className="col-lg-4">
-          <div className="card shadow-sm text-center p-3">
-            <img
-              src={
-                formData.avatarDataUrl ||
-                "https://via.placeholder.com/140x140?text=No+Photo"
-              }
-              alt="Avatar"
-              className="rounded-circle mb-3"
-              style={{ width: "140px", height: "140px", objectFit: "cover" }}
-            />
-            <h5>{formData.fullName || "Your Name"}</h5>
-            <small className="text-muted">@{formData.username || "username"}</small>
-            <p className="mt-3 small text-muted">{formData.bio || "Your short bio appears here."}</p>
-            <hr />
-            <div className="text-start">
-              <strong>Skills:</strong>{" "}
-              {formData.skills.map((s) => (
-                <span key={s} className="badge bg-light text-dark me-1">{s}</span>
-              ))}
-              <br />
-              <strong>Languages:</strong>{" "}
-              {formData.languages.map((l) => (
-                <span key={l} className="badge bg-light text-dark me-1">{l}</span>
-              ))}
-              <br />
-              <strong>Availability:</strong>{" "}
-              {Object.entries(formData.availability.days)
-                .filter(([_, v]) => v)
-                .map(([k]) => k.toUpperCase())
-                .join(", ") || "—"}{" "}
-              | {formData.availability.startTime || "—"}–
-              {formData.availability.endTime || "—"}
-              <br />
-              <strong>Location:</strong> {formData.location || "—"} <br />
-              <strong>Contact:</strong>{" "}
-              {formData.contact.email || "—"} {formData.contact.phone && `· ${formData.contact.phone}`}
-              <br />
-              <strong>Emergency:</strong>{" "}
-              {[formData.emergency.name, formData.emergency.relation, formData.emergency.phone]
-                .filter(Boolean)
-                .join(" · ") || "—"}
-            </div>
-          </div>
-        </div>
+    <><Navbar />
+    <div className="volunteer-root">
+      <div className="vp-hero">
+        <div className="vp-container">
 
-        {/* === RIGHT FORM === */}
-        <div className="col-lg-8">
-          <form onSubmit={handleSave}>
-            {/* Profile Photo & Name */}
-            <div className="card shadow-sm mb-4">
-              <div className="card-body">
-                <h5>Profile Photo & Name</h5>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleAvatarChange}
-                  className="form-control mb-3"
-                />
-                <input
-                  type="text"
-                  className="form-control mb-2"
-                  placeholder="Full Name"
-                  value={formData.fullName}
-                  onChange={(e) => handleChange("fullName", e.target.value)}
-                />
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Username"
-                  value={formData.username}
-                  onChange={(e) => handleChange("username", e.target.value)}
-                />
+          <div className="vp-grid">
+            {/* LEFT PREVIEW */}
+            <aside className="vp-left">
+              <div className="vp-card vp-preview">
+                <div className="vp-avatar-wrap">
+                  <img
+                    src={formData.avatarDataUrl || "https://via.placeholder.com/160x160?text=No+Photo"}
+                    alt="Avatar"
+                    className="vp-avatar"
+                  />
+                </div>
+
+                <div className="vp-name">
+                  <h2>{formData.fullName || "Your Name"}</h2>
+                  <div className="vp-username">@{formData.username || "username"}</div>
+                </div>
+
+                {formData.bio && <p className="vp-bio">{formData.bio}</p>}
+
+                <div className="vp-divider" />
+
+                <div className="vp-details">
+                  {formData.skills.length > 0 && (
+                    <div>
+                      <div className="vp-label">Skills</div>
+                      <div className="vp-tags">{formData.skills.map(s => <span key={s} className="vp-tag primary">{s}</span>)}</div>
+                    </div>
+                  )}
+
+                  {formData.languages.length > 0 && (
+                    <div>
+                      <div className="vp-label">Languages</div>
+                      <div className="vp-tags">{formData.languages.map(l => <span key={l} className="vp-tag">{l}</span>)}</div>
+                    </div>
+                  )}
+
+                  <div>
+                    <div className="vp-label">Availability</div>
+                    <div className="vp-text">{Object.entries(formData.availability.days).filter(([_,v])=>v).map(([k])=>k.charAt(0).toUpperCase()+k.slice(1)).join(', ') || '—'}</div>
+                    <div className="vp-text">{formData.availability.startTime || '—'} – {formData.availability.endTime || '—'}</div>
+                  </div>
+
+                  {formData.location && (
+                    <div>
+                      <div className="vp-label">Location</div>
+                      <div className="vp-text">{formData.location}</div>
+                    </div>
+                  )}
+
+                  {(formData.contact.email || formData.contact.phone) && (
+                    <div>
+                      <div className="vp-label">Contact</div>
+                      <div className="vp-text">{formData.contact.email && `📧 ${formData.contact.email}`}{formData.contact.phone && <div>📱 {formData.contact.phone}</div>}</div>
+                    </div>
+                  )}
+
+                  {(formData.emergency.name || formData.emergency.phone) && (
+                    <div>
+                      <div className="vp-label">Emergency Contact</div>
+                      <div className="vp-text">
+                        {formData.emergency.name && <div>👤 {formData.emergency.name}{formData.emergency.relation && ` (${formData.emergency.relation})`}</div>}
+                        {formData.emergency.phone && <div>📞 {formData.emergency.phone}</div>}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
+            </aside>
 
-            {/* Bio */}
-            <div className="card shadow-sm mb-4">
-              <div className="card-body">
-                <h5>Bio / Short Description</h5>
-                <textarea
-                  className="form-control"
-                  rows="2"
-                  value={formData.bio}
-                  onChange={(e) => handleChange("bio", e.target.value)}
-                />
-              </div>
-            </div>
+            {/* RIGHT FORM */}
+            <main className="vp-right">
+              <form onSubmit={handleSave} className="vp-form">
+                <FormCard title="Profile Photo & Name">
+                  <label className="vp-upload">
+                    <div className="vp-upload-emoji">📸</div>
+                    <div className="vp-upload-text">Click to upload profile photo</div>
+                    <input type="file" accept="image/*" onChange={handleAvatarChange} className="vp-upload-input" />
+                  </label>
+                  <Input placeholder="Full Name" value={formData.fullName} onChange={(e)=>handleChange('fullName', e.target.value)} />
+                  <Input placeholder="Username" value={formData.username} onChange={(e)=>handleChange('username', e.target.value)} />
+                </FormCard>
 
-            {/* Skills & Languages */}
-            <div className="card shadow-sm mb-4">
-              <div className="card-body">
-                <h5>Skills & Languages</h5>
-                <TagInput
-                  title="Skills"
-                  items={formData.skills}
-                  onAdd={(v) => addTag("skills", v)}
-                  onRemove={(v) => removeTag("skills", v)}
-                />
-                <TagInput
-                  title="Languages"
-                  items={formData.languages}
-                  onAdd={(v) => addTag("languages", v)}
-                  onRemove={(v) => removeTag("languages", v)}
-                />
-              </div>
-            </div>
+                <FormCard title="Bio">
+                  <TextArea rows={4} placeholder="Tell us about yourself and your volunteer interests..." value={formData.bio} onChange={(e)=>handleChange('bio', e.target.value)} />
+                </FormCard>
 
-            {/* Availability */}
-            <div className="card shadow-sm mb-4">
-              <div className="card-body">
-                <h5>Availability</h5>
-                <div className="d-flex flex-wrap gap-2 mb-2">
-                  {Object.keys(formData.availability.days).map((day) => (
-                    <div key={day} className="form-check">
-                      <input
-                        className="form-check-input"
-                        type="checkbox"
-                        checked={formData.availability.days[day]}
-                        onChange={(e) =>
-                          handleChange(`availability.days.${day}`, e.target.checked)
-                        }
-                        id={day}
-                      />
-                      <label htmlFor={day} className="form-check-label">
+                <FormCard title="Skills & Languages">
+                  <TagInput title="Skills"  items={formData.skills} onAdd={(v)=>addTag('skills', v)} onRemove={(v)=>removeTag('skills', v)} />
+                  <TagInput title="Languages" items={formData.languages} onAdd={(v)=>addTag('languages', v)} onRemove={(v)=>removeTag('languages', v)} />
+                </FormCard>
+
+                <FormCard title="Availability">
+                  <div className="vp-days">
+                    {DAY_ORDER.map((day) => (
+                      <label
+                        key={day}
+                        className={"vp-day " + (formData.availability.days?.[day] ? 'active' : '')}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={!!formData.availability.days?.[day]}
+                          onChange={(e) => handleChange(`availability.days.${day}`, e.target.checked)}
+                        />
                         {day.charAt(0).toUpperCase() + day.slice(1)}
                       </label>
+                    ))}
+                  </div>
+                  <div className="vp-time-grid">
+                    <div>
+                      <Label>Start Time</Label>
+                      <Input type="time" value={formData.availability.startTime} onChange={(e)=>handleChange('availability.startTime', e.target.value)} />
                     </div>
-                  ))}
-                </div>
-                <div className="row">
-                  <div className="col">
-                    <label>Start Time</label>
-                    <input
-                      type="time"
-                      className="form-control"
-                      value={formData.availability.startTime}
-                      onChange={(e) => handleChange("availability.startTime", e.target.value)}
-                    />
+                    <div>
+                      <Label>End Time</Label>
+                      <Input type="time" value={formData.availability.endTime} onChange={(e)=>handleChange('availability.endTime', e.target.value)} />
+                    </div>
                   </div>
-                  <div className="col">
-                    <label>End Time</label>
-                    <input
-                      type="time"
-                      className="form-control"
-                      value={formData.availability.endTime}
-                      onChange={(e) => handleChange("availability.endTime", e.target.value)}
-                    />
-                  </div>
+                </FormCard>
+
+                <FormCard title="Location">
+                  <Input placeholder="e.g. Central, East, West Singapore" value={formData.location} onChange={(e)=>handleChange('location', e.target.value)} />
+                </FormCard>
+
+                <FormCard title="Contact Information">
+                  <Input type="email" placeholder="Email" value={formData.contact.email} onChange={(e)=>handleChange('contact.email', e.target.value)} />
+                  <Input type="tel" placeholder="Phone" value={formData.contact.phone} onChange={(e)=>handleChange('contact.phone', e.target.value)} />
+                </FormCard>
+
+                <FormCard title="Emergency Contact">
+                  <Input placeholder="Name" value={formData.emergency.name} onChange={(e)=>handleChange('emergency.name', e.target.value)} />
+                  <Input placeholder="Relationship" value={formData.emergency.relation} onChange={(e)=>handleChange('emergency.relation', e.target.value)} />
+                  <Input type="tel" placeholder="Phone" value={formData.emergency.phone} onChange={(e)=>handleChange('emergency.phone', e.target.value)} />
+                </FormCard>
+
+                <div className="vp-actions">
+                  <Button disabled={submitting}>{submitting ? 'Saving...' : 'Save Profile'}</Button>
                 </div>
-              </div>
-            </div>
-
-            {/* Location */}
-            <div className="card shadow-sm mb-4">
-              <div className="card-body">
-                <h5>Location / Preferred Area</h5>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="e.g. Central, East, etc."
-                  value={formData.location}
-                  onChange={(e) => handleChange("location", e.target.value)}
-                />
-              </div>
-            </div>
-
-            {/* Contact */}
-            <div className="card shadow-sm mb-4">
-              <div className="card-body">
-                <h5>Contact Info</h5>
-                <input
-                  type="email"
-                  className="form-control mb-2"
-                  placeholder="Email"
-                  value={formData.contact.email}
-                  onChange={(e) => handleChange("contact.email", e.target.value)}
-                />
-                <input
-                  type="tel"
-                  className="form-control"
-                  placeholder="Phone"
-                  value={formData.contact.phone}
-                  onChange={(e) => handleChange("contact.phone", e.target.value)}
-                />
-              </div>
-            </div>
-
-            {/* Emergency Contact */}
-            <div className="card shadow-sm mb-4">
-              <div className="card-body">
-                <h5>Emergency Contact</h5>
-                <input
-                  type="text"
-                  className="form-control mb-2"
-                  placeholder="Name"
-                  value={formData.emergency.name}
-                  onChange={(e) => handleChange("emergency.name", e.target.value)}
-                />
-                <input
-                  type="text"
-                  className="form-control mb-2"
-                  placeholder="Relationship"
-                  value={formData.emergency.relation}
-                  onChange={(e) => handleChange("emergency.relation", e.target.value)}
-                />
-                <input
-                  type="tel"
-                  className="form-control"
-                  placeholder="Phone"
-                  value={formData.emergency.phone}
-                  onChange={(e) => handleChange("emergency.phone", e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div className="d-flex gap-2">
-              <button type="submit" className="btn btn-primary" disabled={submitting}>
-                {submitting ? "Saving..." : "Save"}
-              </button>
-              <button type="button" onClick={handleReset} className="btn btn-outline-secondary">
-                Reset
-              </button>
-            </div>
-          </form>
+              </form>
+            </main>
+          </div>
         </div>
       </div>
     </div>
+      <SuccessModal open={showSuccessModal} onClose={handleSuccessOk} />
     </>
-
   );
 }
+
+{/* Success modal (uses shared modal styles) */}
+function SuccessModal({ open, onClose }) {
+  if (!open) return null;
+  return (
+    <div className={modalStyles.overlay} onClick={onClose}>
+      <div className={modalStyles.dialog} role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+        <div className={modalStyles.icon} style={{ color: 'green' }}>✓</div>
+        <div className={modalStyles.title}>Profile Saved</div>
+        <div className={modalStyles.body}>Your profile was saved successfully.</div>
+        <div className={modalStyles.buttons}>
+          <button className={modalStyles.btnPrimary} onClick={onClose}>OK</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 
 // === Subcomponent: TagInput ===
 function TagInput({ title, items, onAdd, onRemove }) {
@@ -482,7 +467,7 @@ function TagInput({ title, items, onAdd, onRemove }) {
           onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleAdd())}
           placeholder={`Add ${title.toLowerCase()}...`}
         />
-        <button type="button" className="btn btn-outline-primary" onClick={handleAdd}>
+        <button type="button" className="vp-add-btn" onClick={handleAdd}>
           Add
         </button>
       </div>
@@ -501,5 +486,48 @@ function TagInput({ title, items, onAdd, onRemove }) {
         ))}
       </div>
     </div>
+  );
+}
+
+// Reusable Components
+function FormCard({ title, children }) {
+  return (
+    <div className="form-card">
+      <h3 className="form-card-title">{title}</h3>
+      {children}
+    </div>
+  );
+}
+
+function Label({ children }) {
+  return <label className="label-small">{children}</label>;
+}
+
+function Input({ style = {}, ...props }) {
+  return (
+    <input
+      {...props}
+      className="input-base"
+      style={style}
+    />
+  );
+}
+
+function TextArea({ style = {}, ...props }) {
+  return (
+    <textarea
+      {...props}
+      className="textarea-base"
+      style={style}
+    />
+  );
+}
+
+function Button({ children, variant = 'primary', disabled = false, ...props }) {
+  const cls = `btn-custom ${variant === 'primary' ? 'btn-primary' : 'btn-ghost'}`;
+  return (
+    <button {...props} disabled={disabled} className={cls}>
+      {children}
+    </button>
   );
 }
