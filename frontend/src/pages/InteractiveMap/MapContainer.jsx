@@ -1,4 +1,4 @@
-import { mdiPaw, mdiBalloon, mdiHumanCane, mdiTree, mdiCalendar, mdiHuman, mdiHeartPulse, mdiHumanHandsup, mdiHumanGreetingVariant } from '@mdi/js';
+import { mdiPaw, mdiBalloon, mdiHumanCane, mdiTree, mdiCalendar, mdiHuman, mdiHeartPulse, mdiHumanGreetingVariant } from '@mdi/js';
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
@@ -422,13 +422,10 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
   // Fetch opportunities from backend
   const fetchOpportunities = async () => {
     try {
-      const backendBase = process.env.REACT_APP_API_URL || 'http://localhost:3001';
-      // const res = await fetch(`${backendBase}/api/opportunities`);
       const opportunities = await axios.get(`${API_BASE}/events/get_all_events`);
       const res = await axios.post(`${API_BASE}/events/event_data_modify`, {events: opportunities.data.result});
 
       const data = res.data;
-      console.log('Fetched opportunities:', data);
       setOpportunities(Array.isArray(data) ? data : []);
       setLoading(false);
       setShowingRecommended(false);
@@ -443,15 +440,11 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
       if (!recommendedEvents || recommendedEvents.length === 0) return;
 
       try {
-        const backendBase = process.env.REACT_APP_API_URL || 'http://localhost:3001';
-        console.log("Sending recommendedEvents to event_data_modify...");
-        
         const res = await axios.post(`${API_BASE}/events/event_data_modify`, {
           events: recommendedEvents
         });
 
         const modified = res.data?.events || res.data || [];
-        console.log("Modified events (with lat/lng):", modified);
         setMappedEvents(modified);
       } catch (err) {
         console.error("Error enriching recommendedEvents:", err);
@@ -465,7 +458,6 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
     if (!mapInstanceRef.current || !window.google) return;
     if (!mappedEvents || mappedEvents.length === 0) return;
 
-    console.log("Rendering recommended events on map:", mappedEvents);
     setShowingRecommended(true);
     // Clear previous markers
     markersRef.current.forEach(m => m.setMap(null));
@@ -474,7 +466,6 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
     const bounds = new window.google.maps.LatLngBounds();
 
     mappedEvents.forEach(ev => {
-      console.log(ev)
       if (!ev.lat|| !ev.lng) return; // Skip if no coords
       const pos = { lat: ev.lat, lng: ev.lng};
 
@@ -631,10 +622,7 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
     function addMarker(loc, item) {
       // Get custom icon based on category
       const customIcon = getCategoryMarkerIcon(item.category);
-      
-      // Debug: Log category to icon mapping
-      // console.log(`Marker created - Category: "${item.category}" | Title: "${item.title}"`);
-      
+
       const marker = new window.google.maps.Marker({
         position: loc,
         map: mapInstanceRef.current,
@@ -875,7 +863,6 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
         if (!recommendedEvents || recommendedEvents.length === 0) {
           fetchOpportunities();
         } else {
-          console.log("Skipping fetch — showing recommended events only.");
           setLoading(false);
         }
       }
@@ -883,8 +870,7 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
 
     const loadScriptWithKey = async () => {
       try {
-        const backendBase = process.env.REACT_APP_API_URL || 'http://localhost:3001';
-        const cfgRes = await fetch(`${backendBase}/config/google-maps-key`);
+        const cfgRes = await fetch(`${API_BASE}/config/google-maps-key`);
         
         if (!cfgRes.ok) {
           console.error('Failed to fetch Google Maps key from backend');
@@ -920,7 +906,6 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
           initMap();
         } else {
           // Script exists but Google Maps not loaded yet - wait for it
-          console.log('Google Maps script exists but not loaded yet, waiting...');
           const checkGoogleLoaded = setInterval(() => {
             if (window.google) {
               clearInterval(checkGoogleLoaded);
@@ -968,7 +953,6 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
       
       {(activeFilters.length > 0 || showingRecommended || showNearbyOnly) && (
         <button
-          // onClick={onResetFilters}
           onClick={() => {
             if(showingRecommended) {
               setShowingRecommended(false);
