@@ -184,7 +184,7 @@ const format_reminder = `
         }
 
     Important: Do not include markdown lists or bullet points before the JSON.
-    Output only one short paragraph (plain text) and then a valid JSON structure.
+    Output only a valid JSON structure.
 `
 
 
