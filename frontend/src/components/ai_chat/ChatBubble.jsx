@@ -64,7 +64,7 @@ export default function ChatBubble({ message, onOptionClick }) {
         {message.options && message.options.length > 0 && (
           <div className={`${styles['options-container']}`}>
             {message.options.map((option, index) => (
-              <button key={index} className={`${styles['option-button']}`} onClick={() => onOptionClick("I want " + option + " events")}>
+              <button key={index} className={`${styles['option-button']}`} onClick={() => onOptionClick("Show me " + option + " events")}>
                 {option}
               </button>
             ))}
@@ -96,20 +96,20 @@ export default function ChatBubble({ message, onOptionClick }) {
                   )}
 
                   <div className="text-muted small mb-2">
-                    <div><i className="bi bi-geo-alt me-1"></i>{event.location}</div>
-                    <div><i className="bi bi-clock me-1"></i>{event.date}, {event.time}</div>
+                    <div><span className="me-1" aria-hidden="true">📍</span>{event.location}</div>
+                    <div><span className="me-1" aria-hidden="true">⏰</span>{event.date}, {event.time}</div>
                     {event.skills && (
-                      <div><i className="bi bi-star me-1"></i>{event.skills}</div>
+                      <div><span className="me-1" aria-hidden="true">🌟</span>{event.skills}</div>
                     )}
                   </div>
 
                   <div className="d-flex gap-2 mt-4">
-                    <button className={`btn flex-grow-1 ${styles['apply-btn']}`}>
+                    {/* <button className={`btn flex-grow-1 ${styles['apply-btn']}`}>
                       Apply Now
-                    </button>
+                    </button> */}
 
                     <button
-                      className={`${styles['event-btn']} btn btn-outline-secondary flex-grow-1`}
+                      className={`${styles['apply-btn']} btn flex-grow-1`}
                       onClick={() => nav('/opportunities', { state: { eventId: event?.event_id || event?.id || null, title: event?.title || null } })}
                     >
                       Learn More

@@ -525,7 +525,7 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
               </div>
             ` : ''}
             <div style="font-size: 14px; color: #555; margin-top: 10px; display: flex; align-items: flex-start; padding: 8px 0; border-top: 1px solid #eee;">
-              <span style="line-height: 1.4;"><strong>Location:</strong> ${ev.postalcode}</span>
+              <span style="line-height: 1.4;"><strong>📍</strong> ${ev.postalcode}</span>
             </div>
             ${ev.event_id ? `
               <a
@@ -691,7 +691,7 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
               </div>
             ` : ''}
             <div style="font-size: 14px; color: #555; margin-top: 10px; display: flex; align-items: flex-start; padding: 8px 0; border-top: 1px solid #eee;">
-              <span style="line-height: 1.4;"><strong>Location:</strong> ${item.postalcode}</span>
+              <span style="line-height: 1.4;"><strong>📍</strong> ${item.postalcode}</span>
             </div>
             ${item.event_id ? `
               <a

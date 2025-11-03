@@ -165,3 +165,27 @@
 .option-button:hover {
   background-color: #6a85d1;
 }
+
+/* Ensure chat bubble and cards stay within bounds on small screens */
+@media (max-width: 500px) {
+  .chat-bubble {
+    max-width: 100%;
+    padding: 10px 12px;
+  }
+
+  .event-card-grid {
+    grid-template-columns: 1fr; /* single column to avoid overflow */
+  }
+
+  .event-card {
+    width: 100%;
+  }
+
+  .event-card-img {
+    height: 150px; /* slightly shorter for small screens */
+  }
+
+  .options-container {
+    gap: 6px;
+  }
+}
