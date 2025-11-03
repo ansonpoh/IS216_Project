@@ -20,7 +20,12 @@ export default function ChatInput({ onSend }) {
           value={input}
           onChange={(e) => setInput(e.target.value)}
         />
-        <Button variant="primary" type="submit">
+        <Button
+          type="submit"
+          style={{ backgroundColor: '#7494ec', borderColor: '#7494ec', color: '#fff' }}
+          onMouseOver={(e) => (e.currentTarget.style.filter = 'brightness(0.96)')}
+          onMouseOut={(e) => (e.currentTarget.style.filter = 'none')}
+        >
           <i className="bi bi-send-fill"></i>
         </Button>
       </InputGroup>

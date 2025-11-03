@@ -4,6 +4,7 @@ import remarkGfm from "remark-gfm";
 import styles from "../../styles/ChatBubble.module.css";
 import {useNavigate} from "react-router-dom"
 import { useAuth } from "../../contexts/AuthProvider";
+import profileImg from "../../components/images/profile.png";
 import axios from "axios";
 
 export default function ChatBubble({ message, onOptionClick }) {
@@ -41,16 +42,17 @@ export default function ChatBubble({ message, onOptionClick }) {
   }, []);
 
   return (
+
     <div className={`d-flex mb-3 ${isUser ? "justify-content-end" : "justify-content-start"}`}>
       {!isUser && (
-        <div className={`${styles.avatar} me-2 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center`}>
-          <i className="bi bi-person-hearts"></i>
+        <div className={`${styles.avatar} me-2 rounded-circle overflow-hidden d-flex align-items-center justify-content-center`}>
+          <img src={profileImg} alt="Assistant" className={`${styles['avatar-img']}`} />
         </div>
       )}
       <div
         className={`${styles['chat-bubble']} p-3 ${
           isUser
-            ? `${styles['user-bubble']} bg-primary text-white`
+            ? `${styles['user-bubble']} text-white`
             : `${styles['bot-bubble']} bg-white`
         }`}
 
@@ -102,11 +104,14 @@ export default function ChatBubble({ message, onOptionClick }) {
                   </div>
 
                   <div className="d-flex gap-2 mt-4">
-                    <button className={`btn-primary btn flex-grow-1`}>
+                    <button className={`btn flex-grow-1 ${styles['apply-btn']}`}>
                       Apply Now
                     </button>
 
-                    <button className={`${styles['event-btn']} btn btn-outline-secondary flex-grow-1`}>
+                    <button
+                      className={`${styles['event-btn']} btn btn-outline-secondary flex-grow-1`}
+                      onClick={() => nav('/opportunities', { state: { eventId: event?.event_id || event?.id || null, title: event?.title || null } })}
+                    >
                       Learn More
                     </button>
                   </div>
