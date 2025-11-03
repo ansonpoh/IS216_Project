@@ -798,6 +798,41 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
       .gm-style-iw {
         overflow: visible !important;
       }
+
+      /* Overlay close button on top of image */
+      .gm-style-iw-tc::after {
+        display: none !important;
+      }
+
+      .gm-style .gm-style-iw-t::after {
+        display: none !important;
+      }
+
+      .gm-style-iw button.gm-ui-hover-effect {
+        position: absolute !important;
+        top: 8px !important;
+        right: 8px !important;
+        width: 32px !important;
+        height: 32px !important;
+        background-color: #4891ff !important;
+        border: 2px solid #0066ff !important;
+        border-radius: 50% !important;
+        z-index: 1000 !important;
+        padding: 0 !important;
+      }
+
+      .gm-style-iw button.gm-ui-hover-effect > * {
+        position: absolute !important;
+        left: 50% !important;
+        top: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        margin: 0 !important;
+        filter: brightness(0) invert(1) !important;
+      }
+
+      .gm-style-iw button.gm-ui-hover-effect:hover {
+        background-color: #4891ff !important;
+      }
     `;
     document.head.appendChild(style);
 
