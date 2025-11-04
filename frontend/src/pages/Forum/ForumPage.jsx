@@ -343,7 +343,7 @@ export default function ForumPage() {
     if (sortBy === "date") {
       result.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     } else if (sortBy === "likes") {
-      result.sort((a, b) => (b.liked_count || 0) - (a.liked_count || 0));
+      result.sort((a, b) => (b.like_count || 0) - (a.like_count || 0));
     }
 
     setFilteredPosts(result);
