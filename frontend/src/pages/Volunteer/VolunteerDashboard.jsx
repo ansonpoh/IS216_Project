@@ -378,7 +378,7 @@ function CardCarousel({ title, items, renderCardFooter, emptyText = "Nothing her
                     borderRadius: '4px',
                     border: 'none',
                     background: idx === i 
-                      ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                      ? ' #7494ec'
                       : '#d1d5db',
                     cursor: 'pointer',
                     transition: 'all 0.3s ease'
