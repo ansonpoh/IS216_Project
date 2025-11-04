@@ -197,7 +197,7 @@ export default function ForumPage() {
     fetchHighlights();
   }, []); // Empty dependency array means this runs once on mount
 
-const handleLike = async (feedback_id, liked) => {
+  const handleLike = async (feedback_id, liked) => {
     if (userId.length < 1) {
       alert("Please sign in to like posts.");
       nav("/volunteer/auth");
@@ -209,17 +209,9 @@ const handleLike = async (feedback_id, liked) => {
       const outcome = res.data?.status;
       const isLiked = outcome === "liked";
 
-      setPosts((prevPosts = []) => {
-        (prevPosts || []).map((post) => post.feedback_id === feedback_id ? {
-          ...post,
-          liked_by_user: isLiked,
-          like_count: parseInt(post.like_count) + (isLiked ? 1 : -1),
-        } : post
-        )
-      })
-
-      setFilteredPosts((prevFiltered = []) =>
-        (prevFiltered || []).map((post) =>
+      const safeUpdate = (list = []) => {
+        if (!Array.isArray(list)) return [];
+        return list.map((post) =>
           post.feedback_id === feedback_id
             ? {
                 ...post,
@@ -227,15 +219,17 @@ const handleLike = async (feedback_id, liked) => {
                 like_count: parseInt(post.like_count) + (isLiked ? 1 : -1),
               }
             : post
-        )
-      );
-
-      if (selectedPost?.feedback_id === feedback_id) {
+        );
+      };
+      
+      setPosts((prev = []) => [...safeUpdate(prev)]);
+      
+      if(selectedPost?.feedback_id === feedback_id) {
         setSelectedPost((prev) => ({
           ...prev,
           liked_by_user: isLiked,
           like_count: parseInt(prev.like_count) + (isLiked ? 1 : -1),
-        }));
+        }))
       }
     } catch (err) {
       console.error(err);
