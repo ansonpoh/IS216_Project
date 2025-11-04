@@ -66,9 +66,14 @@ export async function get_post_likes(feedback_id) {
     }
 }
 
-export async function user_likes_post(feedback_id, user_id) {
+export async function user_likes_post(feedback_id, user_id, liked) {
     try {
-        const query = `insert into feedback_likes (feedback_id, user_id) values ($1, $2)`;
+        let query;
+        if(liked) {
+            query = `delete from feedback_likes where feedback_id = $1 and user_id = $2`;
+        } else {
+            query = `insert into feedback_likes (feedback_id, user_id) values ($1, $2)`;
+        }
         const values = [feedback_id, user_id];
         const result = await pool.query(query, values);
         return result.rowCount > 0;
@@ -78,20 +83,18 @@ export async function user_likes_post(feedback_id, user_id) {
     }
 }
 
-export async function get_all_posts() {
+export async function get_all_posts(user_id) {
     try {
-        const query = `
-            SELECT f.*, u.username, u.profile_image 
-            FROM feedback f
-            LEFT JOIN users u ON f.user_id = u.user_id
-            ORDER BY f.created_at DESC`;
-        const result = await pool.query(query);
+        const query = `SELECT f.*, u.username, u.profile_image, (SELECT COUNT(fl.user_id) FROM feedback_likes fl WHERE fl.feedback_id = f.feedback_id) AS like_count, EXISTS (SELECT 1 FROM feedback_likes fl2 WHERE fl2.feedback_id = f.feedback_id AND fl2.user_id = $1) AS liked_by_user FROM feedback f JOIN users u ON f.user_id = u.user_id ORDER BY f.created_at DESC`;
+        const values = [user_id]
+        const result = await pool.query(query, values);
         return result.rows;
     } catch (err) {
         console.error(err);
         throw err;
     }
 }
+
 
 export async function get_all_highlights() {
     try {

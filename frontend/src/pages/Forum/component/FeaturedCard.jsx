@@ -12,6 +12,7 @@ export default function FeaturedCard({
   created_at = "",
   image = null,
   likes = 0,
+  liked_by_user = "",
   onClick,
 }) {
   const navigate = useNavigate();

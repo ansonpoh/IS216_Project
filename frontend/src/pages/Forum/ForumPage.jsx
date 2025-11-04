@@ -8,6 +8,7 @@ import { useNavigate, Link } from "react-router-dom";
 import PageTransition from "../../components/Animation/PageTransition.jsx";
 import NewDiscussion from "./component/NewDiscussion.jsx";
 import styles from "../../styles/Community.module.css";
+import { useAuth } from "../../contexts/AuthProvider.js";
 
 const PostModal = ({ post, onClose, onLike }) => {
   if (!post) return null;
@@ -100,10 +101,10 @@ const PostModal = ({ post, onClose, onLike }) => {
                 border: "1px solid #0d6efd",
 
               }}
-              onClick={() => onLike(post.feedback_id)}
+              onClick={() => onLike(post.feedback_id, post.liked_by_user)}
             >
               <i className={`bi ${post.isLiked ? "bi-heart-fill" : "bi-heart"}`}></i>
-              {post.liked_count || 0}
+              {post.like_count || 0}
             </button>
 
             {/* Event/Org info */}
@@ -124,7 +125,7 @@ const PostModal = ({ post, onClose, onLike }) => {
 
 export default function ForumPage() {
   const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [slides, setSlides] = useState([]);
 
   const [filteredPosts, setFilteredPosts] = useState([]);
@@ -133,13 +134,15 @@ export default function ForumPage() {
   const [selectedPost, setSelectedPost] = useState(null);
   const API_BASE = process.env.REACT_APP_API_URL;
   const nav = useNavigate();
+  const {auth} = useAuth();
+  const userId = auth?.id;
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         setLoading(true);
         const response = await axios.get(
-          `${API_BASE}/community/get_all_posts`
+          `${API_BASE}/community/get_all_posts`, {params:{user_id: userId}}
         );
         const data = response.data.result || [];
         console.log("Posts data:", data);
@@ -152,7 +155,8 @@ export default function ForumPage() {
           body: item.body,
           img: item.image,
           created_at: item.created_at,
-          liked_count: 0,
+          like_count: item.like_count,
+          liked_by_user: item.liked_by_user,
         }));
 
         setPosts(normalised);
@@ -166,7 +170,7 @@ export default function ForumPage() {
       }
     };
 
-    fetchPosts();
+    if(userId.length > 1) fetchPosts();
   }, []);
 
   // highlight fetching
@@ -193,92 +197,55 @@ export default function ForumPage() {
     fetchHighlights();
   }, []); // Empty dependency array means this runs once on mount
 
-  // useEffect(() => {
-  //   const userId = getCurrentUserId();
-  //   if (userId && posts.length > 0) {
-  //     checkUserLikes(posts, userId);
-  //   }
-  // }, [posts]); //run when posts change;
+const handleLike = async (feedback_id, liked) => {
+    if (userId.length < 1) {
+      alert("Please sign in to like posts.");
+      nav("/volunteer/auth");
+      return;
+    }
 
-  // const checkUserLikes = async (posts, userId) => {
-  //   try {
-  //     const response = await fetch(`http://localhost:3001/community/get_post_likes/${userId}`);
-  //     const data = await response.json();
+    try {
+      const res = await axios.post(`${API_BASE}/community/user_likes_post`, {user_id: userId, feedback_id: feedback_id, liked: liked});
+      const outcome = res.data?.status;
+      const isLiked = outcome === "liked";
 
-  //     if (!response.ok) throw new Error('Failed to fetch likes');
+      setPosts((prevPosts = []) => {
+        (prevPosts || []).map((post) => post.feedback_id === feedback_id ? {
+          ...post,
+          liked_by_user: isLiked,
+          like_count: parseInt(post.like_count) + (isLiked ? 1 : -1),
+        } : post
+        )
+      })
 
-  //     const likedPostIds = new Set(data.map(like => like.feedback_id));
+      setFilteredPosts((prevFiltered = []) =>
+        (prevFiltered || []).map((post) =>
+          post.feedback_id === feedback_id
+            ? {
+                ...post,
+                liked_by_user: isLiked,
+                like_count: parseInt(post.like_count) + (isLiked ? 1 : -1),
+              }
+            : post
+        )
+      );
 
-  //     const updatedPosts = posts.map(post => ({
-  //       ...post,
-  //       isLiked: likedPostIds.has(post.feedback_id)
-  //     }));
+      if (selectedPost?.feedback_id === feedback_id) {
+        setSelectedPost((prev) => ({
+          ...prev,
+          liked_by_user: isLiked,
+          like_count: parseInt(prev.like_count) + (isLiked ? 1 : -1),
+        }));
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
-  //     setPosts(updatedPosts);
-  //     setFilteredPosts(updatedPosts);
-  //   } catch (err) {
-  //     console.error("Error checking user likes:", err);
-  //     setPosts(posts);
-  //     setFilteredPosts(posts);
-  //   }
-  // };
-
-  // // Handle like/unlike
-  // const handleLike = async (postId) => {
-  //   const userId = getCurrentUserId();
-
-  //   if (!userId) {
-  //     alert("Please sign in to like posts");
-  //     nav("/volunteer/auth");
-  //     return;
-  //   }
-
-  //   try {
-  //     const post = posts.find(p => p.feedback_id === postId);
-
-  //     // Using the correct endpoint from communityRoutes.js
-  //     const response = await fetch('http://localhost:3001/community/user_likes_post', {
-  //       method: 'POST',
-  //       headers: { 'Content-Type': 'application/json' },
-  //       body: JSON.stringify({
-  //         feedback_id: postId,
-  //         user_id: userId,
-  //         action: post.isLiked ? 'unlike' : 'like' // Add action to determine like/unlike
-  //       })
-  //     });
-
-  //     if (!response.ok) throw new Error(`Failed to ${post.isLiked ? 'unlike' : 'like'} post`);
-
-  //     // Update local state
-  //     updatePostLikeState(postId, !post.isLiked, post.isLiked ? -1 : 1);
-
-  //   } catch (err) {
-  //     console.error("Error handling like:", err);
-  //     alert("Failed to update like. Please try again.");
-  //   }
-  // };
-
-  // const updatePostLikeState = (postId, isLiked, countChange) => {
-  //   const updatePosts = (postsList) => postsList.map(post =>
-  //     post.feedback_id === postId
-  //       ? { ...post, isLiked, liked_count: (post.liked_count || 0) + countChange }
-  //       : post
-  //   );
-
-  //   setPosts(prev => updatePosts(prev));
-  //   setFilteredPosts(prev => updatePosts(prev));
-
-  //   if (selectedPost?.feedback_id === postId) {
-  //     setSelectedPost(prev => ({
-  //       ...prev,
-  //       isLiked,
-  //       liked_count: (prev.liked_count || 0) + countChange
-  //     }));
-  //   }
-  // };
 
   // Handle search
   useEffect(() => {
+    if (!Array.isArray(posts)) return;
     let result = [...posts];
 
     // Apply search filter
@@ -371,7 +338,7 @@ export default function ForumPage() {
                 <p className="text-muted">
                   {query
                     ? "No posts found matching your search."
-                    : "No posts yet. Be the first to share!"}
+                    : "Login to view posts!"}
                 </p>
               </div>
             ) : (
@@ -387,7 +354,8 @@ export default function ForumPage() {
                     body={post.body}
                     created_at={post.created_at}
                     image={post.img}
-                    likes={post.liked_count || 0}
+                    likes={post.like_count || 0}
+                    liked_by_user={post.liked_by_user}
                     onClick={() => setSelectedPost(post)}
                   />
                 ))}
@@ -401,7 +369,7 @@ export default function ForumPage() {
           <PostModal
             post={selectedPost}
             onClose={() => setSelectedPost(null)}
-          // onLike={handleLike}
+            onLike={handleLike}
           />
         )}
       </div>
