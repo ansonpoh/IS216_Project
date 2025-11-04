@@ -321,7 +321,7 @@ export default function OrganiserDashboard() {
                             }`}
                             onClick={() => togglePublish(e)}
                           >
-                            {e.status === "published" ? "Unpublish" : "Publish"}
+                            {e.is_published ? "Close" : "Publish"}
                           </button>
                         </div>
                       </td>
