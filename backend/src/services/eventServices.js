@@ -267,3 +267,15 @@ export async function update_registration_status(user_id, event_id, status) {
         throw err;
     }
 }
+
+export async function update_publish_status(event_id, status) {
+    try {
+        const query = `update events set is_published = $1 where event_id = $2 returning is_published, event_id`;
+        const values = [!status, event_id];
+        const result = await pool.query(query, values);
+        return result.rows;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
