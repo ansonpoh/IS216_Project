@@ -406,13 +406,12 @@ export default function VolunteerDashboard() {
     return round1(inMonth.reduce((s, ev) => s + hoursBetween(ev.start, ev.end), 0));
   }, [pastEvents]);
 
-  const markAttended = async (id) => {
-    const ev = activeEvents.find((e) => e.id === id);
+  const markAttended = async (event_id) => {
+    const ev = activeEvents.find((e) => e.event_id === event_id);
     if (!ev) return;
-
     // Optimistically move local state
     setPastEvents((arr) => [{ ...ev }, ...arr]);
-    setActiveEvents((arr) => arr.filter((e) => e.id !== id));
+    setActiveEvents((arr) => arr.filter((e) => e.event_id !== ev.event_id));
 
     // Notify backend to mark registration as 'attended' and increment hours.
     try {
@@ -427,6 +426,7 @@ export default function VolunteerDashboard() {
       // If backend failed, we could roll back UI change or notify user. For now, keep optimistic update but console log.
     }
   };
+
   const approvePending = (id) => {
     const ev = pendingEvents.find((e) => e.id === id);
     if (!ev) return;
@@ -493,8 +493,8 @@ export default function VolunteerDashboard() {
         <div className="col-lg-6">
           <CardCarousel title="Active (Joined) Events" items={activeEvents} emptyText="Nothing here yet." renderCardFooter={(e) => (
             <>
-              <button className="btn btn-sm btn-success" onClick={() => markAttended(e.id)}>Mark Attended → Past</button>
-              <button className="btn btn-sm btn-outline-danger" onClick={() => deleteActive(e.id)}>Did not attend</button>
+              <button className="btn btn-sm btn-success" onClick={() => markAttended(e.event_id)}>Mark Attended → Past</button>
+              <button className="btn btn-sm btn-outline-danger" onClick={() => deleteActive(e.event_id)}>Did not attend</button>
             </>
           )} />
         </div>
