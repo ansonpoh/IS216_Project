@@ -121,7 +121,7 @@ function Navbar() {
         )}
 
         {auth?.id?.length > 0 ? (
-          <button className="btn btn-outline-danger btn-sm" onClick={handleLogout}>
+          <button className={`btn btn-sm ${styles.logoutBtn}`} onClick={handleLogout}>
             Logout
           </button>
         ) : (

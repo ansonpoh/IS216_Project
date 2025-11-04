@@ -12,6 +12,7 @@
   margin-top: 0;
   margin-bottom: 0;
   padding: 0;
+  size: 1.6rem;
 }
 
 .user-bubble{
@@ -111,17 +112,17 @@
   color: #555;
 }
 
-.apply-btn{
+.learn-btn{
   background-color: #7494ec !important;
   border-color: #7494ec !important;
   color: #ffffff !important;
 }
-.apply-btn:hover,
-.apply-btn:focus{
+.learn-btn:hover,
+.learn-btn:focus{
   filter: brightness(0.96);
   color: #ffffff !important;
 }
-.apply-btn:active{
+.learn-btn:active{
   filter: brightness(0.92);
 }
 

@@ -105,12 +105,9 @@ export default function ChatBubble({ message, onOptionClick }) {
                   </div>
 
                   <div className="d-flex gap-2 mt-4">
-                    {/* <button className={`btn flex-grow-1 ${styles['apply-btn']}`}>
-                      Apply Now
-                    </button> */}
 
                     <button
-                      className={`${styles['apply-btn']} btn flex-grow-1`}
+                      className={`${styles['learn-btn']} btn flex-grow-1`}
                       onClick={() => nav('/opportunities', { state: { eventId: event?.event_id || event?.id || null, title: event?.title || null } })}
                     >
                       Learn More

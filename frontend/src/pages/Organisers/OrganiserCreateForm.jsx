@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../../components/Navbar";
 import { useAuth } from "../../contexts/AuthProvider";
+import Title from "../../components/ui/Title";
+import modalStyles from "../../styles/Modals.module.css";
 
 export default function OrganiserCreateForm() {
   const nav = useNavigate();
@@ -14,6 +16,7 @@ export default function OrganiserCreateForm() {
   const [regions, setRegions] = useState([]);
   const [categories, setCategories] = useState([]);
   const [org, setOrg] = useState(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const API_BASE = process.env.REACT_APP_API_URL;
   const LOCAL_BASE = "http://localhost:3001"
@@ -111,11 +114,12 @@ export default function OrganiserCreateForm() {
       await axios.post(`${LOCAL_BASE}/events/create_event`, form)
         .then((res) => {
           const data = res.data;
-          if(data.status) {
-            alert("Event created successfully!")
-            nav("/organiser/dashboard")
+          if (data.status) {
+            // Show success modal instead of alert
+            setShowSuccessModal(true);
           } else {
-            alert("Event creation failed!")
+            // Keep failure alert behavior for now
+            alert("Event creation failed!");
             window.location.reload();
           }
         });
@@ -125,12 +129,17 @@ export default function OrganiserCreateForm() {
       setSaving(false);
     }
   };
+
+  const handleSuccessOk = () => {
+    setShowSuccessModal(false);
+    nav("/organiser/dashboard");
+  };
   
   return (
     <>
       <Navbar />
       <div className="container py-4">
-        <h2 className="mb-3">Create Event</h2>
+  <Title text="Create Event" size="56px" align="left" mb={12} />
         {err && <div className="alert alert-danger">{err}</div>}
 
         <form className="card p-3" onSubmit={submit}>
@@ -337,7 +346,12 @@ export default function OrganiserCreateForm() {
           </div>
 
           <div className="mt-3 d-flex gap-2">
-            <button type="submit" className="btn btn-success" disabled={saving}>
+            <button
+              type="submit"
+              className="btn"
+              style={{ background: '#7494ec', borderColor: '#7494ec', color: '#fff' }}
+              disabled={saving}
+            >
               {saving ? "Saving..." : "Create Event"}
             </button>
             <button
@@ -351,6 +365,29 @@ export default function OrganiserCreateForm() {
           </div>
         </form>
       </div>
+      {showSuccessModal && (
+        <div
+          className={modalStyles.overlay}
+          onClick={() => {
+            setShowSuccessModal(false);
+            nav("/organiser/dashboard");
+          }}
+        >
+          <div
+            className={modalStyles.dialog}
+            role="dialog"
+            aria-modal="true"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className={modalStyles.icon} style={{ color: "green" }}>✓</div>
+            <div className={modalStyles.title}>Event Created Successfully!</div>
+            <div className={modalStyles.body}>Your event is now live in your dashboard.</div>
+            <div className={modalStyles.buttons}>
+              <button className={modalStyles.btnPrimary} onClick={handleSuccessOk}>OK</button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

@@ -138,7 +138,7 @@ export default function ChatWindow() {
                 className={`btn btn-outline-secondary text-start ${styles['suggestion-card']}`}
                 onClick={() => handleSuggestionClick("I'm new to volunteering")}
               >
-                <span className="me-2" aria-hidden="true">❤️</span>
+                <span className="me-2" aria-hidden="true">💖</span>
                 <strong>I'm new to volunteering</strong>
                 <br />
                 <small>Help me find the perfect first opportunity</small>

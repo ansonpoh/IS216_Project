@@ -463,20 +463,20 @@ export default function VolunteerDashboard() {
   const hoursBetween = (s, e) => Math.max(0, (new Date(e) - new Date(s)) / 36e5);
   const round1 = (n) => Math.round(n * 10) / 10;
 
-  const syncedTotalHours = useMemo(() => round1(pastEvents.reduce((sum, ev) => sum + hoursBetween(ev.start, ev.end), 0)), [pastEvents]);
+  // const syncedTotalHours = useMemo(() => round1(pastEvents.reduce((sum, ev) => sum + hoursBetween(ev.start, ev.end), 0)), [pastEvents]);
   // Display priority: manual override (if >0) -> server value from users table -> computed synced value -> 0
-  const displayedTotalHours = manualTotalHours > 0 ? manualTotalHours : (serverTotalHours ?? syncedTotalHours ?? 0);
+  const displayedTotalHours = manualTotalHours > 0 ? manualTotalHours : (serverTotalHours ?? 0);
 
-  const syncedMonthlyHours = useMemo(() => {
-    const now = new Date();
-    const y = now.getFullYear();
-    const m = now.getMonth();
-    const inMonth = pastEvents.filter((ev) => {
-      const d = new Date(ev.start);
-      return d.getFullYear() === y && d.getMonth() === m;
-    });
-    return round1(inMonth.reduce((s, ev) => s + hoursBetween(ev.start, ev.end), 0));
-  }, [pastEvents]);
+  // const syncedMonthlyHours = useMemo(() => {
+  //   const now = new Date();
+  //   const y = now.getFullYear();
+  //   const m = now.getMonth();
+  //   const inMonth = pastEvents.filter((ev) => {
+  //     const d = new Date(ev.start);
+  //     return d.getFullYear() === y && d.getMonth() === m;
+  //   });
+  //   return round1(inMonth.reduce((s, ev) => s + hoursBetween(ev.start, ev.end), 0));
+  // }, [pastEvents]);
 
   const markAttended = async (id) => {
     const ev = activeEvents.find((e) => e.id === id);
@@ -528,9 +528,9 @@ export default function VolunteerDashboard() {
         <div className="col-lg-4">
           <div className={`card shadow-sm h-100 ${styles.vdCard}`}>
             <div className="card-body">
-              <h5 className="card-title mb-2">Total Volunteered Hours</h5>
+              <h5 className="card-title mb-2">Total{'\u00A0'} Volunteered Hours</h5>
               <div className="display-6 fw-semibold">{displayedTotalHours}</div>
-              <div className="text-muted mt-2">Synced this month: {syncedMonthlyHours}</div>
+              {/* <div className="text-muted mt-2">Synced this month: {syncedMonthlyHours}</div> */}
               <div className="mt-3">
                 <label className="form-label">Adjust Total (optional)</label>
                 <input type="number" min={0} className="form-control" value={manualTotalHours} onChange={(e) => setManualTotalHours(Math.max(0, Number(e.target.value || 0)))} placeholder="0 = show synced value" />

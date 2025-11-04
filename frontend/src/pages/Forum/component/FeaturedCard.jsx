@@ -51,7 +51,8 @@ export default function FeaturedCard({
           {new Date(created_at).toLocaleDateString()}
         </small>
         <div className="d-flex align-items-center">
-          <i className="bi bi-heart me-1"></i>
+          {/* <i className="bi bi-heart me-1"></i> */}
+          <span aria-hidden="true" className="me-1" style={{ fontSize: '1rem' }}>💖</span>
           <small>{likes}</small>
         </div>
       </div>

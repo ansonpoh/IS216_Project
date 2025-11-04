@@ -1,3 +1,13 @@
+/* Slightly larger text for suggestion cards */
+.suggestion-card strong {
+  font-size: 1.3rem; /* ~17.6px */
+  line-height: 1.25;
+}
+
+.suggestion-card small {
+  font-size: 0.95rem; /* slightly larger than default small */
+  line-height: 1.3;
+}
 /* Chat Container */
 .chat-container {
   max-width: 900px;
@@ -136,19 +146,19 @@
 
 
 .suggestion-card strong {
-  color: #7494ec;
+  color: #000000b2;
   font-size: 1.1rem;
   display: block;
   margin-bottom: 0.5rem;
 }
 
 .suggestion-card small {
-  color: #7494ec;
+  color: #000000be;
   font-size: 0.9rem;
 }
 
 .suggestion-card i {
-  font-size: 1.4rem;
+  font-size: 1.6rem;
   vertical-align: middle;
 }
 
