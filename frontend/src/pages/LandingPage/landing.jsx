@@ -16,6 +16,7 @@ import styles from "../../styles/LandingPage.module.css";
 import mapView from "../../components/images/mapView.png";
 import opp from "../../components/images/opp.png";
 import forum from "../../components/images/forum.png";
+import ai from "../../components/images/ai.png";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import ScrollMouse from "../../components/ui/AnimatedMouseIcon";
@@ -454,46 +455,49 @@ export default function Landing() {
                 </div>
               </div>
 
-              {/* Visual Column: Placeholder for the screenshot/mockup */}
+              {/* Visual Column: Styled like Map/Opportunities/Community card */}
               <div className="col-12 col-lg-6 d-flex justify-content-center">
                 <div
-                  className="vera-mockup-container p-4 bg-white rounded-4 shadow-lg border border-gray-100 position-relative w-100"
-                  style={{ maxWidth: "450px" }}
+                  className={`${styles.mapCard} bg-white rounded-4 border border-gray-100 w-100 position-relative p-0`}
+                  style={{ maxWidth: 600, cursor: "pointer" }}
+                  onClick={() => navigate("/ai")}
+                  aria-label="Open AI chat"
+                  role="button"
                 >
-                  {/* Simplified Mockup replicating the look of the AI Chat */}
-                  <div className="d-flex align-items-center mb-3">
-                    <BSIcon
-                      name="robot"
-                      className="text-primary me-2"
-                      size="24px"
+                  <div className={styles.aspect169}>
+                    <img
+                      src={ai}
+                      alt="Chat with Vera AI"
+                      loading="lazy"
+                      className="rounded-3"
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        display: "block",
+                      }}
+                      sizes="(max-width: 576px) 100vw, (max-width: 992px) 90vw, 600px"
                     />
-                    <span className="fw-bold">Vera AI Chat</span>
-                  </div>
 
-                  <div
-                    className="p-3 mb-2 rounded-3 bg-purple-100 d-inline-block"
-                    style={{ maxWidth: "85%" }}
-                  >
-                    Hello! I'm Vera, your personal assistant to discover
-                    meaningful volunteering opportunities. How can I help you
-                    get started today?
-                  </div>
+                    <span className={styles.mapBorder} />
 
-                  {/* Mimic a user selection */}
-                  <div className="text-end">
                     <div
-                      className="p-3 rounded-3 bg-blue-100 d-inline-block text-start mt-2 border-primary"
-                      style={{ maxWidth: "85%" }}
+                      className="position-absolute start-0 end-0 bottom-0 p-3"
+                      style={{
+                        background:
+                          "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.45) 100%)",
+                        color: "#fff",
+                      }}
                     >
-                      I'm new to volunteering
+                      <div className="d-flex align-items-center gap-2">
+                        <span className="ms-auto small d-none d-sm-inline">
+                          Open AI chat
+                        </span>
+                        <i className="bi bi-arrow-right"></i>
+                      </div>
                     </div>
-                  </div>
-
-                  <div className="text-center mt-4">
-                    {/* This could be replaced with an actual image of the chat interface */}
-                    <small className="text-muted">
-                      Real-time matching powered by AI
-                    </small>
                   </div>
                 </div>
               </div>
@@ -758,8 +762,7 @@ export default function Landing() {
 
                   <p className="lead text-muted mb-4">
                     Connect with fellow volunteers. Share your best volunteer
-                    photos, videos, and stories to inspire others and earn
-                    recognition badges for your efforts. Every hour of service
+                    photos, videos, and stories to inspire others and connect with like-minded people. Every hour of service
                     deserves a spotlight!
                   </p>
 
@@ -773,7 +776,7 @@ export default function Landing() {
                       />
                       <div>
                         <h4 className="fs-6 fw-semibold mb-0">
-                          Recognition & Badges
+                          Recognition & Connect
                         </h4>
                         <p className="small text-muted mb-0">
                           Get public recognition for milestones and hours
@@ -810,7 +813,7 @@ export default function Landing() {
                 </div>
               </div>
 
-              {/* Visual Column (LEFT) - Styled like Map/Opportunities card */}
+              {/* Visual Column (LEFT)  */}
               <div className="col-12 col-lg-6 d-flex justify-content-center">
                 <div
                   className={`${styles.mapCard} bg-white rounded-4 border border-gray-100 w-100 position-relative p-0`}

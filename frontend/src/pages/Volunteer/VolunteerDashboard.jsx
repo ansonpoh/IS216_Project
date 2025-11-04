@@ -6,8 +6,10 @@ import axios from "axios";
 import Navbar from "../../components/Navbar.js";
 import Title from '../../components/ui/Title';
 import confetti from "canvas-confetti";
+import PageTransition from "../../components/Animation/PageTransition";
 
-const LS_KEY = "volunteer_dashboard_circular_carousel_v3";
+// const LS_KEY = "volunteer_dashboard_circular_carousel_v3";
+const CONFETTI_KEY = "volunteer_dashboard_confetti_count_v1";
 /* ---------- Helpers ---------- */
 const useAutoplay = (enabled, cb, delay = 4500) => {
   useEffect(() => {
@@ -40,6 +42,15 @@ function CircularProgressRing({ value, max, size = 240 }) {
   const gap = C - dash;
 
   const [message, setMessage] = useState("");
+  const confettiFiredRef = useRef(false);
+
+  // Keep emoji original color by splitting it from the gradient-styled text
+  const msgParts = useMemo(() => {
+    if (!message) return { emoji: "", text: "" };
+    const idx = message.indexOf(" ");
+    if (idx === -1) return { emoji: "", text: message };
+    return { emoji: message.slice(0, idx), text: message.slice(idx + 1) };
+  }, [message]);
 
   useEffect(() => {
     if (pct === 100) {
@@ -52,6 +63,35 @@ function CircularProgressRing({ value, max, size = 240 }) {
       setMessage("🔥 Off to a great start!");
     } else {
       setMessage("🌟 Begin your journey!");
+    }
+  }, [pct]);
+
+  // Fire confetti when pct hits 100, but cap to 3 times (persisted in localStorage)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (pct === 100) {
+      let count = 0;
+      try {
+        count = Number(localStorage.getItem(CONFETTI_KEY) || 0);
+      } catch {}
+
+      if (!confettiFiredRef.current ) {
+        confettiFiredRef.current = true;
+        try {
+          localStorage.setItem(CONFETTI_KEY);
+        } catch {}
+
+        // celebratory burst
+        confetti({
+          particleCount: 140,
+          spread: 70,
+          startVelocity: 35,
+          origin: { y: 0.6 }
+        });
+      }
+    } else {
+      // reset the one-time guard so a future return to 100 can fire again
+      confettiFiredRef.current = false;
     }
   }, [pct]);
 
@@ -118,13 +158,20 @@ function CircularProgressRing({ value, max, size = 240 }) {
         <div style={{
           marginTop: '16px',
           fontSize: '16px',
-          fontWeight: '600',
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text'
+          fontWeight: '600'
         }}>
-          {message}
+          {msgParts.emoji && (
+            <span aria-hidden="true" style={{ lineHeight: 1 }}>{msgParts.emoji}</span>
+          )}
+          {msgParts.emoji ? ' ' : ''}
+          <span style={{
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}>
+            {msgParts.text}
+          </span>
         </div>
       )}
     </div>
@@ -348,7 +395,7 @@ function CardCarousel({ title, items, renderCardFooter, emptyText = "Nothing her
 
 /* ---------- Dashboard ---------- */
 export default function VolunteerDashboard() {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const [events, setEvents] = useState([]);
   const [activeEvents, setActiveEvents] = useState([]);
@@ -450,22 +497,23 @@ export default function VolunteerDashboard() {
     }
   };
 
-  const approvePending = (id) => {
-    const ev = pendingEvents.find((e) => e.id === id);
-    if (!ev) return;
-    setActiveEvents((arr) => [{ ...ev }, ...arr]);
-    setPendingEvents((arr) => arr.filter((e) => e.id !== id));
-  };
-  const withdrawPending = (id) => setPendingEvents((arr) => arr.filter((e) => e.id !== id));
+  // const approvePending = (id) => {
+  //   const ev = pendingEvents.find((e) => e.id === id);
+  //   if (!ev) return;
+  //   setActiveEvents((arr) => [{ ...ev }, ...arr]);
+  //   setPendingEvents((arr) => arr.filter((e) => e.id !== id));
+  // };
+  // const withdrawPending = (id) => setPendingEvents((arr) => arr.filter((e) => e.id !== id));
   const deleteActive = (id) => setActiveEvents((arr) => arr.filter((e) => e.id !== id));
-  const deletePast = (id) => setPastEvents((arr) => arr.filter((e) => e.id !== id));
+  // const deletePast = (id) => setPastEvents((arr) => arr.filter((e) => e.id !== id));
 
-  const syncHours = () => setManualTotalHours(syncedTotalHours);
-  const clearManual = () => setManualTotalHours(0);
+  // const syncHours = () => setManualTotalHours(syncedTotalHours);
+  // const clearManual = () => setManualTotalHours(0);
 
   return (
     <>
     <Navbar />
+    <PageTransition>
     <div className={`container py-4 ${styles.vdash}`}>
       <div className="d-flex flex-column align-items-center mb-3 text-center">
         {/* <button className={`btn btn-outline-primary btn-sm me-2 ${styles.vdBack}`} onClick={() => navigate(-1)}>← Back</button> */}
@@ -542,6 +590,7 @@ export default function VolunteerDashboard() {
         </div>
       </div>
     </div>
+    </PageTransition>
     </>
   );
 }

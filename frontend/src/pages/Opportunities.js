@@ -208,7 +208,8 @@ export default function Opportunities() {
 
       <Navbar />
       <PageTransition>
-        <div className={styles['opportunities-container']}>
+        <div className="container py-4 flex-grow-1">
+        
           <Title text="Opportunities" />
 
           <div className={styles.filters}>
@@ -300,6 +301,7 @@ export default function Opportunities() {
             )}
           </div>
         </div>
+        
 
         {showModal && selectedOpportunity && (
           <>

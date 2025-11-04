@@ -2,6 +2,9 @@ import React, { useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import modalStyles from '../../../styles/Modals.module.css';
+import Title from "../../../components/ui/Title";
+import Navbar from "../../../components/Navbar";
+import PageTransition from "../../../components/Animation/PageTransition";
 
 // Validation constants
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5MB
@@ -164,31 +167,22 @@ export default function NewDiscussion() {
 
 
   return (
+    <>
+    <Navbar />
+    <PageTransition>
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(to bottom, #f0f4ff 0%, #e5e7ff 100%)',
-      padding: '80px 20px 60px'
+      // background: 'linear-gradient(to bottom, #f0f4ff 0%, #e5e7ff 100%)',
+      // padding: '80px 20px 60px'
     }}>
       <div style={{ maxWidth: '900px', margin: '0 auto' }}>
         {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: '48px' }}>
-          <div style={{
-            display: 'inline-block',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-            fontSize: '52px',
-            fontWeight: '800',
-            marginBottom: '12px',
-            lineHeight: '1.2'
-          }}>
-            My Moment
-          </div>
-          <p style={{ fontSize: '18px', color: '#6b7280', margin: 0 }}>
-            Share your volunteer experience with the community
-          </p>
-        </div>
+        <Title
+          text="My Moment"
+          size="52px"
+          subtitle="Share your volunteer experience with the community"
+          className="mb-4 mt-4"
+        />
 
         {/* Main Card */}
         <div style={{
@@ -414,5 +408,7 @@ export default function NewDiscussion() {
       )}
 
     </div>
+    </PageTransition>
+    </>
   );
 }
