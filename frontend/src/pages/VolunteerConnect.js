@@ -11,38 +11,6 @@ function VolunteerConnect() {
   const { setAuth, auth } = useAuth();
   const API_BASE = process.env.REACT_APP_API_URL;
 
-  useEffect(() => {
-    const checkGoogleRedirect = async () => {
-      const {data: sessionData} = await supabase.auth.getSession();
-      const session = sessionData?.session;
-      const user = session?.user;
-      if(!session || !user) return;
-
-      const accessToken = session.access_token;
-      const supabaseId = user.id;
-      const email = user.email;
-      const username = user.user_metadata?.full_name || user.user_metadata?.name || user.user_metadata.username || "";
-      try {
-        const formData = new FormData();
-        formData.append("supabase_id", supabaseId);
-        formData.append("username", username);
-        formData.append("email", email);
-        await axios.post(`${API_BASE}/users/complete_registration`, formData, {headers: {"Content-Type":"multipart/form-data"}});
-      } catch (err) {
-        console.error(err);
-      }
-
-      setAuth({
-        role: "volunteer",
-        id: supabaseId,
-        token: accessToken
-      })
-    }
-    if(!auth?.id) {
-      checkGoogleRedirect();
-    }
-  }, [setAuth, auth?.id])
-
   return (
     <><Navbar />
     <PageTransition>
