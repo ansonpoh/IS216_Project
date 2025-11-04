@@ -3,10 +3,10 @@ import Navbar from "../../components/Navbar";
 import api from "../../utils/api";
 import modalStyles from "../../styles/Modals.module.css";
 import "../../styles/VolunteerProfile.css";
+import avatar from "../../components/images/avatar.png";
 
 export default function VolunteerProfile() {
   const STORAGE_KEY = "volunteer_profile_v1";
-  // get auth early so we can seed user_id
   const auth = JSON.parse(sessionStorage.getItem("auth")) || {};
 
   const [submitting, setSubmitting] = useState(false);
@@ -287,7 +287,7 @@ export default function VolunteerProfile() {
               <div className="vp-card vp-preview">
                 <div className="vp-avatar-wrap">
                   <img
-                    src={formData.avatarDataUrl || "https://via.placeholder.com/160x160?text=No+Photo"}
+                    src={formData.avatarDataUrl || avatar}
                     alt="Avatar"
                     className="vp-avatar"
                   />

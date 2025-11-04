@@ -5,6 +5,7 @@ import styles from "../../styles/ChatBubble.module.css";
 import {useNavigate} from "react-router-dom"
 import { useAuth } from "../../contexts/AuthProvider";
 import profileImg from "../../components/images/profile.png";
+import avatar from "../../components/images/avatar.png";
 import axios from "axios";
 
 export default function ChatBubble({ message, onOptionClick }) {
@@ -129,15 +130,11 @@ export default function ChatBubble({ message, onOptionClick }) {
       </div>
       {isUser && (
         <div className={`${styles.avatar} ms-2 rounded-circle overflow-hidden d-flex align-items-center justify-content-center`}>
-          {image ? (
-            <img
-              src={image}
-              alt="User"
-              className={`${styles['avatar-img']}`}
-            />
-          ) : (
-            <i className="bi bi-person"></i>
-          )}
+          <img
+            src={image || avatar}
+            alt="User"
+            className={`${styles['avatar-img']}`}
+          />
         </div>
       )}
     </div>

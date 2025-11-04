@@ -3,6 +3,8 @@ import { useLocation, useNavigate, NavLink } from "react-router-dom";
 import styles from "../styles/Navbar.module.css";
 import axios from "axios";
 import { useAuth } from "../contexts/AuthProvider";
+import avatar from "./images/avatar.png";
+
 
 function Navbar() {
   const navigate = useNavigate();
@@ -102,10 +104,18 @@ function Navbar() {
       <div className="d-flex align-items-center gap-3">
         {auth?.role === "volunteer" && (
           <>              
-          <i
-                className="bi bi-person-circle fs-5"
+          <img
+                src={image || avatar}
+                alt="Profile"
                 onClick={() => navigate("/VolunteerProfile")}
-                style={{ cursor: "pointer" }}
+                style={{
+                  cursor: "pointer",
+                  width: 36,
+                  height: 36,
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                  border: "2px solid #7494ec",
+                }}
               />
           </>
         )}
