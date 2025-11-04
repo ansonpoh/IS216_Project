@@ -17,7 +17,8 @@ import mapView from "../../components/images/mapView.png";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import ScrollMouse from "../../components/ui/AnimatedMouseIcon";
-
+import { supabase } from "../../config/supabaseClient";
+import { useAuth } from "../../contexts/AuthProvider";
 
 // import { Nav } from 'react-bootstrap';
 
@@ -50,9 +51,43 @@ export default function Landing() {
   const [activeCardIndex, setActiveCardIndex] = useState(null);
   const FACT_SWITCH_MS = 5000;
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const {setAuth, auth} = useAuth();
 
   const API_BASE = process.env.REACT_APP_API_URL; 
   const LOCAL_BASE = "http://localhost:3001"
+
+
+  useEffect(() => {
+    const checkGoogleRedirect = async () => {
+      const {data: sessionData} = await supabase.auth.getSession();
+      const session = sessionData?.session;
+      const user = session?.user;
+      if(!session || !user) return;
+
+      const accessToken = session.access_token;
+      const supabaseId = user.id;
+      const email = user.email;
+      const username = user.user_metadata?.full_name || user.user_metadata?.name || user.user_metadata.username || "";
+      try {
+        const formData = new FormData();
+        formData.append("supabase_id", supabaseId);
+        formData.append("username", username);
+        formData.append("email", email);
+        await axios.post(`${LOCAL_BASE}/users/complete_registration`, formData, {headers: {"Content-Type":"multipart/form-data"}});
+      } catch (err) {
+        console.error(err);
+      }
+
+      setAuth({
+        role: "volunteer",
+        id: supabaseId,
+        token: accessToken
+      })
+    }
+    if(auth?.id.length < 1) {
+      checkGoogleRedirect();
+    }
+  }, [setAuth])
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);

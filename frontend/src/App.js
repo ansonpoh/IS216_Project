@@ -15,7 +15,7 @@ import OrganiserDashboard from './pages/Organisers/OrganiserDashboard.jsx';
 import OrganiserCreateForm from "./pages/Organisers/OrganiserCreateForm.jsx"
 import VolunteerProfile from "./pages/Volunteer/VolunteerProfile.jsx";
 import VolunteerDashboard from "./pages/Volunteer/VolunteerDashboard.jsx";
-
+import ResetPassword from './pages/Signup/ResetPassword.jsx';
 
 //transition wrapper
 import {AnimatePresence} from "framer-motion";
@@ -70,6 +70,8 @@ function App() {
 
             {/* Landing Page */}  
             <Route path="/landing" element={<Landing />} />
+
+            <Route path="/reset-password" element={<ResetPassword />} />
           </Routes>
         </AnimatePresence>
       </AuthProvider>
