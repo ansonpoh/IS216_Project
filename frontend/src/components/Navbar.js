@@ -4,6 +4,7 @@ import styles from "../styles/Navbar.module.css";
 import axios from "axios";
 import { useAuth } from "../contexts/AuthProvider";
 import avatar from "./images/avatar.png";
+import Logo from "../components/images/logo.svg";
 
 
 function Navbar() {
@@ -46,7 +47,7 @@ function Navbar() {
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4">
       <a className="navbar-brand fw-bold text-primary d-flex align-items-center" href="/">
-        <i className="bi bi-heart-fill text-danger me-2"></i>
+        <img src={Logo} alt="VolunteerConnect Logo" className="me-2" style={{ width: 28, height: 28, objectFit: 'contain' }} />
         VolunteerConnect
       </a>
 
