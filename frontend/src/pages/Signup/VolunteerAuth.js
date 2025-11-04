@@ -26,6 +26,11 @@ export default function LoginSignup() {
     profile_image: "",
     agree: false,
   });
+  const [remember, setRemember] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotMsg, setForgotMsg] = useState("");
+  const [sendingReset, setSendingReset] = useState(false);
 
   useEffect(() => {
     if (active) {
@@ -115,6 +120,14 @@ export default function LoginSignup() {
         setLoginErrors("Your email is not yet verified");
         return;
       }
+      
+      await supabase.auth.setSession(data.session);
+
+      if (remember) {
+        localStorage.setItem("sb-persist-session", JSON.stringify({status: true, role:"volunteer"}));
+      } else {
+        localStorage.removeItem("sb-persist-session");
+      }
 
       const userInDb = await axios.get(`${LOCAL_BASE}/users/get_user_by_id`, {params: {id: user.id}});
       if(userInDb.data.result.length === 0) {
@@ -167,7 +180,7 @@ export default function LoginSignup() {
       const {data, error} = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/`,
+          redirectTo: `${window.location.origin}`,
         },
       });
       if(error) {
@@ -179,6 +192,27 @@ export default function LoginSignup() {
       console.error(err);
     }
   }
+
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    setSendingReset(true);
+    setForgotMsg("");
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+
+      setForgotMsg("Reset link sent! Check your email.");
+      setForgotEmail("");
+    } catch (err) {
+      console.error(err);
+      setForgotMsg(`${err.message}`);
+    } finally {
+      setSendingReset(false);
+    }
+  };
 
   return (
     <>
@@ -223,14 +257,19 @@ export default function LoginSignup() {
 
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <div className="form-check">
-                  <input className="form-check-input" type="checkbox" id="remember" />
+                  <input className="form-check-input" type="checkbox" id="remember" checked={remember} onChange={(e) => setRemember(e.target.checked)}/>
                   <label className="form-check-label" htmlFor="remember">
                     Remember me
                   </label>
                 </div>
-                <a href="#" className="small">
+                <button
+                  type="button"
+                  className="btn btn-link p-0 small"
+                  style={{ textDecoration: "none" }}
+                  onClick={() => setShowForgotPassword(true)}
+                >
                   Forgot password?
-                </a>
+                </button>
               </div>
 
               <button type="submit" className={styles.signup_btn}>
@@ -242,6 +281,48 @@ export default function LoginSignup() {
               </div>
             </form>
           </div>
+
+          {showForgotPassword && (
+            <div
+              className={styles.modalOverlay}
+              onClick={(e) => {
+                if (e.target.classList.contains(styles.modalOverlay)) setShowForgotPassword(false);
+              }}
+            >
+            <div className={styles.modalBox}>
+              <h3>Reset Password</h3>
+              <p className="small text-muted">
+                Enter your registered email, and we'll send you a reset link.
+              </p>
+              <form onSubmit={handleForgotPassword}>
+                <input
+                  type="email"
+                  placeholder="Email address"
+                  value={forgotEmail}
+                  onChange={(e) => setForgotEmail(e.target.value)}
+                  required
+                  className="form-control mb-2"
+                />
+                <div className="d-flex justify-content-end gap-2">
+                  <button
+                    type="button"
+                    className="btn btn-secondary btn-sm"
+                    onClick={() => {
+                      setShowForgotPassword(false);
+                      setForgotMsg("");
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button type="submit" className="btn btn-primary btn-sm" disabled={sendingReset}>
+                    {sendingReset ? "Sending..." : "Send Link"}
+                  </button>
+                </div>
+              </form>
+              {forgotMsg && <p className="mt-3 small text-center">{forgotMsg}</p>}
+            </div>
+          </div>
+          )}
 
           {/* REGISTER FORM */}
           <div className={`${styles['form-box']} ${styles.register}`}>

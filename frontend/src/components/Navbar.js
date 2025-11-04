@@ -31,7 +31,7 @@ function Navbar() {
       setImage(data.profile_image);
     }
 
-    if (auth.id.length > 0) {
+    if (auth?.id.length > 0) {
       if (auth.role === "volunteer") {
         fetch_user();
       } else if (auth.role === "organiser") {
@@ -110,7 +110,7 @@ function Navbar() {
           </>
         )}
 
-        {auth.id.length > 0 ? (
+        {auth?.id?.length > 0 ? (
           <button className="btn btn-outline-danger btn-sm" onClick={handleLogout}>
             Logout
           </button>

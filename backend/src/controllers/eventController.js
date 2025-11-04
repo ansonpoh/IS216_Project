@@ -16,6 +16,7 @@ import {
   get_registered_events_for_user,
   get_all_registered_users_for_event,
   update_registration_status,
+  update_publish_status,
 } from "../services/eventServices.js";
 import axios from "axios";
 
@@ -249,6 +250,17 @@ export async function update_registration_status_handler(req, res) {
   try {
     const {user_id, event_id, status} = req.body;
     const result = await update_registration_status(user_id, event_id, status);
+    return res.json({result});
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+}
+
+export async function update_publish_status_handler(req, res) {
+  try {
+    const {event_id, status} = req.body;
+    const result = await update_publish_status(event_id, status);
     return res.json({result});
   } catch (err) {
     console.error(err);
