@@ -36,7 +36,7 @@ export default function Opportunities() {
     const fetchOpportunities = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`${API_BASE}/events/get_all_events`);
+        const res = await axios.get(`${API_BASE}/events/get_all_published_events`);
         const data = Array.isArray(res.data.result) ? res.data.result : [];
         const normalized = data.map((it) => {
           const get = (...keys) => {

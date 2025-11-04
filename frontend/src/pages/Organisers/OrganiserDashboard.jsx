@@ -53,7 +53,7 @@ export default function OrganiserDashboard() {
   useEffect(() => {
     let list = [...events];
 
-    if (status !== "all") list = list.filter((e) => (e.status || "draft") === status);
+    if (status !== "all") list = list.filter((e) => (e.is_published ? "published" : "closed") === status);
 
     if (query.trim()) {
       const q = query.toLowerCase();
@@ -165,40 +165,17 @@ export default function OrganiserDashboard() {
   }
 
   const togglePublish = async (ev) => {
-    const id = ev.id;
-    const next = ev.status === "published" ? "draft" : "published";
+    const id = ev.event_id;
+    const next = ev.is_published;
     // optimistic UI
-    setEvents((arr) => arr.map((e) => (e.id === id ? { ...e, status: next } : e)));
+    setEvents((arr) => arr.map((e) => (e.event_id === id ? { ...e, is_published: !next } : e)));
     try {
-      await axios.post(`/organisers/events/${id}/${next === "published" ? "publish" : "unpublish"}`);
+      const res = await axios.post(`${API_BASE}/events/update_publish_status`, {event_id: id, status: next});
+      console.log(res);
     } catch {
       // revert on error
       setEvents((arr) => arr.map((e) => (e.id === id ? { ...e, status: ev.status } : e)));
       alert("Could not change publish state.");
-    }
-  };
-
-  const duplicate = async (ev) => {
-    try {
-      const res = await axios.post(`/organisers/events/${ev.id}/duplicate`);
-      const newEvent = res.data?.event || { ...ev, id: `${ev.id}-copy`, title: ev.title + " (Copy)", status: "draft" };
-      setEvents((arr) => [newEvent, ...arr]);
-    } catch {
-      // fallback optimistic copy
-      const newEvent = { ...ev, id: `${ev.id}-copy-${Date.now()}`, title: ev.title + " (Copy)", status: "draft" };
-      setEvents((arr) => [newEvent, ...arr]);
-    }
-  };
-
-  const copyLink = async (ev) => {
-    // Prefer slug/publicId if you have one; fallback to id
-    const slug = ev.slug || ev.publicId || ev.id;
-    const url = `${window.location.origin}/opportunities/${slug}`;
-    try {
-      await navigator.clipboard.writeText(url);
-      alert("Public link copied!");
-    } catch {
-      prompt("Copy this link:", url);
     }
   };
 
@@ -330,7 +307,7 @@ export default function OrganiserDashboard() {
                               : "text-bg-warning"
                           }`}
                         >
-                          {e.status || "draft"}
+                          {e.is_published? "Published" : "Closed"}
                         </span>
                       </td>
                       <td>
@@ -340,7 +317,7 @@ export default function OrganiserDashboard() {
                           </button>
                           <button
                             className={`btn btn-sm ${
-                              e.status === "published" ? "btn-outline-warning" : "btn-outline-success"
+                              e.is_published ? "btn-outline-danger" : "btn-outline-success"
                             }`}
                             onClick={() => togglePublish(e)}
                           >
