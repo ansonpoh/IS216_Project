@@ -4,6 +4,8 @@ import remarkGfm from "remark-gfm";
 import styles from "../../styles/ChatBubble.module.css";
 import {useNavigate} from "react-router-dom"
 import { useAuth } from "../../contexts/AuthProvider";
+import profileImg from "../../components/images/profile.png";
+import avatar from "../../components/images/avatar.png";
 import axios from "axios";
 
 export default function ChatBubble({ message, onOptionClick }) {
@@ -12,6 +14,7 @@ export default function ChatBubble({ message, onOptionClick }) {
   const [image, setImage] = useState(null);
   const events = message.events
   const API_BASE = process.env.REACT_APP_API_URL;
+  const LOCAL_BASE = "http://localhost:3001"
   const {auth} = useAuth();
 
   useEffect(() => {
@@ -52,16 +55,17 @@ export default function ChatBubble({ message, onOptionClick }) {
   }, []);
 
   return (
+
     <div className={`d-flex mb-3 ${isUser ? "justify-content-end" : "justify-content-start"}`}>
       {!isUser && (
-        <div className={`${styles.avatar} me-2 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center`}>
-          <i className="bi bi-person-hearts"></i>
+        <div className={`${styles.avatar} me-2 rounded-circle overflow-hidden d-flex align-items-center justify-content-center`}>
+          <img src={profileImg} alt="Assistant" className={`${styles['avatar-img']}`} />
         </div>
       )}
       <div
         className={`${styles['chat-bubble']} p-3 ${
           isUser
-            ? `${styles['user-bubble']} bg-primary text-white`
+            ? `${styles['user-bubble']} text-white`
             : `${styles['bot-bubble']} bg-white`
         }`}
 
@@ -73,7 +77,7 @@ export default function ChatBubble({ message, onOptionClick }) {
         {message.options && message.options.length > 0 && (
           <div className={`${styles['options-container']}`}>
             {message.options.map((option, index) => (
-              <button key={index} className={`${styles['option-button']}`} onClick={() => onOptionClick("I want " + option + " events")}>
+              <button key={index} className={`${styles['option-button']}`} onClick={() => onOptionClick("Show me " + option + " events")}>
                 {option}
               </button>
             ))}
@@ -105,19 +109,19 @@ export default function ChatBubble({ message, onOptionClick }) {
                   )}
 
                   <div className="text-muted small mb-2">
-                    <div><i className="bi bi-geo-alt me-1"></i>{event.location}</div>
-                    <div><i className="bi bi-clock me-1"></i>{event.date}, {event.time}</div>
+                    <div><span className="me-1" aria-hidden="true">📍</span>{event.location}</div>
+                    <div><span className="me-1" aria-hidden="true">⏰</span>{event.date}, {event.time}</div>
                     {event.skills && (
-                      <div><i className="bi bi-star me-1"></i>{event.skills}</div>
+                      <div><span className="me-1" aria-hidden="true">🌟</span>{event.skills}</div>
                     )}
                   </div>
 
                   <div className="d-flex gap-2 mt-4">
-                    <button className={`btn-primary btn flex-grow-1`}>
-                      Apply Now
-                    </button>
 
-                    <button className={`${styles['event-btn']} btn btn-outline-secondary flex-grow-1`}>
+                    <button
+                      className={`${styles['learn-btn']} btn flex-grow-1`}
+                      onClick={() => nav('/opportunities', { state: { eventId: event?.event_id || event?.id || null, title: event?.title || null } })}
+                    >
                       Learn More
                     </button>
                   </div>
@@ -135,15 +139,11 @@ export default function ChatBubble({ message, onOptionClick }) {
       </div>
       {isUser && (
         <div className={`${styles.avatar} ms-2 rounded-circle overflow-hidden d-flex align-items-center justify-content-center`}>
-          {image ? (
-            <img
-              src={image}
-              alt="User"
-              className={`${styles['avatar-img']}`}
-            />
-          ) : (
-            <i className="bi bi-person"></i>
-          )}
+          <img
+            src={image || avatar}
+            alt="User"
+            className={`${styles['avatar-img']}`}
+          />
         </div>
       )}
     </div>

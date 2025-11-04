@@ -12,7 +12,9 @@ export default function LoginSignup() {
   const [loginErrors, setLoginErrors] = useState(false);
   const { setAuth } = useAuth();
   const nav = useNavigate();
+
   const API_BASE = process.env.REACT_APP_API_URL;
+  const LOCAL_BASE = "http://localhost:3001"
 
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [registerData, setRegisterData] = useState({
@@ -52,7 +54,7 @@ export default function LoginSignup() {
       return;
     }
 
-    const emailInUse = await axios.get(`${API_BASE}/orgs/check_email`, {params: {email: registerData.email}});
+    const emailInUse = await axios.get(`${LOCAL_BASE}/orgs/check_email`, {params: {email: registerData.email}});
     if(emailInUse.data.status) {
       setRegisterErrors("Email in use.");
       return;
@@ -132,7 +134,7 @@ export default function LoginSignup() {
             formData.append("profile_image", registerData.profile_image);
           }
           const res = await axios.post(
-            `${API_BASE}/orgs/complete_registration`,
+            `${LOCAL_BASE}/orgs/complete_registration`,
             formData,
             { headers: { "Content-Type": "multipart/form-data" } }
           );
@@ -186,7 +188,6 @@ export default function LoginSignup() {
       setSendingReset(false);
     }
   };
-
 
   return (
     <>
@@ -292,7 +293,6 @@ export default function LoginSignup() {
             </div>
           </div>
           )}
-
           {/* REGISTER FORM */}
           <div className={`${styles['form-box']} ${styles.register}`}>
             <form onSubmit={handle_register}>

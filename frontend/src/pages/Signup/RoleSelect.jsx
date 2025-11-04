@@ -4,6 +4,7 @@ import "boxicons/css/boxicons.min.css";
 import Navbar from "../../components/Navbar";
 import styles from "../../styles/RoleSelect.module.css";
 import PageTransition from "../../components/Animation/PageTransition";
+import Title from "../../components/ui/Title";
 
 export default function RoleSelect() {
   const nav = useNavigate();
@@ -41,12 +42,14 @@ export default function RoleSelect() {
         <div className={styles.orb + " " + styles['orb-3']} />
 
         <section ref={gateRef} className={styles['role-gate'] + " container"}>
-          <header className={styles['role-hero']}>
-            <h1 className="fade-up">Join the Movement ✨</h1>
-            <p className="fade-up" style={{ animationDelay: "100ms" }}>
-              Choose your role to get a tailored experience.
-            </p>
-          </header>
+          {/* Keep emoji original color by rendering it outside the gradient Title */}
+          <div className="mb-2" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
+            <Title text="Join the Movement" size="56px" className="m-0" />
+            <span role="img" aria-label="sparkles" style={{ fontSize: '56px', lineHeight: 1 }}>✨</span>
+          </div>
+          <p className={`fade-up text-center mb-5`} style={{ animationDelay: "100ms" }}>
+            Choose your role to get a tailored experience.
+          </p>
 
           <div className={`${styles['role-grid']} ${styles['two-col']}`}>
             {/* LEFT: Organiser */}
@@ -57,11 +60,11 @@ export default function RoleSelect() {
             >
               <i className="bx bx-building-house role-icon"></i>
               <h2>I'm an Organiser</h2>
-              <p>Create events, manage signups, and message volunteers.</p>
+              <p>Create events and manage signups</p>
               <ul className="perks">
-                <li><i className="bx bx-check"></i> Bulk invites</li>
+                {/* <li><i className="bx bx-check"></i> Bulk invites</li> */}
                 <li><i className="bx bx-check"></i> Attendance tools</li>
-                <li><i className="bx bx-check"></i> Analytics overview</li>
+                {/* <li><i className="bx bx-check"></i> Analytics overview</li> */}
               </ul>
               <button
                 className={`${styles['role-btn']} ${styles.alt}`}
@@ -82,7 +85,7 @@ export default function RoleSelect() {
               <p>Discover causes, sign up fast, and track your impact.</p>
               <ul className="perks">
                 <li><i className="bx bx-check"></i> Smart matching</li>
-                <li><i className="bx bx-check"></i> Calendar sync</li>
+                {/* <li><i className="bx bx-check"></i> Calendar sync</li> */}
                 <li><i className="bx bx-check"></i> Impact logbook</li>
               </ul>
               <button

@@ -14,6 +14,9 @@ import axios from "axios";
 import Navbar from "../../components/Navbar";
 import styles from "../../styles/LandingPage.module.css";
 import mapView from "../../components/images/mapView.png";
+import opp from "../../components/images/opp.png";
+import forum from "../../components/images/forum.png";
+import ai from "../../components/images/ai.png";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import ScrollMouse from "../../components/ui/AnimatedMouseIcon";
@@ -111,18 +114,17 @@ export default function Landing() {
     const fetchFacts = async () => {
       setLoadingFacts(true);
       setFetchError(null);
-
       try {
-        const response = await axios.get(`${API_BASE}/facts`);
+        const response = await axios.get(`${LOCAL_BASE}/facts`);
         const data = response.data;
 
         const rows = Array.isArray(data.facts)
           ? data.facts
           : Array.isArray(data.result)
-          ? data.result
-          : Array.isArray(data)
-          ? data
-          : [];
+            ? data.result
+            : Array.isArray(data)
+              ? data
+              : [];
 
         const parsed = rows.map((r) => ({
           fact_text: r.fact_text ?? r.fact ?? "",
@@ -151,24 +153,24 @@ export default function Landing() {
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
     const sections = gsap.utils.toArray(".fade-section");
-      requestAnimationFrame(() => {
-        sections.forEach((section) => {
-          gsap.fromTo(
-            section,
-            { opacity: 0, y: 40 },
-            {
-              opacity: 1,
-              y: 0,
-              duration: 0.8,
-              ease: "power2.out",
-              scrollTrigger: {
-                trigger: section,
-                start: "top 85%",
-                toggleActions: "play none none reverse",
-              },
-            }
-          );
-        });
+    requestAnimationFrame(() => {
+      sections.forEach((section) => {
+        gsap.fromTo(
+          section,
+          { opacity: 0, y: 40 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: section,
+              start: "top 85%",
+              toggleActions: "play none none reverse",
+            },
+          }
+        );
+      });
     });
   }, []);
 
@@ -256,14 +258,12 @@ export default function Landing() {
               const currentZIndex = isFocus ? 10 : 3 - i;
 
               // Base transform remains the same
-              const baseTransform = `translateX(calc(-50% + ${
-                (i - 1) * 120
-              }px)) translateY(${i * 20}px)`;
+              const baseTransform = `translateX(calc(-50% + ${(i - 1) * 120
+                }px)) translateY(${i * 20}px)`;
 
               // Focus transform adds a slight shift and scale
-              const focusTransform = `translateX(calc(-50% + ${
-                (i - 1) * 120
-              }px)) translateY(${i * 20 - 15}px) scale(1.05) rotate(0deg)`;
+              const focusTransform = `translateX(calc(-50% + ${(i - 1) * 120
+                }px)) translateY(${i * 20 - 15}px) scale(1.05) rotate(0deg)`;
 
               const colors = getCategoryColors(opportunities[i].category);
               // alias for clarity when rendering icon + colors
@@ -273,9 +273,8 @@ export default function Landing() {
               return (
                 <div
                   key={i}
-                  className={`opportunity-card-float bg-white border border-gray-100 shadow-lg p-4 rounded-3 ${
-                    isFocus ? "card-is-focused" : ""
-                  }`}
+                  className={`opportunity-card-float bg-white border border-gray-100 shadow-lg p-4 rounded-3 ${isFocus ? "card-is-focused" : ""
+                    }`}
                   onClick={() => setActiveCardIndex(i)}
                   style={{
                     "--x": `${(i - 1) * 120}px`,
@@ -373,7 +372,6 @@ export default function Landing() {
               {/* Content Column */}
               <div className="col-12 col-lg-6">
                 <div className="pe-lg-5">
-                  {/* New: Eye-catching introductory phrase */}
 
                   {/* Main Heading */}
                   <div className="mb-4">
@@ -386,12 +384,10 @@ export default function Landing() {
                       Your Personal Volunteer Guide
                     </h2>
                   </div>
-  
+
 
                   <p className="lead text-muted mb-4">
-                    Stop endlessly scrolling. Vera uses smart AI to instantly
-                    filter and find the perfect match for your goals, schedule,
-                    and skills.
+                    Stop endlessly scrolling.{'\u00A0'}Ask Vera to instantly find the perfect match for your goals, schedule, and skills.
                   </p>
 
                   {/* Key Features List from AI Chat Interface */}
@@ -451,46 +447,49 @@ export default function Landing() {
                 </div>
               </div>
 
-              {/* Visual Column: Placeholder for the screenshot/mockup */}
+              {/* Visual Column: Styled like Map/Opportunities/Community card */}
               <div className="col-12 col-lg-6 d-flex justify-content-center">
                 <div
-                  className="vera-mockup-container p-4 bg-white rounded-4 shadow-lg border border-gray-100 position-relative w-100"
-                  style={{ maxWidth: "450px" }}
+                  className={`${styles.mapCard} bg-white rounded-4 border border-gray-100 w-100 position-relative p-0`}
+                  style={{ maxWidth: 600, cursor: "pointer" }}
+                  onClick={() => navigate("/ai")}
+                  aria-label="Open AI chat"
+                  role="button"
                 >
-                  {/* Simplified Mockup replicating the look of the AI Chat */}
-                  <div className="d-flex align-items-center mb-3">
-                    <BSIcon
-                      name="robot"
-                      className="text-primary me-2"
-                      size="24px"
+                  <div className={styles.aspect169}>
+                    <img
+                      src={ai}
+                      alt="Chat with Vera AI"
+                      loading="lazy"
+                      className="rounded-3"
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        display: "block",
+                      }}
+                      sizes="(max-width: 576px) 100vw, (max-width: 992px) 90vw, 600px"
                     />
-                    <span className="fw-bold">Vera AI Chat</span>
-                  </div>
 
-                  <div
-                    className="p-3 mb-2 rounded-3 bg-purple-100 d-inline-block"
-                    style={{ maxWidth: "85%" }}
-                  >
-                    Hello! I'm Vera, your personal assistant to discover
-                    meaningful volunteering opportunities. How can I help you
-                    get started today?
-                  </div>
+                    <span className={styles.mapBorder} />
 
-                  {/* Mimic a user selection */}
-                  <div className="text-end">
                     <div
-                      className="p-3 rounded-3 bg-blue-100 d-inline-block text-start mt-2 border-primary"
-                      style={{ maxWidth: "85%" }}
+                      className="position-absolute start-0 end-0 bottom-0 p-3"
+                      style={{
+                        background:
+                          "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.45) 100%)",
+                        color: "#fff",
+                      }}
                     >
-                      I'm new to volunteering
+                      <div className="d-flex align-items-center gap-2">
+                        <span className="ms-auto small d-none d-sm-inline">
+                          Open AI chat
+                        </span>
+                        <i className="bi bi-arrow-right"></i>
+                      </div>
                     </div>
-                  </div>
-
-                  <div className="text-center mt-4">
-                    {/* This could be replaced with an actual image of the chat interface */}
-                    <small className="text-muted">
-                      Real-time matching powered by AI
-                    </small>
                   </div>
                 </div>
               </div>
@@ -533,8 +532,7 @@ export default function Landing() {
                           Location-Based Search
                         </h4>
                         <p className="small text-muted mb-0">
-                          Toggle between regions: Central, North, East, and
-                          West.
+                          Toggle between regions: Central, North, East, West and more.
                         </p>
                       </div>
                     </li>
@@ -688,32 +686,49 @@ export default function Landing() {
                 </div>
               </div>
 
-              {/* Visual Column (RIGHT) - Mockup Placeholder */}
+              {/* Visual Column (RIGHT) -  */}
               <div className="col-12 col-lg-6 d-flex justify-content-center">
                 <div
-                  className="opportunities-mockup-container p-3 bg-white rounded-4 shadow-xl border border-gray-100 w-100"
-                  style={{ maxWidth: "600px", maxHeight: "400px" }}
+                  className={`${styles.mapCard} bg-white rounded-4 border border-gray-100 w-100 position-relative p-0`}
+                  style={{ maxWidth: 600, cursor: "pointer" }}
+                  onClick={() => navigate("/opportunities")}
+                  aria-label="Open opportunities listing"
+                  role="button"
                 >
-                  {/* Placeholder for the Opportunities Screenshot */}
-                  <div
-                    className="opportunities-placeholder-content text-center py-5 rounded-3"
-                    style={{
-                      backgroundColor: "#f8f9fa",
-                      height: "100%",
-                      // Use an image if available: backgroundImage: `url(${process.env.PUBLIC_URL}/opportunities_preview.jpg)`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                      border: "1px solid #dee2e6",
-                    }}
-                  >
-                    <BSIcon
-                      name="calendar-event-fill"
-                      className="text-secondary"
-                      size="3em"
+                  <div className={styles.aspect169}>
+                    <img
+                      src={opp}
+                      alt="Browse all volunteering opportunities"
+                      loading="lazy"
+                      className="rounded-3"
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        display: "block",
+                      }}
+                      sizes="(max-width: 576px) 100vw, (max-width: 992px) 90vw, 600px"
                     />
-                    <p className="text-muted mt-2 fw-semibold">
-                      Opportunities Listing Preview
-                    </p>
+
+                    <span className={styles.mapBorder} />
+
+                    <div
+                      className="position-absolute start-0 end-0 bottom-0 p-3"
+                      style={{
+                        background:
+                          "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.45) 100%)",
+                        color: "#fff",
+                      }}
+                    >
+                      <div className="d-flex align-items-center gap-2">
+                        <span className="ms-auto small d-none d-sm-inline">
+                          Open opportunities
+                        </span>
+                        <i className="bi bi-arrow-right"></i>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -739,8 +754,7 @@ export default function Landing() {
 
                   <p className="lead text-muted mb-4">
                     Connect with fellow volunteers. Share your best volunteer
-                    photos, videos, and stories to inspire others and earn
-                    recognition badges for your efforts. Every hour of service
+                    photos, videos, and stories to inspire others and connect with like-minded people. Every hour of service
                     deserves a spotlight!
                   </p>
 
@@ -754,7 +768,7 @@ export default function Landing() {
                       />
                       <div>
                         <h4 className="fs-6 fw-semibold mb-0">
-                          Recognition & Badges
+                          Recognition & Connect
                         </h4>
                         <p className="small text-muted mb-0">
                           Get public recognition for milestones and hours
@@ -791,32 +805,49 @@ export default function Landing() {
                 </div>
               </div>
 
-              {/* Visual Column (LEFT) - Mockup Placeholder */}
+              {/* Visual Column (LEFT)  */}
               <div className="col-12 col-lg-6 d-flex justify-content-center">
                 <div
-                  className="community-mockup-container p-3 bg-white rounded-4 shadow-xl border border-gray-100 w-100"
-                  style={{ maxWidth: "600px", maxHeight: "400px" }}
+                  className={`${styles.mapCard} bg-white rounded-4 border border-gray-100 w-100 position-relative p-0`}
+                  style={{ maxWidth: 600, cursor: "pointer" }}
+                  onClick={() => navigate("/community")}
+                  aria-label="Open community feed"
+                  role="button"
                 >
-                  {/* Placeholder for the Community Feed Image */}
-                  <div
-                    className="community-placeholder-content text-center py-5 rounded-3"
-                    style={{
-                      backgroundColor: "#f8f9fa",
-                      height: "100%",
-                      // Use an image if available: backgroundImage: `url(${process.env.PUBLIC_URL}/community_preview.jpg)`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                      border: "1px solid #dee2e6",
-                    }}
-                  >
-                    <BSIcon
-                      name="trophy-fill"
-                      className="text-secondary"
-                      size="3em"
+                  <div className={styles.aspect169}>
+                    <img
+                      src={forum}
+                      alt="Community stories and highlights"
+                      loading="lazy"
+                      className="rounded-3"
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        display: "block",
+                      }}
+                      sizes="(max-width: 576px) 100vw, (max-width: 992px) 90vw, 600px"
                     />
-                    <p className="text-muted mt-2 fw-semibold">
-                      Community Feed Preview
-                    </p>
+
+                    <span className={styles.mapBorder} />
+
+                    <div
+                      className="position-absolute start-0 end-0 bottom-0 p-3"
+                      style={{
+                        background:
+                          "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.45) 100%)",
+                        color: "#fff",
+                      }}
+                    >
+                      <div className="d-flex align-items-center gap-2">
+                        <span className="ms-auto small d-none d-sm-inline">
+                          Open community
+                        </span>
+                        <i className="bi bi-arrow-right"></i>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -890,6 +921,8 @@ export default function Landing() {
             </div>
           </div>
         </section>
+
+
 
         {showScrollTop && (
           <button

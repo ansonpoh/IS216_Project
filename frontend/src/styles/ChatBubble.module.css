@@ -1,6 +1,5 @@
 .chat-bubble {
   border-radius: 18px;
-
   max-width: 75%;
   word-wrap: break-word;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
@@ -13,15 +12,23 @@
   margin-top: 0;
   margin-bottom: 0;
   padding: 0;
+  size: 1.6rem;
 }
 
+.user-bubble{
+  background-color: #5397c5 ;
+}
+
+.bot-bubble{
+  background-color: #ffffff ;
+}
 
 /* Avatar base */
 .avatar {
   width: 40px;
   height: 40px;
   flex-shrink: 0;
-  background-color: white; /* white circle behind icon */
+  background-color: #7494ec; /* white circle behind icon */
   border-radius: 50%;
   overflow: hidden;
   display: flex;
@@ -35,13 +42,14 @@
   height: 100%;
   object-fit: cover; /* prevents distortion */
   border-radius: 50%; /* ensures circular crop */
+  border: 2px solid #7494ec;
 }
 
 .typing-dots span {
   height: 8px;
   width: 8px;
   margin: 0 2px;
-  background-color: #999;
+  background-color: #7494ec;
   border-radius: 50%;
   display: inline-block;
   animation: blink 1.4s infinite both;
@@ -76,6 +84,7 @@
 .event-btn {
   font-size: 0.9rem;
   border-radius: 0.6rem;
+  background-color: #7697f0;
 }
 
 .view-all-container {
@@ -96,11 +105,25 @@
 }
 
 .view-all-btn:hover {
-  background-color: #f4f4f4;
+  background-color:#7494ec ;
 }
 
 .view-all-btn i {
   color: #555;
+}
+
+.learn-btn{
+  background-color: #7494ec !important;
+  border-color: #7494ec !important;
+  color: #ffffff !important;
+}
+.learn-btn:hover,
+.learn-btn:focus{
+  filter: brightness(0.96);
+  color: #ffffff !important;
+}
+.learn-btn:active{
+  filter: brightness(0.92);
 }
 
 .typing-dots span:nth-child(2) {
@@ -131,7 +154,7 @@
 }
 
 .option-button {
-  background-color: #2ecc71;
+  background-color: #7494ec;
   color: white;
   border: none;
   border-radius: 16px;
@@ -142,5 +165,29 @@
 }
 
 .option-button:hover {
-  background-color: #27ae60;
+  background-color: #6a85d1;
+}
+
+/* Ensure chat bubble and cards stay within bounds on small screens */
+@media (max-width: 500px) {
+  .chat-bubble {
+    max-width: 100%;
+    padding: 10px 12px;
+  }
+
+  .event-card-grid {
+    grid-template-columns: 1fr; /* single column to avoid overflow */
+  }
+
+  .event-card {
+    width: 100%;
+  }
+
+  .event-card-img {
+    height: 150px; /* slightly shorter for small screens */
+  }
+
+  .options-container {
+    gap: 6px;
+  }
 }

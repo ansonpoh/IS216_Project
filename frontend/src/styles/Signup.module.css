@@ -131,12 +131,33 @@
 
 .social-icons-btn {
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 10px;
-  border: 2px solid #ccc;
-  border-radius: 8px;
+  border: 2px solid #e5e7eb; 
+  border-radius: 10px;
   font-size: 24px;
-  color: #333;
-  margin: 0 8px;
+  color: #4285f4; /* Google blue as base */
+  background: #fff;
+  margin: 8px 8px;
+  transition: all 0.2s ease;
+}
+
+
+.social-icons-btn:hover {
+  border-color: #7494ec; /* app brand */
+  box-shadow: 0 6px 18px rgba(116, 148, 236, 0.25);
+  transform: translateY(-1px);
+}
+
+.social-icons-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(116, 148, 236, 0.2);
+}
+
+.social-icons-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(116, 148, 236, 0.3);
 }
 
 .toggle-box {

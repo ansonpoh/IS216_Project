@@ -3,6 +3,7 @@ import axios from "axios";
 import ChatBubble from "./ChatBubble";
 import ChatInput from "./ChatInput";
 import styles from "../../styles/ChatWindow.module.css";
+
 import { useAuth } from "../../contexts/AuthProvider";
 
 export default function ChatWindow() {
@@ -10,6 +11,7 @@ export default function ChatWindow() {
   const [loading, setLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(true);
   const API_BASE = process.env.REACT_APP_API_URL;
+  const LOCAL_BASE = "http://localhost:3001"
   const chatBoxRef = useRef(null);
 
   useEffect(() => {
@@ -55,7 +57,7 @@ export default function ChatWindow() {
     setShowSuggestions(false);
 
     try {
-      const res = await axios.post(`${API_BASE}/api/chat`, {
+      const res = await axios.post(`${LOCAL_BASE}/api/chat`, {
         userMessage: userMessage,
         history: messages,
       });
@@ -115,7 +117,7 @@ export default function ChatWindow() {
         {/* typing animation */}
         {loading && (
           <div className="d-flex align-items-center">
-            <div className={`${styles.avatar} me-2 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center`}>
+            <div className={`${styles.avatar} me-2 text-white rounded-circle d-flex align-items-center justify-content-center`}>
               <i className="bi bi-person-hearts"></i>
             </div>
             <div className={`${styles['bot-bubble']} p-3 bg-light`}>
@@ -136,7 +138,7 @@ export default function ChatWindow() {
                 className={`btn btn-outline-secondary text-start ${styles['suggestion-card']}`}
                 onClick={() => handleSuggestionClick("I'm new to volunteering")}
               >
-                <i className="bi bi-heart-fill text-primary me-2"></i>
+                <span className="me-2" aria-hidden="true">💖</span>
                 <strong>I'm new to volunteering</strong>
                 <br />
                 <small>Help me find the perfect first opportunity</small>
@@ -146,13 +148,13 @@ export default function ChatWindow() {
                 className={`btn btn-outline-secondary text-start ${styles['suggestion-card']}`}
                 onClick={() => handleSuggestionClick("I have limited time")}
               >
-                <i className="bi bi-clock text-primary me-2"></i>
+                <span className="me-2" aria-hidden="true">⏰</span>
                 <strong>I have limited time</strong>
                 <br />
                 <small>Find flexible opportunities that fit my schedule</small>
               </button>
 
-              <button
+              {/* <button
                 className={`btn btn-outline-secondary text-start ${styles['suggestion-card']}`}
                 onClick={() => handleSuggestionClick("Use my professional skills")}
               >
@@ -160,7 +162,7 @@ export default function ChatWindow() {
                 <strong>Use my professional skills</strong>
                 <br />
                 <small>Match my expertise with meaningful causes</small>
-              </button>
+              </button> */}
             </div>
           </div>
         )}

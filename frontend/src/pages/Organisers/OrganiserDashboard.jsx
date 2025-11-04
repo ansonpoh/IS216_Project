@@ -3,12 +3,14 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import { AuthProvider, useAuth } from "../../contexts/AuthProvider"; // optional if you guard by role
+import Title from "../../components/ui/Title";
 
 export default function OrganiserDashboard() {
   const nav = useNavigate();
   const { auth } = useAuth?.() || {}; // safe in case hook shape differs
   const id = auth.id;
   const API_BASE = process.env.REACT_APP_API_URL;
+  const LOCAL_BASE = "http://localhost:3001"
 
   const [events, setEvents] = useState([]);
   const [filteredEvents, setFilteredEvents] = useState([]);
@@ -125,7 +127,7 @@ export default function OrganiserDashboard() {
     setShowModal(true);
     setLoadingModal(true);
     try {
-      const res = await axios.get(`${API_BASE}/events/get_registered_users_for_event`, {params: {event_id: event.event_id}})
+      const res = await axios.get(`${LOCAL_BASE}/events/get_registered_users_for_event`, {params: {event_id: event.event_id}})
       setRegistrations(res.data.result);
       let approved = 0;
       for(let r of res.data.result) {
@@ -147,7 +149,7 @@ export default function OrganiserDashboard() {
         )
       );
 
-      await axios.post(`${API_BASE}/events/update_registration_status`, {
+      await axios.post(`${LOCAL_BASE}/events/update_registration_status`, {
         user_id,
         event_id,
         status: newStatus,
@@ -187,13 +189,20 @@ export default function OrganiserDashboard() {
       <div className="container py-4">
         {/* Header */}
         <div className="d-flex align-items-center justify-content-between mb-3">
-          <div>
-            <h2 className="mb-1">Organiser Dashboard</h2>
-            <div className="text-muted">
-              Welcome {org ? org.org_name : ""}. Manage your opportunities and volunteers.
-            </div>
+          <div style={{ minWidth: 0 }}>
+            <Title
+              text="Organiser Dashboard"
+              size="56px"
+              align="left"
+              mb={0}
+              subtitle={`Welcome ${org ? org.org_name : ""}. Manage your opportunities and volunteers.`}
+            />
           </div>
-          <button className="btn btn-success" onClick={goCreate}>
+          <button
+            className="btn"
+            style={{ background: '#7494ec', borderColor: '#7494ec', color: '#fff', fontWeight: '600' }}
+            onClick={goCreate}
+          >
             + Create Opportunity
           </button>
         </div>
@@ -211,7 +220,6 @@ export default function OrganiserDashboard() {
           <div className="col-md-3">
             <select className="form-select" value={status} onChange={(e) => setStatus(e.target.value)}>
               <option value="all">All statuses</option>
-              <option value="draft">Draft</option>
               <option value="published">Published</option>
               <option value="closed">Closed</option>
             </select>
@@ -247,7 +255,11 @@ export default function OrganiserDashboard() {
           <div className="text-center text-muted py-5">
             <h5 className="mb-2">No opportunities yet</h5>
             <p className="mb-3">Create your first event and start collecting signups.</p>
-            <button className="btn btn-primary" onClick={goCreate}>
+            <button
+              className="btn"
+              style={{ background: '#7494ec', borderColor: '#7494ec', color: '#fff' }}
+              onClick={goCreate}
+            >
               Create Opportunity
             </button>
           </div>

@@ -13,7 +13,10 @@ export default function LoginSignup() {
   const [registerErrors, setRegisterErrors] = useState(false);
   const { setAuth } = useAuth();
   const nav = useNavigate();
+
   const API_BASE = process.env.REACT_APP_API_URL;
+  const LOCAL_BASE = "http://localhost:3001"
+
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [registerData, setRegisterData] = useState({
     username: "",
@@ -56,7 +59,7 @@ export default function LoginSignup() {
       return;
     }
 
-    const emailInUse = await axios.get(`${API_BASE}/users/check_email`, {params: {email: registerData.email}});
+    const emailInUse = await axios.get(`${LOCAL_BASE}/users/check_email`, {params: {email: registerData.email}});
     if(emailInUse.data.status) {
       setRegisterErrors("Email in use.")
       return;
@@ -117,6 +120,8 @@ export default function LoginSignup() {
         setLoginErrors("Your email is not yet verified");
         return;
       }
+      
+      await supabase.auth.setSession(data.session);
 
       await supabase.auth.setSession(data.session);
 
@@ -138,7 +143,7 @@ export default function LoginSignup() {
           }
 
           const res = await axios.post(
-            `${API_BASE}/users/complete_registration`,
+            `${LOCAL_BASE}/users/complete_registration`,
             formData,
             { headers: { "Content-Type": "multipart/form-data" } }
           );
@@ -177,7 +182,7 @@ export default function LoginSignup() {
       const {data, error} = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/`,
+          redirectTo: `${window.location.origin}`,
         },
       });
       if(error) {

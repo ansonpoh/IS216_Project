@@ -78,6 +78,18 @@ export async function update_user_info_handler(req, res) {
         // req.body may contain JSON strings when multipart/form-data is used
         const body = { ...req.body };
 
+        // Log incoming request for debugging: show keys and basic values (avoid dumping large buffers)
+        console.log('update_user_info_handler: received body keys ->', Object.keys(body));
+        // print a few important incoming values for quick debug
+        ['user_id', 'username', 'email', 'skills', 'languages', 'availability'].forEach(k => {
+            if (body[k] !== undefined) console.log(`  ${k}:`, typeof body[k] === 'string' ? body[k].slice(0, 500) : body[k]);
+        });
+        if (req.file) {
+            console.log('update_user_info_handler: received file ->', { originalname: req.file.originalname, mimetype: req.file.mimetype, size: req.file.size });
+        } else {
+            console.log('update_user_info_handler: no file uploaded');
+        }
+
         // Try to parse common json fields
         ["skills", "languages", "availability", "contact", "emergency"].forEach((k) => {
             if (body[k] && typeof body[k] === "string") {
@@ -85,12 +97,21 @@ export async function update_user_info_handler(req, res) {
             }
         });
 
+        // Ensure empty-string user_id becomes null (avoid SQL type errors). Do not coerce UUID strings to numbers.
+        if (Object.prototype.hasOwnProperty.call(body, 'user_id')) {
+            if (body.user_id === "" || body.user_id === null || body.user_id === undefined) {
+                body.user_id = null;
+            }
+            // otherwise leave as-is (string or UUID) — service layer expects the string/uuid value
+        }
+
         const profileFile = req.file; // uploaded avatar (multer memory)
         const updated = await update_user_info(body, profileFile);
 
         return res.json({ status: true, user: updated });
     } catch (err) {
         console.error("update_user_info_handler error:", err);
+        // include error message in response to help frontend debugging (do not expose stack in production)
         return res.status(500).json({ status: false, message: err.message || "Failed to update user" });
     }
 }

@@ -42,12 +42,63 @@ export default function CommunitySpotlight({ slides = [], interval = 4000 }) {
         ))}
       </div>
 
-      {/* Controls */}
-      <button className={styles["carousel-control-prev"]} onClick={prev} aria-label="Previous slide">
-        <span className={styles["carousel-control-prev-icon"]} aria-hidden="true" />
+      {/* Controls  */}
+      <button
+        onClick={prev}
+        aria-label="Previous slide"
+        style={{
+          position: 'absolute',
+          left: '10px',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          width: '32px',
+          height: '32px',
+          borderRadius: '50%',
+          border: 'none',
+          background: 'white',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+          cursor: 'pointer',
+          fontSize: '18px',
+          color: '#6366f1',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          transition: 'all 0.16s ease',
+          zIndex: 5
+        }}
+        onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-50%) scale(1.06)'}
+        onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(-50%) scale(1)'}
+      >
+        ‹
       </button>
-      <button className={styles["carousel-control-next"]} onClick={next} aria-label="Next slide">
-        <span className={styles["carousel-control-next-icon"]} aria-hidden="true" />
+
+      <button
+        onClick={next}
+        aria-label="Next slide"
+        style={{
+          position: 'absolute',
+          right: '10px',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          width: '32px',
+          height: '32px',
+          borderRadius: '50%',
+          border: 'none',
+          background: 'white',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+          cursor: 'pointer',
+          fontSize: '18px',
+          color: '#6366f1',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          transition: 'all 0.16s ease',
+          zIndex: 5
+        }}
+        onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-50%) scale(1.06)'}
+        onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(-50%) scale(1)'}
+      >
+        ›
       </button>
 
       {/* Indicators */}

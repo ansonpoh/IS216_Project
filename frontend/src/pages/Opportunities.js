@@ -10,6 +10,8 @@ import Title from '../components/ui/Title';
 export default function Opportunities() {
 
   const API_BASE = process.env.REACT_APP_API_URL;
+  const LOCAL_BASE = "http://localhost:3001"
+
   const location = useLocation();
   const openEventId = location.state?.eventId;
   const nav = useNavigate();
@@ -80,13 +82,13 @@ export default function Opportunities() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await axios.get(`${API_BASE}/events/get_all_categories`);
+        const res = await axios.get(`${LOCAL_BASE}/events/get_all_categories`);
         setCategories(Array.isArray(res.data.result) ? res.data.result : []);
       } catch (err) { console.error("Error loading categories", err); }
     };
     const fetchRegions = async () => {
       try {
-        const res = await axios.get(`${API_BASE}/events/get_all_regions`);
+        const res = await axios.get(`${LOCAL_BASE}/events/get_all_regions`);
         setRegions(Array.isArray(res.data.result) ? res.data.result : []);
       } catch (err) { console.error("Error loading regions", err); }
     };
@@ -136,12 +138,12 @@ export default function Opportunities() {
       setConfirmModal(false);
       setSignUpLoading(true);
 
-      const userSignedUp = await axios.get(`${API_BASE}/events/check_if_user_signed_up`, {params: {user_id: auth.id, event_id: selectedOpportunity.event_id}});
+      const userSignedUp = await axios.get(`${LOCAL_BASE}/events/check_if_user_signed_up`, {params: {user_id: auth.id, event_id: selectedOpportunity.event_id}});
 
       if (userSignedUp.data.result.length > 0) {
         setAlreadySignedUp(true);
       } else {
-        const res = await axios.post(`${API_BASE}/events/signup_event`, {user_id: auth.id, event_id: selectedOpportunity.event_id, })
+        const res = await axios.post(`${LOCAL_BASE}/events/signup_event`, {user_id: auth.id, event_id: selectedOpportunity.event_id, })
 
         if (res.data.result) {
           setSignUpSuccess(true);
@@ -156,6 +158,17 @@ export default function Opportunities() {
       setSignUpLoading(false);
     }
   }
+
+  // Close any open modals and return to the Opportunities list view
+  const handleAcknowledgement = () => {
+    setSignUpSuccess(false);
+    setAlreadySignedUp(false);
+    setConfirmModal(false);
+    setShowModal(false);
+    setSelectedOpportunity(null);
+    // Clear any navigation state so modal doesn't auto-open again
+    nav('/opportunities', { replace: true, state: {} });
+  };
 
   const resetFilters = () => {
     setCategoryFilter("");
@@ -195,7 +208,8 @@ export default function Opportunities() {
 
       <Navbar />
       <PageTransition>
-        <div className={styles['opportunities-container']}>
+        <div className="container py-4 flex-grow-1">
+        
           <Title text="Opportunities" />
 
           <div className={styles.filters}>
@@ -258,17 +272,17 @@ export default function Opportunities() {
                     <p>{op.description}</p>
                     <div className={styles['card-info']}>
                       <p>
-                        <i className="bi bi-geo-alt-fill" style={{ marginRight: "5px" }}></i>
+                        <span aria-hidden="true" style={{ marginRight: "5px" }}>📍</span>
                         <span className={styles['info-text']}>{op.location || "N/A"}</span>
                       </p>
                       <p>
-                        <i className="bi bi-calendar-event" style={{ marginRight: "7px" }}></i>
+                        <span aria-hidden="true" style={{ marginRight: "7px" }}>📅</span>
                         <span className={styles['info-text']}>
                           {formatDate(op.start_date)} - {formatTime(op.start_time)} - {formatTime(op.end_time)}
                         </span>
                       </p>
                       <p>
-                        <i className="bi bi-people-fill" style={{ marginRight: "5px" }}></i>
+                        <span aria-hidden="true" style={{ marginRight: "5px" }}>👤</span>
                         Capacity: {op.capacity ?? "N/A"}
                       </p>
                     </div>
@@ -287,6 +301,7 @@ export default function Opportunities() {
             )}
           </div>
         </div>
+        
 
         {showModal && selectedOpportunity && (
           <>
@@ -311,17 +326,17 @@ export default function Opportunities() {
 
                     <div className={styles["modal-detail-list"]}>
                       <p>
-                        <i className="bi bi-geo-alt-fill"></i>{" "}
+                        <span aria-hidden="true" style={{ marginRight: "6px" }}>📍</span>
                         {selectedOpportunity.location || "N/A"}
                       </p>
                       <p>
-                        <i className="bi bi-calendar-event"></i>{" "}
+                        <span aria-hidden="true" style={{ marginRight: "6px" }}>📅</span>
                         {formatDate(selectedOpportunity.start_date)}{" "}
                         {formatTime(selectedOpportunity.start_time)} –{" "}
                         {formatTime(selectedOpportunity.end_time)}
                       </p>
                       <p>
-                        <i className="bi bi-people-fill"></i> Capacity:{" "}
+                        <span aria-hidden="true" style={{ marginRight: "6px" }}>👤</span> Capacity:{" "}
                         {selectedOpportunity.capacity ?? "N/A"}
                       </p>
                       <p>Category: {selectedOpportunity.category}</p>
@@ -361,23 +376,23 @@ export default function Opportunities() {
         )}
 
         {signUpSuccess && (
-          <div className={styles["modal-overlay"]} onClick={() => setSignUpSuccess(false)}>
+          <div className={styles["modal-overlay"]} onClick={handleAcknowledgement}>
             <div className={styles["success-modal"]} onClick={(e) => e.stopPropagation()}>
               <i className="bi bi-check-circle-fill" style={{ color: "green", fontSize: "48px" }}></i>
               <h3>Sign Up Successful!</h3>
               <p>Your application is pending organiser confirmation.</p>
-              <button onClick={() => setSignUpSuccess(false)} className={styles["ok-btn"]}>OK</button>
+              <button onClick={handleAcknowledgement} className={styles["ok-btn"]}>OK</button>
             </div>
           </div>
         )}
 
         {alreadySignedUp && (
-          <div className={styles["modal-overlay"]} onClick={() => setAlreadySignedUp(false)}>
+          <div className={styles["modal-overlay"]} onClick={handleAcknowledgement}>
             <div className={styles["success-modal"]} onClick={(e) => e.stopPropagation()}>
               <i className="bi bi-ban" style={{ color: "red", fontSize: "48px" }}></i>
               <h3>Sign Up Failed</h3>
               <p>You have already signed up for this event!</p>
-              <button onClick={() => setAlreadySignedUp(false)} className={styles["ok-btn"]}>OK</button>
+              <button onClick={handleAcknowledgement} className={styles["ok-btn"]}>OK</button>
             </div>
           </div>
         )}
