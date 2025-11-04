@@ -14,6 +14,8 @@ import axios from "axios";
 import Navbar from "../../components/Navbar";
 import styles from "../../styles/LandingPage.module.css";
 import mapView from "../../components/images/mapView.png";
+import opp from "../../components/images/opp.png";
+import forum from "../../components/images/forum.png";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import ScrollMouse from "../../components/ui/AnimatedMouseIcon";
@@ -79,7 +81,6 @@ export default function Landing() {
     const fetchFacts = async () => {
       setLoadingFacts(true);
       setFetchError(null);
-
       try {
         const response = await axios.get(`${LOCAL_BASE}/facts`);
         const data = response.data;
@@ -341,7 +342,6 @@ export default function Landing() {
               {/* Content Column */}
               <div className="col-12 col-lg-6">
                 <div className="pe-lg-5">
-                  {/* New: Eye-catching introductory phrase */}
 
                   {/* Main Heading */}
                   <div className="mb-4">
@@ -501,8 +501,7 @@ export default function Landing() {
                           Location-Based Search
                         </h4>
                         <p className="small text-muted mb-0">
-                          Toggle between regions: Central, North, East, and
-                          West.
+                          Toggle between regions: Central, North, East, West and more.
                         </p>
                       </div>
                     </li>
@@ -656,32 +655,49 @@ export default function Landing() {
                 </div>
               </div>
 
-              {/* Visual Column (RIGHT) - Mockup Placeholder */}
+              {/* Visual Column (RIGHT) -  */}
               <div className="col-12 col-lg-6 d-flex justify-content-center">
                 <div
-                  className="opportunities-mockup-container p-3 bg-white rounded-4 shadow-xl border border-gray-100 w-100"
-                  style={{ maxWidth: "600px", maxHeight: "400px" }}
+                  className={`${styles.mapCard} bg-white rounded-4 border border-gray-100 w-100 position-relative p-0`}
+                  style={{ maxWidth: 600, cursor: "pointer" }}
+                  onClick={() => navigate("/opportunities")}
+                  aria-label="Open opportunities listing"
+                  role="button"
                 >
-                  {/* Placeholder for the Opportunities Screenshot */}
-                  <div
-                    className="opportunities-placeholder-content text-center py-5 rounded-3"
-                    style={{
-                      backgroundColor: "#f8f9fa",
-                      height: "100%",
-                      // Use an image if available: backgroundImage: `url(${process.env.PUBLIC_URL}/opportunities_preview.jpg)`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                      border: "1px solid #dee2e6",
-                    }}
-                  >
-                    <BSIcon
-                      name="calendar-event-fill"
-                      className="text-secondary"
-                      size="3em"
+                  <div className={styles.aspect169}>
+                    <img
+                      src={opp}
+                      alt="Browse all volunteering opportunities"
+                      loading="lazy"
+                      className="rounded-3"
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        display: "block",
+                      }}
+                      sizes="(max-width: 576px) 100vw, (max-width: 992px) 90vw, 600px"
                     />
-                    <p className="text-muted mt-2 fw-semibold">
-                      Opportunities Listing Preview
-                    </p>
+
+                    <span className={styles.mapBorder} />
+
+                    <div
+                      className="position-absolute start-0 end-0 bottom-0 p-3"
+                      style={{
+                        background:
+                          "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.45) 100%)",
+                        color: "#fff",
+                      }}
+                    >
+                      <div className="d-flex align-items-center gap-2">
+                        <span className="ms-auto small d-none d-sm-inline">
+                          Open opportunities
+                        </span>
+                        <i className="bi bi-arrow-right"></i>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -759,32 +775,49 @@ export default function Landing() {
                 </div>
               </div>
 
-              {/* Visual Column (LEFT) - Mockup Placeholder */}
+              {/* Visual Column (LEFT) - Styled like Map/Opportunities card */}
               <div className="col-12 col-lg-6 d-flex justify-content-center">
                 <div
-                  className="community-mockup-container p-3 bg-white rounded-4 shadow-xl border border-gray-100 w-100"
-                  style={{ maxWidth: "600px", maxHeight: "400px" }}
+                  className={`${styles.mapCard} bg-white rounded-4 border border-gray-100 w-100 position-relative p-0`}
+                  style={{ maxWidth: 600, cursor: "pointer" }}
+                  onClick={() => navigate("/community")}
+                  aria-label="Open community feed"
+                  role="button"
                 >
-                  {/* Placeholder for the Community Feed Image */}
-                  <div
-                    className="community-placeholder-content text-center py-5 rounded-3"
-                    style={{
-                      backgroundColor: "#f8f9fa",
-                      height: "100%",
-                      // Use an image if available: backgroundImage: `url(${process.env.PUBLIC_URL}/community_preview.jpg)`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                      border: "1px solid #dee2e6",
-                    }}
-                  >
-                    <BSIcon
-                      name="trophy-fill"
-                      className="text-secondary"
-                      size="3em"
+                  <div className={styles.aspect169}>
+                    <img
+                      src={forum}
+                      alt="Community stories and highlights"
+                      loading="lazy"
+                      className="rounded-3"
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        display: "block",
+                      }}
+                      sizes="(max-width: 576px) 100vw, (max-width: 992px) 90vw, 600px"
                     />
-                    <p className="text-muted mt-2 fw-semibold">
-                      Community Feed Preview
-                    </p>
+
+                    <span className={styles.mapBorder} />
+
+                    <div
+                      className="position-absolute start-0 end-0 bottom-0 p-3"
+                      style={{
+                        background:
+                          "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.45) 100%)",
+                        color: "#fff",
+                      }}
+                    >
+                      <div className="d-flex align-items-center gap-2">
+                        <span className="ms-auto small d-none d-sm-inline">
+                          Open community
+                        </span>
+                        <i className="bi bi-arrow-right"></i>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -858,6 +891,8 @@ export default function Landing() {
             </div>
           </div>
         </section>
+
+        
 
         {showScrollTop && (
           <button

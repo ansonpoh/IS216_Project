@@ -12,7 +12,7 @@ export default function Title({ text, size = '56px', className = '', subtitle })
   const fontSize = typeof size === 'number' ? `${size}px` : size;
 
   return (
-    <div className={className} style={{ textAlign: 'center', marginBottom: '16px' }}>
+    <div className={className} style={{ textAlign: 'center', marginBottom: '20px' }}>
       <div style={{
         display: 'inline-block',
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',

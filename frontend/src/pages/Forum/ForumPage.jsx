@@ -309,12 +309,12 @@ export default function ForumPage() {
         <PageTransition>
           <div className="container py-4 flex-grow-1">
             {/* Hero Section */}
-            <div style={{ textAlign: 'center', marginBottom: '60px' }}>
+            <div style={{ textAlign: 'center', marginBottom: '30px' }}>
               <Title text="Share the Joy" subtitle="Connect with our community and share your volunteer experiences" />
             </div>
 
             {/* Spotlight Carousel */}
-            <div style={{ marginBottom: '60px' }}>
+            <div style={{ marginBottom: '30px' }}>
               <CommunitySpotlight slides={slides} interval={4500} />
             </div>
 
