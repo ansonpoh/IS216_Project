@@ -4,6 +4,7 @@ import "boxicons/css/boxicons.min.css";
 import Navbar from "../../components/Navbar";
 import styles from "../../styles/RoleSelect.module.css";
 import PageTransition from "../../components/Animation/PageTransition";
+import Title from "../../components/ui/Title";
 
 export default function RoleSelect() {
   const nav = useNavigate();
@@ -41,12 +42,18 @@ export default function RoleSelect() {
         <div className={styles.orb + " " + styles['orb-3']} />
 
         <section ref={gateRef} className={styles['role-gate'] + " container"}>
-          <header className={styles['role-hero']}>
+          <Title text="Join the Movement ✨" className="mb-2 text-center" />
+          <p className={`fade-up text-center mb-5`} style={{ animationDelay: "100ms" }}>
+            Choose your role to get a tailored experience.
+          </p>
+          {/* <header className={styles['role-hero']}>
             <h1 className="fade-up">Join the Movement ✨</h1>
             <p className="fade-up" style={{ animationDelay: "100ms" }}>
               Choose your role to get a tailored experience.
             </p>
-          </header>
+          </header> */}
+          {/* rmove role-hero  css  */}
+
 
           <div className={`${styles['role-grid']} ${styles['two-col']}`}>
             {/* LEFT: Organiser */}
