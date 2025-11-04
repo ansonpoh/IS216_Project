@@ -207,17 +207,9 @@ export default function ForumPage() {
       const outcome = res.data?.status;
       const isLiked = outcome === "liked";
 
-      setPosts((prevPosts = []) => {
-        (prevPosts || []).map((post) => post.feedback_id === feedback_id ? {
-          ...post,
-          liked_by_user: isLiked,
-          like_count: parseInt(post.like_count) + (isLiked ? 1 : -1),
-        } : post
-        )
-      })
-
-      setFilteredPosts((prevFiltered = []) =>
-        (prevFiltered || []).map((post) =>
+      const safeUpdate = (list = []) => {
+        if (!Array.isArray(list)) return [];
+        return list.map((post) =>
           post.feedback_id === feedback_id
             ? {
                 ...post,
@@ -225,15 +217,17 @@ export default function ForumPage() {
                 like_count: parseInt(post.like_count) + (isLiked ? 1 : -1),
               }
             : post
-        )
-      );
-
-      if (selectedPost?.feedback_id === feedback_id) {
+        );
+      };
+      
+      setPosts((prev = []) => [...safeUpdate(prev)]);
+      
+      if(selectedPost?.feedback_id === feedback_id) {
         setSelectedPost((prev) => ({
           ...prev,
           liked_by_user: isLiked,
           like_count: parseInt(prev.like_count) + (isLiked ? 1 : -1),
-        }));
+        }))
       }
     } catch (err) {
       console.error(err);
@@ -436,7 +430,7 @@ export default function ForumPage() {
                     created_at={post.created_at}
                     image={post.img}
                     likes={post.like_count || 0}
-                    liked_by_uesr={post.liked_by_user}
+                    liked_by_user={post.liked_by_user}
                     onClick={() => setSelectedPost(post)}
                   />
                 ))}
