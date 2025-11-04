@@ -33,7 +33,8 @@ export async function create_post_handler (req, res) {
 
 export async function get_all_posts_handler (req, res) {
     try {
-        const result = await get_all_posts();
+        const {user_id} = req.query;
+        const result = await get_all_posts(user_id);
         return res.json({result});
     } catch (err) {
         console.error(err);
@@ -54,8 +55,12 @@ export async function get_post_likes_handler (req, res) {
 
 export async function user_likes_post_handler (req, res) {
     try {
-        const {feedback_id, user_id} = req.body;
-        const result = user_likes_post(feedback_id, user_id);
+        const {feedback_id, user_id, liked} = req.body;
+        const result = await user_likes_post(feedback_id, user_id, liked);
+        if(result) {
+            if(liked) return res.json({status: "unliked"});
+            return res.json({status: "liked"});
+        }
         return res.json({result});
     } catch (err) {
         console.error(err);
