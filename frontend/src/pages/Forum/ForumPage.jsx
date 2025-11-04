@@ -200,6 +200,9 @@ export default function ForumPage() {
       alert("Please sign in to like posts.");
       nav("/volunteer/auth");
       return;
+    } else if (auth?.role === "organiser") {
+      alert("Only users can like post!");
+      return;
     }
 
     try {
