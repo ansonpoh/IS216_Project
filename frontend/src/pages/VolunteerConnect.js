@@ -38,10 +38,10 @@ function VolunteerConnect() {
         token: accessToken
       })
     }
-    if(auth.id.length < 1) {
+    if(!auth?.id) {
       checkGoogleRedirect();
     }
-  }, [setAuth])
+  }, [setAuth, auth?.id])
 
   return (
     <><Navbar />

@@ -29,6 +29,8 @@ export const AuthProvider = ({ children }) => {
     await supabase.auth.signOut();
     setAuth(DEFAULT_AUTH);
     sessionStorage.removeItem("auth");
+    localStorage.removeItem("sb-persist-session");
+    localStorage.removeItem("sb-zswpvzxercgzdhiabbvz-auth-token")
   }
 
   const [messages, setMessages] = useState(() => {
@@ -43,6 +45,23 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     sessionStorage.setItem("chatMessages", JSON.stringify(messages));
   }, [messages]);
+
+  useEffect(() => {
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session || !session.user) {
+        setAuth(DEFAULT_AUTH);
+        return;
+      }
+      if(JSON.parse(localStorage.getItem("sb-persist-session"))?.role === "volunteer") {
+        setAuth({role: "volunteer", id: session.user.id, token: session.access_token})
+      }
+      else if (JSON.parse(localStorage.getItem("sb-persist-session"))?.role === "organiser") {
+        setAuth({role: "organiser", id:session.user.id, token: session.access_token});
+      }
+    });
+
+    return () => listener.subscription.unsubscribe();
+  }, []);
 
   const value = useMemo(() => ({auth, setAuth, logout, messages, setMessages}), [auth, messages]);
 

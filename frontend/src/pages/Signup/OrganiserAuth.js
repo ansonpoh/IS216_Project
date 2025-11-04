@@ -23,7 +23,8 @@ export default function LoginSignup() {
     profile_image: "",
     agree: false,
   });
-
+  const [remember, setRemember] = useState(false);
+  
   useEffect(() => {
     setLoginData({ email: "", password: "" });
     setRegisterData({
@@ -106,6 +107,14 @@ export default function LoginSignup() {
       if (!org.email_confirmed_at) {
         setLoginErrors("Your email is not yet verified");
         return;
+      }
+
+      await supabase.auth.setSession(data.session);
+
+      if (remember) {
+        localStorage.setItem("sb-persist-session", JSON.stringify({status: true, role:"organiser"}));
+      } else {
+        localStorage.removeItem("sb-persist-session");
       }
 
       const orgInDb = await axios.get(`${API_BASE}/orgs/get_org_by_id`, {params: {id: org.id}});
@@ -195,7 +204,7 @@ export default function LoginSignup() {
 
               <div className={`d-flex justify-content-between align-items-center mb-3`}>
                 <div className="form-check">
-                  <input className="form-check-input" type="checkbox" id="remember" />
+                  <input className="form-check-input" type="checkbox" id="remember" checked={remember} onChange={(e) => setRemember(e.target.checked)}/>
                   <label className="form-check-label" htmlFor="remember">
                     Remember me
                   </label>
