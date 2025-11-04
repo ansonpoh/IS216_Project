@@ -125,7 +125,7 @@ const PostModal = ({ post, onClose, onLike }) => {
 
 export default function ForumPage() {
   const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [slides, setSlides] = useState([]);
 
   const [filteredPosts, setFilteredPosts] = useState([]);
@@ -168,7 +168,7 @@ export default function ForumPage() {
       }
     };
 
-    fetchPosts();
+    if(userId.length > 0) fetchPosts();
   }, []);
 
   // highlight fetching
@@ -419,7 +419,7 @@ export default function ForumPage() {
                 <p className="text-muted">
                   {query
                     ? "No posts found matching your search."
-                    : "No posts yet. Be the first to share!"}
+                    : "Login to view posts!"}
                 </p>
               </div>
             ) : (
