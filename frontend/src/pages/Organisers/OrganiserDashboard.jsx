@@ -205,9 +205,7 @@ export default function OrganiserDashboard() {
   const handleDelete = async () => {
     if (!eventToDelete) return;
     try {
-      await axios.delete(`${LOCAL_BASE}/events/delete_event`, {
-        params: { event_id: eventToDelete.event_id },
-      });
+      await axios.post(`${LOCAL_BASE}/events/delete_event`, {event_id: eventToDelete.event_id });
 
       // Remove from state
       setEvents((prev) => prev.filter((e) => e.event_id !== eventToDelete.event_id));

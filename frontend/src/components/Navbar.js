@@ -94,6 +94,12 @@ function Navbar() {
             </NavLink>
           </li>
 
+          <li className="nav-item">
+            <NavLink to="/analytics" className={({ isActive }) => `${styles['navbar_item']} nav-link fw-semibold ${isActive ? styles.active : ''}`}>
+              Analytics
+            </NavLink>
+          </li>
+
           {auth?.role === "organiser" && (
             <li className="nav-item">
               <NavLink to="/organiser/dashboard" className={({ isActive }) => `${styles['navbar_item']} nav-link fw-semibold ${isActive ? styles.active : ''}`}>

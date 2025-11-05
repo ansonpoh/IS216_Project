@@ -16,6 +16,7 @@ import OrganiserCreateForm from "./pages/Organisers/OrganiserCreateForm.jsx"
 import VolunteerProfile from "./pages/Volunteer/VolunteerProfile.jsx";
 import VolunteerDashboard from "./pages/Volunteer/VolunteerDashboard.jsx";
 import ResetPassword from './pages/Signup/ResetPassword.jsx';
+import Analytics from './pages/Analytics.js';
 
 //transition wrapper
 import {AnimatePresence} from "framer-motion";
@@ -44,8 +45,8 @@ function App() {
             {/* Opportunities Page */}
             <Route path="/opportunities" element={<Opportunities />} />
             
-            {/* Notifications Page */}
-            {/* <Route path="/notifications" element={<NotificationsPage />} /> */}
+            {/* Analytics */}
+            <Route path="/analytics" element={<Analytics />} />
             
             {/* Choose Role Page */}
             <Route path="/choose-role" element={<RoleSelect />} />
