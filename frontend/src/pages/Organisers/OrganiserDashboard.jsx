@@ -428,20 +428,24 @@ export default function OrganiserDashboard() {
                               Remove
                             </button>
                           )}
+                    <div style={{ textAlign: "center" }}>
+                      <span
+                        className={`badge px-3 py-2 ${
+                          r.status === "approved"
+                            ? "bg-success-subtle text-success-emphasis"
+                            : r.status === "attended"
+                            ? "bg-success text-white"                    
+                            : r.status === "pending"
+                            ? "bg-warning text-dark"                       
+                            : "bg-danger"                                   
+                        }`}
+                      >
+                        {r.status}
+                      </span>
+                    </div>
 
-                          <div style={{textAlign:"center"}}>
-                            <span
-                              className={`badge px-3 py-2 ${
-                                r.status === "approved"
-                                  ? "bg-success"
-                                  : r.status === "pending"
-                                  ? "bg-warning text-dark"
-                                  : "bg-danger"
-                              }`}
-                            >
-                              {r.status}
-                            </span>
-                          </div>
+
+
 
                           {r.status === "pending" && (
                             <div className="btn-group btn-group-sm">
