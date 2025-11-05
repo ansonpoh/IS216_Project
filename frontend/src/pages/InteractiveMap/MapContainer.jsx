@@ -422,7 +422,7 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
   // Fetch opportunities from backend
   const fetchOpportunities = async () => {
     try {
-      const opportunities = await axios.get(`${API_BASE}/events/get_all_events`);
+      const opportunities = await axios.get(`${API_BASE}/events/get_all_published_events`);
       const res = await axios.post(`${API_BASE}/events/event_data_modify`, {events: opportunities.data.result});
 
       const data = res.data;
