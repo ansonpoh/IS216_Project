@@ -219,29 +219,30 @@
 }
 
 :global(.gm-style .gm-style-mtc button) {
-    background-color: #4891ff !important;
+    background-color: rgb(159, 159, 233) !important;
     color: white !important;
-    border: 2px solid #0066ff !important;
+    border: 2px solid rgba(113, 113, 232, 1) !important;
     box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 4px -1px !important;
-    font-family: Roboto, Arial, sans-serif !important;
-    font-size: 18px !important;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS' !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
     padding: 0 16px !important;
 }
 
 :global(.gm-style .gm-style-mtc button:hover) {
-    background-color: #3a7de8 !important;
+    background-color: rgb(113, 113, 232) !important;
 }
 
 /* Style for active/selected map type button */
 :global(.gm-style .gm-style-mtc button[aria-pressed="true"]) {
-    background-color: #2563eb !important;
+    background-color: rgb(113, 113, 232) !important;
     font-weight: 500 !important;
 }
 
 /* Style Fullscreen Control */
 :global(.gm-style .gm-fullscreen-control) {
-    background-color: #4891ffff !important;
-    border: 2px solid #0066ffff !important;
+    background-color: rgb(159, 159, 233) !important;
+    border: 2px solid rgba(113, 113, 232, 1) !important;
     border-radius: 2px !important;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
     width: 40px !important;
@@ -252,7 +253,7 @@
 }
 
 :global(.gm-style .gm-fullscreen-control:hover) {
-    background-color: #3a7de8 !important;
+    background-color: rgb(113, 113, 232) !important;
 }
 
 :global(.gm-style .gm-fullscreen-control img) {
@@ -266,8 +267,8 @@
 }
 
 :global(.gm-style .gm-bundled-control .gmnoprint) {
-    background-color: #4891ffff !important;
-    border: 2px solid #0066ffff !important;
+    background-color: rgb(159, 159, 233) !important;
+    border: 2px solid rgba(113, 113, 232, 1) !important;
     border-radius: 2px !important;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
     margin-right: 0px !important;
@@ -275,7 +276,7 @@
 }
 
 :global(.gm-style .gm-bundled-control .gmnoprint:hover) {
-    background-color: #3a7de8 !important;
+    background-color: rgb(113, 113, 232) !important;
 }
 
 /* Override white background on inner div */
@@ -284,7 +285,7 @@
 }
 
 :global(.gm-style .gm-bundled-control button.gm-control-active) {
-    background-color: #4891ffff !important;
+    background-color: rgb(159, 159, 233) !important;
     border: none !important;
     display: flex !important;
     align-items: center !important;
@@ -295,7 +296,7 @@
 }
 
 :global(.gm-style .gm-bundled-control button.gm-control-active:hover) {
-    background-color: #3a7de8 !important;
+    background-color: rgb(113, 113, 232) !important;
 }
 
 :global(.gm-style .gm-bundled-control button.gm-control-active img) {
@@ -342,7 +343,7 @@
 }
 
 /* Style other gm-control-active buttons (if any) */
-:global(.gm-style .gm-control-active) {
+:global(.gm-style .gm-control-active:not(.gm-fullscreen-control)) {
     background-color: #4891ffff !important;
     border: 2px solid #0066ffff !important;
     border-radius: 2px !important;
@@ -353,7 +354,7 @@
     background-size: 20px !important;
 }
 
-:global(.gm-style .gm-control-active:hover) {
+:global(.gm-style .gm-control-active:not(.gm-fullscreen-control):hover) {
     background-color: #3a7de8 !important;
 }
 
