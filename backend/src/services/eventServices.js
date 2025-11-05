@@ -14,18 +14,6 @@ export async function create_event(org_id, title, category, description, locatio
     }
 }
 
-export async function delete_event(event_id) {
-    try {
-        const query = `delete from events where event_id = $1`
-        const values = [event_id];
-        const result = await pool.query(query, values);
-        return result.rowCount > 0;
-    } catch (err) {
-        console.error(err);
-        throw err;
-    }
-}
-
 export async function get_event_by_id(event_id) {
     try {
         const query = `select e.*, o.org_name from events e join organisations o on e.org_id = o.org_id where e.event_id = $1`;
