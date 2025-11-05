@@ -4,7 +4,7 @@
   --muted: #6b6b6b;
   --accent: #0a66c2;
   --shadow: 0 6px 18px rgba(28, 28, 28, 0.06);
-  --radius: 8px;
+  --radius: 12px;
   --gutter: 20px;
 }
 
@@ -139,18 +139,17 @@
 
 /* -------- Featured Card -------- */
 .featured-card {
+  /* Match Opportunities.event-card visual style */
   background: var(--card-bg);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  border-radius: 12px; /* same radius as event-card */
   overflow: hidden;
   display: flex;
   flex-direction: column;
   position: relative;
   border: 1px solid rgba(15, 23, 42, 0.04);
-  min-height: 240px;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  animation: fade-in 0.25s ease;
+  box-shadow: 0 6px 18px rgba(7, 12, 20, 0.06);
+  transition: transform .16s ease, box-shadow .16s ease;
+  min-height: 260px; /* match event-card min height */
 }
 
 .featured-card:hover {
@@ -161,31 +160,34 @@
 /* Card Image */
 .card-image {
   width: 100%;
-  height: clamp(120px, 22vh, 220px);
-  object-fit: cover;
+  height: 180px; /* fixed visual height to match Opportunities cards */
+  overflow: hidden;
   display: block;
 }
 
 /* Card Body */
 .card-body {
-  padding: 0.75rem 0.9rem;
+  padding: 1rem; /* match Opportunities card-content padding */
   flex: 1;
   display: flex;
   flex-direction: column;
+  gap: 0.7rem;
 }
 
 .card-title {
   margin: 0 0 0.25rem 0;
-  font-size: 1rem;
+  font-size: 1.05rem; /* match event-title size */
   line-height: 1.2;
-  font-weight: 600;
+  font-weight: 700;
+  color: #0f172a;
 }
 
 .card-text {
   margin: 0 0 0.5rem 0;
   color: var(--muted);
-  font-size: 0.92rem;
+  font-size: 0.95rem;
   flex: 1;
+  line-height: 1.35;
 }
 
 /* Card Footer */
@@ -193,7 +195,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.5rem 0.9rem;
+  padding: 1rem; /* match Opportunities spacing */
   background: transparent;
   font-size: 0.875rem;
   color: var(--muted);

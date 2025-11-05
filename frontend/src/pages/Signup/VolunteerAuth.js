@@ -279,7 +279,7 @@ export default function LoginSignup() {
               </button>
 
               <div className={`${styles['social-icons']}`}>
-                <button className={`${styles['social-icons-btn']}`} onClick={handleGoogleLogin}><i className="bx bxl-google"></i></button>
+                <button type="button" className={`${styles['social-icons-btn']}`} onClick={handleGoogleLogin}><i className="bx bxl-google"></i></button>
               </div>
             </form>
           </div>
@@ -391,26 +391,28 @@ export default function LoginSignup() {
                 <i className="bx bxs-lock-alt"></i>
               </div>
 
-              <div className="form-check mb-3">
+              {/* <div className="form-check mb-3">
                 <input
+                  id="agree"
+                  name="agree"
                   className={styles['form-check-input']}
                   type="checkbox"
                   checked={registerData.agree}
                   onChange={(e) =>
                     setRegisterData({ ...registerData, agree: e.target.checked })
                   }
-                />
-                <label className="form-check-label" htmlFor="agree">
+                /> */}
+                {/* <label className="form-check-label" htmlFor="agree">
                   I agree to the <a href="#">Terms</a> and <a href="#">Privacy</a>.
-                </label>
-              </div>
+                </label> */}
+              {/* </div> */}
 
               <button type="submit" className={styles.signup_btn}>
                 Register
               </button>
 
               <div className={`${styles['social-icons']}`}>
-                <button className={`${styles['social-icons-btn']}`} onClick={handleGoogleLogin}><i className="bx bxl-google"></i></button>
+                <button type="button" className={`${styles['social-icons-btn']}`} onClick={handleGoogleLogin}><i className="bx bxl-google"></i></button>
               </div>
             </form>
           </div>
