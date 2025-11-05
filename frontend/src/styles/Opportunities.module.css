@@ -16,7 +16,7 @@
 .filters {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 0.75rem;
   padding: 1rem;
   justify-content: space-between;
   background-color: transparent 50%;
@@ -60,17 +60,17 @@
 /* Date label tiny helper */
 .date-filter {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.75rem;
   align-items: center;
 }
 .date-filter label {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.75rem;
   font-size: 0.75rem;
   color: #555;
 }
-.date-filter .date-label {
+.date-label {
   font-size: 0.75rem;
   color: #444;
   font-weight: 600;
