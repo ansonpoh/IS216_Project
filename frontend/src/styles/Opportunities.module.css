@@ -109,6 +109,7 @@
   border: 1px solid rgba(15, 23, 42, 0.04);
   box-shadow: 0 6px 18px rgba(7, 12, 20, 0.06);
   cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease; /* Smooth floating hover */
 }
 
 .event-card:hover {
@@ -275,29 +276,57 @@
   }
 }
 
+
+/* --- Empty State --- */
 .empty-state-card {
-  grid-column: 1/-1;
-  text-align: center;
-  font-size: 1.05rem;
-  color: #555;
-  background-color: #f8f9fa;
-  border: 1px dashed #e6eefc;
-  border-radius: 12px;
-  padding: 1.25rem;
+  grid-column: 1 / -1;
+  background: #f0f4ff; /* subtle light background */
+  border-radius: 16px;
+  padding: 2rem 1.5rem;
+  box-shadow: 0 8px 30px rgba(2, 6, 23, 0.12);
+  color: #64748b; /* muted text for paragraph */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  user-select: none;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  max-width: 480px;
+  margin: 4rem auto;
+  min-height: 160px; /* natural height */
+  text-align: center; /* center text */
 }
+
+.empty-state-card h3 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 0;
+  /* Gradient text for header */
+  color: #7494ec;
+  background-clip: text;
+}
+
+.empty-state-card p {
+  font-size: 1rem;
+  color: #64748b;
+  margin: 0;
+  max-width: 380px;
+}
+
 
 .no-opportunities-message {
   padding: 2rem;
   text-align: center;
 }
-
+/* 
 .empty-icon {
   width: 48px;
   height: 48px;
   margin: 0 auto 8px;
   background: linear-gradient(135deg, #667eea, #764ba2);
   border-radius: 50%;
-}
+} */
 
 /* Modal for opportunity details */
 .modal-overlay {

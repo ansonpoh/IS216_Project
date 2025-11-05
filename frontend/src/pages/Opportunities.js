@@ -380,7 +380,7 @@ export default function Opportunities() {
             <div className={styles.dialog} role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
               <div className={styles.icon} style={{ color: 'green' }}>✓</div>
               <div className={styles.title}>Sign Up Successful!</div>
-              <div className={styles.body}>Your appli cation is pending organiser confirmation.</div>
+              <div className={styles.body}>Your application is pending organiser confirmation.</div>
               <div className={styles.buttons}>
                 <button className={styles.btnPrimary} onClick={handleAcknowledgement}>OK</button>
               </div>
