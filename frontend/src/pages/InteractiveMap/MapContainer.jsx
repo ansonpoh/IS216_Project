@@ -1007,19 +1007,19 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
             right: '52px',
             zIndex: 1000,
             boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-            backgroundColor: '#4891ffff',
-            border: '2px solid #0066ffff',
+            backgroundColor: 'rgb(159, 159, 233)',
+            border: '2px solid rgba(113, 113, 232, 1)',
             height: '40px',
             display: 'flex',
             alignItems: 'center'
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.color = '#fff';
-            e.currentTarget.style.backgroundColor = '#3a7de8';
+            e.currentTarget.style.backgroundColor = 'rgb(113, 113, 232)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.color = '#fff';
-            e.currentTarget.style.backgroundColor = '#4891ffff';
+            e.currentTarget.style.backgroundColor = 'rgb(159, 159, 233)';
           }}
         >
           <i className="bi bi-x-circle me-1" style={{ color: '#fff' }}></i>
