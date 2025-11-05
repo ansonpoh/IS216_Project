@@ -17,7 +17,9 @@ import {
   get_all_registered_users_for_event,
   update_registration_status,
   update_publish_status,
-  delete_event
+  delete_event,
+  get_category_analytics,
+  get_region_analytics
 } from "../services/eventServices.js";
 import axios from "axios";
 
@@ -273,6 +275,26 @@ export async function update_publish_status_handler(req, res) {
   try {
     const {event_id, status} = req.body;
     const result = await update_publish_status(event_id, status);
+    return res.json({result});
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+}
+
+export async function get_category_analytics_handler(req, res) {
+  try {
+    const result = await get_category_analytics();
+    return res.json({result});
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+}
+
+export async function get_region_analytics_handler(req,res) {
+  try {
+    const result = await get_region_analytics();
     return res.json({result});
   } catch (err) {
     console.error(err);

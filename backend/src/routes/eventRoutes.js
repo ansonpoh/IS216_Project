@@ -1,5 +1,5 @@
 import express from "express";
-import { get_all_categories_handler, get_all_events_handler, get_event_by_id_handler, get_events_by_category_handler, get_events_by_region_handler, get_events_of_org_handler, get_all_regions_handler, create_event_handler, get_events_by_time_handler, get_filtered_events_handler, get_selectable_options_handler, event_data_modify_handler, signup_event_handler, check_if_user_signed_up_handler, get_registered_events_for_user_handler, get_registered_users_for_event_handler, update_registration_status_handler, update_publish_status_handler, get_all_published_events_handler, delete_event_handler } from "../controllers/eventController.js";
+import { get_all_categories_handler, get_all_events_handler, get_event_by_id_handler, get_events_by_category_handler, get_events_by_region_handler, get_events_of_org_handler, get_all_regions_handler, create_event_handler, get_events_by_time_handler, get_filtered_events_handler, get_selectable_options_handler, event_data_modify_handler, signup_event_handler, check_if_user_signed_up_handler, get_registered_events_for_user_handler, get_registered_users_for_event_handler, update_registration_status_handler, update_publish_status_handler, get_all_published_events_handler, delete_event_handler, get_category_analytics_handler, get_region_analytics_handler } from "../controllers/eventController.js";
 import { requireAuth } from "../config/auth.js";
 
 const router = express.Router();
@@ -18,6 +18,8 @@ router.get("/get_selectable_options", get_selectable_options_handler);
 router.get("/check_if_user_signed_up", check_if_user_signed_up_handler);
 router.get("/get_registered_events_for_user", get_registered_events_for_user_handler);
 router.get("/get_registered_users_for_event", get_registered_users_for_event_handler);
+router.get("/get_categories_analytics", get_category_analytics_handler);
+router.get("/get_region_analytics", get_region_analytics_handler);
 
 router.post("/create_event", create_event_handler);
 router.post("/delete_event", delete_event_handler)
