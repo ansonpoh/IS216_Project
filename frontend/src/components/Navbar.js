@@ -24,29 +24,26 @@ function Navbar() {
   useEffect(() => {
     const fetch_org = async () => {
       try {
-        const org = await axios.get(`${API_BASE}/orgs/get_org_by_id`, { params: { id: auth.id } });
-        const data = org.data.result?.[0];
-        if (data && data.profile_image) {
-          setImage(data.profile_image);
-        }
+        const org = await axios.get(`${LOCAL_BASE}/orgs/get_org_by_id`, { params: { id: auth.id } });
+        const data = org?.data?.result?.[0];
+        if (data && data.profile_image) setImage(data.profile_image);
       } catch (err) {
-        console.error("Error fetching org profile:", err);
+        console.error('Failed to fetch org profile image', err?.response?.data || err.message || err);
       }
     }
 
     const fetch_user = async () => {
       try {
-        const user = await axios.get(`${API_BASE}/users/get_user_by_id`, { params: { id: auth.id } })
-        const data = user.data.result?.[0];
-        if (data && data.profile_image) {
-          setImage(data.profile_image);
-        }
+        const user = await axios.get(`${LOCAL_BASE}/users/get_user_by_id`, { params: { id: auth.id } })
+        const data = user?.data?.result?.[0];
+        if (data && data.profile_image) setImage(data.profile_image);
       } catch (err) {
-        console.error("Error fetching user profile:", err);
+        console.error('Failed to fetch user profile image', err?.response?.data || err.message || err);
       }
     }
 
-    if (auth?.id.length > 0) {
+    // Only run when auth is available. Use optional chaining to avoid runtime errors
+    if (auth?.id?.length > 0) {
       if (auth.role === "volunteer") {
         fetch_user();
       } else if (auth.role === "organiser") {
@@ -54,7 +51,8 @@ function Navbar() {
       }
     }
 
-  }, []);
+  // Re-run this effect whenever auth changes so the avatar updates when a user signs in/out
+  }, [auth]);
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4">
@@ -133,8 +131,8 @@ function Navbar() {
           </>
         )}
 
-        {auth?.id.length > 0 ? (
-          <button className="btn btn-outline-danger btn-sm" onClick={handleLogout}>
+        {auth?.id?.length > 0 ? (
+          <button className={`btn btn-sm ${styles.logoutBtn}`} onClick={handleLogout}>
             Logout
           </button>
         ) : (
