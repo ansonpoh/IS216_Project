@@ -26,6 +26,8 @@ export default function OrganiserDashboard() {
   const [loadingModal, setLoadingModal] = useState(null);
   const [registrations, setRegistrations] = useState([]);
   const [approved, setApproved] = useState(0);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [eventToDelete, setEventToDelete] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -173,11 +175,49 @@ export default function OrganiserDashboard() {
     setEvents((arr) => arr.map((e) => (e.event_id === id ? { ...e, is_published: !next } : e)));
     try {
       const res = await axios.post(`${API_BASE}/events/update_publish_status`, {event_id: id, status: next});
-      console.log(res);
     } catch {
       // revert on error
       setEvents((arr) => arr.map((e) => (e.id === id ? { ...e, status: ev.status } : e)));
       alert("Could not change publish state.");
+    }
+  };
+
+  const republishEvent = (event) => {
+    const { start_date, end_date, start_time, end_time, event_id, ...rest } = event;
+    nav("/organiser/opportunities/new", { state: { ...rest, isRepublish: true } });
+  };
+
+  const handleRemoveFromView = (user_id) => {
+    setRegistrations((prev) => prev.filter((r) => r.user_id !== user_id));
+  };
+
+  const isPastEvent = (event) => {
+    const today = new Date();
+    const end = event.end_date ? new Date(event.end_date) : new Date(event.start_date);
+    return end < today; 
+  };
+
+  const confirmDelete = (event) => {
+    setEventToDelete(event);
+    setShowDeleteModal(true);
+  }
+
+  const handleDelete = async () => {
+    if (!eventToDelete) return;
+    try {
+      await axios.delete(`${LOCAL_BASE}/events/delete_event`, {
+        params: { event_id: eventToDelete.event_id },
+      });
+
+      // Remove from state
+      setEvents((prev) => prev.filter((e) => e.event_id !== eventToDelete.event_id));
+      setFilteredEvents((prev) => prev.filter((e) => e.event_id !== eventToDelete.event_id));
+
+      setShowDeleteModal(false);
+      setEventToDelete(null);
+    } catch (err) {
+      console.error("Failed to delete event:", err);
+      alert("Failed to delete the event. Please try again.");
     }
   };
 
@@ -291,24 +331,6 @@ export default function OrganiserDashboard() {
                         <div className="text-muted small">{fmtDate(e.start_date, e.end_date)} · {fmtTime(e.start_time, e.end_time)}</div>
                       </td>
                       <td>{e.location || "-"}</td>
-                      {/* <td>
-                        <div className="d-flex justify-content-between small">
-                          <span>
-                            {e.registration_count || 0}/{e.capacity || 0}
-                          </span>
-                          <span>{pct}%</span>
-                        </div>
-                        <div className="progress" style={{ height: 8 }}>
-                          <div
-                            className={`progress-bar ${pct >= 100 ? "bg-success" : pct >= 70 ? "bg-info" : "bg-primary"}`}
-                            role="progressbar"
-                            style={{ width: `${pct}%` }}
-                            aria-valuenow={pct}
-                            aria-valuemin="0"
-                            aria-valuemax="100"
-                          ></div>
-                        </div>
-                      </td> */}
                       <td>
                         <span
                           className={`badge ${
@@ -319,7 +341,7 @@ export default function OrganiserDashboard() {
                               : "text-bg-warning"
                           }`}
                         >
-                          {e.is_published? "Published" : "Closed"}
+                          {isPastEvent(e) ? "Closed" : e.is_published ? "Published" : "Closed"}
                         </span>
                       </td>
                       <td>
@@ -327,14 +349,29 @@ export default function OrganiserDashboard() {
                           <button className="btn btn-outline-primary btn-sm" onClick={() => openModal(e)}>
                             View
                           </button>
-                          <button
-                            className={`btn btn-sm ${
-                              e.is_published ? "btn-outline-danger" : "btn-outline-success"
-                            }`}
-                            onClick={() => togglePublish(e)}
-                          >
-                            {e.is_published ? "Close" : "Publish"}
-                          </button>
+                          {isPastEvent(e) ? (
+                            <>
+                            <button
+                              className="btn btn-outline-secondary btn-sm"
+                              onClick={() => republishEvent(e)}
+                            >
+                              Republish
+                            </button>
+                            <button
+                              className="btn btn-outline-danger btn-sm"
+                              onClick={() => confirmDelete(e)}
+                            >
+                              Delete
+                            </button>
+                            </>
+                          ) : (
+                            <button
+                              className={`btn btn-sm ${e.is_published ? "btn-outline-danger" : "btn-outline-success"}`}
+                              onClick={() => togglePublish(e)}
+                            >
+                              {e.is_published ? "Close" : "Publish"}
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -416,6 +453,14 @@ export default function OrganiserDashboard() {
                               </button>
                             </div>
                           )}
+                          {(r.status === "denied" || r.status === "attended") && (
+                            <button
+                              className="btn btn-sm btn-outline-secondary"
+                              onClick={() => handleRemoveFromView(r.user_id)}
+                            >
+                              Remove
+                            </button>
+                          )}
                         </li>
                       ))}
                     </ul>
@@ -427,6 +472,40 @@ export default function OrganiserDashboard() {
                 <div className="modal-footer">
                   <button className="btn btn-secondary" onClick={() => setShowModal(false)}>
                     Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showDeleteModal && eventToDelete && (
+          <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+            <div className="modal-dialog modal-dialog-centered">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title text-danger">Confirm Deletion</h5>
+                  <button type="button" className="btn-close" onClick={() => setShowDeleteModal(false)}></button>
+                </div>
+
+                <div className="modal-body">
+                  <p>
+                    Are you sure you want to <strong>permanently delete</strong> this event?
+                  </p>
+                  <p className="text-muted mb-0">
+                    <em>{eventToDelete.title}</em>
+                  </p>
+                  <small className="text-muted">
+                    This action cannot be undone.
+                  </small>
+                </div>
+
+                <div className="modal-footer">
+                  <button className="btn btn-secondary" onClick={() => setShowDeleteModal(false)}>
+                    Cancel
+                  </button>
+                  <button className="btn btn-danger" onClick={handleDelete}>
+                    Delete
                   </button>
                 </div>
               </div>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../../components/Navbar";
 import { useAuth } from "../../contexts/AuthProvider";
@@ -17,7 +17,24 @@ export default function OrganiserCreateForm() {
   const [categories, setCategories] = useState([]);
   const [org, setOrg] = useState(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-
+  const location = useLocation();
+  const republishData = location.state;
+  const [form, setForm] = useState({
+    org_id: "",
+    title: "",
+    category: "",
+    description: "",
+    location: "",
+    region: "",
+    start_date: "",
+    end_date: "",
+    start_time: "",
+    end_time: "",
+    capacity: "",
+    hours: "",
+    is_published: false,
+    image: null, // optional image file
+  });
   const API_BASE = process.env.REACT_APP_API_URL;
   const LOCAL_BASE = "http://localhost:3001"
 
@@ -60,23 +77,19 @@ export default function OrganiserCreateForm() {
     fetch_org();
   }, [])
 
+  useEffect(() => {
+    if(republishData?.isRepublish) {
+      setForm((prev) => ({
+        ...prev,
+        ...republishData,
+        start_date: "",
+        end_date: "",
+        start_time: "",
+        end_time: "",
+      }))
+    }
+  }, [republishData])
 
-  const [form, setForm] = useState({
-    org_id: "",
-    title: "",
-    category: "",
-    description: "",
-    location: "",
-    region: "",
-    start_date: "",
-    end_date: "",
-    start_time: "",
-    end_time: "",
-    capacity: "",
-    hours: "",
-    is_published: false,
-    image: null, // optional image file
-  });
 
   const onChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -141,7 +154,7 @@ export default function OrganiserCreateForm() {
     <>
       <Navbar />
       <div className="container py-4">
-  <Title text="Create Event" size="56px" align="left" mb={12} />
+      <Title text="Create Event" size="56px" align="left" mb={12} />
         {err && <div className="alert alert-danger">{err}</div>}
 
         <form className="card p-3" onSubmit={submit}>
@@ -210,6 +223,7 @@ export default function OrganiserCreateForm() {
                 onChange={onChange}
                 className="form-control"
                 required
+                min={new Date().toISOString().split("T")[0]}
               />
             </div>
 
@@ -222,6 +236,7 @@ export default function OrganiserCreateForm() {
                 onChange={onChange}
                 className="form-control"
                 required
+                min={form.start_date || new Date().toISOString().split("T")[0]}
               />
             </div>
 
