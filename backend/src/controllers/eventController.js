@@ -16,7 +16,8 @@ import {
   get_registered_events_for_user,
   get_all_registered_users_for_event,
   update_registration_status,
-  update_publish_status
+  update_publish_status,
+  delete_event
 } from "../services/eventServices.js";
 import axios from "axios";
 
@@ -32,6 +33,17 @@ export async function create_event_handler (req, res) {
       return res.json({status: false})
     }
 
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+}
+
+export async function delete_event_handler (req,res) {
+  try {
+    const {event_id} = req.body;
+    const result = await delete_event(event_id);
+    return res.json({result});
   } catch (err) {
     console.error(err);
     throw err;
