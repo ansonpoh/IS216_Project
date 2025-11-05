@@ -240,11 +240,20 @@
     bottom: 0;
     width: 100%;
     height: auto;
+    /* Allow the form to scroll on small screens so fields aren't cut off */
+    max-height: calc(100vh - 60px);
+    overflow-y: auto;
+    /* Ensure the form sits above the toggle overlay on small screens */
+    z-index: 3;
+    /* Give breathing room at the bottom so the Register button isn't obscured */
+    padding-bottom: 24px;
   }
 
+  /* Keep the active form-box anchored to the bottom on small screens
+     (previously moved up by 30% which could hide the top on short viewports) */
   .login_signup_container.active .form-box {
     right: 0;
-    bottom: 30%;
+    bottom: 0;
   }
 
   .toggle-box::before {

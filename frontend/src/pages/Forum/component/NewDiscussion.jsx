@@ -16,7 +16,7 @@ export default function NewDiscussion() {
   const [submitting, setSubmitting] = useState(false);
   const [status, setStatus] = useState("");
   const [showGuidelines, setShowGuidelines] = useState(false);
-  const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:3001";
+  // const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:3001";
   const LOCAL_BASE = "http://localhost:3001"
   const auth = JSON.parse(sessionStorage.getItem("auth"));
 

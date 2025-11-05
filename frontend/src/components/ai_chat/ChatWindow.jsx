@@ -10,7 +10,7 @@ export default function ChatWindow() {
   const { messages, setMessages } = useAuth();
   const [loading, setLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(true);
-  const API_BASE = process.env.REACT_APP_API_URL;
+  // const API_BASE = process.env.REACT_APP_API_URL;
   const LOCAL_BASE = "http://localhost:3001"
   const chatBoxRef = useRef(null);
 
@@ -44,7 +44,7 @@ export default function ChatWindow() {
           },
         ]);
         setLoading(false);
-      }, 1000);
+      },"");
     }
   }, []); // intentionally only on mount
 
@@ -117,9 +117,9 @@ export default function ChatWindow() {
         {/* typing animation */}
         {loading && (
           <div className="d-flex align-items-center">
-            <div className={`${styles.avatar} me-2 text-white rounded-circle d-flex align-items-center justify-content-center`}>
+            {/* <div className={`${styles.avatar} me-2 text-white rounded-circle d-flex align-items-center justify-content-center`}>
               <i className="bi bi-person-hearts"></i>
-            </div>
+            </div> */}
             <div className={`${styles['bot-bubble']} p-3 bg-light`}>
               <div className={`${styles['typing-dots']}`}>
                 <span></span>

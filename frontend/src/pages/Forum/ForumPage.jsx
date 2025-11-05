@@ -6,7 +6,7 @@ import Title from '../../components/ui/Title';
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import PageTransition from "../../components/Animation/PageTransition.jsx";
-import NewDiscussion from "./component/NewDiscussion.jsx";
+// import NewDiscussion from "./component/NewDiscussion.jsx";
 import styles from "../../styles/Community.module.css";
 import { useAuth } from "../../contexts/AuthProvider.js";
 
@@ -182,12 +182,21 @@ export default function ForumPage() {
         );
         const data = response.data;
 
-        if (data.result) {
-          const mappedSlides = data.result.map((highlight) => ({
-            image: highlight.image,
-            caption: highlight.caption,
-          }));
+        console.log('Highlights API response:', data);
+        if (Array.isArray(data.result)) {
+          // map and filter out entries with missing/empty image values
+          const mappedSlides = data.result
+            .map((highlight) => ({
+              id: highlight.highlight_id,
+              image: highlight.image,
+              caption: highlight.caption,
+            }))
+            .filter((s) => s && s.image);
+
+          console.log('Mapped slides (valid images):', mappedSlides.length, mappedSlides);
           setSlides(mappedSlides);
+        } else {
+          console.warn('Highlights result is not an array:', data.result);
         }
       } catch (err) {
         console.error("Error fetching highlights:", err);

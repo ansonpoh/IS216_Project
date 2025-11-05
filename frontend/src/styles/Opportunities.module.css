@@ -1,16 +1,4 @@
-/* Opportunities.css (replace/merge) */
-
-/* Container */
-.h1 {
-  padding-left: 32px;
-
-}
-
-/* .opportunities-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1rem 1.25rem;
-} */
+/* Opportunities CSS - cleaned to only include selectors used by Opportunities.js */
 
 /* Filters area */
 .filters {
@@ -18,12 +6,11 @@
   flex-wrap: wrap;
   gap: 1rem;
   padding: 1rem;
-  justify-content: space-between;
   background-color: transparent 50%;
+  justify-content: space-between;
   border-radius: 12px;
   margin-bottom: 1.5rem;
-  /* box-shadow: 0 18px 4px rgba(0, 0, 0, 0.04); */
-   box-shadow: 0 18px 40px rgba(2,6,23,0.12), 0 8px 20px rgba(2,6,23,0.06);
+  box-shadow: 0 18px 40px rgba(2, 6, 23, 0.171);
   align-items: flex-end;
 }
 
@@ -39,30 +26,28 @@
   display: grid;
   grid-auto-flow: column;
   gap: 0.75rem;
-  align-items: end; /* aligns items to bottom */
+  align-items: end;
 }
 
-/* Standard controls */
 .filters select,
 .filters input[type="date"] {
   padding: 0.55rem 0.9rem;
   font-size: 0.95rem;
   border-radius: 8px;
   border: 1px solid #d0d7de;
-  background-color: transparent 50%;
+  background: #fff;
   color: #333;
   min-width: 150px;
-  transition: border-color .18s ease, box-shadow .18s ease, transform .08s ease;
+  transition: border-color .18s ease, box-shadow .18s ease;
   cursor: pointer;
-  box-sizing: border-box;
 }
 
-/* Date label tiny helper */
 .date-filter {
   display: flex;
   gap: 0.5rem;
   align-items: center;
 }
+
 .date-filter label {
   display: flex;
   flex-direction: column;
@@ -70,44 +55,32 @@
   font-size: 0.75rem;
   color: #555;
 }
+
 .date-filter .date-label {
   font-size: 0.75rem;
   color: #444;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: .03em;
 }
 
-.date-filter input[type="date"] {
-  align-self: center; /* vertically center inside its label container */
-}
-
-/* Reset button */
 .reset-btn {
-  padding: 0.55rem 0.9rem; /* match select/input height */
-  font-size: 0.92rem;
+  padding: 0.55rem 0.9rem;
   border-radius: 8px;
-  border: none;
   background-color: #7494ec;
-  color: #ffffff;
+  color: #fff;
+  border: none;
   cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center; /* ensures text/icon centered */
-  gap: 0.45rem;
-  transition: transform .12s ease, background-color .12s ease, box-shadow .12s ease;
-  box-shadow: 0 6px 18px rgba(3,102,214,0.1); 
 }
-.reset-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(3,102,214,0.15); }
-.reset-btn:active { transform: translateY(0); }
 
-/* Grid + cards */
+.reset-btn:hover {
+  transform: translateY(-2px);
+}
+
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.25rem;
   padding: 0.25rem;
-  animation: fadeIn .22s ease;
 }
 
 .scrollTopButton {
@@ -117,29 +90,15 @@
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2); /* glassy effect */
-  backdrop-filter: blur(10px); /* blurs background behind button */
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.06);
   color: #333;
-  font-size: 24px;
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.25);
-  transition: transform 0.2s, background 0.2s;
   z-index: 1000;
 }
 
-.scrollTopButton:hover {
-  transform: translateY(-3px);
-  background: rgba(255, 255, 255, 0.3);
-}
-
-
-
-/* Card visual - stronger shadow & nicer radius */
 .event-card {
   border-radius: 12px;
   overflow: hidden;
@@ -149,16 +108,14 @@
   position: relative;
   border: 1px solid rgba(15, 23, 42, 0.04);
   box-shadow: 0 6px 18px rgba(7, 12, 20, 0.06);
-  transition: transform .16s ease, box-shadow .16s ease;
-  min-height: 260px;
   cursor: pointer;
 }
+
 .event-card:hover {
   transform: translateY(-6px);
   box-shadow: 0 18px 40px rgba(7, 12, 20, 0.12);
 }
 
-/* Image area */
 .card-image {
   position: relative;
   width: 100%;
@@ -166,6 +123,7 @@
   overflow: hidden;
   background: linear-gradient(180deg, #eee, #f7f7f7);
 }
+
 .card-image img {
   width: 100%;
   height: 100%;
@@ -173,49 +131,41 @@
   display: block;
 }
 
-/* Content */
 .card-content {
   display: flex;
   flex-direction: column;
-  gap: 0.7rem; /* equal spacing between title → description → details */
+  gap: 0.7rem;
   padding: 1rem;
   flex: 1 1 auto;
-
 }
 
 .event-title {
   font-weight: 700;
   margin: 0;
   font-size: 1.05rem;
-  margin-bottom: 0.5rem;
   color: #0f172a;
 }
+
 .card-content p {
   color: #334155;
   margin: 0 0 0.6rem 0;
   line-height: 1.35;
-   gap: 6px; 
 }
 
-/* Info lines */
 .card-info {
   margin-top: 0.45rem;
 }
-.card-info .info-line {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin: 0.3rem 0;
+
+.info-text {
   color: #475569;
-  font-size: 0.95rem;
-  
 }
-.card-info .icon { font-size: 1rem; color: #64748b; }
 
-/* Divider */
-.card-divider { margin: 0; border: none; border-top: 1px solid #f1f5f9; }
+.card-divider {
+  margin: 0;
+  border: none;
+  border-top: 1px solid #f1f5f9;
+}
 
-/* Footer: nicer spacing + alignment */
 .card-footer {
   display: flex;
   justify-content: space-between;
@@ -223,90 +173,110 @@
   padding: 1rem;
   background: transparent;
   font-size: 0.875rem;
-  color: var(--muted);
-  padding-top: 2px;
 }
 
-/* Category tag as pill on left */
 .category-tag {
   color: #fff;
-  border: none;
   padding: 0.45rem 0.95rem;
   font-size: 0.92rem;
   border-radius: 10px;
-  cursor: pointer;
   display: inline-flex;
   align-items: center;
-  transition: transform .12s ease, box-shadow .12s ease, background-color .12s ease;
-  box-shadow: 0 8px 22px rgba(16,185,129,0.12);
   position: absolute;
   top: 12px;
   left: 12px;
   z-index: 10;
 }
 
-/* Category colors */
-.category-animal { 
-  background-color: #f3ce8eea; color: #333;}
-.category-children { background-color: #f5b8d7e5; color: #333; }
-.category-elderly { background-color: #f5b69fe0; color: #333; }
-.category-environment { background-color: #8eecbde7; color: #333; }
-.category-event-support { background-color: #9dc0f7e5; color: #333 }
-.category-mental-health { background-color: #fcb3b3f1; color: #333 }
-.category-pwds { background-color: #afb0f1f1;  color: #333}
-.category-general { background-color: #106db9ef; color: #333 } /* fallback/general */
+.category-animal {
+  background-color: #f3ce8eea;
+  color: #333;
+}
 
+.category-children {
+  background-color: #f5b8d7e5;
+  color: #333;
+}
 
+.category-elderly {
+  background-color: #f5b69fe0;
+  color: #333;
+}
 
-/* Sign up btn aligned right with slight elevation */
+.category-environment {
+  background-color: #8eecbde7;
+  color: #333;
+}
+
+.category-event-support {
+  background-color: #9dc0f7e5;
+  color: #333;
+}
+
+.category-mental-health {
+  background-color: #fcb3b3f1;
+  color: #333;
+}
+
+.category-pwds {
+  background-color: #afb0f1f1;
+  color: #333;
+}
+
+.category-general {
+  background-color: #106db9ef;
+  color: #fff;
+}
+
 .signup-btn {
   width: 95%;
-  display: block;
-  justify-content: center;
   margin: 0 auto;
   background-color: #7494ec;
   color: #fff;
   border: none;
   padding: 0.45rem 0.95rem;
-  font-size: 0.92rem;
   border-radius: 10px;
   cursor: pointer;
-  transition: transform .12s ease, box-shadow .12s ease, background-color .12s ease;
-  box-shadow: 0 8px 22px rgba(16,185,129,0.12);
-}
-.signup-btn:hover {
-  transform: translateY(-3px);
-  background-color: #4d67b1;
-  box-shadow: 0 18px 38px rgba(16,185,129,0.14);
 }
 
-/* Responsive footer: stack on very small widths */
-@media (max-width: 420px) {
+.signup-btn:hover {
+  background-color: #4d67b1;
+}
+
+@media (max-width:420px) {
   .card-footer {
     flex-direction: column;
     align-items: stretch;
-    gap: 0.6rem;
+    gap: 0.6rem
   }
-  .category-tag { align-self: flex-start; }
-  .signup-btn { width: 100%; }
+
+  .category-tag {
+    align-self: flex-start
+  }
+
+  .signup-btn {
+    width: 100%
+  }
 }
 
-/* Filters mobile stack */
-@media (max-width: 720px) {
+@media (max-width:720px) {
   .filters {
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: column
   }
-  .filters .group-left, .filters .group-right {
-    width: 100%;
-    justify-content: space-between;
+
+  .filters .group-left,
+  .filters .group-right {
+    width: 100%
   }
-  .filters select, .filters input[type="date"] { min-width: 140px; flex: 1 1 auto; }
+
+  .filters select,
+  .filters input[type="date"] {
+    min-width: 140px
+  }
 }
 
-/* Empty state card */
 .empty-state-card {
-  grid-column: 1 / -1;
+  grid-column: 1/-1;
   text-align: center;
   font-size: 1.05rem;
   color: #555;
@@ -316,27 +286,32 @@
   padding: 1.25rem;
 }
 
-/* small animation */
-/* @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
-} */
-/* Modal stylings */
+.no-opportunities-message {
+  padding: 2rem;
+  text-align: center;
+}
 
-/* Overlay backdrop */
+.empty-icon {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 8px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 50%;
+}
+
+/* Modal for opportunity details */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
-  padding: 16px; /* ensures modal doesn't touch viewport edges */
+  padding: 16px;
   overflow-y: auto;
 }
 
-/* Wrapper for the modal box */
 .modal-wrapper {
   background: #fff;
   border-radius: 12px;
@@ -347,11 +322,9 @@
   flex-direction: column;
   overflow: hidden;
   position: relative;
-  animation: fadeIn 0.25s ease-in-out;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
 }
 
-/* Close button */
 .modal-close {
   position: absolute;
   top: 12px;
@@ -361,198 +334,207 @@
   background: none;
   border: none;
   cursor: pointer;
-  z-index: 10;
+  z-index: 10
 }
 
-/* Content row */
 .modal-content-row {
   display: flex;
   flex-direction: row;
   gap: 24px;
   padding: 24px;
   flex-wrap: wrap;
-  overflow: hidden;
 }
 
-/* Left side image */
 .modal-left {
   flex: 1 1 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 250px;
+  min-width: 250px
 }
 
 .modal-large-image {
   width: 100%;
-  max-width: 100%;
-  height: auto;
   border-radius: 10px;
-  object-fit: cover;
+  object-fit: cover
 }
 
-/* Right side details */
 .modal-right {
   flex: 1 1 45%;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  gap: 16px; /* spacing between title, description, details, and button */
+  gap: 16px;
   min-width: 250px;
-  overflow-y: auto;
-  padding: 0;
+  overflow-y: auto
 }
 
-/* Title */
 .modal-title {
   font-size: 1.4rem;
   font-weight: 700;
   color: #111;
-  margin: 0;
+  margin: 0
 }
 
-/* Description */
 .modal-desc {
   font-size: 0.95rem;
   color: #333;
   line-height: 1.5;
-  margin: 0;
+  margin: 0
 }
 
-/* Details list */
 .modal-detail-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 6px
 }
 
 .modal-detail-list p {
+  margin: 0;
   font-size: 0.92rem;
   color: #444;
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin: 0;
+  gap: 6px
 }
 
-.modal-detail-list i {
-  font-size: 1rem;
-  color: #444;
-}
-
-/* Modal signup button */
 .modal-signup-btn {
   background-color: #7494ec;
   color: #fff;
   border: none;
   padding: 0.45rem 0.95rem;
   font-size: 0.92rem;
-  font-weight: 500;
   border-radius: 10px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  margin-top: 16px; /* spacing from details */
-  align-self: flex
-}
-
-/* Signup button */
-.modal-signup-btn {
-  background-color: #7494ec;
-  color: #fff;
-  border: none;
-  padding: 0.45rem 0.95rem;       
-  font-size: 0.92rem;             
-  font-weight: 500;               
-  border-radius: 10px;            
-  cursor: pointer;
-  box-shadow: .12s ease, background-color .12s ease;
-  box-shadow: 0 8px 22px rgba(16,185,129,0.12);
-  padding: 0.45rem;
-  box-shadow: 0 6px 18px rgba(16,185,129,0.1);
-}
-
-.modal-signup-btn:hover {
-  transform: translateY(-2px);
-  background: #7494ec;
-}
-
-/* Mobile responsiveness */
-@media (max-width: 768px) {
-  .modal-content-row {
-    flex-direction: column;
-  }
-  .modal-left {
-    flex: 0 0 auto;
-    height: 250px;
-  }
-  .modal-right {
-    padding: 1.5rem;
-  }
+  cursor: pointer
 }
 
 .confirm-modal,
 .loading-modal,
 .success-modal {
   background: #fff;
-  /* match NewDiscussion modal sizing and spacing */
   padding: 28px;
   border-radius: 12px;
   max-width: 520px;
   width: min(520px, 92%);
   text-align: center;
-  box-shadow: 0 20px 60px rgba(16,24,40,0.2);
+  box-shadow: 0 20px 60px rgba(16, 24, 40, 0.18);
 }
 
 .confirm-buttons {
   display: flex;
   justify-content: center;
   gap: 1rem;
-  margin-top: 1.25rem;
+  margin-top: 1.25rem
 }
 
 .cancel-btn {
-  background: #ffffff;
+  background: #fff;
   color: #374151;
   border: 1px solid #e5e7eb;
   padding: 0.6rem 1.2rem;
-  border-radius: 8px;
-  cursor: pointer;
+  border-radius: 8px
 }
 
 .confirm-btn {
-  background: #7494ec; /* primary color from NewDiscussion */
-  color: white;
+  background: #7494ec;
+  color: #fff;
   border: none;
   padding: 0.6rem 1.2rem;
-  border-radius: 8px;
-  cursor: pointer;
+  border-radius: 8px
 }
 
 .ok-btn {
-  background: #7494ec; /* primary color for OK actions */
-  color: white;
+  background: #7494ec;
+  color: #fff;
   border: none;
   padding: 0.6rem 1.2rem;
   border-radius: 8px;
-  cursor: pointer;
-  margin-top: 1rem;
+  margin-top: 1rem
 }
 
 .spinner {
   border: 4px solid #f3f3f3;
-  border-top: 4px solid #7494ec; /* use primary color */
+  border-top: 4px solid #7494ec;
   border-radius: 50%;
   width: 40px;
   height: 40px;
   margin: 0 auto 1rem;
-  animation: spin 1s linear infinite;
+  animation: spin 1s linear infinite
 }
 
 @keyframes spin {
   to {
-    transform: rotate(360deg);
+    transform: rotate(360deg)
   }
+}
+
+/* Success modal (NewDiscussion style) */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 16px;
+  overflow-y: auto
+}
+
+.dialog {
+  background: #fff;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 520px;
+  padding: 24px;
+  box-shadow: 0 20px 60px rgba(16, 24, 40, 0.18);
+  text-align: center;
+  box-sizing: border-box
+}
+
+.icon {
+  font-size: 40px;
+  line-height: 1;
+  margin-bottom: 10px
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #0f172a
+}
+
+.body {
+  color: #374151;
+  margin-bottom: 18px;
+  font-size: 0.98rem
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px
+}
+
+.btnPrimary {
+  background: #7494ec;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer
+}
+
+.btnPrimary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(116, 148, 236, 0.18)
+}
+
+.btnCancel {
+  background: #fff;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+  padding: 10px 20px;
+  border-radius: 8px
 }

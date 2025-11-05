@@ -30,8 +30,16 @@ export default function CommunitySpotlight({ slides = [], interval = 4000 }) {
         style={{ transform: `translateX(-${current * 100}%)` }}
       >
         {slides.map((slide, i) => (
-          <div key={i} className={styles["carousel-item"]}>
-            <img src={slide.image} alt={slide.alt || slide.caption || `Slide ${i + 1}`} />
+          <div key={slide.id ?? i} className={styles["carousel-item"]}>
+            <img
+              src={slide.image}
+              alt={slide.alt || slide.caption || `Slide ${i + 1}`}
+              onError={(e) => {
+                // hide broken images to avoid confusing/blank slides
+                e.currentTarget.style.display = 'none';
+                console.warn('Carousel image failed to load:', e.currentTarget.src);
+              }}
+            />
             {slide.caption && (
               <div className={styles["carousel-caption"]}>
                 <h5>{slide.caption}</h5>
