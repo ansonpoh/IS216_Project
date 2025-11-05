@@ -193,7 +193,7 @@ export default function OrganiserCreateForm() {
             </div>
 
             <div className="col-md-8">
-              <label className="form-label">Location (Postal Code) *</label>
+              <label className="form-label">Location *</label>
               <input
                 name="location"
                 value={form.location}

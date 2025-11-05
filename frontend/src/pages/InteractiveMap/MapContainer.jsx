@@ -520,7 +520,7 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
               ${ev.event_id ? `
                 <a
                   id=${buttonId}
-                  style="display: block; margin-top: 12px; padding: 10px 16px; background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 600; text-align: center; box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3); transition: transform 0.2s;"
+                  style="display: block; margin-top: 12px; padding: 10px 16px; background: linear-gradient(135deg, rgb(159, 159, 233) 0%, rgb(113, 113, 232) 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 600; text-align: center; box-shadow: 0 2px 8px rgba(113, 113, 232, 0.3); transition: transform 0.2s;"
                   onmouseover="this.style.transform='translateY(-2px)'"
                   onmouseout="this.style.transform='translateY(0)'"
                 >
@@ -687,7 +687,7 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
               ${item.event_id ? `
                 <a
                   id=${buttonId}
-                  style="display: block; margin-top: 12px; padding: 10px 16px; background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 600; text-align: center; box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3); transition: transform 0.2s; cursor: pointer;"
+                  style="display: block; margin-top: 12px; padding: 10px 16px; background: linear-gradient(135deg, rgb(159, 159, 233) 0%, rgb(113, 113, 232) 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 600; text-align: center; box-shadow: 0 2px 8px rgba(113, 113, 232, 0.3); transition: transform 0.2s; cursor: pointer;"
                   onmouseover="this.style.transform='translateY(-2px)'"
                   onmouseout="this.style.transform='translateY(0)'"
                 >
@@ -814,8 +814,8 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
         right: 8px !important;
         width: 32px !important;
         height: 32px !important;
-        background-color: #4891ff !important;
-        border: 2px solid #0066ff !important;
+        background-color: rgb(159, 159, 233) !important;
+        border: 2px solid rgba(113, 113, 232, 1) !important;
         border-radius: 50% !important;
         z-index: 1000 !important;
         padding: 0 !important;
@@ -831,7 +831,8 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
       }
 
       .gm-style-iw button.gm-ui-hover-effect:hover {
-        background-color: #4891ff !important;
+        background-color: rgb(113, 113, 232) !important;
+        border: 2px solid rgb(80, 80, 200) !important;
       }
     `;
     document.head.appendChild(style);
