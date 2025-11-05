@@ -416,22 +416,34 @@ export default function OrganiserDashboard() {
                   ) : registrations.length > 0 ? (
                     <ul className="list-group">
                       {registrations.map((r) => (
-                        <li key={r.user_id} className="list-group-item d-flex justify-content-between align-items-center">
-                          <div>
+                        <li key={r.user_id} className="list-group-item d-flex justify-content-between align-items-center" style={{gap:"1rem"}}>
+                          <div style={{flex:1}}>
                             <strong>{r.username}&nbsp; &nbsp;</strong> 
                             <span className="text-muted small">{r.email}</span>
                           </div>
-                          <span
-                            className={`badge ${
-                              r.status === "approved"
-                                ? "bg-success"
-                                : r.status === "pending"
-                                ? "bg-warning text-dark"
-                                : "bg-danger"
-                            }`}
-                          >
-                            {r.status}
-                          </span>
+
+                          {(r.status === "denied" || r.status === "attended") && (
+                            <button
+                              className="btn btn-sm btn-outline-secondary"
+                              onClick={() => handleRemoveFromView(r.user_id)}
+                            >
+                              Remove
+                            </button>
+                          )}
+
+                          <div style={{textAlign:"center"}}>
+                            <span
+                              className={`badge px-3 py-2 ${
+                                r.status === "approved"
+                                  ? "bg-success"
+                                  : r.status === "pending"
+                                  ? "bg-warning text-dark"
+                                  : "bg-danger"
+                              }`}
+                            >
+                              {r.status}
+                            </span>
+                          </div>
 
                           {r.status === "pending" && (
                             <div className="btn-group btn-group-sm">
@@ -453,14 +465,7 @@ export default function OrganiserDashboard() {
                               </button>
                             </div>
                           )}
-                          {(r.status === "denied" || r.status === "attended") && (
-                            <button
-                              className="btn btn-sm btn-outline-secondary"
-                              onClick={() => handleRemoveFromView(r.user_id)}
-                            >
-                              Remove
-                            </button>
-                          )}
+
                         </li>
                       ))}
                     </ul>
