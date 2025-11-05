@@ -83,9 +83,10 @@ export async function get_all_regions() {
     }
 }
 
+//Only shows events that are published, in the future and not filled up.
 export async function get_all_published_events() {
     try {
-        const query = `select * from events where is_published=$1`;
+        const query = `select e.*, count(er.user_id) as approved_count, (e.capacity - count(er.user_id)) as remaining_capacity from events e left join event_registration er on e.event_id = er.event_id and er.status = 'approved' where e.is_published = $1 and e.start_date > now() group by e.event_id having count(er.user_id) < e.capacity`;
         const values = [true];
         const result = await pool.query(query, values);
         return result.rows;
