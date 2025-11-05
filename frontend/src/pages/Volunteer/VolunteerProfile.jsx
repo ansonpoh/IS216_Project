@@ -314,7 +314,7 @@ export default function VolunteerProfile() {
 
                   <div>
                     <div className="vp-label">Availability</div>
-                    <div className="vp-text">{Object.entries(formData.availability.days).filter(([_,v])=>v).map(([k])=>k.charAt(0).toUpperCase()+k.slice(1)).join(', ') || '—'}</div>
+                    <div className="vp-text">{DAY_ORDER.filter((d) => (formData.availability?.days || {})[d]).map((d) => d.charAt(0).toUpperCase() + d.slice(1)).join(', ') || '—'}</div>
                     <div className="vp-text">{formData.availability.startTime || '—'} – {formData.availability.endTime || '—'}</div>
                   </div>
 
@@ -454,20 +454,11 @@ function TagInput({ title, items, onAdd, onRemove }) {
   };
 
   return (
-    <div className="mb-3">
-      <label className="form-label">{title}</label>
-      <div className="input-group mb-2">
-        <input
-          type="text"
-          className="form-control"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleAdd())}
-          placeholder={`Add ${title.toLowerCase()}...`}
-        />
-        <button type="button" className="vp-add-btn" onClick={handleAdd}>
-          Add
-        </button>
+    <div style={{ marginBottom: '24px' }}>
+      <Label>{title}</Label>
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+        <Input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAdd(); } }} placeholder={`Add ${title.toLowerCase()}...`} style={{ flex: 1 }} />
+        <button type="button" onClick={handleAdd} style={{ padding: '10px 20px', background: '#7494ec', color: 'white', border: 'none', borderRadius: '10px', fontSize: '14px', fontWeight: '600', cursor: 'pointer' }} onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}>Add</button>
       </div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
         {items.map((t) => (

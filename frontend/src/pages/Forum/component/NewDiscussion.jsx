@@ -223,7 +223,7 @@ export default function NewDiscussion() {
             border: '2px solid rgba(102, 126, 234, 0.2)',
             borderRadius: '16px',
             padding: '20px',
-            marginBottom: '32px',
+            marginBottom: '20px',
             display: 'flex',
             alignItems: 'flex-start',
             gap: '16px'
@@ -250,12 +250,16 @@ export default function NewDiscussion() {
               ℹ️
             </div>
             <div style={{ flex: 1 }}>
-              <p style={{ margin: 0, fontSize: '14px', color: '#4b5563', lineHeight: '1.6' }}>
-                Remember that posts are subject to the Community Policy.
-                <span onClick={() => setShowGuidelines(!showGuidelines)} style={{ color: '#6366f1', cursor: 'pointer', marginLeft: '4px', fontWeight: '600' }}>
-                  {showGuidelines ? 'Hide' : 'View'} guidelines
-                </span>
-              </p>
+              {/* Header row that vertically centers against the icon */}
+              <div style={{ minHeight: 40, display: 'flex', alignItems: 'center' }}>
+                <p style={{ margin: 0, fontSize: '14px', color: '#4b5563', lineHeight: '1.6' }}>
+                  Remember that posts are subject to the Community Policy.
+                  <span onClick={() => setShowGuidelines(!showGuidelines)} style={{ color: '#6366f1', cursor: 'pointer', marginLeft: '4px', fontWeight: '600' }}>
+                    {showGuidelines ? 'Hide' : 'View'} guidelines
+                  </span>
+                </p>
+              </div>
+
               {showGuidelines && (
                 <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid rgba(102, 126, 234, 0.2)', fontSize: '13px', color: '#6b7280', lineHeight: '1.8' }}>
                   <strong style={{ color: '#4b5563', display: 'block', marginBottom: '8px' }}>Community Guidelines:</strong>

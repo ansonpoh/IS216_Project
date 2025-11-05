@@ -6,8 +6,10 @@ import axios from "axios";
 import Navbar from "../../components/Navbar.js";
 import Title from '../../components/ui/Title';
 import confetti from "canvas-confetti";
+import PageTransition from "../../components/Animation/PageTransition";
 
-const LS_KEY = "volunteer_dashboard_circular_carousel_v3";
+// const LS_KEY = "volunteer_dashboard_circular_carousel_v3";
+const CONFETTI_KEY = "volunteer_dashboard_confetti_count_v1";
 /* ---------- Helpers ---------- */
 const useAutoplay = (enabled, cb, delay = 4500) => {
   useEffect(() => {
@@ -40,6 +42,15 @@ function CircularProgressRing({ value, max, size = 240 }) {
   const gap = C - dash;
 
   const [message, setMessage] = useState("");
+  const confettiFiredRef = useRef(false);
+
+  // Keep emoji original color by splitting it from the gradient-styled text
+  const msgParts = useMemo(() => {
+    if (!message) return { emoji: "", text: "" };
+    const idx = message.indexOf(" ");
+    if (idx === -1) return { emoji: "", text: message };
+    return { emoji: message.slice(0, idx), text: message.slice(idx + 1) };
+  }, [message]);
 
   useEffect(() => {
     if (pct === 100) {
@@ -52,6 +63,35 @@ function CircularProgressRing({ value, max, size = 240 }) {
       setMessage("🔥 Off to a great start!");
     } else {
       setMessage("🌟 Begin your journey!");
+    }
+  }, [pct]);
+
+  // Fire confetti when pct hits 100, but cap to 3 times (persisted in localStorage)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (pct === 100) {
+      let count = 0;
+      try {
+        count = Number(localStorage.getItem(CONFETTI_KEY) || 0);
+      } catch {}
+
+      if (!confettiFiredRef.current ) {
+        confettiFiredRef.current = true;
+        try {
+          localStorage.setItem(CONFETTI_KEY);
+        } catch {}
+
+        // celebratory burst
+        confetti({
+          particleCount: 140,
+          spread: 70,
+          startVelocity: 35,
+          origin: { y: 0.6 }
+        });
+      }
+    } else {
+      // reset the one-time guard so a future return to 100 can fire again
+      confettiFiredRef.current = false;
     }
   }, [pct]);
 
@@ -118,13 +158,20 @@ function CircularProgressRing({ value, max, size = 240 }) {
         <div style={{
           marginTop: '16px',
           fontSize: '16px',
-          fontWeight: '600',
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text'
+          fontWeight: '600'
         }}>
-          {message}
+          {msgParts.emoji && (
+            <span aria-hidden="true" style={{ lineHeight: 1 }}>{msgParts.emoji}</span>
+          )}
+          {msgParts.emoji ? ' ' : ''}
+          <span style={{
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}>
+            {msgParts.text}
+          </span>
         </div>
       )}
     </div>
@@ -201,9 +248,9 @@ function CardCarousel({ title, items, renderCardFooter, emptyText = "Nothing her
           <div style={{
             position: 'relative',
             background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%)',
-            borderRadius: '16px',
-            padding: '32px 24px',
-            minHeight: '200px',
+            borderRadius: '14px',
+            padding: '20px 28px',
+            minHeight: '160px',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center'
@@ -259,24 +306,25 @@ function CardCarousel({ title, items, renderCardFooter, emptyText = "Nothing her
                   onClick={prev}
                   style={{
                     position: 'absolute',
-                    left: '8px',
+                    left: '-8px',
                     top: '50%',
                     transform: 'translateY(-50%)',
-                    width: '36px',
-                    height: '36px',
+                    width: '32px',
+                    height: '32px',
                     borderRadius: '50%',
                     border: 'none',
                     background: 'white',
-                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
                     cursor: 'pointer',
-                    fontSize: '20px',
+                    fontSize: '18px',
                     color: '#6366f1',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    transition: 'all 0.2s ease'
+                    transition: 'all 0.16s ease',
+                    zIndex: 5
                   }}
-                  onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-50%) scale(1.1)'}
+                  onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-50%) scale(1.06)'}
                   onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(-50%) scale(1)'}
                 >
                   ‹
@@ -285,24 +333,25 @@ function CardCarousel({ title, items, renderCardFooter, emptyText = "Nothing her
                   onClick={next}
                   style={{
                     position: 'absolute',
-                    right: '8px',
+                    right: '-8px',
                     top: '50%',
                     transform: 'translateY(-50%)',
-                    width: '36px',
-                    height: '36px',
+                    width: '32px',
+                    height: '32px',
                     borderRadius: '50%',
                     border: 'none',
                     background: 'white',
-                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
                     cursor: 'pointer',
-                    fontSize: '20px',
+                    fontSize: '18px',
                     color: '#6366f1',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    transition: 'all 0.2s ease'
+                    transition: 'all 0.16s ease',
+                    zIndex: 5
                   }}
-                  onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-50%) scale(1.1)'}
+                  onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-50%) scale(1.06)'}
                   onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(-50%) scale(1)'}
                 >
                   ›
@@ -329,7 +378,7 @@ function CardCarousel({ title, items, renderCardFooter, emptyText = "Nothing her
                     borderRadius: '4px',
                     border: 'none',
                     background: idx === i 
-                      ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                      ? ' #7494ec'
                       : '#d1d5db',
                     cursor: 'pointer',
                     transition: 'all 0.3s ease'
@@ -346,7 +395,7 @@ function CardCarousel({ title, items, renderCardFooter, emptyText = "Nothing her
 
 /* ---------- Dashboard ---------- */
 export default function VolunteerDashboard() {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const [events, setEvents] = useState([]);
   const [activeEvents, setActiveEvents] = useState([]);
@@ -355,15 +404,37 @@ export default function VolunteerDashboard() {
   const [goalHours, setGoalHours] = useState(36);
   const [manualTotalHours, setManualTotalHours] = useState(0);
   const {auth} = useAuth();
-  const API_BASE = process.env.REACT_APP_API_URL;
+  const [serverTotalHours, setServerTotalHours] = useState(null);
   
+  const API_BASE = process.env.REACT_APP_API_URL;
+  const LOCAL_BASE = "http://localhost:3001"
+
   useEffect(() => {
     const fetchEvents = async () => {
-      const result = await axios.get(`${API_BASE}/events/get_registered_events_for_user`, {params:{user_id: auth.id}});
+      const result = await axios.get(`${LOCAL_BASE}/events/get_registered_events_for_user`, {params:{user_id: auth.id}});
       setEvents(result.data.result);
     }
     fetchEvents();
   }, [])
+
+  // Fetch stored total hours from users table (by user id)
+  useEffect(() => {
+    async function fetchUserHours() {
+      try {
+        if (!auth?.id) return;
+        const resp = await axios.get(`${LOCAL_BASE}/users/get_user_by_id`, { params: { id: auth.id } });
+        const rows = resp.data?.result;
+        if (rows && rows.length > 0) {
+          const u = rows[0];
+          // may be null in DB
+          setServerTotalHours(u.hours ?? null);
+        }
+      } catch (err) {
+        console.error('Failed to load user hours:', err?.response?.data || err.message || err);
+      }
+    }
+    fetchUserHours();
+  }, [auth?.id]);
 
   useEffect(() => {
     let pending = [];
@@ -392,61 +463,61 @@ export default function VolunteerDashboard() {
   const hoursBetween = (s, e) => Math.max(0, (new Date(e) - new Date(s)) / 36e5);
   const round1 = (n) => Math.round(n * 10) / 10;
 
-  const syncedTotalHours = useMemo(() => round1(pastEvents.reduce((sum, ev) => sum + hoursBetween(ev.start, ev.end), 0)), [pastEvents]);
-  const displayedTotalHours = manualTotalHours || syncedTotalHours || 0;
+  // const syncedTotalHours = useMemo(() => round1(pastEvents.reduce((sum, ev) => sum + hoursBetween(ev.start, ev.end), 0)), [pastEvents]);
+  // Display priority: manual override (if >0) -> server value from users table -> computed synced value -> 0
+  const displayedTotalHours = manualTotalHours > 0 ? manualTotalHours : (serverTotalHours ?? 0);
 
-  const syncedMonthlyHours = useMemo(() => {
-    const now = new Date();
-    const y = now.getFullYear();
-    const m = now.getMonth();
-    const inMonth = pastEvents.filter((ev) => {
-      const d = new Date(ev.start);
-      return d.getFullYear() === y && d.getMonth() === m;
-    });
-    return round1(inMonth.reduce((s, ev) => s + hoursBetween(ev.start, ev.end), 0));
-  }, [pastEvents]);
+  // const syncedMonthlyHours = useMemo(() => {
+  //   const now = new Date();
+  //   const y = now.getFullYear();
+  //   const m = now.getMonth();
+  //   const inMonth = pastEvents.filter((ev) => {
+  //     const d = new Date(ev.start);
+  //     return d.getFullYear() === y && d.getMonth() === m;
+  //   });
+  //   return round1(inMonth.reduce((s, ev) => s + hoursBetween(ev.start, ev.end), 0));
+  // }, [pastEvents]);
 
-  const markAttended = async (event_id) => {
-    const ev = activeEvents.find((e) => e.event_id === event_id);
+  const markAttended = async (id) => {
+    const ev = activeEvents.find((e) => e.id === id);
     if (!ev) return;
     // Optimistically move local state
     setPastEvents((arr) => [{ ...ev }, ...arr]);
-    setActiveEvents((arr) => arr.filter((e) => e.event_id !== ev.event_id));
+    setActiveEvents((arr) => arr.filter((e) => e.id !== id));
 
-    // Notify backend to mark registration as 'attended' and increment hours.
     try {
-      await axios.post(`${API_BASE}/events/update_registration_status`, {
+      const res = await axios.post(`${LOCAL_BASE}/events/update_registration_status`, {
         user_id: auth.id,
         event_id: ev.event_id,
         status: 'attended'
       });
-      // success: backend increments user hours (handled server-side)
+      console.log(res);
     } catch (err) {
       console.error('Failed to mark attended on server:', err?.response?.data || err.message || err);
-      // If backend failed, we could roll back UI change or notify user. For now, keep optimistic update but console log.
     }
   };
 
-  const approvePending = (id) => {
-    const ev = pendingEvents.find((e) => e.id === id);
-    if (!ev) return;
-    setActiveEvents((arr) => [{ ...ev }, ...arr]);
-    setPendingEvents((arr) => arr.filter((e) => e.id !== id));
-  };
-  const withdrawPending = (id) => setPendingEvents((arr) => arr.filter((e) => e.id !== id));
+  // const approvePending = (id) => {
+  //   const ev = pendingEvents.find((e) => e.id === id);
+  //   if (!ev) return;
+  //   setActiveEvents((arr) => [{ ...ev }, ...arr]);
+  //   setPendingEvents((arr) => arr.filter((e) => e.id !== id));
+  // };
+  // const withdrawPending = (id) => setPendingEvents((arr) => arr.filter((e) => e.id !== id));
   const deleteActive = (id) => setActiveEvents((arr) => arr.filter((e) => e.id !== id));
-  const deletePast = (id) => setPastEvents((arr) => arr.filter((e) => e.id !== id));
+  // const deletePast = (id) => setPastEvents((arr) => arr.filter((e) => e.id !== id));
 
-  const syncHours = () => setManualTotalHours(syncedTotalHours);
-  const clearManual = () => setManualTotalHours(0);
+  // const syncHours = () => setManualTotalHours(syncedTotalHours);
+  // const clearManual = () => setManualTotalHours(0);
 
   return (
     <>
     <Navbar />
+    <PageTransition>
     <div className={`container py-4 ${styles.vdash}`}>
-      <div className="d-flex align-items-center mb-3">
+      <div className="d-flex flex-column align-items-center mb-3 text-center">
         {/* <button className={`btn btn-outline-primary btn-sm me-2 ${styles.vdBack}`} onClick={() => navigate(-1)}>← Back</button> */}
-        <Title text="Volunteer Dashboard" subtitle="Track your volunteering hours and manage your events." />
+        <Title text="My Impact" subtitle="Track your volunteering hours and manage your events." />
         {/* <div className="ms-auto d-flex gap-2">
           <button className="btn btn-outline-primary btn-sm" onClick={syncHours}>Sync Hours from Past Events</button>
           {manualTotalHours > 0 && <button className="btn btn-outline-secondary btn-sm" onClick={clearManual}>Clear Manual Override</button>}
@@ -457,9 +528,9 @@ export default function VolunteerDashboard() {
         <div className="col-lg-4">
           <div className={`card shadow-sm h-100 ${styles.vdCard}`}>
             <div className="card-body">
-              <h5 className="card-title mb-2">Total Volunteered Hours</h5>
+              <h5 className="card-title mb-2">Total{'\u00A0'} Volunteered Hours</h5>
               <div className="display-6 fw-semibold">{displayedTotalHours}</div>
-              <div className="text-muted mt-2">Synced this month: {syncedMonthlyHours}</div>
+              {/* <div className="text-muted mt-2">Synced this month: {syncedMonthlyHours}</div> */}
               <div className="mt-3">
                 <label className="form-label">Adjust Total (optional)</label>
                 <input type="number" min={0} className="form-control" value={manualTotalHours} onChange={(e) => setManualTotalHours(Math.max(0, Number(e.target.value || 0)))} placeholder="0 = show synced value" />
@@ -493,8 +564,14 @@ export default function VolunteerDashboard() {
         <div className="col-lg-6">
           <CardCarousel title="Active (Joined) Events" items={activeEvents} emptyText="Nothing here yet." renderCardFooter={(e) => (
             <>
-              <button className="btn btn-sm btn-success" onClick={() => markAttended(e.event_id)}>Mark Attended → Past</button>
-              <button className="btn btn-sm btn-outline-danger" onClick={() => deleteActive(e.event_id)}>Did not attend</button>
+              <button
+                className="btn btn-sm"
+                onClick={() => markAttended(e.id)}
+                style={{ background: '#7494ec', borderColor: '#7494ec', color: '#fff' }}
+              >
+                Mark Attended → Past
+              </button>
+              <button className="btn btn-sm btn-outline-danger" onClick={() => deleteActive(e.id)}>Did not attend</button>
             </>
           )} />
         </div>
@@ -513,6 +590,7 @@ export default function VolunteerDashboard() {
         </div>
       </div>
     </div>
+    </PageTransition>
     </>
   );
 }

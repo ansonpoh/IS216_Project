@@ -54,8 +54,11 @@ export default function Landing() {
   const [activeCardIndex, setActiveCardIndex] = useState(null);
   const FACT_SWITCH_MS = 5000;
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const API_BASE = process.env.REACT_APP_API_URL; 
   const {setAuth, auth} = useAuth();
+
+  const API_BASE = process.env.REACT_APP_API_URL; 
+  const LOCAL_BASE = "http://localhost:3001"
+
 
   useEffect(() => {
     const checkGoogleRedirect = async () => {
@@ -73,7 +76,7 @@ export default function Landing() {
         formData.append("supabase_id", supabaseId);
         formData.append("username", username);
         formData.append("email", email);
-        await axios.post(`${API_BASE}/users/complete_registration`, formData, {headers: {"Content-Type":"multipart/form-data"}});
+        await axios.post(`${LOCAL_BASE}/users/complete_registration`, formData, {headers: {"Content-Type":"multipart/form-data"}});
       } catch (err) {
         console.error(err);
       }
@@ -121,10 +124,10 @@ export default function Landing() {
         const rows = Array.isArray(data.facts)
           ? data.facts
           : Array.isArray(data.result)
-            ? data.result
-            : Array.isArray(data)
-              ? data
-              : [];
+          ? data.result
+          : Array.isArray(data)
+          ? data
+          : [];
 
         const parsed = rows.map((r) => ({
           fact_text: r.fact_text ?? r.fact ?? "",
@@ -153,24 +156,24 @@ export default function Landing() {
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
     const sections = gsap.utils.toArray(".fade-section");
-    requestAnimationFrame(() => {
-      sections.forEach((section) => {
-        gsap.fromTo(
-          section,
-          { opacity: 0, y: 40 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.8,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: section,
-              start: "top 85%",
-              toggleActions: "play none none reverse",
-            },
-          }
-        );
-      });
+      requestAnimationFrame(() => {
+        sections.forEach((section) => {
+          gsap.fromTo(
+            section,
+            { opacity: 0, y: 40 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.8,
+              ease: "power2.out",
+              scrollTrigger: {
+                trigger: section,
+                start: "top 85%",
+                toggleActions: "play none none reverse",
+              },
+            }
+          );
+        });
     });
   }, []);
 
@@ -258,12 +261,14 @@ export default function Landing() {
               const currentZIndex = isFocus ? 10 : 3 - i;
 
               // Base transform remains the same
-              const baseTransform = `translateX(calc(-50% + ${(i - 1) * 120
-                }px)) translateY(${i * 20}px)`;
+              const baseTransform = `translateX(calc(-50% + ${
+                (i - 1) * 120
+              }px)) translateY(${i * 20}px)`;
 
               // Focus transform adds a slight shift and scale
-              const focusTransform = `translateX(calc(-50% + ${(i - 1) * 120
-                }px)) translateY(${i * 20 - 15}px) scale(1.05) rotate(0deg)`;
+              const focusTransform = `translateX(calc(-50% + ${
+                (i - 1) * 120
+              }px)) translateY(${i * 20 - 15}px) scale(1.05) rotate(0deg)`;
 
               const colors = getCategoryColors(opportunities[i].category);
               // alias for clarity when rendering icon + colors
@@ -273,8 +278,9 @@ export default function Landing() {
               return (
                 <div
                   key={i}
-                  className={`opportunity-card-float bg-white border border-gray-100 shadow-lg p-4 rounded-3 ${isFocus ? "card-is-focused" : ""
-                    }`}
+                  className={`opportunity-card-float bg-white border border-gray-100 shadow-lg p-4 rounded-3 ${
+                    isFocus ? "card-is-focused" : ""
+                  }`}
                   onClick={() => setActiveCardIndex(i)}
                   style={{
                     "--x": `${(i - 1) * 120}px`,
@@ -384,10 +390,12 @@ export default function Landing() {
                       Your Personal Volunteer Guide
                     </h2>
                   </div>
-
+  
 
                   <p className="lead text-muted mb-4">
-                    Stop endlessly scrolling.{'\u00A0'}Ask Vera to instantly find the perfect match for your goals, schedule, and skills.
+                    Stop endlessly scrolling.{'\u00A0'} Vera uses smart{'\u00A0'} AI to instantly
+                    filter and find the perfect match for your goals, schedule,
+                    and skills.
                   </p>
 
                   {/* Key Features List from AI Chat Interface */}
@@ -753,8 +761,8 @@ export default function Landing() {
                   </h2>
 
                   <p className="lead text-muted mb-4">
-                    Connect with fellow volunteers. Share your best volunteer
-                    photos, videos, and stories to inspire others and connect with like-minded people. Every hour of service
+                    Connect with fellow volunteers.{'\u00A0'} Share your best volunteer
+                    photos, videos,  and stories to inspire others and connect with like-minded people. Every hour of service
                     deserves a spotlight!
                   </p>
 
@@ -922,7 +930,7 @@ export default function Landing() {
           </div>
         </section>
 
-
+        
 
         {showScrollTop && (
           <button
