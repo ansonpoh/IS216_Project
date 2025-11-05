@@ -17,6 +17,7 @@ export async function check_if_user_email_in_use_handler (req, res) {
 
 export async function complete_registration_handler(req, res) {
     try {
+        console.log(req.body);
         const {user_id, username, email} = req.body;
         const profile_image = req.file;
 

@@ -66,14 +66,13 @@ export default function Landing() {
       const session = sessionData?.session;
       const user = session?.user;
       if(!session || !user) return;
-
       const accessToken = session.access_token;
-      const supabaseId = user.id;
+      const user_id = user.id;
       const email = user.email;
       const username = user.user_metadata?.full_name || user.user_metadata?.name || user.user_metadata.username || "";
       try {
         const formData = new FormData();
-        formData.append("supabase_id", supabaseId);
+        formData.append("user_id", user_id);
         formData.append("username", username);
         formData.append("email", email);
         await axios.post(`${LOCAL_BASE}/users/complete_registration`, formData, {headers: {"Content-Type":"multipart/form-data"}});
@@ -83,11 +82,12 @@ export default function Landing() {
 
       setAuth({
         role: "volunteer",
-        id: supabaseId,
+        id: user_id,
         token: accessToken
       })
     }
-    if(auth?.id.length < 1) {
+    if(!auth?.id) {
+      console.log(1);
       checkGoogleRedirect();
     }
   }, [setAuth])
