@@ -14,9 +14,9 @@
 | <img src="photos/anson.jpg" width="80"> | Anson Poh Jing En | Backend Developer, Database & Auth - AI Chat, Supabase Integration |
 | <img src="photos/sitinur.jpg" width="80"> | Sitinur | Frontend Developer - Opportunity Listing |
 | <img src="photos/keying.jpg" width="80"> | Liang Keying | Backend Developer, UI/UX - AI Chat, Webpage Layout |
-| <img src="photos/riya.jpg" width="80"> | Riya Philip | Frontend Developer - Login/Signup, Profile |
+| <img src="photos/riya.jpg" width="80"> | Riya Philip | Frontend Developer, UI/UX - Opportunity Listing, Community Page |
 | <img src="photos/joshua.jpg" width="80"> | Cher Zhi Rui Joshua | Frontend Developer - Interactive Map, Community Page |
-| <img src="photos/yuanlong.jpg" width="80"> | Siew Yuanlong | Frontend Developer - Login/Signup, Profile |
+| <img src="photos/yuanlong.png" width="80"> | Siew Yuanlong | Frontend Developer - Login/Signup, Profile |
 
 > Place all headshot thumbnails in the `/photos` folder (JPEG or PNG).
 
