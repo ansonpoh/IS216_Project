@@ -53,11 +53,6 @@ export default function LoginSignup() {
     e.preventDefault();
     setRegisterErrors("");
 
-    // if (!registerData.agree) {
-    //   setRegisterErrors("Please agree to Terms and Privacy to continue");
-    //   return;
-    // }
-
     if (registerData.password !== registerData.confirmPassword) {
       setRegisterErrors("Passwords do not match");
       return;
@@ -163,47 +158,6 @@ export default function LoginSignup() {
       })
 
       nav("/");
-
-      // const userInDb = await axios.get(`${API_BASE}/users/get_user_by_id`, {params: {id: user.id}});
-      // if(userInDb.data.result.length === 0) {
-      //   try {
-      //     const formData = new FormData();
-      //     formData.append("user_id", user.id);
-      //     formData.append("username", user.user_metadata?.username || "");
-      //     formData.append("email", user.email || "");
-      //     if (registerData.profile_image instanceof File) {
-      //       formData.append("profile_image", registerData.profile_image);
-      //     }
-
-      //     const res = await axios.post(
-      //       `${API_BASE}/users/complete_registration`,
-      //       formData,
-      //       { headers: { "Content-Type": "multipart/form-data" } }
-      //     );
-
-      //     if (res?.data?.status) {
-      //       alert("Login success");
-      //     } else {
-      //       console.log(res?.data);
-      //     }
-
-      //     setAuth({
-      //       role: "volunteer",
-      //       id: user.id,
-      //       token: accessToken || "",
-      //     });
-      //     nav("/");
-      //   } catch (err) {
-      //     console.error(err);
-      //   }
-      // } else {
-      //   setAuth({
-      //     role: "volunteer",
-      //     id: user.id,
-      //     token: accessToken || "",
-      //   });
-      //   nav("/");
-      // }
     } catch (err) {
       console.error(err);
       setLoginErrors("Unexpected error during login");

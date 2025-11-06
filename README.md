@@ -1,4 +1,5 @@
-# �� IS216 Web Application Development II
+# 🌍 IS216 Web Application Development II
+**Project Title:** VolunteerConnect  
 
 ---
 
@@ -18,92 +19,100 @@
 | <img src="photos/joshua.jpg" width="80"> | Cher Zhi Rui Joshua | Frontend Developer - Interactive Map, Community Page |
 | <img src="photos/yuanlong.png" width="80"> | Siew Yuanlong | Frontend Developer - Login/Signup, Profile, Dashboards |
 
-> Place all headshot thumbnails in the `/photos` folder (JPEG or PNG).
-
 ---
 
 ## Business Problem
 
-Describe the **real-world business or community problem** your project addresses.
-
-> *Example:*  
-> Small local businesses struggle to maintain an online presence, limiting visibility to customers.  
-> Our web application helps them list menus, accept feedback, and attract more customers.
-
 Current volunteer recruitment systems, like WhatsApp polls and manual coordination, are inefficient. They lead to long waiting times (weeks to months), poor visualization of opportunities, and a frustrating experience that discourages potential volunteers. This creates a significant barrier between passionate individuals and NGOs in need of support.
 
-Our web application aims to simplify and accelerate the volunteer–NGO matching process by providing a centralized, easy-to-use platform. It addresses the inefficiencies of current systems (long waiting times, scattered opportunities, and poor visibility) by offering features like AI-powered opportunity recommendations, interactive maps, and real-time event management. Volunteers can quickly discover, track, and engage with opportunities that match their interests, while NGOs can efficiently manage sign-ups and communicate with participants.
+**Volunteer Connect** aims to simplify and accelerate the volunteer–NGO matching process by providing a centralized, easy-to-use platform. It addresses the inefficiencies of current systems (long waiting times, scattered opportunities, and poor visibility) by offering features like AI-powered opportunity recommendations, interactive maps, and real-time event management. Volunteers can quickly discover, track, and engage with opportunities that match their interests, while NGOs can efficiently manage sign-ups and communicate with participants.
 
 ---
 
 ## Web Solution Overview
 
-### �� Intended Users
-Anyone, especially students, who are looking for volunteering opportunities island-wide
+### 🎯 Intended Users
+- Students and young adults looking for volunteer opportunities island-wide  
+- Non-profit organisations (NGOs) managing events and volunteers  
 
-### �� What Users Can Do & Benefits
-Explain the core features and the benefit each provides.  
+### 🚀 What Users Can Do & Benefits
 
 | Feature | Description | User Benefit |
 |:--|:--|:--|
-| Register & Login | Secure authentication system | Personalized experience and data security |
-| AI Chat | AI Chat that interacts with users to recommend suitable volunteering opportunities | Saves time and effort by quickly guiding users to relevant opportunities |
-| Interactive Map | Dynamic map displaying volunteering opportunities with regional and category filters, and custom markers | Easy and visually-appealing location-based opportunity lookup |
-| Opportunities Listing | List of all opportunities available | Provides detailed information and simplifies the process of signing up for events |
-| Communities Page | Social page where organisations and users can share images with captions of volunteering experiences | Encourages community engagement and sharing of memorable moments, motivating more volunteering |
-| Analytics Page | Visual analytics of popular volunteering categories, regions, and a heatmap for insights | Allows users to see popular volunteering categories, regions and heatmap to help them make informed decisions on what to volunteer for |
-| Organiser Dashboard | Tool for organisers to create events and manage volunteer sign-ups in one place | Allows organisers to create events and manage volunteer sign ups all in one place |
-| Volunteer Dashboard | Dashboard for volunteers to set goals, track past and ongoing events, and manage pending applications in one place | Helps volunteers stay organized and monitor their volunteering progress efficiently
+| **Register & Login** | Secure authentication system | Personalized experience and data security |
+| **AI Chat** | AI Chat that interacts with users to recommend suitable volunteering opportunities | Saves time and effort by quickly guiding users to relevant opportunities |
+| **Interactive Map** | Dynamic map displaying volunteering opportunities with regional and category filters, and custom markers | Easy and visually-appealing location-based opportunity lookup |
+| **Opportunities Listing** | List of all opportunities available | Provides detailed information and simplifies the process of signing up for events |
+| **Communities Page** | Social page where organisations and users can share images with captions of volunteering experiences | Encourages community engagement and sharing of memorable moments, motivating more volunteering |
+| **Analytics Page** | Visual analytics of popular volunteering categories, regions, and a heatmap for insights | Allows users to see popular volunteering categories, regions and heatmap to help them make informed decisions on what to volunteer for |
+| **Organiser Dashboard** | Tool for organisers to create events and manage volunteer sign-ups in one place | Allows organisers to create events and manage volunteer sign ups all in one place |
+| **Volunteer Dashboard** | Dashboard for volunteers to set goals, track past and ongoing events, and manage pending applications in one place | Helps volunteers stay organized and monitor their volunteering progress efficiently
 
 ---
 
-## Tech Stack
+## 🧰 Tech Stack
 
 | Logo | Technology | Purpose / Usage |
 |:--:|:--|:--|
-| <img src="https://raw.githubusercontent.com/github/explore/main/topics/html/html.png" width="40"> | **HTML5** | Structure and content |
-| <img src="https://raw.githubusercontent.com/github/explore/main/topics/css/css.png" width="40"> | **CSS3 / Bootstrap** | Styling and responsiveness |
-| <img src="https://raw.githubusercontent.com/github/explore/main/topics/javascript/javascript.png" width="40"> | **JavaScript (ES6)** | Client-side logic and interactivity |
-| <img src="https://raw.githubusercontent.com/github/explore/main/topics/nodejs/nodejs.png" width="40"> | **Node.js** | Backend runtime environment |
-| <img src="https://raw.githubusercontent.com/github/explore/main/topics/react/react.png" width="40"> | **React** | Component-based frontend framework |
-| <img src="https://raw.githubusercontent.com/github/explore/main/topics/supabase/supabase.png" width="40"> | **Supabase** | Authentication and database services |
+| <img src="https://raw.githubusercontent.com/github/explore/main/topics/html/html.png" width="40"> | **HTML5** | Page structure and markup |
+| <img src="https://raw.githubusercontent.com/github/explore/main/topics/css/css.png" width="40"> | **CSS / Bootstrap** | Styling and responsive layouts |
+| <img src="https://raw.githubusercontent.com/github/explore/main/topics/javascript/javascript.png" width="40"> | **JavaScript** | Client-side logic and API calls |
+| <img src="https://raw.githubusercontent.com/github/explore/main/topics/react/react.png" width="40"> | **React.js** | Frontend framework for component-based architecture |
+| <img src="https://raw.githubusercontent.com/github/explore/main/topics/nodejs/nodejs.png" width="40"> | **Node.js + Express** | REST API backend server |
+| <img src="https://raw.githubusercontent.com/github/explore/main/topics/supabase/supabase.png" width="40"> | **Supabase (PostgreSQL)** | Authentication and data storage |
+| <img src="https://avatars.githubusercontent.com/u/10639145?s=200&v=4" width="40"> | **Recharts / GSAP / Framer Motion** | Analytics visualization & smooth animations |
+| <img src="https://raw.githubusercontent.com/github/explore/main/topics/vercel/vercel.png" width="40"> | **Vercel** | Frontend hosting |
+| <img src="https://raw.githubusercontent.com/github/explore/main/topics/render/render.png" width="40"> | **Render** | Backend hosting |
 
 ---
 
-## Use Case & User Journey
+## 🧭 Use Case & User Journey
 
 Provide screenshots and captions showing how users interact with your app.
 
 1. **Landing Page**  
    <img src="screenshots/landing.png" width="600">  
-   - Displays the homepage with navigation options.
+   - Welcomes users with introduction and sign-in options.
 
-2. **Search Feature**  
-   <img src="screenshots/search.png" width="600">  
-   - Users can browse and filter items by criteria.
+2. **AI Chat (Vera)**  
+   <img src="screenshots/ai_chat.png" width="600">  
+   - Users interact with “Vera” to receive personalized volunteering suggestions.
 
-3. **User Dashboard**  
-   <img src="screenshots/dashboard.png" width="600">  
-   - Shows saved data and recent activities.
+3. **Interactive Map**  
+   <img src="screenshots/map.png" width="600">  
+   - Users explore opportunities by region and category visually.
 
-> Save screenshots inside `/screenshots` with clear filenames.
+4. **Volunteer Dashboard**  
+   <img src="screenshots/dashboard_volunteer.png" width="600">  
+   - Tracks ongoing, approved, and past volunteering events.
+
+5. **Organiser Dashboard**  
+   <img src="screenshots/dashboard_organiser.png" width="600">  
+   - Enables creation and management of events with registration tracking.
+
+6. **Analytics Page**  
+   <img src="screenshots/analytics.png" width="600">  
+   - Displays most popular categories and regions in bar charts and heatmaps.
+
+> Screenshots stored in `/screenshots`.
 
 ---
 
-## Developers Setup Guide
+## 🧑‍💻 Developers Setup Guide
 
 Comprehensive steps to help other developers or evaluators run and test your project.
 
 ---
 
 ### 0) Prerequisites
+- [Node.js](https://nodejs.org/) v18+  
 - [Git](https://git-scm.com/) v2.4+  
-- [Node.js](https://nodejs.org/) v18+ and npm v9+  
-- Access to backend or cloud services used (Firebase, MongoDB Atlas, AWS S3, etc.)
+- Access to [Supabase](https://supabase.com/) project  
+- (Optional) [Render](https://render.com/) & [Vercel](https://vercel.com/) accounts for deployment  
 
 ---
 
-### 1) Download the Project
+### 1) Clone the Repository
 ```bash
 git clone https://github.com/ansonpoh/IS216_Project.git
 cd IS216_Project
@@ -112,23 +121,38 @@ npm install
 
 ---
 
-### 2) Configure Environment Variables
-Create a `.env` file in the root/backend directory with the following structure:
+### 2) Install Dependencies
+
+**Backend**
+```bash
+cd backend
+npm install
+```
+
+**Frontend**
+```bash
+cd frontend 
+npm install
+```
+
+---
+
+### 3) Configure Environment Variables
+Create a `.env` file in the backend folder with the following structure:
 
 ```bash
 DATABASE_URL=<your_backend_url>
 SUPABASE_URL=<your_supabase_url>
 SUPABASE_KEY=<your_supabase_api_key>
-OR_API=<or_api>
-OR_MODEL=<or_model>
 GOOGLE_MAPS_API_KEY=<your_google_maps_api_key>
 OPENAI_API_KEY=<your_openai_api_key>
 ```
 
-Create a `.env` file in the root/frontend directory with the following structure:
+Create a `.env` file in the frontend folder with the following structure:
 ```bash
 REACT_APP_SUPABASE_URL=<supabase_url>
 REACT_APP_SUPABASE_ANON_KEY=<supabase_anon_key>
+REACT_APP_API_URL=http://localhost:3001
 ```
 
 > Never commit the `.env` file to your repository.  
@@ -136,45 +160,18 @@ REACT_APP_SUPABASE_ANON_KEY=<supabase_anon_key>
 
 ---
 
-### 3) Backend / Cloud Service Setup
+### 4) Run the Application Locally
 
-#### Firebase
-1. Go to [Firebase Console](https://console.firebase.google.com/)
-2. Create a new project.
-3. Enable the following:
-   - **Authentication** → Email/Password sign-in
-   - **Firestore Database** or **Realtime Database**
-   - **Hosting (optional)** if you plan to deploy your web app
-4. Copy the Firebase configuration into your `.env` file.
-
-#### Optional: Express.js / MongoDB
-If your app includes a backend:
-1. Create a `/server` folder for backend code.
-2. Inside `/server`, create a `.env` file with:
-   ```bash
-   MONGO_URI=<your_mongodb_connection_string>
-   JWT_SECRET=<your_jwt_secret_key>
-   ```
-3. Start the backend:
-   ```bash
-   cd server
-   npm install
-   npm start
-   ```
-
----
-
-### 4) Run the Frontend
-To start the development server:
+**Start Backend**
 ```bash
-npm start
+cd backend
+npm run dev
 ```
-The project will run on [http://localhost:3000](http://localhost:3000) by default.
 
-To build and preview the production version:
+**Start Frontend**
 ```bash
-npm run build
-npm run preview
+cd frontend
+npm start
 ```
 
 ---
@@ -184,50 +181,54 @@ npm run preview
 #### Manual Testing
 Perform the following checks before submission:
 
-| Area | Test Description | Expected Outcome |
+| Test Area | Description | Expected Result |
 |:--|:--|:--|
-| Authentication | Register, Login, Logout | User successfully signs in/out |
-| CRUD Operations | Add, Edit, Delete data | Database updates correctly |
-| Responsiveness | Test on mobile & desktop | Layout adjusts without distortion |
-| Navigation | All menu links functional | Pages route correctly |
-| Error Handling | Invalid inputs or missing data | User-friendly error messages displayed |
-
-#### Automated Testing (Optional)
-If applicable:
-```bash
-npm run test
-```
+| Authentication | Sign up, login, logout via Supabase | User can authenticate successfully |
+| AI Chat | Ask for volunteering suggestions | Returns suitable events |
+| Map Page | Use region/category filters | Markers update accordingly |
+| Dashboards | Organizer CRUD; Volunteer history | Data creates/updates correctly |
+| Community Page | Post, like/unlike feedback | UI updates reflect DB state |
+| Analytics | View bar charts & heatmap | Matches real registration data |
 
 ---
 
 ### 6) Common Issues & Fixes
 
-| Issue | Cause | Fix |
+| Issue | Likely Cause | Fix |
 |:--|:--|:--|
-| `Module not found` | Missing dependencies | Run `npm install` again |
-| `Firebase: permission-denied` | Firestore security rules not set | Check rules under Firestore → Rules |
-| `CORS policy error` | Backend not allowing requests | Enable your domain in CORS settings |
-| `.env` variables undefined | Missing `VITE_` prefix | Rename variables to start with `VITE_` |
-| `npm run dev` fails | Node version mismatch | Check Node version (`node -v` ≥ 18) |
+| CORS errors | Frontend domain not allowed | Add domain(s) to `CORS_ORIGIN` in backend `.env` |
+| OAuth redirects to localhost | Supabase `Site URL` not updated | Set `https://is-216-project.vercel.app` in Supabase Auth |
+| `Axios 404` | Wrong API base URL | Ensure `REACT_APP_API_URL` points to backend |
+| DB permission errors | RLS/policies blocking access | Add appropriate policies for anon/service-role |
+| Wrong counts/capacity | Missing `LEFT JOIN`/`GROUP BY` | Use `COUNT()` with joins and `GROUP BY event_id` |
 
 ---
+
+### 7) Deployment
+
+**Backend(Render)**
+   1. Create a **Web Service** from Git repo -> /backend 
+   2. Build command: `npm install`
+   3. Start command: `npm start`
+   4. Add `.env` variables
+   5. Copy deployed URL and replace REACT_APP_API_URL in frontend .env
+
+**Frontend**(Vercel)
+   1. Import repo -> Select `/frontend` folder
+   2. Add `.env` variables
+   3. Build Command: `npm run build`
+   4. Deployed URL: https://is-216-project.vercel.app
 
 ## Group Reflection
 
 Each member should contribute 2–3 sentences on their learning and project experience.
 
-> **Example Template:**  
-> - *Alice:* Learned to build reusable Vue components and manage state effectively.  
-> - *Ben:* Gained experience connecting frontend and backend APIs.  
-> - *Chloe:* Improved UI/UX design workflow and collaboration using Figma.  
-> - *David:* Understood how Firebase Authentication and Firestore integrate with modern SPAs.  
-
-> - *Anson:* 
+> - *Anson:* Learned more in detail about cloud databases and configuring an agentic AI. Gained more experience in overall web development.
 > - *Sitinur:* 
 > - *Keying:*  Gained experience connecting frontend and backend API endpoints. Created reusable components.  
 > - *Riya:* Learned how to use reusable React components, design the frontend UI and understood how data is retrieved from the backend using routes and controllers
 > - *Joshua:* Learned how to use Fort Awesome, Bootstrap icons, SVG over map API, as well as map filter logic.
-> - *Yuanlong:* 
+> - *Yuanlong:* Learned how to route pages and connect different components effectively and how to manage dynamic content across pages.
 
 As a team, reflect on:
 - Key takeaways from working with real-world frameworks  
