@@ -518,61 +518,73 @@ const sortOptions = [
                   {loadingModal ? (
                     <div>Loading...</div>
                   ) : registrations.length > 0 ? (
-                    <ul className="list-group">
-                      {registrations.map((r) => (
-                        <li key={r.user_id} className="list-group-item d-flex justify-content-between align-items-center" style={{gap:"1rem"}}>
-                          <div style={{flex:1}}>
-                            <strong>{r.username}&nbsp; &nbsp;</strong> 
-                            <span className="text-muted small" style={{cursor:"pointer"}} onClick={() => openUserModal(r.user_id)}>{r.email}</span>
-                          </div>
+            <ul className="list-group">
+              {registrations.map((r) => (
+                <li
+                  key={r.user_id}
+                  className="list-group-item d-flex align-items-center flex-wrap"
+                  style={{ gap: "8px" }}  
+                >
+                  <div className="flex-grow-1 min-w-0">
+                    <strong className="d-inline-block text-truncate me-2" style={{ maxWidth: 160 }}>
+                      {r.username}
+                    </strong>
+                    <span
+                      className="text-muted small d-inline-block text-truncate"
+                      style={{ maxWidth: 220, cursor: "pointer" }}
+                      onClick={() => openUserModal(r.user_id)}
+                    >
+                      {r.email}
+                    </span>
+                  </div>
 
-                          {(r.status === "denied" || r.status === "attended") && (
-                            <button
-                              className="btn btn-sm btn-outline-secondary"
-                              onClick={() => handleRemoveFromView(r.user_id)}
-                            >
-                              Remove
-                            </button>
-                          )}
-                    <div style={{ textAlign: "center" }}>
-                      <span
-                        className={`badge px-3 py-2 ${
-                          r.status === "approved"
-                            ? "bg-success-subtle text-success-emphasis"
-                            : r.status === "attended"
-                            ? "bg-success text-white"                    
-                            : r.status === "pending"
-                            ? "bg-warning text-dark"                       
-                            : "bg-danger"                                   
-                        }`}
+                  <div className="ms-auto d-flex align-items-center gap-2 flex-wrap" style={{ flexShrink: 0 }}>
+                    {(r.status === "denied" || r.status === "attended") && (
+                      <button
+                        className="btn btn-sm btn-outline-secondary"
+                        style={{ flexShrink: 0 }}
+                        onClick={() => handleRemoveFromView(r.user_id)}
                       >
-                        {r.status}
-                      </span>
-                    </div>
-                          {r.status === "pending" && (
-                            <div className="btn-group btn-group-sm">
-                              <button
-                                className="btn btn-outline-success"
-                                onClick={() =>
-                                  handleUpdate(r.user_id, selectedEvent.event_id, "approved")
-                                }
-                              >
-                                Approve
-                              </button>
-                              <button
-                                className="btn btn-outline-danger"
-                                onClick={() =>
-                                  handleUpdate(r.user_id, selectedEvent.event_id, "denied")
-                                }
-                              >
-                                Deny
-                              </button>
-                            </div>
-                          )}
+                        Remove
+                      </button>
+                    )}
 
-                        </li>
-                      ))}
-                    </ul>
+                    {r.status === "pending" && (
+                      <div className="d-flex gap-2 flex-wrap" style={{ flexShrink: 0 }}>
+                        <button
+                          className="btn btn-outline-success btn-sm"
+                          onClick={() => handleUpdate(r.user_id, selectedEvent.event_id, "approved")}
+                        >
+                          Approve
+                        </button>
+                        <button
+                          className="btn btn-outline-danger btn-sm"
+                          onClick={() => handleUpdate(r.user_id, selectedEvent.event_id, "denied")}
+                        >
+                          Deny
+                        </button>
+                      </div>
+                    )}
+
+                    <span
+                      className={`badge px-3 py-2 ${
+                        r.status === "approved"
+                          ? "bg-success-subtle text-success-emphasis"
+                          : r.status === "attended"
+                          ? "bg-success text-white"
+                          : r.status === "pending"
+                          ? "bg-warning text-dark"
+                          : "bg-danger"
+                      }`}
+                      style={{ whiteSpace: "nowrap", flexShrink: 0 }}
+                    >
+                      {r.status}
+                    </span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+
                   ) : (
                     <div className="text-muted">No volunteers yet.</div>
                   )}
