@@ -46,8 +46,8 @@
 
 /* Global font for the entire app */
 html, body, #root {
-  /* font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; */ 
-  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS';
+  /* font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; */
+  font-family: 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
   height: 100%;
   margin: 0;
   background-color: var(--bg1);

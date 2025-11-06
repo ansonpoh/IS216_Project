@@ -41,7 +41,7 @@ export default function OrganiserCreateForm() {
   useEffect(() => {
     const fetch_regions = async () => {
       try {
-        const res = await axios.get(`${LOCAL_BASE}/events/get_all_regions`);
+        const res = await axios.get(`${API_BASE}/events/get_all_regions`);
         const data = Array.isArray(res.data.result) ? res.data.result : [];
         setRegions(data);
       } catch (err) {
@@ -51,7 +51,7 @@ export default function OrganiserCreateForm() {
 
     const fetch_categories = async () => {
       try {
-        const res = await axios.get(`${LOCAL_BASE}/events/get_all_categories`);
+        const res = await axios.get(`${API_BASE}/events/get_all_categories`);
         const data = Array.isArray(res.data.result) ? res.data.result : [];
         setCategories(data);
       } catch (err) {
@@ -126,7 +126,7 @@ export default function OrganiserCreateForm() {
     setSaving(true);
 
     try {
-      await axios.post(`${LOCAL_BASE}/events/create_event`, form)
+      await axios.post(`${API_BASE}/events/create_event`, form)
         .then((res) => {
           const data = res.data;
           if (data.status) {
