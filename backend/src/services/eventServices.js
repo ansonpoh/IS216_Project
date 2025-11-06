@@ -155,7 +155,8 @@ export async function get_filtered_events(category, region, filter, start_date, 
         }
 
         const where_clause = conditions.length > 0 ? `where  ${conditions.join(" AND ")}` : "";
-        const query = `select e.*, count(er.user_id) as approved_count, (e.capacity - count(er.user_id)) as remaining_capacity from events e left join event_registration er on e.event_id = er.event_id and er.status = 'approved ${where_clause} group by e.event_id having count (er.user_id) < e.capacity`;
+        const query = `select e.*, count(er.user_id) as approved_count, (e.capacity - count(er.user_id)) as remaining_capacity from events e left join event_registration er on e.event_id = er.event_id and er.status = 'approved' ${where_clause} group by e.event_id having count (er.user_id) < e.capacity`;
+        console.log("QUERY: ", query);
         const result = await pool.query(query, values);
         return result.rows;
     } catch (err) {
