@@ -100,8 +100,6 @@ export default function OrganiserDashboard() {
 
 const sortOptions = [
   { value: "title", label: "Sort by A-Z" },
-  { value: "startAt", label: "Sort by start time" },
-  { value: "createdAt", label: "Sort by created time" },
   { value: "capacity", label: "Sort by capacity filled" },
 ];
 
