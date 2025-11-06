@@ -288,7 +288,7 @@ export default function Opportunity() {
               filteredOpportunities.map((op) => (
                 <div className={styles['event-card']} key={op.event_id} onClick={() => { setShowModal(true); setSelectedOpportunity(op); }}>
                   <div className={styles['card-image']}>
-                    {op.image_url && <img src={op.image_url} alt={op.title} />}
+                    <img src={op.image_url || '/images/default-opportunity.svg'} alt={op.title} />
                     {/* <span className={`${styles['status-badge']} ${styles[op.status]}`}>{op.status}</span> */}
                   </div>
 
@@ -343,7 +343,7 @@ export default function Opportunity() {
                 <div className={styles["modal-content-row"]}>
                   <div className={styles["modal-left"]}>
                     <img
-                      src={selectedOpportunity.image_url}
+                      src={selectedOpportunity.image_url || '/images/default-opportunity.svg'}
                       alt={selectedOpportunity.title}
                       className={styles["modal-large-image"]}
                     />
