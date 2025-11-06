@@ -165,7 +165,7 @@ REACT_APP_API_URL=http://localhost:3001
 **Start Backend**
 ```bash
 cd backend
-npm run dev
+npx nodemon ./src/index.js 
 ```
 
 **Start Frontend**
