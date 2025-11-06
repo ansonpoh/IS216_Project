@@ -228,7 +228,7 @@ export default function OrganiserDashboard() {
     setLoadingUser(true);
     try {
       const res = await axios.get(`${API_BASE}/users/get_user_by_id`, {
-        params: { user_id }
+        params: { id: user_id }
       });
       setSelectedUser(res.data.result?.[0]);
     } catch (err) {
@@ -446,7 +446,7 @@ export default function OrganiserDashboard() {
                         <li key={r.user_id} className="list-group-item d-flex justify-content-between align-items-center" style={{gap:"1rem"}}>
                           <div style={{flex:1}}>
                             <strong>{r.username}&nbsp; &nbsp;</strong> 
-                            <span className="text-muted small" onClick={() => openUserModal(r.user_id)}>{r.email}</span>
+                            <span className="text-muted small" style={{cursor:"pointer"}} onClick={() => openUserModal(r.user_id)}>{r.email}</span>
                           </div>
 
                           {(r.status === "denied" || r.status === "attended") && (
@@ -565,14 +565,16 @@ export default function OrganiserDashboard() {
                   {loadingUser ? (
                     <div>Loading user info...</div>
                   ) : selectedUser ? (
-                    <>
-                    {console.log(selectedUser)}
+                    <div>
                       <p><strong>Name:</strong> {selectedUser.username}</p>
                       <p><strong>Email:</strong> {selectedUser.email}</p>
-                      <p><strong>Joined:</strong> {new Date(selectedUser.created_at).toLocaleDateString()}</p>
-                      <p><strong>Volunteer Interests:</strong> {selectedUser.interests || "N/A"}</p>
-                      <p><strong>Region:</strong> {selectedUser.region || "N/A"}</p>
-                    </>
+                      <p><strong>Phone Number: </strong> {selectedUser.contact_phone}</p>
+                      <p><strong>Joined:</strong> {new Date(selectedUser.date_joined).toLocaleDateString()}</p>
+                      <p><strong>Volunteered Hours:</strong> {selectedUser.hours}</p>
+                      <p><strong>Skills: </strong>{selectedUser?.skills?.join(", " || "NA")}</p>
+                      <p><strong>Languages: </strong>{selectedUser?.languages?.join(", " || "NA")}</p>
+                      {console.log(selectedUser)}
+                    </div>
                   ) : (
                     <div>No user details found.</div>
                   )}
