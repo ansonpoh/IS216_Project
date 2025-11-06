@@ -594,15 +594,27 @@
 }
 
 .modal-close {
-  background: none;
-  border: none;
+  position: absolute; /* attach to modal-wrapper’s top-right */
+  top: 12px;
+  right: 16px;
+  font-size: 1.8rem;
   color: #333;
+  background: rgba(255, 255, 255, 0.85); /* visible over image */
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  font-size: 2rem;
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  z-index: 10;
+  z-index: 20;
+  backdrop-filter: blur(6px);
+  transition: background 0.2s;
+}
+
+.modal-close:hover {
+  background: rgba(255, 255, 255, 1);
 }
 
 /* Fix overlap below 628px */
