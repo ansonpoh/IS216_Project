@@ -135,6 +135,7 @@ cd frontend
 npm install
 ```
 
+---
 
 ### 3) Configure Environment Variables
 Create a `.env` file in the backend folder with the following structure:
@@ -182,41 +183,42 @@ npm start
 #### Manual Testing
 Perform the following checks before submission:
 
-| Area | Test Description | Expected Outcome |
+| Test Area | Description | Expected Result |
 |:--|:--|:--|
-| Authentication | Register, Login, Logout | User successfully signs in/out |
-| CRUD Operations | Add, Edit, Delete data | Database updates correctly |
-| Responsiveness | Test on mobile & desktop | Layout adjusts without distortion |
-| Navigation | All menu links functional | Pages route correctly |
-| Error Handling | Invalid inputs or missing data | User-friendly error messages displayed |
+| Authentication | Sign up, login, logout via Supabase | User can authenticate successfully |
+| AI Chat | Ask for volunteering suggestions | Returns suitable events |
+| Map Page | Use region/category filters | Markers update accordingly |
+| Dashboards | Organizer CRUD; Volunteer history | Data creates/updates correctly |
+| Community Page | Post, like/unlike feedback | UI updates reflect DB state |
+| Analytics | View bar charts & heatmap | Matches real registration data |
 
 ---
 
 ### 6) Common Issues & Fixes
 
-| Issue                       | Cause                         | Fix                                                                      |
-| :-------------------------- | :---------------------------- | :----------------------------------------------------------------------- |
-| CORS Error                  | Wrong frontend domain         | Update `CORS_ORIGIN` in backend `.env`                                   |
-| OAuth Redirect to localhost | Supabase redirect not updated | Change “Site URL” in Supabase Auth → `https://is-216-project.vercel.app` |
-| Axios 404                   | Wrong API URL                 | Check `REACT_APP_API_URL` points to backend                              |
-| Database permission errors  | Row-Level Security            | Enable proper Supabase policies for anon/service role                    |
-| Event count mismatch        | Missing `LEFT JOIN` logic     | Use provided SQL with `count(er.user_id)` aggregation                    |
+| Issue | Likely Cause | Fix |
+|:--|:--|:--|
+| CORS errors | Frontend domain not allowed | Add domain(s) to `CORS_ORIGIN` in backend `.env` |
+| OAuth redirects to localhost | Supabase `Site URL` not updated | Set `https://is-216-project.vercel.app` in Supabase Auth |
+| `Axios 404` | Wrong API base URL | Ensure `REACT_APP_API_URL` points to backend |
+| DB permission errors | RLS/policies blocking access | Add appropriate policies for anon/service-role |
+| Wrong counts/capacity | Missing `LEFT JOIN`/`GROUP BY` | Use `COUNT()` with joins and `GROUP BY event_id` |
 
 ---
 
 ### 7) Deployment
 
-**Backend**(Render)
+**Backend(Render)**
    1. Create a **Web Service** from Git repo -> /backend 
-   2. Build command: npm install
-   3. Start command: npm start
-   4. Add .env variables
+   2. Build command: `npm install`
+   3. Start command: `npm start`
+   4. Add `.env` variables
    5. Copy deployed URL and replace REACT_APP_API_URL in frontend .env
 
 **Frontend**(Vercel)
-   1. Import repo -> Select /frontend folder
-   2. Add environment variables
-   3. Build Command: npm run build
+   1. Import repo -> Select `/frontend` folder
+   2. Add `.env` variables
+   3. Build Command: `npm run build`
    4. Deployed URL: https://is-216-project.vercel.app
 
 ## Group Reflection
