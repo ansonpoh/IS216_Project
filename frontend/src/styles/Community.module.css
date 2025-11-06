@@ -427,15 +427,23 @@
 
 /* Close button */
 .modal-close {
-  position: absolute;
-  top: 12px;
-  right: 16px;
-  font-size: 1.8rem;
-  color: #333;
   background: none;
   border: none;
+  color: #333;
   cursor: pointer;
+  font-size: 2rem;
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
   z-index: 10;
+}
+
+@media (max-width: 628px) {
+.modal-close {
+    top: 0rem;       /* more breathing room */
+    right: 0rem;     /* push it inward a bit */
+    font-size: 1.8rem; 
+  }
 }
 
 /* Content row */
