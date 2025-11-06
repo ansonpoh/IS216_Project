@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import Navbar from "../../components/Navbar";
 import { useAuth } from "../../contexts/AuthProvider";
 import Title from "../../components/ui/Title";
 import modalStyles from "../../styles/Modals.module.css";
+import styles from "../../styles/OrganiserCreateForm.module.css";
 import Select from "react-select"
 
 const customSelectStyles = {
@@ -88,8 +91,8 @@ export default function OrganiserCreateForm() {
     description: "",
     location: "",
     region: "",
-    start_date: "",
-    end_date: "",
+    start_date: null,
+    end_date: null,
     start_time: "",
     end_time: "",
     capacity: "",
@@ -144,8 +147,8 @@ export default function OrganiserCreateForm() {
       setForm((prev) => ({
         ...prev,
         ...republishData,
-        start_date: "",
-        end_date: "",
+        start_date: null,
+        end_date: null,
         start_time: "",
         end_time: "",
       }))
@@ -173,7 +176,7 @@ export default function OrganiserCreateForm() {
     if (!form.title.trim()) return "Title is required.";
     if (!form.start_date || !form.end_date)
       return "Start and end dates are required.";
-    if (new Date(form.end_date) < new Date(form.start_date))
+    if (form.end_date < form.start_date)
       return "End date cannot be earlier than start date.";
     if (!form.start_time || !form.end_time)
       return "Start and end times are required.";
@@ -188,7 +191,14 @@ export default function OrganiserCreateForm() {
     setSaving(true);
 
     try {
-      await axios.post(`${API_BASE}/events/create_event`, form)
+      // Format dates for API
+      const formattedForm = {
+        ...form,
+        start_date: form.start_date ? form.start_date.toISOString().split('T')[0] : "",
+        end_date: form.end_date ? form.end_date.toISOString().split('T')[0] : "",
+      };
+
+      await axios.post(`${API_BASE}/events/create_event`, formattedForm)
         .then((res) => {
           const data = res.data;
           if (data.status) {
@@ -291,27 +301,29 @@ export default function OrganiserCreateForm() {
             {/* DATES */}
             <div className="col-md-6">
               <label className="form-label">Start Date *</label>
-              <input
-                type="date"
-                name="start_date"
-                value={form.start_date}
-                onChange={onChange}
-                className="form-control"
+              <DatePicker
+                selected={form.start_date}
+                onChange={(date) => setForm({ ...form, start_date: date })}
+                dateFormat="dd/MM/yyyy"
+                placeholderText="Select start date"
+                className={styles['custom-datepicker']}
+                minDate={new Date()}
+                isClearable
                 required
-                min={new Date().toISOString().split("T")[0]}
               />
             </div>
 
             <div className="col-md-6">
               <label className="form-label">End Date *</label>
-              <input
-                type="date"
-                name="end_date"
-                value={form.end_date}
-                onChange={onChange}
-                className="form-control"
+              <DatePicker
+                selected={form.end_date}
+                onChange={(date) => setForm({ ...form, end_date: date })}
+                dateFormat="dd/MM/yyyy"
+                placeholderText="Select end date"
+                className={styles['custom-datepicker']}
+                minDate={form.start_date || new Date()}
+                isClearable
                 required
-                min={form.start_date || new Date().toISOString().split("T")[0]}
               />
             </div>
 
