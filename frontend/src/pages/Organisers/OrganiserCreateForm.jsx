@@ -77,6 +77,8 @@ export default function OrganiserCreateForm() {
   const [categories, setCategories] = useState([]);
   const [org, setOrg] = useState(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorModalMessage, setErrorModalMessage] = useState("");
   const location = useLocation();
   const republishData = location.state;
   const [form, setForm] = useState({
@@ -193,9 +195,9 @@ export default function OrganiserCreateForm() {
             // Show success modal instead of alert
             setShowSuccessModal(true);
           } else {
-            // Keep failure alert behavior for now
-            alert("Event creation failed!");
-            window.location.reload();
+            // show styled error modal instead of native alert
+            setErrorModalMessage("Event creation failed!");
+            setShowErrorModal(true);
           }
         });
     } catch (e2) {
@@ -474,6 +476,18 @@ export default function OrganiserCreateForm() {
             <div className={modalStyles.body}>Your event is now live in your dashboard.</div>
             <div className={modalStyles.buttons}>
               <button className={modalStyles.btnPrimary} onClick={handleSuccessOk}>OK</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {showErrorModal && (
+        <div className={modalStyles.overlay} onClick={() => setShowErrorModal(false)}>
+          <div className={modalStyles.dialog} role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+            <div className={modalStyles.icon} style={{ color: '#f59e0b' }}>⚠️</div>
+            <div className={modalStyles.title}>Error</div>
+            <div className={modalStyles.body}>{errorModalMessage}</div>
+            <div className={modalStyles.buttons}>
+              <button className={modalStyles.btnPrimary} onClick={() => { setShowErrorModal(false); window.location.reload(); }}>OK</button>
             </div>
           </div>
         </div>

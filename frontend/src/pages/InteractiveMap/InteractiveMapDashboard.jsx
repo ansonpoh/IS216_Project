@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import modalStyles from "../../styles/Modals.module.css";
 import Navbar from "../../components/Navbar.js";
 import MapContainer from "./MapContainer.jsx";
 import styles from "../../styles/MapStyles.module.css"
@@ -12,6 +13,8 @@ const InteractiveMapDashboard = () => {
 
   // Add map instance ref
   const mapInstanceRef = useRef(null);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorModalMessage, setErrorModalMessage] = useState("");
 
   // UPDATED REGIONS - Singapore regions
   const regions = [
@@ -66,11 +69,13 @@ const InteractiveMapDashboard = () => {
           }
         },
         () => {
-          alert('Unable to get your location');
+          setErrorModalMessage('Unable to get your location');
+          setShowErrorModal(true);
         }
       );
     } else {
-      alert('Geolocation is not supported by your browser');
+      setErrorModalMessage('Geolocation is not supported by your browser');
+      setShowErrorModal(true);
     }
   };
 
@@ -148,6 +153,18 @@ const InteractiveMapDashboard = () => {
           </div>
         </div>
       {/* </PageTransition> */}
+        {showErrorModal && (
+          <div className={modalStyles.overlay} onClick={() => setShowErrorModal(false)}>
+            <div className={modalStyles.dialog} role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+              <div className={modalStyles.icon} style={{ color: '#f59e0b' }}>⚠️</div>
+              <div className={modalStyles.title}>Error</div>
+              <div className={modalStyles.body}>{errorModalMessage}</div>
+              <div className={modalStyles.buttons}>
+                <button className={modalStyles.btnPrimary} onClick={() => setShowErrorModal(false)}>OK</button>
+              </div>
+            </div>
+          </div>
+        )}
     </>
   );
 };
