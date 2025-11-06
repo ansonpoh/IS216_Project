@@ -4,6 +4,7 @@ import api from "../../utils/api";
 import modalStyles from "../../styles/Modals.module.css";
 import "../../styles/VolunteerProfile.css";
 import avatar from "../../components/images/avatar.png";
+import axios from "axios";
 
 export default function VolunteerProfile() {
   const STORAGE_KEY = "volunteer_profile_v1";
@@ -12,6 +13,7 @@ export default function VolunteerProfile() {
   const [submitting, setSubmitting] = useState(false);
   const [status, setStatus] = useState("");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const API_BASE = process.env.REACT_APP_API_URL;
 
   const [formData, setFormData] = useState({
     fullName: "John Doe",
@@ -43,8 +45,9 @@ export default function VolunteerProfile() {
       try {
         if (!auth?.id) return;
         setStatus("Loading profile from server...");
-        const resp = await api.get(`/users/get_user_by_id`, { params: { id: auth.id } });
+        const resp = await axios.get(`${API_BASE}/users/get_user_by_id`, { params: { id: auth.id } });
         const rows = resp.data?.result;
+        console.log(rows)
         if (!rows || rows.length === 0) {
           setStatus("No profile found on server");
           return;
@@ -177,7 +180,7 @@ export default function VolunteerProfile() {
         });
         fd.append("avatar", formData.avatarFile);
 
-        const resp = await api.post(`/users/update_profile`, fd, {
+        const resp = await axios.post(`${API_BASE}/users/update_profile`, fd, {
           withCredentials: true,
           headers: {
             Accept: "application/json",
