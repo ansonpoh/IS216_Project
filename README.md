@@ -222,7 +222,7 @@ Each member should contribute 2–3 sentences on their learning and project expe
 > - *Chloe:* Improved UI/UX design workflow and collaboration using Figma.  
 > - *David:* Understood how Firebase Authentication and Firestore integrate with modern SPAs.  
 
-> - *Anson:* 
+> - *Anson:* Learned more in detail about cloud databases and configuring an agentic AI. Gained more experience in overall web development.
 > - *Sitinur:* 
 > - *Keying:* 
 > - *Riya:* Learned how to use reusable React components, design the frontend UI and understood how data is retrieved from the backend using routes and controllers
