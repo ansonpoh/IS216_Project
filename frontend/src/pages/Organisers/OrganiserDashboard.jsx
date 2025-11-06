@@ -281,7 +281,7 @@ const sortOptions = [
   const handleDelete = async () => {
     if (!eventToDelete) return;
     try {
-      await axios.post(`${LOCAL_BASE}/events/delete_event`, {event_id: eventToDelete.event_id });
+      await axios.post(`${API_BASE}/events/delete_event`, {event_id: eventToDelete.event_id });
 
       // Remove from state
       setEvents((prev) => prev.filter((e) => e.event_id !== eventToDelete.event_id));
