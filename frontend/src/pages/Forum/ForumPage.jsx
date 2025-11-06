@@ -334,9 +334,26 @@ export default function ForumPage() {
 
             {/* Posts grid */}
             {loading ? (
-              <div className="text-center py-5">
-                <div className="spinner-border text-primary" role="status">
-                  <span className="visually-hidden">Loading...</span>
+              <div style={{ position: 'relative', minHeight: '200px' }}>
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    zIndex: 50,
+                    backgroundColor: 'white',
+                    padding: '24px',
+                    borderRadius: '12px',
+                    boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+                  }}
+                >
+                  <div className="text-center">
+                    <div className="spinner-border text-primary" role="status" style={{ marginBottom: '12px' }}>
+                      <span className="visually-hidden">Loading...</span>
+                    </div>
+                    <p className="text-muted mb-0">Loading posts...</p>
+                  </div>
                 </div>
               </div>
             ) : filteredPosts.length === 0 ? (
