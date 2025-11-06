@@ -178,7 +178,7 @@
 
 .category-tag {
     align-items: center;
-    border-radius: 12px;
+    border-radius: 16px;
     color: #fff;
     display: inline-flex;
     font-size: .92rem;
@@ -275,6 +275,40 @@
     min-width: 140px
   }
 }
+
+@media (max-width: 480px) {
+  .filters .group-left,
+  .filters .group-right {
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+
+  .filters button,
+  .reset-btn {
+    width: 100%; /* full-width buttons */
+    min-width: auto;
+  }
+}
+
+/* Fix date filter overflow for very small screens */
+@media (max-width: 400px) {
+  .date-filter {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .date-filter label {
+    width: 100%;
+  }
+
+  .date-filter input[type="date"] {
+    width: 100%;
+    min-width: auto;
+  }
+}
+
+
 
 
 /* --- Empty State --- */
