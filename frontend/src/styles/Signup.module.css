@@ -226,8 +226,6 @@
   margin-bottom: 20px;
 }
 
-
-
 .toggle-panel .signup_btn {
   width: 160px;
   height: 46px;
@@ -349,4 +347,101 @@
     transform: translateY(0);
     opacity: 1;
   }
+}
+
+@media screen and (max-width: 480px) {
+  /* Stack everything vertically */
+  .login_signup_container {
+    position: relative;
+    display: flex;
+    flex-direction: column;  
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 100vh;
+    padding: 16px 0 32px;
+    background: #f8fafc;
+    border-radius: 0;
+    box-shadow: none;
+    overflow-y: auto;
+  }
+
+  .toggle-box::before {
+    display: none !important;
+  }
+
+  .toggle-box {
+    position: static !important;
+    width: 92%;
+    max-width: 360px;
+    order: 0;   
+    z-index: 1;
+  }
+
+  .toggle-panel {
+    position: static !important;
+    top: auto !important;
+    right: auto !important;
+    left: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    transition: none !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+
+    width: 100%;
+    height: auto !important;
+    background: #7494ec;
+    color: #fff;
+    border-radius: 14px;
+    text-align: center;
+    padding: 20px 14px;
+    margin-bottom: 12px;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.1);
+  }
+
+  .toggle-panel h1 { font-size: 20px; margin-bottom: 6px; }
+  .toggle-panel p  { font-size: 14px; margin-bottom: 10px; }
+  .toggle-panel .signup_btn {
+    background: #fff;
+    color: #7494ec;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    height: 38px;
+    width: 120px;
+  }
+
+  .form-box {
+    position: static !important;
+    right: auto !important;
+    height: auto !important;
+    width: 92% !important;
+    max-width: 360px;
+    padding: 24px 18px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    z-index: 0;
+    order: 1;   
+    transition: none !important;
+  }
+
+  .form-box h1 { font-size: 22px; margin-bottom: 16px; }
+  .input-box { margin: 18px 0; }
+  .input-box input { font-size: 14px; padding: 10px 38px 10px 14px; }
+  .signup_btn { height: 42px; font-size: 15px; }
+  .social-icons-btn { font-size: 20px; padding: 8px; }
+
+  .login_signup_container:not(.active) .form-box.register { display: none !important; }
+  .login_signup_container:not(.active) .form-box:not(.register) { display: block !important; }
+
+  .login_signup_container.active .form-box.register { display: block !important; }
+  .login_signup_container.active .form-box:not(.register) { display: none !important; }
+
+  .toggle-panel { display: none; }
+  .login_signup_container:not(.active) .toggle-panel.toggle-left { display: flex; }
+  .login_signup_container.active .toggle-panel.toggle-right { display: flex; }
 }
