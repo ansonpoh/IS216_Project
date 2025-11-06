@@ -297,20 +297,23 @@ export default function Opportunity() {
                     <p className="text-muted">{op.org_name}</p>
                     <p>{op.description}</p>
                     <div className={styles['card-info']}>
-                      <p>
-                        <span aria-hidden="true" style={{ marginRight: "5px" }}>📍</span>
+                      <div className={styles['info-item']}>
+                        <span className={styles['info-icon']} aria-hidden="true">📍</span>
                         <span className={styles['info-text']}>{op.location || "N/A"}</span>
-                      </p>
-                      <p>
-                        <span aria-hidden="true" style={{ marginRight: "7px" }}>📅</span>
+                      </div>
+
+                      <div className={styles['info-item']}>
+                        <span className={styles['info-icon']} aria-hidden="true">📅</span>
                         <span className={styles['info-text']}>
                           {formatDate(op.start_date)} - {formatTime(op.start_time)} - {formatTime(op.end_time)}
                         </span>
-                      </p>
-                      <p>
-                        <span aria-hidden="true" style={{ marginRight: "5px" }}>👤</span>
-                        Capacity: {op.capacity ?? "N/A"}
-                      </p>
+                      </div>
+
+                      <div className={styles['info-item']}>
+                        <span className={styles['info-icon']} aria-hidden="true">👤</span>
+                        <span className={styles['info-text']}>Capacity: {op.capacity ?? "N/A"}</span>
+                      </div>
+
                     </div>
                   </div>
 

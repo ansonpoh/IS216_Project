@@ -334,6 +334,25 @@
 }
 
 
+/* info item */
+/* Opportunities.module.css */
+.info-item {
+  display: flex;
+  align-items: flex-start; /* align icon with first line of text */
+  margin-bottom: 6px; /* optional spacing */
+}
+
+.info-icon {
+  flex-shrink: 0; /* prevent icon from shrinking */
+  width: 24px; /* fixed width for alignment */
+  display: inline-flex;
+  justify-content: center;
+  margin-right: 8px;
+}
+
+.info-text {
+  flex: 1; /* allow text to wrap */
+}
 
 
 /* --- Empty State --- */
