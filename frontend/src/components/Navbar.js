@@ -75,7 +75,7 @@ function Navbar() {
     <ul className="navbar-nav mx-auto gap-3 d-none d-lg-flex">
       <li className="nav-item">
         <NavLink to="/ai" className={({ isActive }) => `${styles['navbar_item']} nav-link fw-semibold ${isActive ? styles.active : ''}`}>
-          AI Chat
+          Vera
         </NavLink>
       </li>
       <li className="nav-item">
@@ -116,9 +116,22 @@ function Navbar() {
 
     {/* Mobile Links with Dividers */}
     <ul className="navbar-nav d-lg-none mobile-nav-list">
+      {/* Mobile avatar row: shown when signed in, above the logout/get-started button */}
+      {auth?.id?.length > 0 && (
+        <li className="nav-item mobile-nav-item mobile-avatar-item">
+          <div className="d-flex align-items-center gap-2" style={{ padding: '8px 12px' }}>
+            <img
+              src={image || avatar}
+              alt="Profile"
+              onClick={() => navigate("/VolunteerProfile")}
+              style={{ width: 44, height: 44, borderRadius: '50%', cursor: 'pointer', objectFit: 'cover', border: '2px solid #7494ec' }}
+            />
+          </div>
+        </li>
+      )}
       <li className="nav-item mobile-nav-item">
         <NavLink to="/ai" className={({ isActive }) => `${styles['navbar_item']} nav-link fw-semibold ${isActive ? styles.active : ''}`}>
-          AI Chat
+          Vera
         </NavLink>
       </li>
       <li className="nav-item mobile-nav-item">

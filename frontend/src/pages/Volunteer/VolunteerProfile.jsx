@@ -4,6 +4,7 @@ import api from "../../utils/api";
 import modalStyles from "../../styles/Modals.module.css";
 import "../../styles/VolunteerProfile.css";
 import avatar from "../../components/images/avatar.png";
+import PageTransition from "../../components/Animation/PageTransition";
 import axios from "axios";
 
 export default function VolunteerProfile() {
@@ -15,29 +16,40 @@ export default function VolunteerProfile() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const API_BASE = process.env.REACT_APP_API_URL;
 
-  const [formData, setFormData] = useState({
-    fullName: "John Doe",
-    username: "johndoe",
-    bio: "Passionate about making a difference in my community through volunteer work.",
-    skills: ["Event Planning", "Photography", "Teaching"],
-    languages: ["English", "Mandarin"],
-    availability: {
-      days: { mon: true, tue: false, wed: true, thu: false, fri: true, sat: true, sun: false },
-      startTime: "09:00",
-      endTime: "17:00",
-    },
-    location: "Central Singapore",
-    contact: { email: "john@example.com", phone: "+65 9123 4567" },
-    emergency: { name: "Jane Doe", relation: "Sister", phone: "+65 9876 5432" },
-    avatarDataUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop",
-    avatarFile: null,
-  });
+  // Read local saved profile synchronously so we don't flash the empty template
+  const _savedRaw = (() => {
+    try {
+      return localStorage.getItem(STORAGE_KEY);
+    } catch (err) {
+      return null;
+    }
+  })();
+  const _saved = _savedRaw ? JSON.parse(_savedRaw) : null;
+  const [hasLocalData] = useState(!!_saved);
 
-  // Load saved data from localStorage
-  useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) setFormData(JSON.parse(saved));
-  }, []);
+  const defaultForm = {
+    fullName: "",
+    username: "",
+    bio: "",
+    skills: [],
+    languages: [],
+    availability: {
+      days: { mon: false, tue: false, wed: false, thu: false, fri: false, sat: false, sun: false },
+      startTime: "",
+      endTime: "",
+    },
+    location: "",
+    contact: { email: "", phone: "" },
+    emergency: { name: "", relation: "", phone: "" },
+    avatarDataUrl: "",
+    avatarFile: null,
+  };
+
+  // Initialize form data from local saved copy (if present) to avoid initial flash
+  const [formData, setFormData] = useState(() => _saved || defaultForm);
+
+  // track server fetch state so we can show a loader when needed
+  const [isFetching, setIsFetching] = useState(false);
 
   // Fetch user profile from backend when authenticated
   useEffect(() => {
@@ -45,6 +57,7 @@ export default function VolunteerProfile() {
       try {
         if (!auth?.id) return;
         setStatus("Loading profile from server...");
+        setIsFetching(true);
         const resp = await axios.get(`${API_BASE}/users/get_user_by_id`, { params: { id: auth.id } });
         const rows = resp.data?.result;
         console.log(rows)
@@ -98,6 +111,9 @@ export default function VolunteerProfile() {
       } catch (err) {
         console.error("Failed to load profile:", err);
         setStatus("Failed to load profile from server");
+      }
+      finally {
+        setIsFetching(false);
       }
     }
 
@@ -274,8 +290,20 @@ export default function VolunteerProfile() {
   const DAY_ORDER = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 
   return (
-    <><Navbar />
-    <div className="volunteer-root">
+    <>
+      <Navbar />
+      {/* If we're fetching server profile and there's no local copy, show a centered loader
+          so the user doesn't see the empty template flash. */}
+      <PageTransition>
+      {isFetching && !hasLocalData ? (
+        <div className="container py-5 d-flex justify-content-center align-items-center" style={{ minHeight: '50vh' }}>
+          <div className="text-center">
+            <div className="spinner-border text-primary" role="status" aria-hidden="true"></div>
+            <div className="mt-3">Loading profile...</div>
+          </div>
+        </div>
+      ) : (
+        <div className="volunteer-root">
       <div className="vp-hero">
         <div className="vp-container">
 
@@ -422,7 +450,9 @@ export default function VolunteerProfile() {
         </div>
       </div>
     </div>
+      )}
       <SuccessModal open={showSuccessModal} onClose={handleSuccessOk} />
+      </PageTransition>
     </>
   );
 }

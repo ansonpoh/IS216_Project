@@ -6,6 +6,7 @@ import styles from "../../styles/Signup.module.css";
 import Navbar from "../../components/Navbar";
 import { supabase } from "../../config/supabaseClient";
 import PageTransition from "../../components/Animation/PageTransition";
+import modalStyles from "../../styles/Modals.module.css";
 
 export default function LoginSignup() {
   const [active, setActive] = useState(false);
@@ -31,6 +32,8 @@ export default function LoginSignup() {
   const [forgotEmail, setForgotEmail] = useState("");
   const [forgotMsg, setForgotMsg] = useState("");
   const [sendingReset, setSendingReset] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
   
   useEffect(() => {
     if (active) {
@@ -101,8 +104,9 @@ export default function LoginSignup() {
       }
 
 
-      alert("Verification link sent to email!");
-      setActive(false);
+  setSuccessMessage("Verification link sent to email!");
+  setShowSuccessModal(true);
+  setActive(false);
     } catch (err) {
       console.error(err);
       setRegisterErrors("Unexpected error during registration.");
@@ -482,6 +486,23 @@ export default function LoginSignup() {
         </div>
       </div>
       </PageTransition>
+      <SuccessModalLocal open={showSuccessModal} message={successMessage} onClose={() => setShowSuccessModal(false)} />
     </>
+  );
+}
+
+function SuccessModalLocal({ open, message, onClose }) {
+  if (!open) return null;
+  return (
+    <div className={modalStyles.overlay} onClick={onClose}>
+      <div className={modalStyles.dialog} role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+        <div className={modalStyles.icon} style={{ color: 'green' }}>✓</div>
+        <div className={modalStyles.title}>Success</div>
+        <div className={modalStyles.body}>{message}</div>
+        <div className={modalStyles.buttons}>
+          <button className={modalStyles.btnPrimary} onClick={onClose}>OK</button>
+        </div>
+      </div>
+    </div>
   );
 }

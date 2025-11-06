@@ -96,6 +96,23 @@
   padding: 0.5rem;
 }
 
+  /* Mobile avatar item - visible inside the collapsed nav */
+  :global(.mobile-avatar-item) {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid rgba(155, 91, 255, 0.04);
+  }
+
+  :global(.mobile-avatar-item img) {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #7494ec;
+  }
+
 :global(.mobile-nav-item) {
   padding: 0.75rem 0;
   border-bottom: 2px solid rgba(155, 91, 255, 0.1);
@@ -131,7 +148,7 @@
 }
 
 /* Improve spacing when navbar is collapsed on small screens */
-@media (max-width: 991px) {
+@media (max-width: 991.98px) {
   /* show collapse as a stacked panel - NO BOX SHADOW */
   /* Keep background/backdrop ready on the collapsed element so it doesn't have to repaint when toggled.
      Use opacity transition to fade in quickly when `.show` is added. Promote to its own layer with translateZ(0).
@@ -213,7 +230,7 @@
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(155, 91, 255, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
   }
   
-  @media (max-width: 991px) {
+  @media (max-width: 991.98px) {
     :global(.navbar-collapse.show) {
       background: linear-gradient(135deg, rgba(26, 32, 44, 0.98), rgba(45, 55, 72, 0.98));
       border: 1px solid rgba(155, 91, 255, 0.2);
@@ -244,10 +261,11 @@
   .navbarRight {
     margin-left: auto;
   }
+}
 
-/* Reduce padding / font size for center nav items on narrower large viewports so
-   the text doesn't overlap the right-side buttons (affects widths up to 1471px). */
-@media (max-width: 1471px) {
+/* Reduce padding / font size for center nav items on narrower large viewports (992px - 1471px)
+   so the text doesn't overlap the right-side buttons. */
+@media (min-width: 992px) and (max-width: 1471px) {
   .navbar_item {
     padding: 6px 10px;
     font-size: 0.95rem;
@@ -257,5 +275,4 @@
   :global(.navbar-collapse) {
     gap: 8px;
   }
-}
 }
