@@ -22,6 +22,7 @@
 /* Style for the "Community Posts" title */
 .title {
   font-size: 1.5rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: #000000;
   margin: 0;
@@ -56,6 +57,7 @@
   width: 220px;
 }
 .searchInput:focus {
+  border-color: #6366f1;
   border-color: #6366f1;
 }
 .sortSelect {

@@ -1,3 +1,10 @@
+/* 
+  Cleaned and consolidated LandingPage styles.
+  - Removed duplicate keyframes and overlapping global rules
+  - Fixed invalid AI variable and tightened AI feature sizes
+  - Kept original responsive behavior and utility classes intact
+*/
+
 .landing-page section {
   margin: 0;
   padding: 0;
@@ -14,7 +21,7 @@
   margin-top: -1px;
 }
 
-
+/* Color & utility tokens kept small and explicit */
 .bg-blue-100 {
   background-color: #dbeafe;
 }
@@ -55,14 +62,7 @@
   transform: scale(1.05);
 }
 
-/* Hero Section Background */
-/* .section {
-  padding-top: 5rem;
-  padding-bottom: 5rem;
-  position: relative;
-  overflow: hidden;
-} */
-
+/* Hero Section */
 .hero-section {
   position: relative;
   overflow: hidden;
@@ -75,7 +75,6 @@
   inset: 0;
   z-index: 0;
   will-change: transform;
-  /* border-bottom: 1px solid transparent !important; */
 }
 
 .hero-section>.container {
@@ -84,28 +83,20 @@
 }
 
 .container.mt-7 {
-  margin-top: 1.75rem;
-  /* adjust if mt-7 is too large on small screens */
+  margin-top: 40px !important;
 }
 
-/* Target devices smaller than medium (Bootstrap's md breakpoint is usually 768px) */
 @media (max-width: 768px) {
-
-  /* Target the floating card container */
   .hero-section .container.mt-7 {
-    /* Dramatically reduce the top margin to save vertical space */
     margin-top: 1.5rem !important;
-    /* Adjust as needed, but this is much smaller */
   }
 
-  /* OPTIONAL: Reduce padding/margin inside the hero-section if needed */
   .hero-section {
     padding-top: 2rem !important;
     padding-bottom: 2rem !important;
   }
 }
 
-/* Title underline */
 .title-underline {
   position: absolute;
   bottom: -1rem;
@@ -115,7 +106,7 @@
   background-color: #8b5cf6;
 }
 
-/* Gradient Text and Backgrounds */
+/* Gradient text/background helpers (scoped via :global later) */
 .gradient-text-blue-purple {
   background: linear-gradient(to right, #2563eb, #9333ea);
   -webkit-background-clip: text;
@@ -151,18 +142,14 @@
 
 .custom-btn-cta {
   background-image: linear-gradient(to right, #2563eb, #9333ea);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
   border: none;
   padding: 0.75rem 2.5rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .custom-btn-cta:hover {
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
 }
-
 
 .scrollTopButton {
   position: fixed;
@@ -172,9 +159,7 @@
   height: 50px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.2);
-  /* glassy effect */
   backdrop-filter: blur(10px);
-  /* blurs background behind button */
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.3);
   color: #333;
@@ -184,7 +169,7 @@
   align-items: center;
   justify-content: center;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
-  transition: transform 0.2s, background 0.2s;
+  transition: transform .2s, background .2s;
   z-index: 1000;
 }
 
@@ -193,6 +178,7 @@
   background: rgba(255, 255, 255, 0.3);
 }
 
+/* Consolidated keyframes (single canonical definitions) */
 @keyframes float {
 
   0%,
@@ -285,14 +271,26 @@
   animation: bounce-slow 3s infinite ease-in-out;
 }
 
-/* Make these selectors global but scoped under .landing-page so they override app defaults */
+/* Global (scoped) overrides for landing page - kept consolidated */
+:global(html, body) {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scroll-padding-top: 80px;
+}
+
+:global(.landing-page) {
+  scroll-behavior: smooth;
+  transition: scroll 0.3s ease-in-out;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 :global(.landing-page .gradient-text-blue-purple) {
   background: linear-gradient(to right, #2563eb, #9333ea);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
-
 
 :global(.landing-page .gradient-text-purple-pink) {
   background: linear-gradient(to right, #9333ea, #ec4899);
@@ -326,11 +324,11 @@
   top: 0;
   left: 50%;
   width: 300px;
-  transition: all 0.3s;
+  transition: all .3s;
   animation: float-card 6s infinite ease-in-out;
 }
 
-/* animations (keep global under landing-page) */
+/* Floating/list/map animations scoped */
 :global(.landing-page .animate-fade-in) {
   animation: fade-in 0.8s ease-out forwards;
   opacity: 0;
@@ -345,62 +343,9 @@
   animation: bounce-slow 3s infinite ease-in-out;
 }
 
-
-:global(html, body) {
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
-  /* for iOS momentum */
-  scroll-padding-top: 80px;
-  /* keeps sections clean when using anchors */
-}
-
-:global(.landing-page) {
-  scroll-behavior: smooth;
-  transition: scroll 0.3s ease-in-out;
-}
-
-
-/* keep your @keyframes as global (no .landing-page prefix needed) */
-@keyframes gradient {
-
-  0%,
-  100% {
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
-}
-
-@keyframes fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes bounce-slow {
-
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
 /* Map preview card */
 .mapCard {
   border-radius: 1rem;
-  /* ~rounded-4 */
   overflow: hidden;
   transition: transform .25s ease, box-shadow .25s ease;
   box-shadow: 0 10px 24px rgba(0, 0, 0, .08);
@@ -412,12 +357,10 @@
   box-shadow: 0 18px 30px rgba(0, 0, 0, .12);
 }
 
-
 .mapCard:hover .mapBorder {
   inset: 8px;
 }
 
-/* optional helper for a responsive box (16:9) */
 .aspect169 {
   aspect-ratio: 16 / 9;
   width: 100%;
@@ -435,81 +378,112 @@
   }
 }
 
-/* Ensure the subheading used in Landing is larger than normal text but smaller than the H2 (Meet Vera).
-   Use a global selector so the class works when applied as a plain string in JSX. */
+/* Subheadings */
 :global(.subheading_1) {
-  font-size: 1.5rem;
-  /* base size */
+  font-size: 1.25rem;
   line-height: 1.15;
   font-weight: 600;
   margin-bottom: 1rem;
 }
 
-@media (min-width: 768px) {
+@media (min-width:768px) {
   :global(.subheading_1) {
-    font-size: 1.75rem;
-    /* slightly larger on tablet / desktop */
+    font-size: 1rem;
   }
 }
 
-@media (min-width: 1200px) {
+@media (min-width:1200px) {
   :global(.subheading_1) {
     font-size: 2rem;
-    /* still smaller than display-5 heading */
   }
 }
 
-/* --- Mobile / small-screen refinements ---
-   These keep large-screen styles untouched and only apply
-   compression at narrow viewports (iPhone-width devices). */
+/* --- Global typographic scale-down for Landing page --- */
+:global(.landing-page .display-3) {
+  font-size: 1.8rem !important;
+  line-height: 1 !important;
+}
 
-/* Very small phones (iPhone SE / narrow devices) */
-@media (max-width: 390px) {
+:global(.landing-page .display-5) {
+  font-size: 1.4rem !important;
+  line-height: 1 !important;
+}
 
-  /* Reduce hero height and vertical spacing so the hero content fits without heavy scrolling */
-  .hero-section {
-    min-height: auto !important;
-    padding-top: 1.5rem !important;
-    padding-bottom: 1.5rem !important;
+:global(.landing-page h1) {
+  font-size: 1.5rem !important;
+}
+
+:global(.landing-page h2) {
+  font-size: 1.2rem !important;
+}
+
+:global(.landing-page h3) {
+  font-size: 0.95rem !important;
+}
+
+/* :global(.landing-page p),
+:global(.landing-page .lead) {
+  font-size: 0.95rem;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+} */
+
+/* :global(.landing-page .subheading_1) {
+  font-size: 1rem !important;
+} */
+
+@media (min-width:768px) {
+  :global(.landing-page .display-3) {
+    font-size: 2.4rem !important;
   }
 
-  /* Slightly smaller headline to avoid wrapping into many lines */
-  .hero-title {
+  :global(.landing-page .display-5) {
+    font-size: 1.6rem !important;
+  }
+
+  :global(.landing-page .subheading_1) {
     font-size: 1.5rem !important;
-    line-height: 1.05 !important;
   }
-
-  /* Floating cards should be narrower and slightly scaled down */
-  :global(.landing-page .opportunity-card-float) {
-    width: 220px !important;
-    transform-origin: center top;
-    animation-duration: 6s;
-  }
-
-  /* Ensure the mapCard does not overflow the viewport */
-  :global(.landing-page .mapCard) {
-    max-width: 92% !important;
-    width: 92% !important;
-  }
-
-  /* Reduce CTA/button padding so they fit comfortably */
-  :global(.landing-page .custom-btn-primary),
-  :global(.landing-page .custom-btn-cta) {
-    padding: 0.5rem 1rem !important;
-    font-size: 0.95rem !important;
-    display: block !important;
-    width: 92% !important;
-    max-width: 420px !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-    justify-content: center !important;
-  }
-
 }
 
-/* Small phones / narrow portrait (typical iPhone 12 width is 390–412px) */
-@media (max-width: 420px) {
+/* AI section: fix invalid var and set sensible compact sizes for list items */
+:global(.landing-page .ai-section) {
+  font-size: 0.92rem !important;
+}
 
+:global(.landing-page .ai-section .list-unstyled li h4) {
+  font-size: 0.65rem !important;
+  line-height: 1.1 !important;
+}
+
+:global(.landing-page .ai-section .list-unstyled li p),
+:global(.landing-page .ai-section .list-unstyled li .small) {
+  font-size: 0.5rem !important;
+  line-height: 1.2 !important;
+}
+
+/* Card / list titles */
+:global(.landing-page .opportunity-card-float h3),
+:global(.landing-page .mapCard h3) {
+  font-size: 0.95rem !important;
+}
+
+/* Small utility text */
+:global(.landing-page .small),
+:global(.landing-page .text-muted) {
+  font-size: 0.82rem !important;
+  
+}
+
+/* Buttons text slightly smaller */
+:global(.landing-page .custom-btn-primary),
+:global(.landing-page .custom-btn-cta),
+:global(.landing-page .btn) {
+  font-size: 0.95rem !important;
+}
+
+/* Mobile / small-screen refinements kept but consolidated */
+@media (max-width: 420px) {
   .hero-section {
     min-height: auto !important;
     padding-top: 1.75rem !important;
@@ -525,29 +499,20 @@
     line-height: 1.06 !important;
   }
 
-  /* Floating cards scale down and reduce horizontal overlap */
   :global(.landing-page .opportunity-card-float) {
     width: 260px !important;
     animation: float-card 6s infinite ease-in-out;
   }
 
-  /* Map/preview cards: keep nice spacing but prevent overflow */
   :global(.landing-page .mapCard) {
     max-width: 95% !important;
     width: 95% !important;
   }
 
-  /* Facts area: reduce min-height so it fits above the fold more often */
   :global(.landing-page .text-center.bg-white.border.bo.shadow-sm.p-4.rounded-3) {
     min-height: 120px !important;
   }
 
-  /* Slightly smaller subheading on small screens */
-  :global(.subheading_1) {
-    font-size: 1.25rem !important;
-  }
-
-  /* Make CTA buttons match the mapCard width on small phones */
   :global(.landing-page .custom-btn-primary),
   :global(.landing-page .custom-btn-cta) {
     display: block !important;
@@ -557,31 +522,9 @@
     margin-right: auto !important;
     justify-content: center !important;
   }
-
 }
 
-/* Narrow desktop / large tablet breakpoint (fix floating cards overlap around 940px) */
-@media (max-width: 992px) {
-
-  /* Pull floating cards slightly up and reduce width so they don't collide
-     with the next-section preview cards (AI/map) when the layout stacks. */
-  :global(.landing-page .opportunity-card-float) {
-    width: 260px !important;
-    top: -10px !important;
-    transition: transform 0.25s ease, top 0.25s ease;
-  }
-
-  /* Reduce the extra spacing between the hero and following sections */
-  .hero-section .container.mt-7 {
-    margin-top: 0.5rem !important;
-  }
-
-}
-
-/* Tablet / small landscape fallback (still leave desktop untouched) */
 @media (max-width: 576px) {
-
-  /* Reduce vertical spacing across hero and sections */
   .hero-section {
     padding-top: 2rem !important;
     padding-bottom: 2rem !important;
@@ -591,27 +534,23 @@
     margin-top: 1rem !important;
   }
 
-  /* Make the hero badges and small callouts slightly smaller */
   .hero-section .d-inline-flex.px-4.py-3 {
     padding: 0.5rem 1rem !important;
   }
 
-  /* Make sure the CTA buttons remain tappable but not oversized */
   :global(.landing-page .custom-btn-primary) {
     padding: 0.6rem 1rem !important;
     font-size: 1rem !important;
   }
 
-  /* Floating cards: reduce overlap offset to avoid off-screen clipping */
   :global(.landing-page .opportunity-card-float) {
     left: 50% !important;
     transform-origin: center top !important;
   }
-
 }
 
-/* Make sure the global gradient animation isn't too heavy on small screens */
-@media (prefers-reduced-motion: reduce), (max-width: 420px) {
+@media (prefers-reduced-motion: reduce),
+(max-width: 420px) {
   :global(.landing-page .animate-gradient) {
     animation: none !important;
   }

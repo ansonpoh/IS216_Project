@@ -213,7 +213,7 @@ export default function Landing() {
       <div className="landing-page landing-page-bg">
         <section
           className="position-relative mt-6 mb-3 hero-section fade-section"
-          style={{ minHeight: '100dvh' }} // <--- Change is here
+          style={{ minHeight: '100vh' }} // <--- Change is here
         >
 
           {/* Parallax Background Effect */}
@@ -225,7 +225,7 @@ export default function Landing() {
           <div className="container position-relative z-10">
             <div className="text-center space-y-5 animate-fade-in pt-5">
               {/* Callout Badge */}
-              <div className="d-inline-flex align-items-center gap-2 px-4 py-3 bg-white rounded-pill border border-purple-200 shadow-sm animate-bounce-slow">
+              <div className="d-inline-flex align-items-center gap-2 px-3 py-2 bg-white rounded-pill border border-purple-200 shadow-sm animate-bounce-slow">
                 <BSIcon name="stars" className="text-warning sparkle-pulse" />
                 <span className="small text-muted fw-medium">
                   Be the change Today!
@@ -233,7 +233,7 @@ export default function Landing() {
               </div>
 
               {/* Main Title */}
-              <h1 className="display-3 fw-bolder mb-5 hero-title">
+              <h1 className="display-3 fw-bolder mb-3 hero-title">
                 <span className="gradient-text-blue-purple animate-gradient">
                   Find your cause
                 </span>
@@ -264,18 +264,12 @@ export default function Landing() {
               // Calculate dynamic Z-Index: Active card is highest (10), others are normal (3-i)
               const currentZIndex = isFocus ? 10 : 3 - i;
 
-              // Use a smaller horizontal offset on narrower screens to avoid
-              // the floating cards reaching into the right-column content
-              // (e.g. the AI/map preview) around widths like 940px.
-              const cardOffset = (typeof window !== 'undefined' && window.innerWidth < 992) ? 22 : 45;
-              const yOffset = (typeof window !== 'undefined' && window.innerWidth < 992) ? 4 : 5;
-
-              const baseTransform = `translateX(calc(-50% + ${(i - 1) * cardOffset
-                }px)) translateY(${i * yOffset}px)`;
+              const baseTransform = `translateX(calc(-50% + ${(i - 1) * 45
+                }px)) translateY(${i * 5}px)`;
 
               // Focus transform adds a slight lift and scale (subtle)
-              const focusTransform = `translateX(calc(-50% + ${(i - 1) * cardOffset
-                }px)) translateY(${i * (yOffset + 3) - 5}px) scale(1.06) rotate(0deg)`;
+              const focusTransform = `translateX(calc(-50% + ${(i - 1) * 45
+                }px)) translateY(${i * 8 - 5}px) scale(1.06) rotate(0deg)`;
 
               const colors = getCategoryColors(opportunities[i].category);
               // alias for clarity when rendering icon + colors
@@ -382,30 +376,30 @@ export default function Landing() {
           <div className="container">
             <div className="row g-4 align-items-center">
               {/* Content Column */}
-              <div className="col-12 col-lg-6">
+              <div className="col-12 col-lg-6 col-md-6">
                 <div className="pe-lg-5">
 
                   {/* Main Heading */}
-                  <div className="mb-4">
+                  <div className="mb-1">
                     <p className="subheading_1">Not sure where to start?</p>
-                    <h2 className="display-5 fw-bolder mb-3 ">
-                      <span className="gradient-text-blue-purple">
+                    <h2 className="display-5 fw-bolder mb-2 ">
+                      <span className={` gradient-text-blue-purple`}>
                         Meet Vera:
                       </span>
                       <br />
-                      Your Personal Volunteer Guide
+                      <span >Your Personal Volunteer Guide</span>
                     </h2>
                   </div>
 
 
-                  <p className="lead text-muted mb-4">
+                  <p className="lead text-muted mb-2">
                     Stop endlessly scrolling.{'\u00A0'} Vera uses smart{'\u00A0'} AI to instantly
                     filter and find the perfect match for your goals, schedule,
                     and skills.
                   </p>
 
                   {/* Key Features List from AI Chat Interface */}
-                  <ul className="list-unstyled space-y-3 mb-5">
+                  <ul className="list-unstyled ">
                     <li className="d-flex align-items-start gap-2">
                       <BSIcon
                         name="check-circle-fill"
@@ -413,10 +407,16 @@ export default function Landing() {
                         size="1.2em"
                       />
                       <div>
-                        <h4 className="fs-6 fw-semibold mb-0">
+                        <h4
+                          className="fw-semibold mb-1"
+                          style={{ fontSize: "0.8rem", lineHeight: "1.1" }}
+                        >
                           I'm new to volunteering
                         </h4>
-                        <p className="small text-muted mb-0">
+                        <p
+                          className="text-muted mb-1"
+                          style={{ fontSize: "0.65rem", lineHeight: "1.1" }}
+                        >
                           Find beginner-friendly opportunities with clear
                           guidance.
                         </p>
@@ -429,10 +429,16 @@ export default function Landing() {
                         size="1.2em"
                       />
                       <div>
-                        <h4 className="fs-6 fw-semibold mb-0">
+                        <h4
+                          className="fw-semibold mb-1"
+                          style={{ fontSize: "0.8rem", lineHeight: "1.1" }}
+                        >
                           I have limited time
                         </h4>
-                        <p className="small text-muted mb-0">
+                        <p
+                          className="text-muted mb-0"
+                          style={{ fontSize: "0.65rem", lineHeight: "1.1" }}
+                        >
                           Match with micro-volunteering or short-term
                           commitments.
                         </p>
@@ -462,10 +468,10 @@ export default function Landing() {
               </div>
 
               {/* Visual Column: Styled like Map/Opportunities/Community card */}
-              <div className="col-12 col-lg-6 d-flex justify-content-center">
+              <div className="col-12 col-lg-6 col-md-6 d-flex justify-content-center">
                 <div
                   className={`${styles.mapCard} bg-white rounded-4 border border-gray-100 w-100 position-relative p-0`}
-                  style={{ maxWidth: 600, cursor: "pointer" }}
+                  style={{ maxWidth: 600, cursor: "pointer", maxHeight: 400}}
                   onClick={() => navigate("/ai")}
                   aria-label="Open AI chat"
                   role="button"
@@ -516,10 +522,10 @@ export default function Landing() {
           <div className="container">
             <div className="row g-4 align-items-center flex-row-reverse">
               {/* Content Column (RIGHT) */}
-              <div className="col-12 col-lg-6">
+              <div className="col-12 col-lg-6 col-md-6">
                 <div className="ps-lg-5">
                   {/* Main Heading */}
-                  <h2 className="display-5 fw-bolder mb-3">
+                  <h2 className="display-5 fw-bolder mb-2">
                     <span className="gradient-text-purple-pink">
                       See Your Impact
                     </span>
@@ -527,14 +533,14 @@ export default function Landing() {
                     Visualize Opportunities Nearby
                   </h2>
 
-                  <p className="lead text-muted mb-4">
+                  <p className="lead text-muted mb-2">
                     Filter and browse volunteer events directly on the map. Find
                     opportunities based on geographical region, category, or
                     even proximity to your home.
                   </p>
 
                   {/* Key Map Features */}
-                  <ul className="list-unstyled space-y-3 mb-5">
+                  <ul className="list-unstyled  ">
                     <li className="d-flex align-items-start gap-2">
                       <BSIcon
                         name="pin-map-fill"
@@ -542,10 +548,16 @@ export default function Landing() {
                         size="1.2em"
                       />
                       <div>
-                        <h4 className="fs-6 fw-semibold mb-0">
+                        <h4
+                          className="fw-semibold mb-1"
+                          style={{ fontSize: "0.8rem", lineHeight: "1.1" }}
+                        >
                           Location-Based Search
                         </h4>
-                        <p className="small text-muted mb-0">
+                         <p
+                          className="text-muted mb-1"
+                          style={{ fontSize: "0.65rem", lineHeight: "1.1" }}
+                        >
                           Toggle between regions: Central, North, East, West and more.
                         </p>
                       </div>
@@ -557,10 +569,16 @@ export default function Landing() {
                         size="1.2em"
                       />
                       <div>
-                        <h4 className="fs-6 fw-semibold mb-0">
+                        <h4
+                          className="fw-semibold mb-1"
+                          style={{ fontSize: "0.8rem", lineHeight: "1.1" }}
+                        >
                           Category Filtering
                         </h4>
-                        <p className="small text-muted mb-0">
+                         <p
+                          className="text-muted mb-1"
+                          style={{ fontSize: "0.65rem", lineHeight: "1.1" }}
+                        >
                           Quickly find causes you care about, from Environment
                           to Mental Health.
                         </p>
@@ -581,7 +599,7 @@ export default function Landing() {
 
               {/* Visual Column (LEFT)  */}
 
-              <div className="col-12 col-lg-6 d-flex justify-content-center">
+              <div className="col-12 col-lg-6 col-md-6 d-flex justify-content-center">
                 <div
                   className={`${styles.mapCard} bg-white rounded-4 border border-gray-100 w-100 position-relative p-0`}
                   style={{ maxWidth: 600, cursor: "pointer" }}
@@ -635,10 +653,10 @@ export default function Landing() {
           <div className="container">
             <div className="row g-4 align-items-center">
               {/* Content Column (LEFT) */}
-              <div className="col-12 col-lg-6">
+              <div className="col-12 col-lg-6 col-md-6">
                 <div className="pe-lg-5">
                   {/* Main Heading */}
-                  <h2 className="display-5 fw-bolder mb-3">
+                  <h2 className="display-5 fw-bolder mb-2">
                     <span className="gradient-text-blue-purple">
                       Explore & Filter
                     </span>
@@ -646,7 +664,7 @@ export default function Landing() {
                     Your Next Volunteer Mission
                   </h2>
 
-                  <p className="lead text-muted mb-4">
+                  <p className="lead text-muted mb-2">
                     Seamlessly browse a diverse catalog of opportunities. Use
                     simple filters to sort by category, region, and dates, just
                     like a pro. Find everything from one-day events to long-term
@@ -654,7 +672,7 @@ export default function Landing() {
                   </p>
 
                   {/* Key Explore Features */}
-                  <ul className="list-unstyled space-y-3 mb-5">
+                  <ul className="list-unstyled ">
                     <li className="d-flex align-items-start gap-2">
                       <BSIcon
                         name="list-task"
@@ -662,7 +680,10 @@ export default function Landing() {
                         size="1.2em"
                       />
                       <div>
-                        <h4 className="fs-6 fw-semibold mb-0">
+                        <h4
+                          className="fw-semibold mb-1"
+                          style={{ fontSize: "0.8rem", lineHeight: "1.1" }}
+                        >
                           Quick Filtering Tools
                         </h4>
                         <p className="small text-muted mb-0">
@@ -678,10 +699,16 @@ export default function Landing() {
                         size="1.2em"
                       />
                       <div>
-                        <h4 className="fs-6 fw-semibold mb-0">
+                        <h4
+                          className="fw-semibold mb-1"
+                          style={{ fontSize: "0.8rem", lineHeight: "1.1" }}
+                        >
                           Clear Details at a Glance
                         </h4>
-                        <p className="small text-muted mb-0">
+                         <p
+                          className="text-muted mb-1"
+                          style={{ fontSize: "0.65rem", lineHeight: "1.1" }}
+                        >
                           View location, time, and capacity directly on the
                           event cards.
                         </p>
@@ -701,7 +728,7 @@ export default function Landing() {
               </div>
 
               {/* Visual Column (RIGHT) -  */}
-              <div className="col-12 col-lg-6 d-flex justify-content-center">
+              <div className="col-12 col-lg-6 col-md-6 d-flex justify-content-center">
                 <div
                   className={`${styles.mapCard} bg-white rounded-4 border border-gray-100 w-100 position-relative p-0`}
                   style={{ maxWidth: 600, cursor: "pointer" }}
@@ -755,10 +782,10 @@ export default function Landing() {
           <div className="container">
             <div className="row g-4 align-items-center flex-row-reverse">
               {/* Content Column (RIGHT) */}
-              <div className="col-12 col-lg-6">
+              <div className="col-12 col-lg-6 col-md-6">
                 <div className="ps-lg-5">
                   {/* Main Heading */}
-                  <h2 className="display-5 fw-bolder mb-3">
+                  <h2 className="display-5 fw-bolder mb-2">
                     <span className="gradient-text-purple-pink">
                       Celebrate Moments
                     </span>
@@ -766,14 +793,14 @@ export default function Landing() {
                     Join the Volunteer Community
                   </h2>
 
-                  <p className="lead text-muted mb-4">
+                  <p className="lead text-muted mb-2">
                     Connect with fellow volunteers.{'\u00A0'} Share your best volunteer
                     photos, videos,  and stories to inspire others and connect with like-minded people. Every hour of service
                     deserves a spotlight!
                   </p>
 
                   {/* Key Community Features */}
-                  <ul className="list-unstyled space-y-3 mb-5">
+                  <ul className="list-unstyled ">
                     <li className="d-flex align-items-start gap-2">
                       <BSIcon
                         name="award-fill"
@@ -781,10 +808,16 @@ export default function Landing() {
                         size="1.2em"
                       />
                       <div>
-                        <h4 className="fs-6 fw-semibold mb-0">
+                        <h4
+                          className="fw-semibold mb-1"
+                          style={{ fontSize: "0.8rem", lineHeight: "1.1" }}
+                        >
                           Recognition & Connect
                         </h4>
-                        <p className="small text-muted mb-0">
+                         <p
+                          className="text-muted mb-1"
+                          style={{ fontSize: "0.65rem", lineHeight: "1.1" }}
+                        >
                           Get public recognition for milestones and hours
                           volunteered.
                         </p>
@@ -797,10 +830,16 @@ export default function Landing() {
                         size="1.2em"
                       />
                       <div>
-                        <h4 className="fs-6 fw-semibold mb-0">
+                        <h4
+                          className="fw-semibold mb-1"
+                          style={{ fontSize: "0.8rem", lineHeight: "1.1" }}
+                        >
                           Inspiring Feed
                         </h4>
-                        <p className="small text-muted mb-0">
+                         <p
+                          className="text-muted mb-1"
+                          style={{ fontSize: "0.65rem", lineHeight: "1.1" }}
+                        >
                           See real-time volunteer activity and success stories
                           in your area.
                         </p>
@@ -820,7 +859,7 @@ export default function Landing() {
               </div>
 
               {/* Visual Column (LEFT)  */}
-              <div className="col-12 col-lg-6 d-flex justify-content-center">
+              <div className="col-12 col-lg-6 col-md-6 d-flex justify-content-center">
                 <div
                   className={`${styles.mapCard} bg-white rounded-4 border border-gray-100 w-100 position-relative p-0`}
                   style={{ maxWidth: 600, cursor: "pointer" }}
