@@ -318,8 +318,8 @@ const sortOptions = [
       <Navbar />
       <div className="container py-4">
         {/* Header */}
-        <div className="d-flex align-items-center justify-content-between mb-3">
-          <div style={{ minWidth: 0 }}>
+        <div className="d-flex flex-column align-items-start mb-3">
+          <div style={{ minWidth: 0 }} className="mb-2">
             <Title
               text="Organiser Dashboard"
               size="56px"
@@ -328,9 +328,8 @@ const sortOptions = [
               subtitle={`Welcome. ${org ? org.org_name : ""} Manage your opportunities and volunteers.`}
             />
           </div>
-          <button
-            className="btn"
-            style={{ background: '#7494ec', borderColor: '#7494ec', color: '#fff', fontWeight: '600' }}
+          <button className="btn w-100 w-lg-auto mt-2 py-3 px-4 "
+            style={{ background: '#7494ec', borderColor: '#7494ec', color: '#fff', fontWeight: '600', borderRadius: '0.75rem', fontSize: '1.8rem'  }}
             onClick={goCreate}
           >
             + Create Opportunity
