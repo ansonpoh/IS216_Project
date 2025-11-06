@@ -650,6 +650,22 @@ const sortOptions = [
                       <p><strong>Volunteered Hours:</strong> {selectedUser?.hours || 0}</p>
                       <p><strong>Skills: </strong>{selectedUser?.skills?.join(", ") || "None"}</p>
                       <p><strong>Languages: </strong>{selectedUser?.languages?.join(", ") || "None"}</p>
+                      {selectedUser.availability && selectedUser.availability.days && (
+                        <div>
+                          {(() => {
+                            const daysObj = selectedUser.availability.days;
+                            const orderedDays = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
+                            const availableDays = orderedDays
+                              .filter(day => daysObj[day]) // keep only true ones
+                              .map(day => day.charAt(0).toUpperCase() + day.slice(1));
+                            return (
+                              <>
+                                <p><strong>Available Days:</strong> {availableDays.length ? availableDays.join(", ") : "None"}</p>
+                              </>
+                            );
+                          })()}
+                        </div>
+                      )}
                       {console.log(selectedUser)}
                     </div>
                   ) : (
