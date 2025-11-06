@@ -1,11 +1,11 @@
-.container {
+/* .container {
   max-width: 1200px;
-  margin: 80px auto 60px; /* gives room below navbar */
+  margin: 80px auto 60px; gives room below navbar
   padding: 0 2rem;
   display: flex;
   flex-direction: column;
   gap: 3rem;
-}
+} */
 
 .section {
   background: var(--card-bg, #ffffff);
