@@ -230,7 +230,7 @@ Each member should contribute 2–3 sentences on their learning and project expe
 > - *Keying:* 
 > - *Riya:* Learned how to use reusable React components, design the frontend UI and understood how data is retrieved from the backend using routes and controllers
 > - *Joshua:* Learned how to use Fort Awesome, Bootstrap icons, SVG over map API, as well as map filter logic.
-> - *Yuanlong:* 
+> - *Yuanlong:* Learned how to route pages and connect different components effectively and how to manage dynamic content across pages.
 
 As a team, reflect on:
 - Key takeaways from working with real-world frameworks  
