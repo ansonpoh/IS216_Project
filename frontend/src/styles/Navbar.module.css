@@ -1,25 +1,51 @@
 .navbar_item {
   font-weight: 500;
-  color: #333;
+  color: #4a5568;
   text-decoration: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
-  /* margin-top: 10px; */
-  /* transition: transform .12s ease, background-color .12s ease, box-shadow .12s ease; */
-
+  padding: 8px 16px;
+  transition: all 0.3s ease;
+  position: relative;
 }
 
 .navbar_item:hover {
-  background-color: white;
-  color: white;
-  transition: transform 0.2s;
-  transform: scale(1.05);
+  background: linear-gradient(135deg, rgba(67, 161, 255, 0.1), rgba(155, 91, 255, 0.1));
+  color: #5b6fff;
+  transform: translateY(-2px);
 }
 
 .navbar_item.active {
-  background-color: #7494ec;
+  background: linear-gradient(135deg, #43a1ff, #9b5bff);
   color: white;
-  padding: 10px;
+  box-shadow: 0 4px 12px rgba(67, 161, 255, 0.3);
+}
+
+/* Get Started Button - Desktop */
+.getStartedBtn {
+  background: linear-gradient(90deg, #43a1ff, #9b5bff) !important;
+  border: 0 !important;
+  transition: all 0.3s ease !important;
+}
+
+.getStartedBtn:hover {
+  background: linear-gradient(90deg, #3b8fe6, #8a4ae6) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(67, 161, 255, 0.4) !important;
+}
+
+/* Mobile Get Started Button */
+.mobileGetStarted {
+  background: linear-gradient(90deg, #43a1ff, #9b5bff) !important;
+  border: 0 !important;
+  border-radius: 8px !important;
+  padding: 12px !important;
+  transition: all 0.3s ease !important;
+}
+
+.mobileGetStarted:hover {
+  background: linear-gradient(90deg, #3b8fe6, #8a4ae6) !important;
+  box-shadow: 0 4px 12px rgba(67, 161, 255, 0.3) !important;
 }
 
 /* Brand-styled logout button */
@@ -27,86 +53,187 @@
   border-color: #f73e66a6 !important;
   color: #f7f7f7 !important;
   background-color: #f73e66c0 !important;
-  font-weight: 600 !important; /* slightly bolder than default */
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  transition: all 0.3s ease !important;
 }
 
 .logoutBtn:hover {
   background-color: #f32b57 !important;
   color: #fff !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(247, 62, 102, 0.3) !important;
 }
 
 .logoutBtn:focus {
-  box-shadow: 0 0 0 0.2rem rgba(116, 148, 236, 0.35) !important;
+  box-shadow: 0 0 0 0.2rem rgba(247, 62, 102, 0.35) !important;
+}
+
+/* Custom Navbar Toggler Color */
+:global(.navbar-toggler) {
+  border-color: rgba(155, 91, 255, 0.3) !important;
+  transition: all 0.3s ease !important;
+  position: relative; /* ensure toggler can be stacked above collapse */
+  z-index: 1400 !important;
+}
+
+:global(.navbar-toggler:hover) {
+  border-color: rgba(155, 91, 255, 0.5) !important;
+  background: rgba(155, 91, 255, 0.05) !important;
+}
+
+:global(.navbar-toggler:focus) {
+  box-shadow: 0 0 0 0.2rem rgba(155, 91, 255, 0.25) !important;
+}
+
+:global(.navbar-toggler-icon) {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(155, 91, 255, 0.8)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+}
+
+/* Mobile Navigation Dividers */
+:global(.mobile-nav-list) {
+  width: 100%;
+  padding: 0.5rem;
+}
+
+:global(.mobile-nav-item) {
+  padding: 0.75rem 0;
+  border-bottom: 2px solid rgba(155, 91, 255, 0.1);
+  position: relative;
+}
+
+:global(.mobile-nav-item::after) {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #43a1ff, #9b5bff);
+  transition: width 0.3s ease;
+}
+
+:global(.mobile-nav-item:hover::after) {
+  width: 100%;
+}
+
+:global(.mobile-nav-item:last-child) {
+  border-bottom: none;
+}
+
+:global(.mobile-nav-item:last-child::after) {
+  display: none;
+}
+
+:global(.mobile-nav-item) .navbar_item {
+  display: block;
+  width: auto; /* allow narrower items by default; mobile layout will control centering */
 }
 
 /* Improve spacing when navbar is collapsed on small screens */
 @media (max-width: 991px) {
-  /* show collapse as a stacked panel with a little elevation */
-  .navbar-collapse.show {
-    background: #fff;
-    padding: 0.5rem;
-    border-radius: 8px;
-    box-shadow: 0 10px 30px rgba(8, 15, 30, 0.08);
-    margin-bottom: 0.75rem; /* create space between collapse and right actions */
+  /* show collapse as a stacked panel - NO BOX SHADOW */
+  /* Keep background/backdrop ready on the collapsed element so it doesn't have to repaint when toggled.
+     Use opacity transition to fade in quickly when `.show` is added. Promote to its own layer with translateZ(0).
+  */
+  :global(.navbar-collapse) {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 255, 0.98));
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    border-radius: 12px;
+    border: 1px solid rgba(155, 91, 255, 0.1);
+    padding: 0rem;
+    opacity: 0;
+    transition: opacity 160ms ease-in-out;
+    will-change: opacity;
+    transform: translateZ(0);
+    position: relative;
+    z-index: 1000;
   }
 
-  /* stack nav links vertically and enlarge tap targets */
-  .navbar-nav {
+  :global(.navbar-collapse.show) {
+    opacity: 1;
+  }
+
+  /* Mobile nav items styling */
+  /* Center the list and make each item shrink to content so they are not full-width */
+  :global(.mobile-nav-list) {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    width: 100%;
+    align-items: center;
+    gap: 8px;
+    padding: 0.5rem 0;
   }
 
-  /* make each link full width and add inner padding */
-  .navbar-nav .nav-link {
-    display: block;
-    width: 100%;
-    padding: 0.5rem 0.75rem;
-    border-radius: 6px;
+  :global(.mobile-nav-item) {
+    width: auto;
+    padding: 0.25rem 0;
   }
 
-  /* ensure active/hover states remain visible */
-  .navbar-nav .nav-link:hover,
-  .navbar-nav .nav-link.active {
-    background-color: rgba(15, 23, 42, 0.04);
+  :global(.mobile-nav-item) .navbar_item {
+    border-radius: 8px;
+    padding: 8px 14px;
+    display: inline-flex;
+    width: auto;
   }
 
-  /* push the right-side action block down when collapse is open */
-  .navbar .navbar-collapse.show + .d-flex {
-    margin-top: 0.5rem;
+  :global(.mobile-nav-item) .navbar_item:hover {
+    background: linear-gradient(135deg, rgba(67, 161, 255, 0.15), rgba(155, 91, 255, 0.15));
+    transform: translateX(4px);
+  }
+
+  :global(.mobile-nav-item) .navbar_item.active {
+    background: linear-gradient(135deg, #43a1ff, #9b5bff);
+    color: white;
+    box-shadow: 0 4px 12px rgba(67, 161, 255, 0.3);
+  }
+  
+  /* Style mobile logout button */
+  :global(.mobile-nav-item) .logoutBtn {
+    border-radius: 8px;
+    padding: 12px !important;
   }
 }
 
-/* Ensure collapse spacing and push right actions down on mobile */
-@media (max-width: 991px) {
-  :global(.navbar-collapse.show) {
-    background: #fff;
-    padding: 0.5rem;
-    border-radius: 8px;
-    box-shadow: 0 10px 30px rgba(8, 15, 30, 0.08);
-    margin-bottom: 0.5rem;
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar_item {
+    color: #e2e8f0;
+  }
+  
+  .navbar_item:hover {
+    color: #a0aec0;
+  }
+  
+  :global(.mobile-nav-item) {
+    border-bottom: 2px solid rgba(155, 91, 255, 0.2);
+  }
+  
+  :global(.navbar-toggler-icon) {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(155, 91, 255, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+  }
+  
+  @media (max-width: 991px) {
+    :global(.navbar-collapse.show) {
+      background: linear-gradient(135deg, rgba(26, 32, 44, 0.98), rgba(45, 55, 72, 0.98));
+      border: 1px solid rgba(155, 91, 255, 0.2);
+    }
+  }
+}
+/* Force center alignment for desktop nav */
+@media (min-width: 992px) {
+  :global(.navbar-collapse) {
+    display: flex !important;
+    align-items: center;
   }
 
-  /* give space between the stacked nav links and the action block inside the collapse */
-  :global(.navbar-collapse.show) :global(.d-flex),
-  :global(.navbar-collapse.show) .navbar-nav + :global(.d-flex) {
-    margin-top: 0.6rem !important;
+  :global(.navbar-nav.mx-auto) {
+    position: absolute;
+    left: 50%;
+    transform: translate
   }
 
-  /* enlarge tap targets and stack nav links */
-  :global(.navbar-collapse.show) .navbar-nav {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    width: 100%;
-    margin: 0;
-  }
-
-  :global(.navbar-collapse.show) .navbar-nav .nav-link {
-    display: block;
-    width: 100%;
-    padding: 0.5rem 0.75rem;
-    border-radius: 6px;
+  .navbarRight {
+    margin-left: auto;
   }
 }

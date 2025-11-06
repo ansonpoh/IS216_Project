@@ -55,104 +55,157 @@ function Navbar() {
   }, [auth]);
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4">
-      <a className="navbar-brand fw-bold text-primary d-flex align-items-center" href="/">
-        <img src={Logo} alt="VolunteerConnect Logo" className="me-2" style={{ width: 28, height: 28, objectFit: 'contain' }} />
-        VolunteerConnect
-      </a>
+<nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4">
+  <a className="navbar-brand fw-bold text-primary d-flex align-items-center" href="/">
+    <img src={Logo} alt="VolunteerConnect Logo" className="me-2" style={{ width: 28, height: 28, objectFit: 'contain' }} />
+    VolunteerConnect
+  </a>
 
-      <button
-        className="navbar-toggler"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#navbarNav"
-      >
-        <span className="navbar-toggler-icon"></span>
-      </button>
+  <button
+    className="navbar-toggler"
+    type="button"
+    data-bs-toggle="collapse"
+    data-bs-target="#navbarNav"
+  >
+    <span className="navbar-toggler-icon"></span>
+  </button>
 
-      {/* Center Links */}
-      <div className="collapse navbar-collapse justify-content-center" id="navbarNav">
-        <ul className="navbar-nav gap-3">
-          <li className="nav-item">
-            <NavLink to="/ai" className={({ isActive }) => `${styles['navbar_item']} nav-link fw-semibold ${isActive ? styles.active : ''}`}>
-              AI Chat
-            </NavLink>
-          </li>
-          <li className="nav-item">
-            <NavLink to="/map" className={({ isActive }) => `${styles['navbar_item']} nav-link fw-semibold ${isActive ? styles.active : ''}`}>
-              Map
-            </NavLink>
-          </li>
-          <li className="nav-item">
-            <NavLink to="/opportunity" className={({ isActive }) => `${styles['navbar_item']} nav-link fw-semibold ${isActive ? styles.active : ''}`}>
-              Opportunity
-            </NavLink>
-          </li>
-          <li className="nav-item">
-            <NavLink to="/community" className={({ isActive }) => `${styles['navbar_item']} nav-link fw-semibold ${isActive ? styles.active : ''}`}>
-              Community
-            </NavLink>
-          </li>
+  <div className="collapse navbar-collapse" id="navbarNav">
+    {/* Center Links - Hidden on mobile */}
+    <ul className="navbar-nav mx-auto gap-3 d-none d-lg-flex">
+      <li className="nav-item">
+        <NavLink to="/ai" className={({ isActive }) => `${styles['navbar_item']} nav-link fw-semibold ${isActive ? styles.active : ''}`}>
+          AI Chat
+        </NavLink>
+      </li>
+      <li className="nav-item">
+        <NavLink to="/map" className={({ isActive }) => `${styles['navbar_item']} nav-link fw-semibold ${isActive ? styles.active : ''}`}>
+          Map
+        </NavLink>
+      </li>
+      <li className="nav-item">
+        <NavLink to="/opportunity" className={({ isActive }) => `${styles['navbar_item']} nav-link fw-semibold ${isActive ? styles.active : ''}`}>
+          Opportunity
+        </NavLink>
+      </li>
+      <li className="nav-item">
+        <NavLink to="/community" className={({ isActive }) => `${styles['navbar_item']} nav-link fw-semibold ${isActive ? styles.active : ''}`}>
+          Community
+        </NavLink>
+      </li>
+      <li className="nav-item">
+        <NavLink to="/analytics" className={({ isActive }) => `${styles['navbar_item']} nav-link fw-semibold ${isActive ? styles.active : ''}`}>
+          Analytics
+        </NavLink>
+      </li>
+      {auth?.role === "organiser" && (
+        <li className="nav-item">
+          <NavLink to="/organiser/dashboard" className={({ isActive }) => `${styles['navbar_item']} nav-link fw-semibold ${isActive ? styles.active : ''}`}>
+            Dashboard
+          </NavLink>
+        </li>
+      )}
+      {auth?.role === "volunteer" && (
+        <li className="nav-item">
+          <NavLink to="/volunteer/dashboard" className={({ isActive }) => `${styles['navbar_item']} nav-link fw-semibold ${isActive ? styles.active : ''}`}>
+            Dashboard
+          </NavLink>
+        </li>
+      )}
+    </ul>
 
-          <li className="nav-item">
-            <NavLink to="/analytics" className={({ isActive }) => `${styles['navbar_item']} nav-link fw-semibold ${isActive ? styles.active : ''}`}>
-              Analytics
-            </NavLink>
-          </li>
-
-          {auth?.role === "organiser" && (
-            <li className="nav-item">
-              <NavLink to="/organiser/dashboard" className={({ isActive }) => `${styles['navbar_item']} nav-link fw-semibold ${isActive ? styles.active : ''}`}>
-                Dashboard
-              </NavLink>
-            </li>
-          )}
-          {auth?.role === "volunteer" && (
-            <li className="nav-item">
-              <NavLink to="/volunteer/dashboard" className={({ isActive }) => `${styles['navbar_item']} nav-link fw-semibold ${isActive ? styles.active : ''}`}>
-                Dashboard
-              </NavLink>
-            </li>
-          )}
-        </ul>
-      </div>
-
-      {/* Right Side */}
-      <div className="d-flex align-items-center gap-3">
-        {auth?.role === "volunteer" && (
-          <>              
-          <img
-                src={image || avatar}
-                alt="Profile"
-                onClick={() => navigate("/VolunteerProfile")}
-                style={{
-                  cursor: "pointer",
-                  width: 36,
-                  height: 36,
-                  borderRadius: "50%",
-                  objectFit: "cover",
-                  border: "2px solid #7494ec",
-                }}
-              />
-          </>
-        )}
-
+    {/* Mobile Links with Dividers */}
+    <ul className="navbar-nav d-lg-none mobile-nav-list">
+      <li className="nav-item mobile-nav-item">
+        <NavLink to="/ai" className={({ isActive }) => `${styles['navbar_item']} nav-link fw-semibold ${isActive ? styles.active : ''}`}>
+          AI Chat
+        </NavLink>
+      </li>
+      <li className="nav-item mobile-nav-item">
+        <NavLink to="/map" className={({ isActive }) => `${styles['navbar_item']} nav-link fw-semibold ${isActive ? styles.active : ''}`}>
+          Map
+        </NavLink>
+      </li>
+      <li className="nav-item mobile-nav-item">
+        <NavLink to="/opportunity" className={({ isActive }) => `${styles['navbar_item']} nav-link fw-semibold ${isActive ? styles.active : ''}`}>
+          Opportunity
+        </NavLink>
+      </li>
+      <li className="nav-item mobile-nav-item">
+        <NavLink to="/community" className={({ isActive }) => `${styles['navbar_item']} nav-link fw-semibold ${isActive ? styles.active : ''}`}>
+          Community
+        </NavLink>
+      </li>
+      <li className="nav-item mobile-nav-item">
+        <NavLink to="/analytics" className={({ isActive }) => `${styles['navbar_item']} nav-link fw-semibold ${isActive ? styles.active : ''}`}>
+          Analytics
+        </NavLink>
+      </li>
+      {auth?.role === "organiser" && (
+        <li className="nav-item mobile-nav-item">
+          <NavLink to="/organiser/dashboard" className={({ isActive }) => `${styles['navbar_item']} nav-link fw-semibold ${isActive ? styles.active : ''}`}>
+            Dashboard
+          </NavLink>
+        </li>
+      )}
+      {auth?.role === "volunteer" && (
+        <li className="nav-item mobile-nav-item">
+          <NavLink to="/volunteer/dashboard" className={({ isActive }) => `${styles['navbar_item']} nav-link fw-semibold ${isActive ? styles.active : ''}`}>
+            Dashboard
+          </NavLink>
+        </li>
+      )}
+      
+      {/* Mobile Get Started / Logout with gradient */}
+      <li className="nav-item mobile-nav-item">
         {auth?.id?.length > 0 ? (
-          <button className={`btn btn-sm ${styles.logoutBtn}`} onClick={handleLogout}>
+          <button className={`btn btn-sm w-100 text-start ${styles.logoutBtn}`} onClick={handleLogout}>
             Logout
           </button>
         ) : (
           <button
-            className="btn rounded-pill px-4 fw-semibold shadow-sm text-white"
-            style={{ background: 'linear-gradient(90deg,#43a1ff,#9b5bff)', border: 0 }}
+            className={`btn w-100 fw-semibold text-white ${styles.mobileGetStarted}`}
             onClick={() => navigate("/choose-role")}
           >
             Get Started
           </button>
-
         )}
-      </div>
-    </nav>
+      </li>
+    </ul>
+
+    {/* Right Side - Desktop Only */}
+    <div className={`d-none d-lg-flex align-items-center gap-3 ${styles.navbarRight}`}>
+      {auth?.role === "volunteer" && (
+        <img
+          src={image || avatar}
+          alt="Profile"
+          onClick={() => navigate("/VolunteerProfile")}
+          style={{
+            cursor: "pointer",
+            width: 36,
+            height: 36,
+            borderRadius: "50%",
+            objectFit: "cover",
+            border: "2px solid #7494ec",
+          }}
+        />
+      )}
+
+      {auth?.id?.length > 0 ? (
+        <button className={`btn btn-sm ${styles.logoutBtn}`} onClick={handleLogout}>
+          Logout
+        </button>
+      ) : (
+        <button
+          className={`btn rounded-pill px-4 fw-semibold shadow-sm text-white ${styles.getStartedBtn}`}
+          onClick={() => navigate("/choose-role")}
+        >
+          Get Started
+        </button>
+      )}
+    </div>
+  </div>
+</nav>
   );
 }
 
