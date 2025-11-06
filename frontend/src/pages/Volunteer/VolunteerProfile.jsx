@@ -215,7 +215,7 @@ export default function VolunteerProfile() {
         }
       } else {
         // send JSON
-        const resp = await api.post(`/users/update_profile`, payloadFields, {
+        const resp = await axios.post(`${API_BASE}/users/update_profile`, payloadFields, {
           withCredentials: true,
           headers: { "Content-Type": "application/json" },
         });
