@@ -147,7 +147,6 @@ const sortOptions = [
 
     list.sort((a, b) => {
       if (sort === "capacity") {
-        console.log(a,b)
         const pa = a.registration_count
         const pb = b.registration_count;
         return pb - pa; // most filled first
