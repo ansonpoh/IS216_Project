@@ -1,5 +1,11 @@
 /* OrganiserCreateForm CSS - DatePicker styling matching Opportunities page */
 
+/* Match input height to react-select dropdown */
+.matchSelectHeight {
+  padding: 0.55rem 0.9rem !important;
+  min-height: 42px;
+}
+
 /* DatePicker wrapper elements - prevent shifting */
 :global(.react-datepicker-wrapper) {
   display: block;

@@ -245,7 +245,7 @@ export default function OrganiserCreateForm() {
                 name="title"
                 value={form.title}
                 onChange={onChange}
-                className="form-control"
+                className={`form-control ${styles.matchSelectHeight}`}
                 required
               />
             </div>
@@ -279,7 +279,7 @@ export default function OrganiserCreateForm() {
                 name="location"
                 value={form.location}
                 onChange={onChange}
-                className="form-control"
+                className={`form-control ${styles.matchSelectHeight}`}
                 required
               />
             </div>
