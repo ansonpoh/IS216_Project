@@ -148,9 +148,10 @@
 
 .vd-total-title {
   /* font-size: 0.85rem; */
-  font-weight: 700;
+  font-weight: 500;
   /* color: rgba(255, 0, 242, 0.95); */
-  text-transform: uppercase;
+  text-transform:capitalize;
+  font-size: 1.8rem;
   /* letter-spacing: 0.15em; */
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.027);
 }

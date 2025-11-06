@@ -252,7 +252,7 @@ export default function OrganiserDashboard() {
               size="56px"
               align="left"
               mb={0}
-              subtitle={`Welcome ${org ? org.org_name : ""}. Manage your opportunities and volunteers.`}
+              subtitle={`Welcome. ${org ? org.org_name : ""} Manage your opportunities and volunteers.`}
             />
           </div>
           <button
