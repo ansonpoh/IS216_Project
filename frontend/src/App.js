@@ -5,7 +5,7 @@ import VolunteerConnect from './pages/VolunteerConnect';
 import InteractiveMapDashboard from './pages/InteractiveMap/InteractiveMapDashboard.jsx';
 import {Routes, Route, useLocation} from "react-router-dom";
 import { AuthProvider } from './contexts/AuthProvider';
-import Opportunities from './pages/Opportunities.js';
+import Opportunity from './pages/Opportunities.js';
 import Community from './pages/Forum/ForumPage';
 import NewDiscussion from './pages/Forum/component/NewDiscussion'; 
 import RoleSelect from './pages/Signup/RoleSelect.jsx';
@@ -44,8 +44,8 @@ function App() {
             {/* Map Page */}
             <Route path="/map" element={<InteractiveMapDashboard />} />
             
-            {/* Opportunities Page */}
-            <Route path="/opportunities" element={<Opportunities />} />
+            {/* Opportunity Page */}
+            <Route path="/opportunity" element={<Opportunity />} />
             
             {/* Analytics */}
             <Route path="/analytics" element={<Analytics />} />
