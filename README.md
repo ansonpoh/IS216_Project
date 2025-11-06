@@ -224,10 +224,10 @@ Perform the following checks before submission:
 Each member should contribute 2–3 sentences on their learning and project experience.
 
 > - *Anson:* Learned more in detail about cloud databases and configuring an agentic AI. Gained more experience in overall web development.
-> - *Sitinur:* 
+> - *Sitinur:* Gained experience building and styling responsive frontend interfaces with dynamic data.
 > - *Keying:*  Gained experience connecting frontend and backend API endpoints. Created reusable components.  
 > - *Riya:* Learned how to use reusable React components, design the frontend UI and understood how data is retrieved from the backend using routes and controllers.
-> - *Joshua:* Learned how to use Fort Awesome, Bootstrap icons, SVG over map API, as well as map filter logic. Also learned how different methods of styling are used for different cases, i.e. styling API in-built elements, default components.
+> - *Joshua:* Learned how to manage API-implemented elements, as well as map filter logic. Also learned how different methods of styling are used for different cases, i.e. styling API in-built elements, default components.
 > - *Yuanlong:* Learned how to route pages and connect different components effectively and how to manage dynamic content across pages.
 
 As a team, reflect on:
