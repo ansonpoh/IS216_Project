@@ -147,10 +147,12 @@ const sortOptions = [
 
     list.sort((a, b) => {
       if (sort === "capacity") {
-        const pa = capacityPct(a);
-        const pb = capacityPct(b);
+        console.log(a,b)
+        const pa = a.registration_count
+        const pb = b.registration_count;
         return pb - pa; // most filled first
       }
+
       if (sort === "title") {
         const titleA = (a.title || "").toLowerCase();
         const titleB = (b.title || "").toLowerCase();
@@ -647,11 +649,11 @@ const sortOptions = [
                     <div>
                       <p><strong>Name:</strong> {selectedUser.username}</p>
                       <p><strong>Email:</strong> {selectedUser.email}</p>
-                      <p><strong>Phone Number: </strong> {selectedUser.contact_phone}</p>
+                      <p><strong>Phone Number: </strong> {selectedUser?.contact_phone || "None"}</p>
                       <p><strong>Joined:</strong> {new Date(selectedUser.date_joined).toLocaleDateString()}</p>
-                      <p><strong>Volunteered Hours:</strong> {selectedUser.hours}</p>
-                      <p><strong>Skills: </strong>{selectedUser?.skills?.join(", " || "NA")}</p>
-                      <p><strong>Languages: </strong>{selectedUser?.languages?.join(", " || "NA")}</p>
+                      <p><strong>Volunteered Hours:</strong> {selectedUser?.hours || 0}</p>
+                      <p><strong>Skills: </strong>{selectedUser?.skills?.join(", ") || "None"}</p>
+                      <p><strong>Languages: </strong>{selectedUser?.languages?.join(", ") || "None"}</p>
                       {console.log(selectedUser)}
                     </div>
                   ) : (
