@@ -7,7 +7,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthProvider.js";
 import Title from '../components/ui/Title';
 
-export default function Opportunities() {
+export default function Opportunity() {
 
   const API_BASE = process.env.REACT_APP_API_URL;
   const LOCAL_BASE = "http://localhost:3001"
@@ -167,7 +167,7 @@ export default function Opportunities() {
     setShowModal(false);
     setSelectedOpportunity(null);
     // Clear any navigation state so modal doesn't auto-open again
-    nav('/opportunities', { replace: true, state: {} });
+    nav('/opportunity', { replace: true, state: {} });
   };
 
   const resetFilters = () => {
@@ -231,7 +231,8 @@ export default function Opportunities() {
       <PageTransition>
         <div className="container py-4 flex-grow-1">
         
-          <Title text="Opportunities" />
+          <Title text="Opportunity" subtitle="Sign up for exciting opportunities to give back to your community!"/>
+
 
           <div className={styles.filters}>
             <div className={styles['group-left']}>

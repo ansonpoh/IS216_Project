@@ -84,8 +84,8 @@ function Navbar() {
             </NavLink>
           </li>
           <li className="nav-item">
-            <NavLink to="/opportunities" className={({ isActive }) => `${styles['navbar_item']} nav-link fw-semibold ${isActive ? styles.active : ''}`}>
-              Opportunities
+            <NavLink to="/opportunity" className={({ isActive }) => `${styles['navbar_item']} nav-link fw-semibold ${isActive ? styles.active : ''}`}>
+              Opportunity
             </NavLink>
           </li>
           <li className="nav-item">
