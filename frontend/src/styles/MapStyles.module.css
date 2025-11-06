@@ -223,7 +223,7 @@
     color: white !important;
     border: 2px solid rgba(113, 113, 232, 1) !important;
     box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 4px -1px !important;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS' !important;
+    font-family: 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif !important;
     font-size: 14px !important;
     font-weight: 600 !important;
     padding: 0 16px !important;
