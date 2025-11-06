@@ -21,7 +21,7 @@
 
 /* Style for the "Community Posts" title */
 .title {
-  font-size: 1.5rem; /* Adjust as needed */
+  font-size: 1.5rem;
   font-weight: 700;
   color: #000000; /* Dark text color */
   margin: 0;
@@ -55,7 +55,7 @@
   width: 220px; /* Specific width for the search input on large screens */
 }
 .searchInput:focus {
-  border-color: #6366f1; /* Tailwind's indigo-500 equivalent */
+  border-color: #6366f1;
 }
 .sortSelect {
   cursor: pointer;
@@ -90,7 +90,6 @@
   transform: translateY(-1px);
 }
 
-/* Apply this class directly to your elements in HTML */
 .searchInput,
 .sortSelect {
   font-family: "Gill Sans MT", "Gill Sans", Calibri, sans-serif;
@@ -138,7 +137,6 @@
 /* --- Media Query for Medium Screens (e.g., max-width: 768px) --- */
 @media (max-width: 768px) {
   .community-posts-header {
-    /* Aligning the title to the left on top (as seen in the smaller screen image) */
     flex-direction: column; 
     align-items: flex-start;
   }
@@ -175,7 +173,6 @@
   }
   
   .addPostButton {
-    /* Button moves to its own line/position, but we'll let it flow after the filtersContainer */
     margin-top: 0.25rem; /* Small space above the button if it wraps */
   }
 }

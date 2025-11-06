@@ -594,16 +594,26 @@
 }
 
 .modal-close {
-  position: absolute;
-  top: 12px;
-  right: 16px;
-  font-size: 1.8rem;
-  color: #333;
   background: none;
   border: none;
+  color: #333;
   cursor: pointer;
-  z-index: 10
+  font-size: 2rem;
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 10;
 }
+
+/* Fix overlap below 628px */
+@media (max-width: 628px) {
+.modal-close {
+    top: 0rem;       /* more breathing room */
+    right: 0rem;     /* push it inward a bit */
+    font-size: 2rem; 
+  }
+}
+
 
 .modal-content-row {
   display: flex;
@@ -616,7 +626,7 @@
 .modal-left {
   flex: 1 1 50%;
   display: flex;
-  align-items: center;
+  /* align-items: center; */
   justify-content: center;
   min-width: 250px
 }
@@ -749,7 +759,6 @@
   }
 }
 
-/* Success modal (NewDiscussion style) */
 .overlay {
   position: fixed;
   inset: 0;
