@@ -706,7 +706,7 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
         const btn = document.getElementById(buttonId);
         if (btn) {
           btn.addEventListener("click", () => {
-            nav("/opportunities", { state: { eventId: item.event_id } });
+            nav("/opportunity", { state: { eventId: item.event_id } });
           });
         }
       });

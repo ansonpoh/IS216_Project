@@ -179,7 +179,7 @@
 }
 
 :global(.react-datepicker__navigation) {
-  top: 10px;
+  top: 4px;
 }
 
 :global(.react-datepicker__navigation-icon::before) {
