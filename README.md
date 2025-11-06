@@ -30,6 +30,10 @@ Describe the **real-world business or community problem** your project addresses
 > Small local businesses struggle to maintain an online presence, limiting visibility to customers.  
 > Our web application helps them list menus, accept feedback, and attract more customers.
 
+Current volunteer recruitment systems, like WhatsApp polls and manual coordination, are inefficient. They lead to long waiting times (weeks to months), poor visualization of opportunities, and a frustrating experience that discourages potential volunteers. This creates a significant barrier between passionate individuals and NGOs in need of support.
+
+Our web application aims to simplify and accelerate the volunteer–NGO matching process by providing a centralized, easy-to-use platform. It addresses the inefficiencies of current systems—long waiting times, scattered opportunities, and poor visibility—by offering features like AI-powered opportunity recommendations, interactive maps, and real-time event management. Volunteers can quickly discover, track, and engage with opportunities that match their interests, while NGOs can efficiently manage sign-ups and communicate with participants.
+
 ---
 
 ## Web Solution Overview
@@ -47,6 +51,10 @@ Explain the core features and the benefit each provides.
 | Interactive Map | Live map showing all opportunities, with regional and categorical filters, and customised markers | Easy and aesthetic location-based opportunity lookup |
 | Opportunities Listing | List of all opportunities available | Has detailed information of all opportunities, and assists with signing up |
 | Communities Page | Social page where organisations and users can share images with captions of volunteering | Allows users to share memorable moments with other users, encouraging volunteering |
+| Analytics Page | Allows users to see popular volunteering categories, regions and heatmap to help them decide what to volunteer in |
+| Organiser Dashboard | Allows organisers to create events and manage volunteer sign ups all in one place |
+| Volunteer Dashboard | Allows volunteers to set volunteering goals, track  past and ongoing volunteering events as well as pending applications all in one place |
+
 
 ---
 
@@ -218,7 +226,7 @@ Each member should contribute 2–3 sentences on their learning and project expe
 > - *Anson:* 
 > - *Sitinur:* 
 > - *Keying:* 
-> - *Riya:* 
+> - *Riya:* Learned how to use reusable React components, design the frontend UI and understood how data is retrieved from the backend using routes and controllers
 > - *Joshua:* Learned how to use Fort Awesome, Bootstrap icons, SVG over map API, as well as map filter logic.
 > - *Yuanlong:* 
 
