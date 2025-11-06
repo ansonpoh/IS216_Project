@@ -28,6 +28,8 @@ export default function NewDiscussion() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showSignInModal, setShowSignInModal] = useState(false);
   const [showDiscardModal, setShowDiscardModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorModalMessage, setErrorModalMessage] = useState("");
 
   const fileInputRef = useRef(null);
   const nav = useNavigate();
@@ -139,13 +141,15 @@ export default function NewDiscussion() {
       } else {
         const msg = response?.data?.message || "Failed to create post";
         setStatus(msg);
-        alert(`Error: ${msg}`);
+        setErrorModalMessage(msg);
+        setShowErrorModal(true);
       }
     } catch (err) {
       console.error("Create post error:", err);
       const errorMessage = err.response?.data?.message || err.message || "Failed to create post";
       setStatus(errorMessage);
-      alert(`Error: ${errorMessage}`);
+      setErrorModalMessage(errorMessage);
+      setShowErrorModal(true);
       if (err.response?.status === 413) setStatus("Image file is too large");
       if (err.response?.status === 415) setStatus("Unsupported image format");
     } finally {
@@ -406,6 +410,19 @@ export default function NewDiscussion() {
             <div className={modalStyles.buttons}>
               <button className={modalStyles.btnCancel} onClick={() => setShowDiscardModal(false)}>Cancel</button>
               <button className={modalStyles.btnPrimary} onClick={handleDiscardConfirm}>Discard</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showErrorModal && (
+        <div className={modalStyles.overlay} onClick={() => setShowErrorModal(false)}>
+          <div className={modalStyles.dialog} role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+            <div className={modalStyles.icon} style={{ color: '#f59e0b' }}>⚠️</div>
+            <div className={modalStyles.title}>Error</div>
+            <div className={modalStyles.body}>{errorModalMessage}</div>
+            <div className={modalStyles.buttons}>
+              <button className={modalStyles.btnPrimary} onClick={() => setShowErrorModal(false)}>OK</button>
             </div>
           </div>
         </div>

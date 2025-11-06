@@ -17,6 +17,7 @@ import VolunteerProfile from "./pages/Volunteer/VolunteerProfile.jsx";
 import VolunteerDashboard from "./pages/Volunteer/VolunteerDashboard.jsx";
 import ResetPassword from './pages/Signup/ResetPassword.jsx';
 import Analytics from './pages/Analytics.js';
+import ClickSpark from './components/Animation/ClickSpark.jsx';
 
 //transition wrapper
 import {AnimatePresence} from "framer-motion";
@@ -26,10 +27,11 @@ function App() {
 
   return (
     <div className="App">
-      <AuthProvider>
-        <ScrollToTop />
-        <AnimatePresence mode="wait">
-          <Routes location={location} key={location.pathname}>
+      <ClickSpark>
+        <AuthProvider>
+          <ScrollToTop />
+          <AnimatePresence mode="wait">
+            <Routes location={location} key={location.pathname}>
             {/* {landingpage} */}
             <Route path="/" element={<Landing />} />
             {/* AI Landing Page */}
@@ -73,9 +75,10 @@ function App() {
             <Route path="/landing" element={<Landing />} />
 
             <Route path="/reset-password" element={<ResetPassword />} />
-          </Routes>
-        </AnimatePresence>
-      </AuthProvider>
+            </Routes>
+          </AnimatePresence>
+        </AuthProvider>
+      </ClickSpark>
     </div>
   );
 }

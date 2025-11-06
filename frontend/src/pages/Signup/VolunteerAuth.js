@@ -49,10 +49,10 @@ export default function LoginSignup() {
     e.preventDefault();
     setRegisterErrors("");
 
-    if (!registerData.agree) {
-      setRegisterErrors("Please agree to Terms and Privacy to continue");
-      return;
-    }
+    // if (!registerData.agree) {
+    //   setRegisterErrors("Please agree to Terms and Privacy to continue");
+    //   return;
+    // }
 
     if (registerData.password !== registerData.confirmPassword) {
       setRegisterErrors("Passwords do not match");

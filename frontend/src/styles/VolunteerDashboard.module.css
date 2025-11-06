@@ -2,205 +2,382 @@
    Light-blue theme with subtle motion
    ---------------------------------- */
 
-:root{
-  --vd-bg: #f7fbff;
-  --vd-surface: #ffffff;
-  --vd-surface-2: #f4f8ff;
-  --vd-text: #1f2a3b;
+:root {
+  --vd-bg: #f7fbff00;
+  --vd-surface: #ffffff00;
+  --vd-surface-2: #f4f8ff00;
+  /* --vd-text: #ff0000; */
   --vd-muted: #6c7a90;
   --vd-blue: #4aa8ff;
   --vd-blue-2: #44b2ff;
-  --vd-blue-3: #0d6efd;  /* bootstrap primary */
+  --vd-blue-3: #0d6efd;
+  /* bootstrap primary */
   --vd-cyan: #49e2ff;
   --vd-glow: rgba(13, 110, 253, .18);
-  --vd-shadow: 0 10px 24px rgba(13,110,253,.10), 0 3px 8px rgba(0,0,0,.05);
-  --vd-shadow-strong: 0 18px 40px rgba(13,110,253,.18);
+  --vd-shadow: 0 10px 24px rgba(13, 110, 253, .10), 0 3px 8px rgba(0, 0, 0, .05);
+  --vd-shadow-strong: 0 18px 40px rgba(13, 110, 253, .18);
+  /* Card border color for vd components (uses bootstrap/translucent border if present) */
+  --bs-card-border-color: var(--bs-border-color-translucent);
 }
 
 /* Page background + gentle entrance */
 .vdash {
   animation: vdash-fade-in .45s ease both;
 }
+
 @keyframes vdash-fade-in {
-  from { opacity: 0; transform: translateY(6px) }
-  to   { opacity: 1; transform: translateY(0) }
+  from {
+    opacity: 0;
+    transform: translateY(6px)
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0)
+  }
 }
 
 .vdCard {
-  background: linear-gradient(180deg, var(--vd-surface), var(--vd-surface-2));
-  box-shadow: var(--vd-shadow);
   transition: transform .25s ease, box-shadow .25s ease, background .25s ease;
-  /* border: 1px solid rgba(13,110,253,.06); */
+  border: 1px solid var(--bs-card-border-color);
   border-radius: 16px !important;
 }
-/* Cards get glassy light-blue hover */
-.vd-card {
-  background: linear-gradient(180deg, var(--vd-surface), var(--vd-surface-2));
-  box-shadow: var(--vd-shadow);
-  transition: transform .25s ease, box-shadow .25s ease, background .25s ease;
-  /* border: 1px solid rgba(13,110,253,.06); */
-  /* border-radius: 20px; */
-}
-.vd-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--vd-shadow-strong);
+
+.text-muted {
+  color: var(--vd-muted) !important;
 }
 
-/* Meter wrapper: soft floating glow */
-.vd-meter {
-  filter: drop-shadow(0 6px 16px var(--vd-glow));
-  transition: transform .25s ease;
-}
-.vd-meter:hover {
-  transform: translateY(-2px);
+
+/* Moved from inline styles in VolunteerDashboard.jsx */
+@keyframes vd-float {
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-20px);
+  }
 }
 
-/* Carousel stage: soft gradient backdrop + edges fade */
-.vd-carousel {
-  background:
-    radial-gradient(120% 80% at 50% 0%, #ffffff 0%, #f5faff 60%, #eef6ff 100%);
-  border-radius: 16px;
-  border: 1px solid rgba(13,110,253,.06);
-  box-shadow: var(--vd-shadow);
-  position: relative;
-}
-.vd-carousel::before,
-.vd-carousel::after{
-  content:"";
-  position:absolute;
-  top:0; bottom:0;
-  width:48px;
-  pointer-events:none;
-  z-index:4;
-}
-.vd-carousel::before{ left:0; background:linear-gradient(90deg, #fff, rgba(255,255,255,0)); }
-.vd-carousel::after{ right:0; background:linear-gradient(-90deg, #fff, rgba(255,255,255,0)); }
+@keyframes vd-bounce {
 
-/* Slide card styling */
-.vd-slide{
-  background: linear-gradient(180deg, #ffffff 0%, #f7faff 100%);
-  border: 1px solid rgba(13,110,253,.08);
-  box-shadow: var(--vd-shadow);
-  transition: transform 350ms ease, opacity 300ms ease, box-shadow 300ms ease, outline-color .2s;
-  outline: 0 solid transparent;
-}
-.vd-slide:hover{
-  box-shadow: var(--vd-shadow-strong);
-}
-.vd-slide:focus-within{
-  outline: 2px solid rgba(68,178,255,.65);
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
-/* Carousel arrows: glass buttons with ripple */
-.vd-nav{
-  width: 36px; height: 36px; border-radius: 999px;
-  backdrop-filter: blur(6px);
-  background: rgba(255,255,255,.85);
-  border: 1px solid rgba(13,110,253,.15);
-  color: var(--vd-blue-3);
-  transition: transform .12s ease, box-shadow .2s ease, background .2s ease;
-}
-.vd-nav:hover{ box-shadow: 0 6px 18px rgba(13,110,253,.20); background: rgba(255,255,255,.95); }
-.vd-nav:active{ transform: translateY(1px) scale(.98); }
+@keyframes vd-sparkle {
 
-/* Dots (pagers) */
-.vd-dot{
-  width: 9px; height: 9px; margin: 4px; border-radius: 999px !important;
-  background: #cfe7ff;
-  transition: background .25s ease, transform .25s ease, box-shadow .25s ease;
-}
-.vd-dot:hover{ transform: translateY(-1px); box-shadow: 0 4px 10px rgba(13,110,253,.20); }
-.vd-dot[aria-current="true"],
-.vd-dot.active{
-  background: var(--vd-blue);
-  box-shadow: 0 0 0 4px rgba(74,168,255,.18);
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2) rotate(180deg);
+  }
 }
 
-/* Buttons (global micro interaction) */
-.btn { transition: transform .08s ease, box-shadow .18s ease; }
-.btn:active{ transform: translateY(1px) scale(.98); }
-.btn-outline-primary, .btn-outline-secondary{
-  background: linear-gradient(180deg, #ffffff, #f9fbff);
+@keyframes vd-numberPulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.05);
+  }
 }
 
-/* Subtle “shimmer” accent you can apply with class .vd-shimmer */
-.vd-shimmer {
-  position: relative;
+/* ----- Styles for the Total Volunteered Hours card (moved from inline JSX) ----- */
+.vd-total-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
   overflow: hidden;
-}
-.vd-shimmer::after{
-  content:"";
-  position:absolute; inset:0;
-  background: linear-gradient(110deg, transparent 45%, rgba(255,255,255,.6) 50%, transparent 55%);
-  transform: translateX(-120%);
-  animation: vd-shine 2.2s ease-in-out infinite;
-}
-@keyframes vd-shine {
-  to { transform: translateX(120%); }
-}
-
-/* Typographic polish */
-.card-title { color: var(--vd-text); }
-.text-muted { color: var(--vd-muted) !important; }
-
-/* Optional: animate section entrances */
-.vdash .row.g-3 > [class*="col-"] {
-  animation: vd-rise .45s ease both;
-}
-.vdash .row.g-3 > [class*="col-"]:nth-child(1){ animation-delay: .02s }
-.vdash .row.g-3 > [class*="col-"]:nth-child(2){ animation-delay: .06s }
-.vdash .row.g-3 > [class*="col-"]:nth-child(3){ animation-delay: .10s }
-@keyframes vd-rise {
-  from { opacity: 0; transform: translateY(8px) }
-  to   { opacity: 1; transform: translateY(0) }
-}
-
-/* Back Button */
-.vd-back {
-  transition: all 0.2s ease;
+  position: relative;
   border-radius: 20px;
-  background: linear-gradient(180deg, #f8fbff, #e8f3ff);
-  color: #007bff;
-  border: 1px solid rgba(0, 123, 255, 0.3);
-}
-.vd-back:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 12px rgba(74, 168, 255, 0.3);
-  background: linear-gradient(180deg, #eaf6ff, #d9edff);
-}
-.vd-back:active {
-  transform: translateY(1px);
 }
 
-@keyframes fadeInUp {
-  0% { opacity: 0; transform: translateY(8px); filter: blur(2px); }
-  100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+.vd-total-bg-circle {
+  position: absolute;
+  border-radius: 50%;
+  z-index: 0;
 }
 
-.vdMotivationRight {
+/* module-friendly helpers for background circle positions */
+.vd-total-bg-top-right {
+  top: -50px;
+  right: -50px;
+  width: 150px;
+  height: 150px;
+  background: rgba(156, 219, 7, 0.308);
+  animation: vd-float 6s ease-in-out infinite;
+}
+
+.vd-total-bg-bottom-left {
+  bottom: -30px;
+  left: -30px;
+  width: 120px;
+  height: 120px;
+  background: rgba(255, 0, 0, 0.1);
+  animation: vd-float 4s ease-in-out infinite reverse;
+}
+
+.vd-total-bg-mid-left {
+  top: 50%;
+  left: 10%;
+  width: 80px;
+  height: 80px;
+  background: rgba(255, 0, 0, 0.521);
+  animation: vd-float 5s ease-in-out infinite;
+}
+
+.vd-total-card-body {
+  min-height: 240px;
+  position: relative;
+  z-index: 1;
+  padding: 2rem;
+}
+
+.vd-total-title {
+  /* font-size: 0.85rem; */
+  font-weight: 700;
+  /* color: rgba(255, 0, 242, 0.95); */
+  text-transform: uppercase;
+  /* letter-spacing: 0.15em; */
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.027);
+}
+
+.vd-total-number {
+  font-size: 7rem;
+  line-height: 1;
+  color: #1c3886;
+  letter-spacing: -0.03em;
+  /* text-shadow: 0 8px 32px rgba(43, 4, 4, 0.123); */
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  animation: vd-numberPulse 3s ease-in-out infinite;
+}
+
+.vd-sparkle-top {
+  position: absolute;
+  top: -10px;
+  right: -15px;
+  font-size: 1.5rem;
+  animation: vd-sparkle 2.5s ease-in-out infinite;
+}
+
+.vd-sparkle-bottom {
+  position: absolute;
+  bottom: 10px;
+  left: -20px;
+  font-size: 1.2rem;
+  animation: vd-sparkle 2.5s ease-in-out infinite;
+  animation-delay: 1s;
+}
+
+.vd-bottom-message {
+  margin-top: 1.5rem;
+  padding: 0.75rem 1.5rem;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50px;
+  backdrop-filter: blur(10px);
+  color: #7494ec;
+  font-size: 0.9rem;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* ----- Card / Carousel utility styles ----- */
+.vd-panel {
+  background: white 10%;
+  border-radius: 20px;
+  padding: 28px;
+  border: 1px solid var(--bs-card-border-color);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.vd-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.vd-panel-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.vd-panel-count {
+  font-size: 14px;
+  color: #7494ec;
+  font-weight: 600;
+}
+
+.vd-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  font-size: 15px;
+  padding: 40px 0;
+}
+
+.vd-carousel-stage {
+  position: relative;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+  border-radius: 14px;
+  padding: 20px 28px;
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.vd-event-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 12px;
+}
+
+.vd-event-meta {
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.vd-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.vd-carousel-nav {
   position: absolute;
   top: 50%;
- left: calc(100% + 13.5rem); /* 💥 pushes it even further to the right */
   transform: translateY(-50%);
-  width: 260px; /* optional: add a bit more room for wrapping */
-  text-align: left;
-
-  font-weight: 700;
-  font-size: 1rem;
-  line-height: 1.4;
-  letter-spacing: 0.3px;
-
-  /* Gradient text effect */
-  background: linear-gradient(90deg, #49e2ff, #43b2ff, #ff5a9f);
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-
-  text-shadow:
-    0 0 8px rgba(73, 226, 255, 0.35),
-    0 0 16px rgba(255, 90, 159, 0.25);
-
-  animation: fadeInUp 0.6s ease-out;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  font-size: 18px;
+  color: #6366f1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform .16s ease;
+  z-index: 5;
 }
 
+.vd-carousel-nav:hover {
+  transform: translateY(-50%) scale(1.06);
+}
+
+.vd-carousel-nav.left {
+  left: -8px;
+}
+
+.vd-carousel-nav.right {
+  right: -8px;
+}
+
+/* CSS module friendly helper classes (use these in JSX via styles['vd-carousel-nav-left'] etc) */
+.vd-carousel-nav-left {
+  left: -8px;
+}
+
+.vd-carousel-nav-right {
+  right: -8px;
+}
+
+.vd-indicators {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.vd-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  border: none;
+  background: #d1d5db;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.vd-indicator.active {
+  width: 24px;
+  background: #7494ec;
+}
+
+/* module-friendly active indicator class */
+.vd-indicator-active {
+  width: 24px;
+  background: #7494ec;
+}
+
+/* Additional small utility classes used in the dashboard */
+.vd-panel-content {
+  flex: 1;
+}
+
+.vd-meta-row {
+  margin-bottom: 6px;
+}
+
+.vd-goal-title {
+  font-size: 1.8rem;
+  font-weight: 500;
+}
+
+.vd-goal-note {
+  font-size: 1.2rem;
+}
+
+.vd-goal-label {
+  font-size: 1.2rem;
+}
+
+.vd-goal-input {
+  max-width: 200px;
+  font-size: 1.2rem;
+}
+
+.vd-full-height {
+  height: 100%;
+}
+
+.vd-mark-attended {
+  background: #7494ec !important;
+  border-color: #7494ec !important;
+  color: #fff !important;
+}
+
+.vd-mark-didnot-attended {
+  background: #f73e66c0 !important;
+  border-color: #d63726 !important;
+  color: #fff !important;
+}

@@ -7,28 +7,79 @@ import Navbar from "../../components/Navbar.js";
 import Title from '../../components/ui/Title';
 import confetti from "canvas-confetti";
 import PageTransition from "../../components/Animation/PageTransition";
+import { gsap } from 'gsap';
 
 // const LS_KEY = "volunteer_dashboard_circular_carousel_v3";
 const CONFETTI_KEY = "volunteer_dashboard_confetti_count_v1";
 /* ---------- Helpers ---------- */
-const useAutoplay = (enabled, cb, delay = 4500) => {
+// --- NEW HELPER: Tilt Wrapper Component ---
+// This is defined outside the main component to avoid re-creating it on every render,
+// but it is conceptually integrated.
+
+const TiltDiv = ({ children, className, style }) => {
+  const tiltRef = useRef(null);
+  const MOBILE_BREAKPOINT = 768; // Define mobile breakpoint for disabling effect
+
   useEffect(() => {
-    if (!enabled) return;
-    const id = setInterval(cb, delay);
-    return () => clearInterval(id);
-  }, [enabled, cb, delay]);
+    const element = tiltRef.current;
+    const isMobile = window.innerWidth <= MOBILE_BREAKPOINT;
+
+    if (!element || isMobile) return;
+
+    const handleMouseMove = e => {
+      const rect = element.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+
+  // Tilt Calculation (subtler max 6 degrees)
+  const rotateX = ((y - centerY) / centerY) * -4;
+  const rotateY = ((x - centerX) / centerX) * 4;
+
+      gsap.to(element, {
+        rotateX,
+        rotateY,
+        duration: 0.1,
+        ease: 'power2.out',
+        transformPerspective: 1000 // Key for 3D tilt
+      });
+    };
+
+    const handleMouseLeave = () => {
+      gsap.to(element, {
+        rotateX: 0,
+        rotateY: 0,
+        duration: 0.3,
+        ease: 'power2.out'
+      });
+    };
+
+    // Apply necessary base styles for 3D perspective
+    element.style.transformStyle = 'preserve-3d';
+    element.style.transition = 'transform 0.3s ease-out'; // Keep a base transition for smooth exit
+
+    element.addEventListener('mousemove', handleMouseMove);
+    element.addEventListener('mouseleave', handleMouseLeave);
+
+    return () => {
+      element.removeEventListener('mousemove', handleMouseMove);
+      element.removeEventListener('mouseleave', handleMouseLeave);
+      gsap.killTweensOf(element); // Cleanup GSAP animations
+    };
+  }, []); // Empty dependency array means this runs once on mount
+
+  return (
+    <div
+      ref={tiltRef}
+      className={className}
+      style={{ ...style, position: 'relative' }} // Must be relative for internal positioning if needed
+    >
+      {children}
+    </div>
+  );
 };
 
-const useKeyControls = (onPrev, onNext) => {
-  useEffect(() => {
-    const onKey = (e) => {
-      if (["ArrowLeft", "a", "A"].includes(e.key)) onPrev();
-      if (["ArrowRight", "d", "D"].includes(e.key)) onNext();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onPrev, onNext]);
-};
 
 /* ---------- Circular Progress Ring (simpler gradient look) ---------- */
 function CircularProgressRing({ value, max, size = 240 }) {
@@ -97,7 +148,9 @@ function CircularProgressRing({ value, max, size = 240 }) {
 
   return (
     <div style={{ textAlign: 'center' }}>
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+      {/* constrain the inner container to the requested size so long messages don't expand layout */}
+      <div style={{ width: size, maxWidth: size, margin: '0 auto', textAlign: 'center' }}>
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ display: 'block', margin: '0 auto' }}>
         <defs>
           <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stopColor="#667eea" />
@@ -129,12 +182,12 @@ function CircularProgressRing({ value, max, size = 240 }) {
           style={{ transition: 'stroke-dasharray 0.5s ease' }}
         />
 
-        {/* Center text */}
+        {/* Center text (use dominantBaseline/textAnchor + percentage y positions for reliable centering) */}
         <text
           x="50%"
-          y="50%"
+          y="45%"
           textAnchor="middle"
-          dy="-10"
+          dominantBaseline="middle"
           fontSize="42"
           fontWeight="800"
           fill="#1f2937"
@@ -143,9 +196,9 @@ function CircularProgressRing({ value, max, size = 240 }) {
         </text>
         <text
           x="50%"
-          y="50%"
+          y="62%"
           textAnchor="middle"
-          dy="20"
+          dominantBaseline="middle"
           fontSize="12"
           fill="#9ca3af"
           letterSpacing="2"
@@ -154,26 +207,33 @@ function CircularProgressRing({ value, max, size = 240 }) {
         </text>
       </svg>
 
-      {message && (
-        <div style={{
-          marginTop: '16px',
-          fontSize: '16px',
-          fontWeight: '600'
-        }}>
-          {msgParts.emoji && (
-            <span aria-hidden="true" style={{ lineHeight: 1 }}>{msgParts.emoji}</span>
-          )}
-          {msgParts.emoji ? ' ' : ''}
-          <span style={{
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text'
+        {message && (
+          <div style={{
+            marginTop: 16,
+            fontSize: 16,
+            fontWeight: 600,
+            // ensure long messages wrap inside the fixed-width container
+            wordBreak: 'break-word',
+            whiteSpace: 'normal'
           }}>
-            {msgParts.text}
-          </span>
-        </div>
-      )}
+            {msgParts.emoji && (
+              <span aria-hidden="true" style={{ lineHeight: 1 }}>{msgParts.emoji}</span>
+            )}
+            {msgParts.emoji ? ' ' : ''}
+            <span style={{
+              display: 'inline-block',
+              maxWidth: '100%',
+              overflowWrap: 'break-word',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text'
+            }}>
+              {msgParts.text}
+            </span>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -193,37 +253,15 @@ function CardCarousel({ title, items, renderCardFooter, emptyText = "Nothing her
 
   const currentItem = items[idx];
 
-  return (
-    <div style={{
-      background: 'white',
-      borderRadius: '20px',
-      padding: '28px',
-      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
-      height: '100%',
-      display: 'flex',
-      flexDirection: 'column'
-    }}>
+    return (
+    <div className={styles['vd-panel']}>
       {/* Header */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '20px'
-      }}>
-        <h3 style={{
-          margin: 0,
-          fontSize: '20px',
-          fontWeight: '700',
-          color: '#1f2937'
-        }}>
+      <div className={styles['vd-panel-header']}>
+        <h3 className={styles['vd-panel-title']}>
           {title}
         </h3>
         {count > 0 && (
-          <span style={{
-            fontSize: '14px',
-            color: '#9ca3af',
-            fontWeight: '600'
-          }}>
+          <span className={styles['vd-panel-count']}>
             {idx + 1} / {count}
           </span>
         )}
@@ -231,54 +269,27 @@ function CardCarousel({ title, items, renderCardFooter, emptyText = "Nothing her
 
       {/* Content */}
       {count === 0 || !currentItem ? (
-        <div style={{
-          flex: 1,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: '#9ca3af',
-          fontSize: '15px',
-          padding: '40px 0'
-        }}>
+        <div className={styles['vd-empty']}>
           {emptyText}
         </div>
       ) : (
-        <div style={{ flex: 1 }}>
+  <div className={styles['vd-panel-content']}>
           {/* Carousel */}
-          <div style={{
-            position: 'relative',
-            background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%)',
-            borderRadius: '14px',
-            padding: '20px 28px',
-            minHeight: '160px',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center'
-          }}>
+          <div className={styles['vd-carousel-stage']}>
             {/* Event Card */}
             <div>
-              <h4 style={{
-                fontSize: '18px',
-                fontWeight: '700',
-                color: '#1f2937',
-                marginBottom: '12px'
-              }}>
+              <h4 className={styles['vd-event-title']}>
                 {currentItem.title}
               </h4>
-              <div style={{
-                fontSize: '14px',
-                color: '#6b7280',
-                lineHeight: '1.6',
-                marginBottom: '20px'
-              }}>
-                <div style={{ marginBottom: '6px' }}>
+              <div className={styles['vd-event-meta']}>
+                <div className={styles['vd-meta-row']}>
                   📅 {fmtDate(currentItem.start_date, currentItem.end_date)}
                 </div>
-                <div style={{ marginBottom: '6px' }}>
+                  <div className={styles['vd-meta-row']}>
                   ⏰ {fmtTime(currentItem.start_time, currentItem.end_time)}
                 </div>
                 {currentItem.location && (
-                  <div style={{ marginBottom: '6px' }}>
+                    <div className={styles['vd-meta-row']}>
                     📍 {currentItem.location}
                   </div>
                 )}
@@ -289,11 +300,7 @@ function CardCarousel({ title, items, renderCardFooter, emptyText = "Nothing her
 
               {/* Actions */}
               {renderCardFooter && (
-                <div style={{
-                  display: 'flex',
-                  gap: '8px',
-                  flexWrap: 'wrap'
-                }}>
+                <div className={styles['vd-actions']}>
                   {renderCardFooter(currentItem)}
                 </div>
               )}
@@ -302,87 +309,20 @@ function CardCarousel({ title, items, renderCardFooter, emptyText = "Nothing her
             {/* Navigation Arrows */}
             {count > 1 && (
               <>
-                <button
-                  onClick={prev}
-                  style={{
-                    position: 'absolute',
-                    left: '-8px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    width: '32px',
-                    height: '32px',
-                    borderRadius: '50%',
-                    border: 'none',
-                    background: 'white',
-                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
-                    cursor: 'pointer',
-                    fontSize: '18px',
-                    color: '#6366f1',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    transition: 'all 0.16s ease',
-                    zIndex: 5
-                  }}
-                  onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-50%) scale(1.06)'}
-                  onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(-50%) scale(1)'}
-                >
-                  ‹
-                </button>
-                <button
-                  onClick={next}
-                  style={{
-                    position: 'absolute',
-                    right: '-8px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    width: '32px',
-                    height: '32px',
-                    borderRadius: '50%',
-                    border: 'none',
-                    background: 'white',
-                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
-                    cursor: 'pointer',
-                    fontSize: '18px',
-                    color: '#6366f1',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    transition: 'all 0.16s ease',
-                    zIndex: 5
-                  }}
-                  onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-50%) scale(1.06)'}
-                  onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(-50%) scale(1)'}
-                >
-                  ›
-                </button>
+                <button onClick={prev} className={`${styles['vd-carousel-nav']} ${styles['vd-carousel-nav-left']}`}>‹</button>
+                <button onClick={next} className={`${styles['vd-carousel-nav']} ${styles['vd-carousel-nav-right']}`}>›</button>
               </>
             )}
           </div>
 
           {/* Indicators */}
           {count > 1 && (
-            <div style={{
-              display: 'flex',
-              justifyContent: 'center',
-              gap: '8px',
-              marginTop: '16px'
-            }}>
+            <div className={styles['vd-indicators']}>
               {items.map((_, i) => (
                 <button
                   key={i}
                   onClick={() => setIdx(i)}
-                  style={{
-                    width: idx === i ? '24px' : '8px',
-                    height: '8px',
-                    borderRadius: '4px',
-                    border: 'none',
-                    background: idx === i
-                      ? ' #7494ec'
-                      : '#d1d5db',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease'
-                  }}
+                  className={`${styles['vd-indicator']} ${i === idx ? styles['vd-indicator-active'] : ''}`}
                 />
               ))}
             </div>
@@ -415,7 +355,7 @@ export default function VolunteerDashboard() {
       setEvents(result.data.result);
     }
     fetchEvents();
-  }, [])
+  }, [auth.id])
 
   // Fetch stored total hours from users table (by user id)
   const fetchUserHours = async () => {
@@ -467,25 +407,8 @@ export default function VolunteerDashboard() {
     setManualTotalHours(hours);
   }, [pastEvents]);
 
-  // const hoursBetween = (s, e) => Math.max(0, (new Date(e) - new Date(s)) / 36e5);
-  // const round1 = (n) => Math.round(n * 10) / 10;
-
-  // const syncedTotalHours = useMemo(() => round1(pastEvents.reduce((sum, ev) => sum + hoursBetween(ev.start, ev.end), 0)), [pastEvents]);
-  // Display only DB-stored hours. If DB value is null, show a dash (—) in the UI.
-  // For components that need a numeric value (progress ring, goal math) use numericHours (0 when DB is null).
   const displayedTotalHours = serverTotalHours !== null && serverTotalHours !== undefined ? serverTotalHours : null;
   const numericHours = displayedTotalHours !== null ? Number(displayedTotalHours) : 0;
-
-  // const syncedMonthlyHours = useMemo(() => {
-  //   const now = new Date();
-  //   const y = now.getFullYear();
-  //   const m = now.getMonth();
-  //   const inMonth = pastEvents.filter((ev) => {
-  //     const d = new Date(ev.start);
-  //     return d.getFullYear() === y && d.getMonth() === m;
-  //   });
-  //   return round1(inMonth.reduce((s, ev) => s + hoursBetween(ev.start, ev.end), 0));
-  // }, [pastEvents]);
 
   const markAttended = async (identifier) => {
     // identifier may be event_id or id depending on API shape
@@ -517,18 +440,7 @@ export default function VolunteerDashboard() {
     }
   };
 
-  // const approvePending = (id) => {
-  //   const ev = pendingEvents.find((e) => e.id === id);
-  //   if (!ev) return;
-  //   setActiveEvents((arr) => [{ ...ev }, ...arr]);
-  //   setPendingEvents((arr) => arr.filter((e) => e.id !== id));
-  // };
-  // const withdrawPending = (id) => setPendingEvents((arr) => arr.filter((e) => e.id !== id));
   const deleteActive = (identifier) => setActiveEvents((arr) => arr.filter((e) => (e.event_id ?? e.id) !== identifier && e.id !== identifier));
-  // const deletePast = (id) => setPastEvents((arr) => arr.filter((e) => e.id !== id));
-
-  // const syncHours = () => setManualTotalHours(syncedTotalHours);
-  // const clearManual = () => setManualTotalHours(0);
 
   return (
     <>
@@ -536,271 +448,124 @@ export default function VolunteerDashboard() {
       <PageTransition>
         <div className={`container py-4 ${styles.vdash}`}>
           <div className="d-flex flex-column align-items-center mb-3 text-center">
-            {/* <button className={`btn btn-outline-primary btn-sm me-2 ${styles.vdBack}`} onClick={() => navigate(-1)}>← Back</button> */}
             <Title text="My Impact" subtitle="Track your volunteering hours and manage your events." />
-            {/* <div className="ms-auto d-flex gap-2">
-          <button className="btn btn-outline-primary btn-sm" onClick={syncHours}>Sync Hours from Past Events</button>
-          {manualTotalHours > 0 && <button className="btn btn-outline-secondary btn-sm" onClick={clearManual}>Clear Manual Override</button>}
-        </div> */}
           </div>
-
-          {/* <div className="row g-3 mb-4">
-        <div className="col-lg-4">
-          <div className={`card shadow-sm h-100 ${styles.vdCard}`}>
-            <div className="card-body">
-              <h5 className="card-title mb-2">Total{'\u00A0'} Volunteered Hours</h5>
-              <div className="display-6 fw-semibold">{displayedTotalHours ?? '—'}</div>
-            </div>
-          </div>
-        </div>
-
-        <div className="col-lg-8">
-          <div className={`card shadow-sm h-100 ${styles.vdCard}`}>
-            <div className="card-body d-flex align-items-center gap-4">
-                <div className="flex-shrink-0">
-                <CircularProgressRing value={numericHours} max={goalHours} size={260} thickness={18} />
-              </div>
-              <div className="flex-grow-1">
-                <h5 className="mb-2">Goal Progress</h5>
-                <p className="text-muted mb-3">{Math.min(numericHours, goalHours)} / {goalHours} hours</p>
-                <div className="row g-2">
-                  <div className="col-sm-6">
-                    <label className="form-label">Set Goal (hours)</label>
-                    <input type="number" min={1} className="form-control" value={goalHours} onChange={(e) => setGoalHours(Math.max(1, Number(e.target.value || 1)))} />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div> */}
           <div className="row g-3 mb-4">
+
+            {/* CARD 1: TOTAL HOURS (COL-LG-4) - Keeping all original style/animation for this one */}
             <div className="col-lg-4">
-              <div className={`card shadow-lg h-100 ${styles.vdCard}`} style={{
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                border: 'none',
-                overflow: 'hidden',
-                position: 'relative',
-                borderRadius: '20px'
-              }}>
+              <TiltDiv style={{height: '100%', borderRadius: '1rem', overflow: 'hidden'}}>
+              <div className={`card shadow-lg h-100 ${styles.vdCard} ${styles['vd-total-card']}`}>
                 {/* Animated background circles */}
-                <div style={{
-                  position: 'absolute',
-                  top: '-50px',
-                  right: '-50px',
-                  width: '150px',
-                  height: '150px',
-                  borderRadius: '50%',
-                  background: 'rgba(255,255,255,0.15)',
-                  animation: 'float 6s ease-in-out infinite',
-                  zIndex: 0
-                }}></div>
-                <div style={{
-                  position: 'absolute',
-                  bottom: '-30px',
-                  left: '-30px',
-                  width: '120px',
-                  height: '120px',
-                  borderRadius: '50%',
-                  background: 'rgba(255,255,255,0.1)',
-                  animation: 'float 4s ease-in-out infinite reverse',
-                  zIndex: 0
-                }}></div>
-                <div style={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '10%',
-                  width: '80px',
-                  height: '80px',
-                  borderRadius: '50%',
-                  background: 'rgba(255,255,255,0.08)',
-                  animation: 'float 5s ease-in-out infinite',
-                  zIndex: 0
-                }}></div>
+                <div className={`${styles['vd-total-bg-circle']} ${styles['vd-total-bg-top-right']}`} />
+                <div className={`${styles['vd-total-bg-circle']} ${styles['vd-total-bg-bottom-left']}`} />
+                <div className={`${styles['vd-total-bg-circle']} ${styles['vd-total-bg-mid-left']}`} />
 
-                <div className="card-body d-flex flex-column justify-content-center align-items-center text-center" style={{
-                  minHeight: '240px',
-                  position: 'relative',
-                  zIndex: 1,
-                  padding: '2rem'
-                }}>
-                  {/* Icon/Emoji at top */}
-                  {/* <div style={{
-        fontSize: '2.5rem',
-        marginBottom: '1rem',
-        animation: 'bounce 2s ease-in-out infinite'
-      }}>
-        ⏱️
-      </div> */}
-
-                  <h5 className="card-title mb-3" style={{
-                    fontSize: '0.85rem',
-                    fontWeight: '700',
-                    color: 'rgba(0, 0, 0, 0.95)',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.15em',
-                    textShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                  }}>
+                <div className={`card-body d-flex flex-column justify-content-center align-items-center text-center ${styles['vd-total-card-body']}`}>
+                  <h5 className={`card-title mb-3 ${styles['vd-total-title']}`}>
                     Total Volunteered Hours
                   </h5>
 
                   {/* The Big Number */}
                   <div className="position-relative d-inline-block">
-                    <div
-                      className="fw-bold"
-                      style={{
-                        fontSize: '7rem',
-                        lineHeight: '1',
-                        color: '#ffffff',
-                        letterSpacing: '-0.03em',
-                        textShadow: '0 8px 32px rgba(0,0,0,0.3)',
-                        fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-                        animation: 'numberPulse 3s ease-in-out infinite'
-                      }}
-                    >
+                    <div className={`fw-bold ${styles['vd-total-number']}`}>
                       {displayedTotalHours ?? '—'}
                     </div>
 
                     {/* Decorative sparkles */}
-                    <span style={{
-                      position: 'absolute',
-                      top: '-10px',
-                      right: '-15px',
-                      fontSize: '1.5rem',
-                      animation: 'sparkle 1.5s ease-in-out infinite'
-                    }}>✨</span>
-                    <span style={{
-                      position: 'absolute',
-                      bottom: '10px',
-                      left: '-20px',
-                      fontSize: '1.2rem',
-                      animation: 'sparkle 1.5s ease-in-out infinite 0.5s'
-                    }}>⭐</span>
+                    <span className={styles['vd-sparkle-top']}>✨</span>
+                    <span className={styles['vd-sparkle-bottom']}>⭐</span>
                   </div>
 
                   {/* Bottom message */}
-                  <div style={{
-                    marginTop: '1.5rem',
-                    padding: '0.75rem 1.5rem',
-                    background: 'rgba(255,255,255,0.2)',
-                    borderRadius: '50px',
-                    backdropFilter: 'blur(10px)',
-                    color: '#ffffff',
-                    fontSize: '0.9rem',
-                    fontWeight: '600',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                    border: '1px solid rgba(255,255,255,0.3)'
-                  }}>
+                  <div className={styles['vd-bottom-message']}>
                     🎉 Keep up the amazing work!
                   </div>
                 </div>
-
-                <style jsx>{`
-      @keyframes float {
-        0%, 100% {
-          transform: translateY(0px);
-        }
-        50% {
-          transform: translateY(-20px);
-        }
-      }
-
-      @keyframes bounce {
-        0%, 100% {
-          transform: translateY(0);
-        }
-        50% {
-          transform: translateY(-10px);
-        }
-      }
-
-      @keyframes sparkle {
-        0%, 100% {
-          opacity: 1;
-          transform: scale(1) rotate(0deg);
-        }
-        50% {
-          opacity: 0.5;
-          transform: scale(1.2) rotate(180deg);
-        }
-      }
-
-      @keyframes numberPulse {
-        0%, 100% {
-          transform: scale(1);
-        }
-        50% {
-          transform: scale(1.05);
-        }
-      }
-    `}</style>
               </div>
+              </TiltDiv>
             </div>
 
+            {/* CARD 2: GOAL PROGRESS (COL-LG-8) - APPLYING TILT EFFECT HERE */}
             <div className="col-lg-8">
-              <div className={`card h-100 ${styles.vdCard}`}>
+              <TiltDiv className={`card h-100 ${styles.vdCard_2}`} style={{borderRadius: '1rem', overflow: 'hidden'}}>
                 <div className="card-body d-flex align-items-center gap-4">
                   <div className="flex-shrink-0">
-                    <CircularProgressRing
-                      value={numericHours}
-                      max={goalHours}
-                      size={240}
-                      thickness={20}
-                    />
+                    {/* Reserve fixed space for the ring + message so the card height stays stable */}
+                    <div style={{ width: 260, height: 320, display: 'flex', alignItems: 'center', justifyContent: 'center', marginLeft: 16 }}>
+                      <CircularProgressRing
+                        value={numericHours}
+                        max={goalHours}
+                        size={260}
+                        thickness={20}
+                      />
+                    </div>
                   </div>
                   <div className="flex-grow-1">
-                    <h5 className="mb-3" style={{ fontSize: '1.1rem', fontWeight: '500' }}>
+                    <h5 className={`mb-3 ${styles['vd-goal-title']}`}>
                       Goal Progress
                     </h5>
-                    <p className="text-muted mb-3" style={{ fontSize: '0.95rem' }}>
+                    <p className={`text-muted mb-3 ${styles['vd-goal-note']}`}>
                       {Math.min(numericHours, goalHours)} / {goalHours} hours
                     </p>
                     <div className="mb-3">
-                      <label className="form-label text-muted" style={{ fontSize: '0.9rem' }}>
+                      <label className={`form-label text-muted ${styles['vd-goal-label']}`}>
                         Set Goal (hours)
                       </label>
                       <input
                         type="number"
                         min={1}
-                        className="form-control"
-                        style={{ maxWidth: '200px', fontSize: '0.95rem' }}
+                        className={`form-control ${styles['vd-goal-input']}`}
                         value={goalHours}
                         onChange={(e) => setGoalHours(Math.max(1, Number(e.target.value || 1)))}
                       />
                     </div>
                   </div>
                 </div>
-              </div>
+              </TiltDiv>
             </div>
           </div>
 
           <div className="row g-3">
+            {/* CAROUSEL 1: ACTIVE EVENTS (COL-LG-6) - APPLYING TILT EFFECT HERE (optional, but good for consistency) */}
             <div className="col-lg-6">
-              <CardCarousel title="Active (Joined) Events" items={activeEvents} emptyText="Nothing here yet." renderCardFooter={(e) => (
-                <>
-                  <button
-                    className="btn btn-sm"
-                    onClick={() => markAttended(e.event_id ?? e.id)}
-                    style={{ background: '#7494ec', borderColor: '#7494ec', color: '#fff' }}
-                  >
-                    Mark Attended → Past
-                  </button>
-                  <button className="btn btn-sm btn-outline-danger" onClick={() => deleteActive(e.event_id ?? e.id)}>Did not attend</button>
-                </>
-              )} />
+              <TiltDiv style={{height: '100%', borderRadius: '1rem', overflow: 'hidden'}}>
+                  <CardCarousel title="Active (Joined) Events" items={activeEvents} emptyText="Nothing here yet." renderCardFooter={(e) => (
+                    <>
+                      <button
+                        className={`btn btn-sm ${styles['vd-mark-attended']}`}
+                        onClick={() => markAttended(e.event_id ?? e.id)}
+                      >
+                        Mark Attended → Past
+                      </button>
+                      <button className={`btn btn-sm ${styles['vd-mark-didnot-attended']}`} onClick={() => deleteActive(e.event_id ?? e.id)}>Did not attend</button>
+                    </>
+                  )} />
+              </TiltDiv>
             </div>
 
+            {/* CAROUSEL 2: PENDING APPLICATIONS (COL-LG-6) - NOTE: CardCarousel is likely an external component, 
+                so we wrap it in a div or use TiltDiv if it renders the root element. 
+                Assuming CardCarousel renders a div, we'll wrap it in a simple div for clean sizing here. */}
             <div className="col-lg-6">
-              <CardCarousel title="Pending Applications" items={pendingEvents} emptyText="Nothing here yet." renderCardFooter={(e) => (
-                <>
-                  {/* <button className="btn btn-sm btn-primary" onClick={() => approvePending(e.id)}>Approve → Active</button> */}
-                </>
-              )} />
+              {/* Optional: You can apply TiltDiv here too if desired */}
+              <TiltDiv style={{height: '100%', borderRadius: '1rem', overflow: 'hidden'}}>
+              <div style={{height: '100%'}}> 
+                  <CardCarousel title="Pending Applications" items={pendingEvents} emptyText="Nothing here yet." renderCardFooter={(e) => (
+                    <>
+                      {/* <button className="btn btn-sm btn-primary" onClick={() => approvePending(e.id)}>Approve → Active</button> */}
+                    </>
+                  )} />
+              </div>
+              </TiltDiv>
             </div>
 
+            {/* CAROUSEL 3: PAST EVENTS (COL-12) */}
             <div className="col-12">
+              <TiltDiv style={{height: '100%', borderRadius: '1rem', overflow: 'hidden'}}>
               <CardCarousel title="Past Events" items={pastEvents} emptyText="Nothing here yet."
               />
+              </TiltDiv>
             </div>
           </div>
         </div>
