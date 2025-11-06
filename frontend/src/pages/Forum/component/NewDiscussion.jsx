@@ -91,6 +91,7 @@ export default function NewDiscussion() {
     setFormData({ subject: "", body: "", image_file: null });
     clearImage();
     setShowDiscardModal(false);
+    nav("/community")
   }
   /* ========== Submit ========== */
   async function handlePost(e) {
