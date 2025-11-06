@@ -11,7 +11,6 @@ import styles from "../../styles/Community.module.css";
 import { useAuth } from "../../contexts/AuthProvider.js";
 import Select from "react-select";
 
-// ForumPage.jsx (before your component)
 const customSelectStyles = {
   control: (base, state) => ({
     ...base,

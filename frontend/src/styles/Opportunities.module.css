@@ -589,7 +589,7 @@
 .modal-close {
     top: 0rem;       /* more breathing room */
     right: 0rem;     /* push it inward a bit */
-    font-size: 2rem; /* slightly smaller icon if needed */
+    font-size: 2rem; 
   }
 }
 
@@ -738,7 +738,6 @@
   }
 }
 
-/* Success modal (NewDiscussion style) */
 .overlay {
   position: fixed;
   inset: 0;
