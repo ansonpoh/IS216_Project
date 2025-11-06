@@ -5,6 +5,66 @@ import Navbar from "../../components/Navbar";
 import { useAuth } from "../../contexts/AuthProvider";
 import Title from "../../components/ui/Title";
 import modalStyles from "../../styles/Modals.module.css";
+import Select from "react-select"
+
+const customSelectStyles = {
+  control: (base, state) => ({
+    ...base,
+    fontFamily: '"Gill Sans MT", "Gill Sans", Calibri, sans-serif',
+    backgroundColor: "#fff",
+    borderRadius: "8px",
+    borderColor: state.isFocused ? "#7494ec" : "#cfd8f7",
+    boxShadow: state.isFocused
+      ? "0 0 0 3px rgba(116,148,236,0.25)"
+      : "0 2px 8px rgba(116,148,236,0.08)",
+    padding: "2px",
+    transition: "all 0.2s ease",
+    "&:hover": { borderColor: "#7494ec" },
+    transform: state.isFocused ? "translateY(-1px)" : "translateY(0)",
+  }),
+  placeholder: (base) => ({
+    ...base,
+    color: "#64748b",
+    fontSize: "0.95rem",
+    fontFamily: '"Gill Sans MT", "Gill Sans", Calibri, sans-serif',
+  }),
+  singleValue: (base) => ({
+    ...base,
+    color: "#0f172a",
+    fontWeight: 500,
+    fontFamily: '"Gill Sans MT", "Gill Sans", Calibri, sans-serif',
+    whiteSpace: "nowrap",
+    overflow: "visible",
+    textOverflow: "unset",
+    minWidth: "2.5ch",
+  }),
+  option: (base, state) => ({
+    ...base,
+    fontFamily: '"Gill Sans MT", "Gill Sans", Calibri, sans-serif',
+    backgroundColor: state.isFocused ? "#eef2ff" : "#fff",
+    color: "#0f172a",
+    cursor: "pointer",
+    padding: "10px 12px",
+    transition: "background 0.15s ease",
+    borderRadius: "0",
+  }),
+  dropdownIndicator: (base, state) => ({
+    ...base,
+    color: state.isFocused ? "#7494ec" : "#64748b",
+    transition: "color 0.2s",
+    "&:hover": { color: "#7494ec" },
+  }),
+  indicatorSeparator: () => ({ display: "none" }),
+  menu: (base) => ({
+    ...base,
+    borderRadius: "8px",
+    marginTop: "4px",
+    boxShadow: "0 8px 20px rgba(15,23,42,0.15)",
+    overflow: "hidden",
+    zIndex: 9999,
+  }),
+  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+};
 
 export default function OrganiserCreateForm() {
   const nav = useNavigate();
@@ -149,6 +209,16 @@ export default function OrganiserCreateForm() {
     setShowSuccessModal(false);
     nav("/organiser/dashboard");
   };
+
+  const categoryOptions = categories.map(c => ({
+    value: c.category,
+    label: c.category
+  }));
+
+  const regionOptions = regions.map(r => ({
+    value: r.region,
+    label: r.region
+  }))
   
   return (
     <>
@@ -172,13 +242,14 @@ export default function OrganiserCreateForm() {
 
             <div className="col-md-4">
               <label className="form-label">Category *</label>
-              <select name="category" value={form.category} 
-              className="form-control" onChange={onChange} required>
-                <option value="">Select Category</option>
-                {categories.map((c) => (
-                  <option key={c.category} value={c.category}>{c.category}</option>
-                ))}
-              </select>
+              <Select
+                value={categoryOptions.find(opt => opt.value === form.category) || null}
+                onChange={(opt) => setForm({ ...form, category: opt.value })}
+                options={categoryOptions}
+                placeholder="Select Category"
+                styles={customSelectStyles}
+                menuPortalTarget={document.body}
+              />
             </div>
 
             <div className="col-12">
@@ -205,12 +276,14 @@ export default function OrganiserCreateForm() {
 
             <div className="col-md-4">
               <label className="form-label">Region *</label>
-              <select name="region" className="form-control" value={form.region} onChange={onChange} required>
-                <option value="">Select Region</option>
-                {regions.map((r) => (
-                  <option key={r.region} value={r.region}>{r.region}</option>
-                ))}
-              </select>
+              <Select
+                value={regionOptions.find(opt => opt.value === form.region) || null}
+                onChange={(opt) => setForm({ ...form, region: opt.value })}
+                options={regionOptions}
+                placeholder="Select Region"
+                styles={customSelectStyles}
+                menuPortalTarget={document.body}
+              />
             </div>
 
             {/* DATES */}
