@@ -479,7 +479,7 @@ export default function VolunteerDashboard() {
 
                   {/* Bottom message */}
                   <div className={styles['vd-bottom-message']}>
-                    🎉 Keep up the amazing work!
+                    🎉 You got this!
                   </div>
                 </div>
               </div>

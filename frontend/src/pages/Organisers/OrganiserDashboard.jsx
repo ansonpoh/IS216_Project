@@ -147,10 +147,11 @@ const sortOptions = [
 
     list.sort((a, b) => {
       if (sort === "capacity") {
-        const pa = capacityPct(a);
-        const pb = capacityPct(b);
+        const pa = a.registration_count
+        const pb = b.registration_count;
         return pb - pa; // most filled first
       }
+
       if (sort === "title") {
         const titleA = (a.title || "").toLowerCase();
         const titleB = (b.title || "").toLowerCase();
@@ -205,7 +206,7 @@ const sortOptions = [
     setShowModal(true);
     setLoadingModal(true);
     try {
-      const res = await axios.get(`${LOCAL_BASE}/events/get_registered_users_for_event`, {params: {event_id: event.event_id}})
+      const res = await axios.get(`${API_BASE}/events/get_registered_users_for_event`, {params: {event_id: event.event_id}})
       setRegistrations(res.data.result);
       let approved = 0;
       for(let r of res.data.result) {
@@ -227,7 +228,7 @@ const sortOptions = [
         )
       );
 
-      await axios.post(`${LOCAL_BASE}/events/update_registration_status`, {
+      await axios.post(`${API_BASE}/events/update_registration_status`, {
         user_id,
         event_id,
         status: newStatus,
@@ -281,7 +282,7 @@ const sortOptions = [
   const handleDelete = async () => {
     if (!eventToDelete) return;
     try {
-      await axios.post(`${LOCAL_BASE}/events/delete_event`, {event_id: eventToDelete.event_id });
+      await axios.post(`${API_BASE}/events/delete_event`, {event_id: eventToDelete.event_id });
 
       // Remove from state
       setEvents((prev) => prev.filter((e) => e.event_id !== eventToDelete.event_id));
@@ -647,11 +648,11 @@ const sortOptions = [
                     <div>
                       <p><strong>Name:</strong> {selectedUser.username}</p>
                       <p><strong>Email:</strong> {selectedUser.email}</p>
-                      <p><strong>Phone Number: </strong> {selectedUser.contact_phone}</p>
+                      <p><strong>Phone Number: </strong> {selectedUser?.contact_phone || "None"}</p>
                       <p><strong>Joined:</strong> {new Date(selectedUser.date_joined).toLocaleDateString()}</p>
-                      <p><strong>Volunteered Hours:</strong> {selectedUser.hours}</p>
-                      <p><strong>Skills: </strong>{selectedUser?.skills?.join(", " || "NA")}</p>
-                      <p><strong>Languages: </strong>{selectedUser?.languages?.join(", " || "NA")}</p>
+                      <p><strong>Volunteered Hours:</strong> {selectedUser?.hours || 0}</p>
+                      <p><strong>Skills: </strong>{selectedUser?.skills?.join(", ") || "None"}</p>
+                      <p><strong>Languages: </strong>{selectedUser?.languages?.join(", ") || "None"}</p>
                       {console.log(selectedUser)}
                     </div>
                   ) : (
