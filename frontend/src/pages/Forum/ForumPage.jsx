@@ -208,7 +208,18 @@ export default function ForumPage() {
   const sortOptions = [
   { value: "date", label: "Sort by Date" },
   { value: "likes", label: "Sort by Likes" },
-];
+  ];
+
+  useEffect(() => {
+    if (selectedPost) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto"; 
+    }
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [selectedPost]);
 
 
   useEffect(() => {
