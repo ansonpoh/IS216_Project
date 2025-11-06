@@ -92,6 +92,54 @@
   background:rgba(255,255,255,.6);
   animation:ripple .6s ease-out forwards;
 }
+
+@media (max-width: 576px) {
+  /* Single column layout */
+  .role-grid.two-col {
+    grid-template-columns: 1fr;
+    gap: 1rem; /* slightly smaller gap for small screens */
+  }
+
+  /* Reduce card padding */
+  .role-card {
+    padding: 1rem; /* reduce padding for mobile */
+    border-radius: 14px; /* slightly smaller radius */
+  }
+
+  /* Icon spacing */
+  .role-icon {
+    font-size: 2.5rem; /* smaller icons */
+    margin-bottom: 0.8rem;
+  }
+
+  /* Headings and text */
+  .role-card h2 {
+    font-size: 1.2rem; /* smaller heading */
+    margin-bottom: 0.3rem;
+  }
+
+  .role-card p {
+    font-size: 0.9rem;
+    margin-bottom: 0.8rem;
+  }
+
+  /* Perks list spacing */
+  .perks {
+    margin-bottom: 0.8rem;
+  }
+  .perks li {
+    font-size: 0.9rem;
+    margin: 0.2rem 0;
+    gap: 0.4rem;
+  }
+
+  /* Buttons */
+  .role-btn {
+    padding: 0.6rem 0.9rem; /* slightly smaller for mobile */
+    font-size: 0.9rem;
+  }
+}
+
 @keyframes ripple{to{transform:scale(3);opacity:0;}}
 
 /* Fade animation */
