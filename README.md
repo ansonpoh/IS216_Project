@@ -224,7 +224,7 @@ Each member should contribute 2–3 sentences on their learning and project expe
 
 > - *Anson:* 
 > - *Sitinur:* 
-> - *Keying:* 
+> - *Keying:*  Gained experience connecting frontend and backend API endpoints. Created reusable components.  
 > - *Riya:* Learned how to use reusable React components, design the frontend UI and understood how data is retrieved from the backend using routes and controllers
 > - *Joshua:* Learned how to use Fort Awesome, Bootstrap icons, SVG over map API, as well as map filter logic.
 > - *Yuanlong:* 

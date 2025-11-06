@@ -487,9 +487,9 @@ export default function VolunteerDashboard() {
             </div>
 
             {/* CARD 2: GOAL PROGRESS (COL-LG-8) - APPLYING TILT EFFECT HERE */}
-            <div className="col-lg-8">
+            <div className="col-12 col-lg-8">
               <TiltDiv className={`card h-100 ${styles.vdCard_2}`} style={{borderRadius: '1rem', overflow: 'hidden'}}>
-                <div className="card-body d-flex align-items-center gap-4">
+                <div className="card-body d-flex flex-column flex-md-row align-items-center gap-4">
                   <div className="flex-shrink-0">
                     {/* Reserve fixed space for the ring + message so the card height stays stable */}
                     <div style={{ width: 260, height: 320, display: 'flex', alignItems: 'center', justifyContent: 'center', marginLeft: 16 }}>
@@ -501,7 +501,7 @@ export default function VolunteerDashboard() {
                       />
                     </div>
                   </div>
-                  <div className="flex-grow-1">
+                  <div className="flex-grow-1 text-center text-md-start">
                     <h5 className={`mb-3 ${styles['vd-goal-title']}`}>
                       Goal Progress
                     </h5>
