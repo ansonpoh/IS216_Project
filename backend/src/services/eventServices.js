@@ -132,31 +132,30 @@ export async function get_events_by_time(filter, start_date, end_date) {
 
 export async function get_filtered_events(category, region, filter, start_date, end_date) {
     try {
-        let conditions = [];
+        let conditions = [`e.is_published = true`, `e.start_date > now()`];
         let values = [];
         let i = 1;
         console.log(category, region, filter)
         if(category) {
-            conditions.push(`lower(category) ilike lower($${i++})`)
+            conditions.push(`lower(e.category) ilike lower($${i++})`)
             values.push(category);
         }
         if(region) {
-            conditions.push(`lower(region) ilike lower($${i++})`)
+            conditions.push(`lower(e.region) ilike lower($${i++})`)
             values.push(region);
         }
 
         if(filter === "weekday") {
-            conditions.push(`extract(isodow from start_date) between 1 and 5`);
+            conditions.push(`extract(isodow from e.start_date) between 1 and 5`);
         } else if (filter === "weekend") {
-            conditions.push(`extract(isodow from start_date) in (6,7)`);
+            conditions.push(`extract(isodow from e.start_date) in (6,7)`);
         } else if (filter === "range" && start_date && end_date) {
-            conditions.push(`start_date between $${i++} and $${i++}`);
+            conditions.push(`e.start_date between $${i++} and $${i++}`);
             values.push(start_date, end_date);
         }
 
-        const where_clause = conditions.length > 0 ? `where ${conditions.join(" AND ")}` : "";
-        const query = `select * from events ${where_clause}`;
-        console.log("Query:", query, "WHERE:", where_clause);
+        const where_clause = conditions.length > 0 ? `where  ${conditions.join(" AND ")}` : "";
+        const query = `select e.*, count(er.user_id) as approved_count, (e.capacity - count(er.user_id)) as remaining_capacity from events e left join event_registration er on e.event_id = er.event_id and er.status = 'approved ${where_clause} group by e.event_id having count (er.user_id) < e.capacity`;
         const result = await pool.query(query, values);
         return result.rows;
     } catch (err) {
