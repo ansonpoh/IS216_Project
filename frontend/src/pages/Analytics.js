@@ -26,8 +26,8 @@ const TiltDiv = ({ children, className, style }) => {
       const centerY = rect.height / 2;
 
       // Tilt Calculation (subtler max 6 degrees)
-      const rotateX = ((y - centerY) / centerY) * -4;
-      const rotateY = ((x - centerX) / centerX) * 4;
+      const rotateX = ((y - centerY) / centerY) * -2;
+      const rotateY = ((x - centerX) / centerX) * 2;
 
       gsap.to(element, {
         rotateX,
@@ -182,10 +182,10 @@ export default function Analytics() {
       <PageTransition>
         <div className={`container py-4 ${styles.container}`}>
           <div className="d-flex flex-column align-items-center mb-3 text-center">
-            <Title text="Event Sign-up Analytics" />
+            <Title text="See What's Hot!" />
           </div>
           <div className="row g-3 mb-4">
-            <div className="col-lg-8">
+            <div className="col-lg-12">
               <TiltDiv style={{ height: '100%', borderRadius: '1rem', overflow: 'hidden' }}>
                 <section className={styles.section}>
                   <h2>Category Popularity</h2>
@@ -195,20 +195,19 @@ export default function Analytics() {
                       <XAxis dataKey="category" />
                       <YAxis />
                       <Tooltip />
-                      <Bar dataKey="signup_count" fill="#82ca9d" />
+                      <Bar dataKey="Signups" fill="#82ca9d" />
                     </BarChart>
                   </ResponsiveContainer>
                 </section>
               </TiltDiv>
             </div>
-            <div className="col-lg-4">
+            {/* <div className="col-lg-4">
               <TiltDiv style={{ height: '100%', borderRadius: '1rem', overflow: 'hidden' }}>
                 something here
               </TiltDiv>
-            </div>
+            </div> */}
 
-            <div className="row g-3">
-              <div className="col-lg-4">
+            <div className="col-lg-4">
                 <TiltDiv style={{ height: '100%', borderRadius: '1rem', overflow: 'hidden' }}>
                   <section className={styles.section}>
                     <h2>Regional Popularity</h2>
@@ -231,12 +230,11 @@ export default function Analytics() {
                     <h2>Regional Popularity Heatmap</h2>
                     <div
                       ref={mapRef}
-                      style={{ width: "100%", height: "300px", borderRadius: "12px" }}
+                      style={{ width: "100%", height: "301px", borderRadius: "12px" }}
                     />
                   </section>
                 </TiltDiv>
               </div>
-            </div>
           </div>
         </div>
       </PageTransition>

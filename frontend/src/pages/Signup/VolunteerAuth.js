@@ -59,7 +59,7 @@ export default function LoginSignup() {
       return;
     }
 
-    const emailInUse = await axios.get(`${LOCAL_BASE}/users/check_email`, {params: {email: registerData.email}});
+    const emailInUse = await axios.get(`${API_BASE}/users/check_email`, {params: {email: registerData.email}});
     if(emailInUse.data.status) {
       setRegisterErrors("Email in use.")
       return;
@@ -143,7 +143,7 @@ export default function LoginSignup() {
           }
 
           const res = await axios.post(
-            `${LOCAL_BASE}/users/complete_registration`,
+            `${API_BASE}/users/complete_registration`,
             formData,
             { headers: { "Content-Type": "multipart/form-data" } }
           );

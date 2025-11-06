@@ -24,7 +24,7 @@ function Navbar() {
   useEffect(() => {
     const fetch_org = async () => {
       try {
-        const org = await axios.get(`${LOCAL_BASE}/orgs/get_org_by_id`, { params: { id: auth.id } });
+        const org = await axios.get(`${API_BASE}/orgs/get_org_by_id`, { params: { id: auth.id } });
         const data = org?.data?.result?.[0];
         if (data && data.profile_image) setImage(data.profile_image);
       } catch (err) {
@@ -34,7 +34,7 @@ function Navbar() {
 
     const fetch_user = async () => {
       try {
-        const user = await axios.get(`${LOCAL_BASE}/users/get_user_by_id`, { params: { id: auth.id } })
+        const user = await axios.get(`${API_BASE}/users/get_user_by_id`, { params: { id: auth.id } })
         const data = user?.data?.result?.[0];
         if (data && data.profile_image) setImage(data.profile_image);
       } catch (err) {

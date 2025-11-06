@@ -19,7 +19,7 @@ import forum from "../../components/images/forum.png";
 import ai from "../../components/images/ai.png";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import ScrollMouse from "../../components/ui/AnimatedMouseIcon";
+// import ScrollMouse from "../../components/ui/AnimatedMouseIcon";
 import { supabase } from "../../config/supabaseClient";
 import { useAuth } from "../../contexts/AuthProvider";
 
@@ -75,7 +75,7 @@ export default function Landing() {
         formData.append("user_id", user_id);
         formData.append("username", username);
         formData.append("email", email);
-        await axios.post(`${LOCAL_BASE}/users/complete_registration`, formData, {headers: {"Content-Type":"multipart/form-data"}});
+        await axios.post(`${API_BASE}/users/complete_registration`, formData, {headers: {"Content-Type":"multipart/form-data"}});
       } catch (err) {
         console.error(err);
       }
@@ -118,7 +118,7 @@ export default function Landing() {
       setLoadingFacts(true);
       setFetchError(null);
       try {
-        const response = await axios.get(`${LOCAL_BASE}/facts`);
+        const response = await axios.get(`${API_BASE}/facts`);
         const data = response.data;
 
         const rows = Array.isArray(data.facts)
@@ -362,13 +362,13 @@ export default function Landing() {
               />
             )}
           </div>
-          <ScrollMouse
+          {/* <ScrollMouse
             size={36}
             stroke="rgba(117, 97, 231, 0.85)"
             fill="rgba(136, 47, 121, 0.85)"
             bottom={80}
             z={999}
-          />
+          /> */}
         </section>
 
         {/* ai chat */}

@@ -23,6 +23,7 @@ const openai = createOpenAI({
 })
 
 const BASE = "http://localhost:3001";
+const API_ENDPOINT = process.env.RENDER_URL;
 
 // const shortened_system = `
 // You are Vera, a warm-but-practical volunteer matchmaker who turns "I have to" into "I want to." Be friendly, conversational, and persuasive for reluctant users—BUT follow the output contract so the frontend can parse you.
@@ -195,7 +196,7 @@ const getAllEventsTool = tool({
   description: "Retreives a list of all volunteering events from the backend api.",
   inputSchema: z.object({}),
   execute: async () => {
-    const res = await axios.get(`${BASE}/events/get_all_events`);
+    const res = await axios.get(`${API_ENDPOINT}/events/get_all_events`);
     return res.data;
   }
 })
@@ -211,7 +212,7 @@ const getSelectableOptionsTool = tool({
   }),
   execute: async ({type}) => {
     try {
-      const res = await axios.get(`${BASE}/events/get_selectable_options`);
+      const res = await axios.get(`${API_ENDPOINT}/events/get_selectable_options`);
       const data = res.data?.result ?? res.data ?? {};
       const options = data[type.toLowerCase()] ?? [];
       if (Array.isArray(options) && options.length > 0) return options;
@@ -232,7 +233,7 @@ const getEventsByCategoryTool = tool({
   }),
   execute: async ({category}) => {
     try {
-      const res = await axios.get(`${BASE}/events/get_events_by_category?category=${encodeURIComponent(category.toLowerCase())}`);
+      const res = await axios.get(`${API_ENDPOINT}/events/get_events_by_category?category=${encodeURIComponent(category.toLowerCase())}`);
       const data = res.data?.result ?? res.data ?? [];
       if (Array.isArray(data) && data.length > 0) return data;
 
@@ -256,7 +257,7 @@ const getEventsByRegionTool = tool({
   }),
   execute: async ({region}) => {
     try {
-      const res = await axios.get(`${BASE}/events/get_events_by_region?region=${encodeURIComponent(region.toLowerCase())}`);
+      const res = await axios.get(`${API_ENDPOINT}/events/get_events_by_region?region=${encodeURIComponent(region.toLowerCase())}`);
       const data = res.data?.result ?? res.data ?? [];
       if (Array.isArray(data) && data.length > 0) return data;
 
@@ -287,7 +288,7 @@ const getEventsByTimeTool = tool({
         params.append("start_date", start_date);
         params.append("end_date", end_date);
       }
-      const res = await axios.get(`${BASE}/events/get_events_by_time?${params.toString()}`);
+      const res = await axios.get(`${API_ENDPOINT}/events/get_events_by_time?${params.toString()}`);
       const data = res.data?.result ?? res.data ?? [];
 
       if (Array.isArray(data) && data.length > 0) return data;
@@ -324,7 +325,7 @@ const getFilteredEventsTools = tool({
         params.append("end_date", end_date);
       }
       console.log(params.toString())
-      const res = await axios.get(`${BASE}/events/get_filtered_events?${params.toString()}`);
+      const res = await axios.get(`${API_ENDPOINT}/events/get_filtered_events?${params.toString()}`);
       const data = res.data?.result ?? res.data ?? [];
 
       if (Array.isArray(data) && data.length > 0) return data;
