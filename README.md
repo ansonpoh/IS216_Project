@@ -144,8 +144,6 @@ Create a `.env` file in the backend folder with the following structure:
 DATABASE_URL=<your_backend_url>
 SUPABASE_URL=<your_supabase_url>
 SUPABASE_KEY=<your_supabase_api_key>
-OR_API=<or_api>
-OR_MODEL=<or_model>
 GOOGLE_MAPS_API_KEY=<your_google_maps_api_key>
 OPENAI_API_KEY=<your_openai_api_key>
 ```
