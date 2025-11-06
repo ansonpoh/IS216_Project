@@ -47,10 +47,10 @@ export default function LoginSignup() {
   const handle_register = async (e) => {
     e.preventDefault();
     setRegisterErrors("");
-    if (!registerData.agree) {
-      setRegisterErrors("Please agree to Terms and Privacy to continue");
-      return;
-    }
+    // if (!registerData.agree) {
+    //   setRegisterErrors("Please agree to Terms and Privacy to continue");
+    //   return;
+    // }
 
     if (registerData.password !== registerData.confimPassword) {
       setRegisterErrors("Passwords do not match");
@@ -361,7 +361,7 @@ export default function LoginSignup() {
                 <i className="bx bxs-lock-alt"></i>
               </div>
 
-              <div className={`form-check mb-3`}>
+              {/* <div className={`form-check mb-3`}>
                 <input
                   className={styles['form-check-input']}
                   type="checkbox"
@@ -373,7 +373,7 @@ export default function LoginSignup() {
                 <label className="form-check-label" htmlFor="agree">
                   I agree to the <a href="#">Terms</a> and <a href="#">Privacy</a>.
                 </label>
-              </div>
+              </div> */}
 
               <button type="submit" className={styles.signup_btn}>
                 Register
