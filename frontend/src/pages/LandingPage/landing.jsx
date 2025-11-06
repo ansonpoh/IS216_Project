@@ -213,7 +213,7 @@ export default function Landing() {
       <div className="landing-page landing-page-bg">
         <section
           className="position-relative mt-6 mb-3 hero-section fade-section"
-          style={{ minHeight: '60vh' , paddingBottom: "200px"}} // <--- Change is here
+          style={{ minHeight: '60vh' , paddingBottom: "250px"}} // <--- Change is here
         >
 
           {/* Parallax Background Effect */}
