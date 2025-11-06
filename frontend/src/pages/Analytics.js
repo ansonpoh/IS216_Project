@@ -151,15 +151,29 @@ export default function Analytics() {
         opacity: 0.7,
       });
 
+      // const rainbowGradient = [
+      //   "rgba(0, 0, 255, 0)",     
+      //   "rgba(0, 0, 255, 1)",     
+      //   "rgba(0, 255, 255, 1)",   
+      //   "rgba(0, 255, 0, 1)",     
+      //   "rgba(255, 255, 0, 1)",   
+      //   "rgba(255, 165, 0, 1)",   
+      //   "rgba(255, 0, 0, 1)"    
+      // ];
+      
       const rainbowGradient = [
-        "rgba(0, 0, 255, 0)",     
-        "rgba(0, 0, 255, 1)",     
-        "rgba(0, 255, 255, 1)",   
-        "rgba(0, 255, 0, 1)",     
-        "rgba(255, 255, 0, 1)",   
-        "rgba(255, 165, 0, 1)",   
-        "rgba(255, 0, 0, 1)"    
+        "rgba(0, 0, 0, 0.78)",
+        "rgba(141, 152, 216, 1)",   // Periwinkle
+        "rgba(123, 190, 245, 1)",   // Pastel blue
+        "rgba(118, 223, 237, 1)",   // Mint cyan
+        "rgba(150, 215, 153, 1)",   // Pastel green
+        "rgba(252, 241, 142, 1)",   // Pastel yellow
+        "rgba(252, 153, 122, 1)"
       ];
+
+
+
+      
 
       heatmap.set("gradient", rainbowGradient);
 
@@ -187,9 +201,9 @@ export default function Analytics() {
                     <BarChart data={categoryData}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="category" />
-                      <YAxis allowDecimals={false}/>
+                      <YAxis allowDecimals={false} />
                       <Tooltip />
-                      <Bar dataKey="signup_count" fill="#82ca9d" name="Total Signups"/>
+                      <Bar dataKey="signup_count" fill="#82ca9d" name="Total Signups" />
                     </BarChart>
                   </ResponsiveContainer>
                 </section>
@@ -202,33 +216,33 @@ export default function Analytics() {
             </div> */}
 
             <div className="col-lg-6 col-md-12">
-                <TiltDiv style={{ height: '100%', borderRadius: '1rem', overflow: 'hidden' }}>
-                  <section className={styles.section}>
-                    <h2>Regional Popularity</h2>
-                    {/* optional: placeholder map */}
-                    <ResponsiveContainer width="100%" height={300}>
-                      <BarChart data={regionData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="region" />
-                        <YAxis allowDecimals={false}/>
-                        <Tooltip />
-                        <Bar dataKey="signup_count" fill="#8884d8" name="Total Signups"/>
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </section>
-                </TiltDiv>
-              </div>
-              <div className="col-12">
-                <TiltDiv style={{ height: '100%', borderRadius: '1rem', overflow: 'hidden' }}>
-                  <section className={styles.section}>
-                    <h2>Regional Popularity Heatmap</h2>
-                    <div
-                      ref={mapRef}
-                      style={{ width: "100%", height: "301px", borderRadius: "12px" }}
-                    />
-                  </section>
-                </TiltDiv>
-              </div>
+              <TiltDiv style={{ height: '100%', borderRadius: '1rem', overflow: 'hidden' }}>
+                <section className={styles.section}>
+                  <h2>Regional Popularity</h2>
+                  {/* optional: placeholder map */}
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={regionData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="region" />
+                      <YAxis allowDecimals={false} />
+                      <Tooltip />
+                      <Bar dataKey="signup_count" fill="#8884d8" name="Total Signups" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </section>
+              </TiltDiv>
+            </div>
+            <div className="col-12">
+              <TiltDiv style={{ height: '100%', borderRadius: '1rem', overflow: 'hidden' }}>
+                <section className={styles.section}>
+                  <h2>Regional Popularity Heatmap</h2>
+                  <div
+                    ref={mapRef}
+                    style={{ width: "100%", height: "301px", borderRadius: "12px" }}
+                  />
+                </section>
+              </TiltDiv>
+            </div>
           </div>
         </div>
       </PageTransition>

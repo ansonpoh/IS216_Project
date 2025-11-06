@@ -227,13 +227,35 @@
     align-items: center;
   }
 
+  /* Center the middle nav using flex instead of absolute positioning to avoid overlap
+     with the right-side buttons. Allow it to shrink on narrow large screens. */
   :global(.navbar-nav.mx-auto) {
-    position: absolute;
-    left: 50%;
-    transform: translate
+    position: static;
+    left: auto;
+    transform: none;
+    margin: 0 auto;
+    display: flex;
+    gap: 12px;
+    flex: 1 1 auto;
+    justify-content: center;
+    min-width: 0; /* allow flex children to shrink */
   }
 
   .navbarRight {
     margin-left: auto;
   }
+
+/* Reduce padding / font size for center nav items on narrower large viewports so
+   the text doesn't overlap the right-side buttons (affects widths up to 1471px). */
+@media (max-width: 1471px) {
+  .navbar_item {
+    padding: 6px 10px;
+    font-size: 0.95rem;
+  }
+
+  /* Make sure the collapse area keeps a small gap so elements don't collide */
+  :global(.navbar-collapse) {
+    gap: 8px;
+  }
+}
 }
