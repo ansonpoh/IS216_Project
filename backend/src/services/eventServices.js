@@ -283,7 +283,7 @@ export async function update_publish_status(event_id, status) {
 
 export async function get_category_analytics() {
     try {
-        const query = `SELECT e.category, count(er.user_id) AS signup_count FROM event_registration er JOIN events e ON e.event_id = er.event_id WHERE er.status = 'approved' GROUP BY e.category`;
+        const query = `SELECT e.category, count(er.user_id) AS signup_count FROM event_registration er JOIN events e ON e.event_id = er.event_id WHERE er.status != 'denied' GROUP BY e.category`;
         const result = await pool.query(query);
         return result.rows;
     } catch (err) {
@@ -294,7 +294,7 @@ export async function get_category_analytics() {
 
 export async function get_region_analytics() {
     try {
-        const query = `SELECT e.region, COUNT(er.user_id) AS signup_count FROM event_registration er JOIN events e ON e.event_id = er.event_id WHERE er.status = 'approved' GROUP BY e.region`;
+        const query = `SELECT e.region, COUNT(er.user_id) AS signup_count FROM event_registration er JOIN events e ON e.event_id = er.event_id WHERE er.status != 'denied' GROUP BY e.region`;
         const result = await pool.query(query);
         return result.rows;
     } catch(err) {
