@@ -13,10 +13,10 @@
 |:--:|:--|:--|
 | <img src="photos/anson.jpg" width="80"> | Anson Poh Jing En | Backend Developer, Database & Auth - AI Chat, Supabase Integration |
 | <img src="photos/sitinur.jpg" width="80"> | Sitinur | Frontend Developer - Opportunity Listing |
-| <img src="photos/keying.jpg" width="80"> | Liang Keying | Backend Developer, UI/UX - AI Chat, Webpage Layout |
+| <img src="photos/keying.jpg" width="80"> | Liang Keying | Backend Developer, UI/UX - Landing Page, AI Chat, Webpage Layout |
 | <img src="photos/riya.jpg" width="80"> | Riya Philip | Frontend Developer, UI/UX - Opportunity Listing, Community Page |
 | <img src="photos/joshua.jpg" width="80"> | Cher Zhi Rui Joshua | Frontend Developer - Interactive Map, Community Page |
-| <img src="photos/yuanlong.png" width="80"> | Siew Yuanlong | Frontend Developer - Login/Signup, Profile |
+| <img src="photos/yuanlong.png" width="80"> | Siew Yuanlong | Frontend Developer - Login/Signup, Profile, Dashboards |
 
 > Place all headshot thumbnails in the `/photos` folder (JPEG or PNG).
 
@@ -32,7 +32,7 @@ Describe the **real-world business or community problem** your project addresses
 
 Current volunteer recruitment systems, like WhatsApp polls and manual coordination, are inefficient. They lead to long waiting times (weeks to months), poor visualization of opportunities, and a frustrating experience that discourages potential volunteers. This creates a significant barrier between passionate individuals and NGOs in need of support.
 
-Our web application aims to simplify and accelerate the volunteer–NGO matching process by providing a centralized, easy-to-use platform. It addresses the inefficiencies of current systems—long waiting times, scattered opportunities, and poor visibility—by offering features like AI-powered opportunity recommendations, interactive maps, and real-time event management. Volunteers can quickly discover, track, and engage with opportunities that match their interests, while NGOs can efficiently manage sign-ups and communicate with participants.
+Our web application aims to simplify and accelerate the volunteer–NGO matching process by providing a centralized, easy-to-use platform. It addresses the inefficiencies of current systems (long waiting times, scattered opportunities, and poor visibility) by offering features like AI-powered opportunity recommendations, interactive maps, and real-time event management. Volunteers can quickly discover, track, and engage with opportunities that match their interests, while NGOs can efficiently manage sign-ups and communicate with participants.
 
 ---
 
@@ -47,14 +47,13 @@ Explain the core features and the benefit each provides.
 | Feature | Description | User Benefit |
 |:--|:--|:--|
 | Register & Login | Secure authentication system | Personalized experience and data security |
-| AI Chat | AI Chat that interacts with users to recommend suitable opportunities | Saves time and effort to find preferred volunteering opportunities |
-| Interactive Map | Live map showing all opportunities, with regional and categorical filters, and customised markers | Easy and aesthetic location-based opportunity lookup |
-| Opportunities Listing | List of all opportunities available | Has detailed information of all opportunities, and assists with signing up |
-| Communities Page | Social page where organisations and users can share images with captions of volunteering | Allows users to share memorable moments with other users, encouraging volunteering |
-| Analytics Page | Allows users to see popular volunteering categories, regions and heatmap to help them decide what to volunteer in |
-| Organiser Dashboard | Allows organisers to create events and manage volunteer sign ups all in one place |
-| Volunteer Dashboard | Allows volunteers to set volunteering goals, track  past and ongoing volunteering events as well as pending applications all in one place |
-
+| AI Chat | AI Chat that interacts with users to recommend suitable volunteering opportunities | Saves time and effort by quickly guiding users to relevant opportunities |
+| Interactive Map | Dynamic map displaying volunteering opportunities with regional and category filters, and custom markers | Easy and visually-appealing location-based opportunity lookup |
+| Opportunities Listing | List of all opportunities available | Provides detailed information and simplifies the process of signing up for events |
+| Communities Page | Social page where organisations and users can share images with captions of volunteering experiences | Encourages community engagement and sharing of memorable moments, motivating more volunteering |
+| Analytics Page | Visual analytics of popular volunteering categories, regions, and a heatmap for insights | Allows users to see popular volunteering categories, regions and heatmap to help them make informed decisions on what to volunteer for |
+| Organiser Dashboard | Tool for organisers to create events and manage volunteer sign-ups in one place | Allows organisers to create events and manage volunteer sign ups all in one place |
+| Volunteer Dashboard | Dashboard for volunteers to set goals, track past and ongoing events, and manage pending applications in one place | Helps volunteers stay organized and monitor their volunteering progress efficiently
 
 ---
 
