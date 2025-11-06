@@ -351,7 +351,7 @@ export default function VolunteerDashboard() {
 
   useEffect(() => {
     const fetchEvents = async () => {
-      const result = await axios.get(`${LOCAL_BASE}/events/get_registered_events_for_user`, { params: { user_id: auth.id } });
+      const result = await axios.get(`${API_BASE}/events/get_registered_events_for_user`, { params: { user_id: auth.id } });
       setEvents(result.data.result);
     }
     fetchEvents();
@@ -361,7 +361,7 @@ export default function VolunteerDashboard() {
   const fetchUserHours = async () => {
     try {
       if (!auth?.id) return;
-      const resp = await axios.get(`${LOCAL_BASE}/users/get_user_by_id`, { params: { id: auth.id } });
+      const resp = await axios.get(`${API_BASE}/users/get_user_by_id`, { params: { id: auth.id } });
       const rows = resp.data?.result;
       if (rows && rows.length > 0) {
         const u = rows[0];
@@ -419,7 +419,7 @@ export default function VolunteerDashboard() {
     setActiveEvents((arr) => arr.filter((e) => (e.event_id ?? e.id) !== identifier && e.id !== identifier));
 
     try {
-      const res = await axios.post(`${LOCAL_BASE}/events/update_registration_status`, {
+      const res = await axios.post(`${API_BASE}/events/update_registration_status`, {
         user_id: auth.id,
         event_id: ev.event_id ?? ev.id,
         status: 'attended'
