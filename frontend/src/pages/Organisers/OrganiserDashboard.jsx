@@ -352,6 +352,7 @@ export default function OrganiserDashboard() {
                             <button
                               className="btn btn-outline-secondary btn-sm"
                               onClick={() => republishEvent(e)}
+                              style={{width:"75px"}}
                             >
                               Republish
                             </button>
@@ -363,12 +364,21 @@ export default function OrganiserDashboard() {
                             </button>
                             </>
                           ) : (
+                            <>
                             <button
-                              className={`btn btn-sm ${e.is_published ? "btn-outline-danger" : "btn-outline-success"}`}
+                              className={`btn btn-sm ${e.is_published ? "btn-outline-secondary" : "btn-outline-success"}`}
                               onClick={() => togglePublish(e)}
+                              style={{width:"75px"}}
                             >
                               {e.is_published ? "Close" : "Publish"}
                             </button>
+                            <button
+                              className="btn btn-outline-danger btn-sm"
+                              onClick={() => confirmDelete(e)}
+                            >
+                              Delete
+                            </button>
+                            </>
                           )}
                         </div>
                       </td>

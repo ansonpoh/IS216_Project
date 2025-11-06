@@ -10,7 +10,7 @@ export default function ChatWindow() {
   const { messages, setMessages } = useAuth();
   const [loading, setLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(true);
-  // const API_BASE = process.env.REACT_APP_API_URL;
+  const API_BASE = process.env.REACT_APP_API_URL;
   const LOCAL_BASE = "http://localhost:3001"
   const chatBoxRef = useRef(null);
 
@@ -57,7 +57,7 @@ export default function ChatWindow() {
     setShowSuggestions(false);
 
     try {
-      const res = await axios.post(`${LOCAL_BASE}/api/chat`, {
+      const res = await axios.post(`${API_BASE}/api/chat`, {
         userMessage: userMessage,
         history: messages,
       });
