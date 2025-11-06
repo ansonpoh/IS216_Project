@@ -453,7 +453,7 @@ export default function VolunteerDashboard() {
           <div className="row g-3 mb-4">
 
             {/* CARD 1: TOTAL HOURS (COL-LG-4) - Keeping all original style/animation for this one */}
-            <div className="col-lg-4">
+            <div className="col-lg-4 col-md-4">
               <TiltDiv style={{height: '100%', borderRadius: '1rem', overflow: 'hidden'}}>
               <div className={`card shadow-lg h-100 ${styles.vdCard} ${styles['vd-total-card']}`}>
                 {/* Animated background circles */}
@@ -487,7 +487,7 @@ export default function VolunteerDashboard() {
             </div>
 
             {/* CARD 2: GOAL PROGRESS (COL-LG-8) - APPLYING TILT EFFECT HERE */}
-            <div className="col-12 col-lg-8">
+            <div className="col-12 col-lg-8 col-md-8">
               <TiltDiv className={`card h-100 ${styles.vdCard_2}`} style={{borderRadius: '1rem', overflow: 'hidden'}}>
                 <div className="card-body d-flex flex-column flex-md-row align-items-center gap-4">
                   <div className="flex-shrink-0">
@@ -528,7 +528,7 @@ export default function VolunteerDashboard() {
 
           <div className="row g-3">
             {/* CAROUSEL 1: ACTIVE EVENTS (COL-LG-6) - APPLYING TILT EFFECT HERE (optional, but good for consistency) */}
-            <div className="col-lg-6">
+            <div className="col-lg-6 col-md-6">
               <TiltDiv style={{height: '100%', borderRadius: '1rem', overflow: 'hidden'}}>
                   <CardCarousel title="Active (Joined) Events" items={activeEvents} emptyText="Nothing here yet." renderCardFooter={(e) => (
                     <>
@@ -547,7 +547,7 @@ export default function VolunteerDashboard() {
             {/* CAROUSEL 2: PENDING APPLICATIONS (COL-LG-6) - NOTE: CardCarousel is likely an external component, 
                 so we wrap it in a div or use TiltDiv if it renders the root element. 
                 Assuming CardCarousel renders a div, we'll wrap it in a simple div for clean sizing here. */}
-            <div className="col-lg-6">
+            <div className="col-lg-6 col-md-6">
               {/* Optional: You can apply TiltDiv here too if desired */}
               <TiltDiv style={{height: '100%', borderRadius: '1rem', overflow: 'hidden'}}>
               <div style={{height: '100%'}}> 
