@@ -147,30 +147,24 @@ export default function Analytics() {
       const heatmap = new window.google.maps.visualization.HeatmapLayer({
         data: heatmapPoints,
         radius: 50,
-        // dissipating: true,
+        dissipating: true,
         opacity: 0.7,
-        maxIntensity: 10
       });
+
+      const rainbowGradient = [
+        "rgba(0, 0, 255, 0)",     
+        "rgba(0, 0, 255, 1)",     
+        "rgba(0, 255, 255, 1)",   
+        "rgba(0, 255, 0, 1)",     
+        "rgba(255, 255, 0, 1)",   
+        "rgba(255, 165, 0, 1)",   
+        "rgba(255, 0, 0, 1)"    
+      ];
+
+      heatmap.set("gradient", rainbowGradient);
 
       heatmap.setMap(map);
       heatmapRef.current = heatmap;
-
-      heatmap.set('gradient', [
-        'rgba(0, 255, 255, 0)',
-        'rgba(0, 255, 255, 1)',
-        'rgba(0, 191, 255, 1)',
-        'rgba(0, 127, 255, 1)',
-        'rgba(0, 63, 255, 1)',
-        'rgba(0, 0, 255, 1)',
-        'rgba(0, 0, 223, 1)',
-        'rgba(0, 0, 191, 1)',
-        'rgba(0, 0, 159, 1)',
-        'rgba(0, 0, 127, 1)',
-        'rgba(63, 0, 91, 1)',
-        'rgba(127, 0, 63, 1)',
-        'rgba(191, 0, 31, 1)',
-        'rgba(255, 0, 0, 1)'
-      ]);
     };
 
     loadGoogleMaps();
