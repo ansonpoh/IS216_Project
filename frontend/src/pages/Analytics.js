@@ -195,7 +195,7 @@ export default function Analytics() {
                       <XAxis dataKey="category" />
                       <YAxis />
                       <Tooltip />
-                      <Bar dataKey="signup_count" fill="#82ca9e" />
+                      <Bar dataKey="Signups" fill="#82ca9d" />
                     </BarChart>
                   </ResponsiveContainer>
                 </section>

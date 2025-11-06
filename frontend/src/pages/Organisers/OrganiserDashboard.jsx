@@ -29,6 +29,10 @@ export default function OrganiserDashboard() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [eventToDelete, setEventToDelete] = useState(null);
 
+  const [showUserModal, setShowUserModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [loadingUser, setLoadingUser] = useState(false);
+
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -219,6 +223,21 @@ export default function OrganiserDashboard() {
     }
   };
 
+  const openUserModal = async (user_id) => {
+    setShowUserModal(true);
+    setLoadingUser(true);
+    try {
+      const res = await axios.get(`${API_BASE}/users/get_user_by_id`, {
+        params: { user_id }
+      });
+      setSelectedUser(res.data.result?.[0]);
+    } catch (err) {
+      console.error("Failed to fetch user details", err);
+    } finally {
+      setLoadingUser(false);
+    }
+  };
+
 
   // ---- UI ------------------------------------------------------------------
   return (
@@ -352,6 +371,7 @@ export default function OrganiserDashboard() {
                             <button
                               className="btn btn-outline-secondary btn-sm"
                               onClick={() => republishEvent(e)}
+                              style={{width:"75px"}}
                             >
                               Republish
                             </button>
@@ -363,12 +383,21 @@ export default function OrganiserDashboard() {
                             </button>
                             </>
                           ) : (
+                            <>
                             <button
-                              className={`btn btn-sm ${e.is_published ? "btn-outline-danger" : "btn-outline-success"}`}
+                              className={`btn btn-sm ${e.is_published ? "btn-outline-secondary" : "btn-outline-success"}`}
                               onClick={() => togglePublish(e)}
+                              style={{width:"75px"}}
                             >
                               {e.is_published ? "Close" : "Publish"}
                             </button>
+                            <button
+                              className="btn btn-outline-danger btn-sm"
+                              onClick={() => confirmDelete(e)}
+                            >
+                              Delete
+                            </button>
+                            </>
                           )}
                         </div>
                       </td>
@@ -417,7 +446,7 @@ export default function OrganiserDashboard() {
                         <li key={r.user_id} className="list-group-item d-flex justify-content-between align-items-center" style={{gap:"1rem"}}>
                           <div style={{flex:1}}>
                             <strong>{r.username}&nbsp; &nbsp;</strong> 
-                            <span className="text-muted small">{r.email}</span>
+                            <span className="text-muted small" onClick={() => openUserModal(r.user_id)}>{r.email}</span>
                           </div>
 
                           {(r.status === "denied" || r.status === "attended") && (
@@ -443,10 +472,6 @@ export default function OrganiserDashboard() {
                         {r.status}
                       </span>
                     </div>
-
-
-
-
                           {r.status === "pending" && (
                             <div className="btn-group btn-group-sm">
                               <button
@@ -513,6 +538,48 @@ export default function OrganiserDashboard() {
                   </button>
                   <button className="btn btn-danger" onClick={handleDelete}>
                     Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showUserModal && (
+          <div
+            className="modal fade show d-block"
+            tabIndex="-1"
+            style={{ backgroundColor: "rgba(0,0,0,0.6)", zIndex: 1060 }}
+          >
+            <div className="modal-dialog modal-dialog-centered">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title">Volunteer Information</h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={() => setShowUserModal(false)}
+                  ></button>
+                </div>
+                <div className="modal-body">
+                  {loadingUser ? (
+                    <div>Loading user info...</div>
+                  ) : selectedUser ? (
+                    <>
+                    {console.log(selectedUser)}
+                      <p><strong>Name:</strong> {selectedUser.username}</p>
+                      <p><strong>Email:</strong> {selectedUser.email}</p>
+                      <p><strong>Joined:</strong> {new Date(selectedUser.created_at).toLocaleDateString()}</p>
+                      <p><strong>Volunteer Interests:</strong> {selectedUser.interests || "N/A"}</p>
+                      <p><strong>Region:</strong> {selectedUser.region || "N/A"}</p>
+                    </>
+                  ) : (
+                    <div>No user details found.</div>
+                  )}
+                </div>
+                <div className="modal-footer">
+                  <button className="btn btn-secondary" onClick={() => setShowUserModal(false)}>
+                    Close
                   </button>
                 </div>
               </div>

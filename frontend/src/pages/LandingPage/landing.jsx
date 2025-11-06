@@ -75,7 +75,7 @@ export default function Landing() {
         formData.append("user_id", user_id);
         formData.append("username", username);
         formData.append("email", email);
-        await axios.post(`${LOCAL_BASE}/users/complete_registration`, formData, {headers: {"Content-Type":"multipart/form-data"}});
+        await axios.post(`${API_BASE}/users/complete_registration`, formData, {headers: {"Content-Type":"multipart/form-data"}});
       } catch (err) {
         console.error(err);
       }
@@ -118,7 +118,7 @@ export default function Landing() {
       setLoadingFacts(true);
       setFetchError(null);
       try {
-        const response = await axios.get(`${LOCAL_BASE}/facts`);
+        const response = await axios.get(`${API_BASE}/facts`);
         const data = response.data;
 
         const rows = Array.isArray(data.facts)

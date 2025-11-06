@@ -54,7 +54,7 @@ export default function LoginSignup() {
       return;
     }
 
-    const emailInUse = await axios.get(`${LOCAL_BASE}/orgs/check_email`, {params: {email: registerData.email}});
+    const emailInUse = await axios.get(`${API_BASE}/orgs/check_email`, {params: {email: registerData.email}});
     if(emailInUse.data.status) {
       setRegisterErrors("Email in use.");
       return;
@@ -134,7 +134,7 @@ export default function LoginSignup() {
             formData.append("profile_image", registerData.profile_image);
           }
           const res = await axios.post(
-            `${LOCAL_BASE}/orgs/complete_registration`,
+            `${API_BASE}/orgs/complete_registration`,
             formData,
             { headers: { "Content-Type": "multipart/form-data" } }
           );
