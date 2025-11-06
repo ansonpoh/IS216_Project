@@ -225,12 +225,6 @@ Perform the following checks before submission:
 
 Each member should contribute 2–3 sentences on their learning and project experience.
 
-> **Example Template:**  
-> - *Alice:* Learned to build reusable Vue components and manage state effectively.  
-> - *Ben:* Gained experience connecting frontend and backend APIs.  
-> - *Chloe:* Improved UI/UX design workflow and collaboration using Figma.  
-> - *David:* Understood how Firebase Authentication and Firestore integrate with modern SPAs.  
-
 > - *Anson:* Learned more in detail about cloud databases and configuring an agentic AI. Gained more experience in overall web development.
 > - *Sitinur:* 
 > - *Keying:* 
