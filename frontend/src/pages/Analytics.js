@@ -185,7 +185,7 @@ export default function Analytics() {
             <Title text="See What's Hot!" />
           </div>
           <div className="row g-3 mb-4">
-            <div className="col-lg-12">
+            <div className="col-lg-6 col-md-12">
               <TiltDiv style={{ height: '100%', borderRadius: '1rem', overflow: 'hidden' }}>
                 <section className={styles.section}>
                   <h2>Category Popularity</h2>
@@ -193,7 +193,7 @@ export default function Analytics() {
                     <BarChart data={categoryData}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="category" />
-                      <YAxis />
+                      <YAxis allowDecimals={false}/>
                       <Tooltip />
                       <Bar dataKey="signup_count" fill="#82ca9d" name="Total Signups"/>
                     </BarChart>
@@ -207,7 +207,7 @@ export default function Analytics() {
               </TiltDiv>
             </div> */}
 
-            <div className="col-lg-4">
+            <div className="col-lg-6 col-md-12">
                 <TiltDiv style={{ height: '100%', borderRadius: '1rem', overflow: 'hidden' }}>
                   <section className={styles.section}>
                     <h2>Regional Popularity</h2>
@@ -216,7 +216,7 @@ export default function Analytics() {
                       <BarChart data={regionData}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="region" />
-                        <YAxis />
+                        <YAxis allowDecimals={false}/>
                         <Tooltip />
                         <Bar dataKey="signup_count" fill="#8884d8" name="Total Signups"/>
                       </BarChart>
@@ -224,7 +224,7 @@ export default function Analytics() {
                   </section>
                 </TiltDiv>
               </div>
-              <div className="col-lg-8">
+              <div className="col-12">
                 <TiltDiv style={{ height: '100%', borderRadius: '1rem', overflow: 'hidden' }}>
                   <section className={styles.section}>
                     <h2>Regional Popularity Heatmap</h2>
