@@ -45,7 +45,7 @@ export default function RoleSelect() {
           {/* Keep emoji original color by rendering it outside the gradient Title */}
           <div className="mb-2" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
             <Title text="Join the Movement" size="56px" className="m-0" />
-            <span role="img" aria-label="sparkles" style={{ fontSize: '56px', lineHeight: 1 }}>✨</span>
+            <span role="img" aria-label="sparkles" style={{ fontSize: '56px', lineHeight: 1 }}></span>
           </div>
           <p className={`fade-up text-center mb-5`} style={{ animationDelay: "100ms" }}>
             Choose your role to get a tailored experience.

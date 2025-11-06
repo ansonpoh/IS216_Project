@@ -14,92 +14,154 @@
   margin-top: -1px;
 }
 
-/* Optional: alternate section backgrounds */
-.hero-section,
-.map-section,
-.community-section
-.meet-vera-section,
-.opportunities-section {
-  background: linear-gradient(180deg, #eaf3ff 0%, #f9fbff 100%);
+
+.bg-blue-100 {
+  background-color: #dbeafe;
 }
 
+.bg-purple-100 {
+  background-color: #ede9fe;
+}
 
+.text-gray-800 {
+  color: #1f2937;
+}
 
-.bg-blue-100 { background-color: #dbeafe; }
+.text-gray-600 {
+  color: #4b5563;
+}
 
-.bg-purple-100 { background-color: #ede9fe; }
+.border-purple-200 {
+  border-color: #d8b4fe;
+}
 
-.text-gray-800 { color: #1f2937; }
+.border-gray-100 {
+  border-color: #f3f4f6;
+}
 
-.text-gray-600 { color: #4b5563; }
+.text-white-50 {
+  color: rgba(255, 255, 255, 0.75);
+}
 
-.border-purple-200 { border-color: #d8b4fe; }
+.hover-shadow-lg:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
 
-.border-gray-100 { border-color: #f3f4f6; }
+.hover-translate-y-2:hover {
+  transform: translateY(-0.5rem);
+}
 
-.text-white-50 { color: rgba(255, 255, 255, 0.75); }
-
-.hover-shadow-lg:hover { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
-
-.hover-translate-y-2:hover { transform: translateY(-0.5rem); }
-
-.hover-scale-105:hover { transform: scale(1.05); }
+.hover-scale-105:hover {
+  transform: scale(1.05);
+}
 
 /* Hero Section Background */
+/* .section {
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+  position: relative;
+  overflow: hidden;
+} */
+
 .hero-section {
-    position: relative;
-    padding-top: 5rem;
-    padding-bottom: 5rem;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid transparent;
+  min-height: 100dvh;
+}
+
+.hero-section .hero-bg-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  will-change: transform;
+  /* border-bottom: 1px solid transparent !important; */
+}
+
+.hero-section>.container {
+  position: relative;
+  z-index: 1;
+}
+
+.container.mt-7 {
+  margin-top: 1.75rem;
+  /* adjust if mt-7 is too large on small screens */
+}
+
+/* Target devices smaller than medium (Bootstrap's md breakpoint is usually 768px) */
+@media (max-width: 768px) {
+
+  /* Target the floating card container */
+  .hero-section .container.mt-7 {
+    /* Dramatically reduce the top margin to save vertical space */
+    margin-top: 1.5rem !important;
+    /* Adjust as needed, but this is much smaller */
+  }
+
+  /* OPTIONAL: Reduce padding/margin inside the hero-section if needed */
+  .hero-section {
+    padding-top: 2rem !important;
+    padding-bottom: 2rem !important;
+  }
 }
 
 /* Title underline */
 .title-underline {
-    position: absolute;
-    bottom: -1rem;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background-color: #8b5cf6;
+  position: absolute;
+  bottom: -1rem;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background-color: #8b5cf6;
 }
 
 /* Gradient Text and Backgrounds */
 .gradient-text-blue-purple {
-    background: linear-gradient(to right, #2563eb, #9333ea);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  background: linear-gradient(to right, #2563eb, #9333ea);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .gradient-text-purple-pink {
-    background: linear-gradient(to right, #9333ea, #ec4899);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  background: linear-gradient(to right, #9333ea, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-.bg-gradient-blue-purple { background-image: linear-gradient(to right, #2563eb, #9333ea); }
-.bg-gradient-purple-pink { background-image: linear-gradient(to right, #9333ea, #ec4899); }
+.bg-gradient-blue-purple {
+  background-image: linear-gradient(to right, #2563eb, #9333ea);
+}
+
+.bg-gradient-purple-pink {
+  background-image: linear-gradient(to right, #9333ea, #ec4899);
+}
 
 .custom-btn-primary {
-    background-image: linear-gradient(to right, #2563eb, #9333ea);
-    border: none;
-    transition: all 0.3s;
+  background-image: linear-gradient(to right, #2563eb, #9333ea);
+  border: none;
+  transition: all 0.3s;
 }
+
 .custom-btn-primary:hover {
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-    transform: scale(1.05);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  transform: scale(1.05);
 }
 
 .custom-btn-cta {
-    background-image: linear-gradient(to right, #2563eb, #9333ea);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    border: none;
-    padding: 0.75rem 2.5rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+  background-image: linear-gradient(to right, #2563eb, #9333ea);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  border: none;
+  padding: 0.75rem 2.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
 }
-.custom-btn-cta:hover { box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); }
+
+.custom-btn-cta:hover {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
 
 
 .scrollTopButton {
@@ -109,8 +171,10 @@
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2); /* glassy effect */
-  backdrop-filter: blur(10px); /* blurs background behind button */
+  background: rgba(255, 255, 255, 0.2);
+  /* glassy effect */
+  backdrop-filter: blur(10px);
+  /* blurs background behind button */
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.3);
   color: #333;
@@ -119,7 +183,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.25);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
   transition: transform 0.2s, background 0.2s;
   z-index: 1000;
 }
@@ -129,18 +193,97 @@
   background: rgba(255, 255, 255, 0.3);
 }
 
-@keyframes float { 0%,100%{ transform: translateY(0px) rotate(0deg);} 50%{ transform: translateY(-20px) rotate(5deg);} }
-@keyframes float-card { 0%,100%{ transform: translateX(calc(-50% + var(--x))) translateY(var(--y)) rotate(0deg);} 50%{ transform: translateX(calc(-50% + var(--x))) translateY(calc(var(--y) - 10px)) rotate(2deg);} }
-@keyframes gradient { 0%,100%{ background-position: 0% 50%; } 50%{ background-position: 100% 50%; } }
-@keyframes expand { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-@keyframes fade-in { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes bounce-slow { 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-10px); } }
+@keyframes float {
 
-.animate-float { animation: float infinite ease-in-out; }
-.animate-fade-in { animation: fade-in 0.8s ease-out forwards; opacity: 0; }
-.animate-gradient { background-size: 200% 200%; animation: gradient 3s ease infinite; }
-.animate-expand { animation: expand 0.8s ease-out forwards; }
-.animate-bounce-slow { animation: bounce-slow 3s infinite ease-in-out; }
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-20px) rotate(5deg);
+  }
+}
+
+@keyframes float-card {
+
+  0%,
+  100% {
+    transform: translateX(calc(-50% + var(--x))) translateY(var(--y)) rotate(0deg);
+  }
+
+  50% {
+    transform: translateX(calc(-50% + var(--x))) translateY(calc(var(--y) - 10px)) rotate(2deg);
+  }
+}
+
+@keyframes gradient {
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes expand {
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce-slow {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float infinite ease-in-out;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.8s ease-out forwards;
+  opacity: 0;
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient 3s ease infinite;
+}
+
+.animate-expand {
+  animation: expand 0.8s ease-out forwards;
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 3s infinite ease-in-out;
+}
 
 /* Make these selectors global but scoped under .landing-page so they override app defaults */
 :global(.landing-page .gradient-text-blue-purple) {
@@ -158,16 +301,22 @@
   background-clip: text;
 }
 
-:global(.landing-page .bg-gradient-blue-purple) { background-image: linear-gradient(to right, #2563eb, #9333ea); }
-:global(.landing-page .bg-gradient-purple-pink) { background-image: linear-gradient(to right, #9333ea, #ec4899); }
+:global(.landing-page .bg-gradient-blue-purple) {
+  background-image: linear-gradient(to right, #2563eb, #9333ea);
+}
+
+:global(.landing-page .bg-gradient-purple-pink) {
+  background-image: linear-gradient(to right, #9333ea, #ec4899);
+}
 
 :global(.landing-page .custom-btn-primary) {
   background-image: linear-gradient(to right, #2563eb, #9333ea);
   border: none;
   transition: all 0.3s;
 }
+
 :global(.landing-page .custom-btn-primary:hover) {
-  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
   transform: scale(1.05);
 }
 
@@ -176,21 +325,33 @@
   position: absolute;
   top: 0;
   left: 50%;
-  width: 320px;
+  width: 300px;
   transition: all 0.3s;
   animation: float-card 6s infinite ease-in-out;
 }
 
 /* animations (keep global under landing-page) */
-:global(.landing-page .animate-fade-in) { animation: fade-in 0.8s ease-out forwards; opacity: 0; }
-:global(.landing-page .animate-gradient) { background-size: 200% 200%; animation: gradient 3s ease infinite; }
-:global(.landing-page .animate-bounce-slow) { animation: bounce-slow 3s infinite ease-in-out; }
+:global(.landing-page .animate-fade-in) {
+  animation: fade-in 0.8s ease-out forwards;
+  opacity: 0;
+}
+
+:global(.landing-page .animate-gradient) {
+  background-size: 200% 200%;
+  animation: gradient 3s ease infinite;
+}
+
+:global(.landing-page .animate-bounce-slow) {
+  animation: bounce-slow 3s infinite ease-in-out;
+}
 
 
 :global(html, body) {
   scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch; /* for iOS momentum */
-  scroll-padding-top: 80px; /* keeps sections clean when using anchors */
+  -webkit-overflow-scrolling: touch;
+  /* for iOS momentum */
+  scroll-padding-top: 80px;
+  /* keeps sections clean when using anchors */
 }
 
 :global(.landing-page) {
@@ -200,22 +361,55 @@
 
 
 /* keep your @keyframes as global (no .landing-page prefix needed) */
-@keyframes gradient { 0%,100%{ background-position: 0% 50%; } 50%{ background-position: 100% 50%; } }
-@keyframes fade-in { from { opacity: 0; transform: translateY(20px);} to { opacity: 1; transform: translateY(0);} }
-@keyframes bounce-slow { 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(-10px);} }
+@keyframes gradient {
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce-slow {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
 
 /* Map preview card */
 .mapCard {
-  border-radius: 1rem;            /* ~rounded-4 */
+  border-radius: 1rem;
+  /* ~rounded-4 */
   overflow: hidden;
   transition: transform .25s ease, box-shadow .25s ease;
-  box-shadow: 0 10px 24px rgba(0,0,0,.08);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .08);
   will-change: transform, box-shadow;
 }
 
 .mapCard:hover {
   transform: translateY(-1px) scale(1.03);
-  box-shadow: 0 18px 30px rgba(0,0,0,.12);
+  box-shadow: 0 18px 30px rgba(0, 0, 0, .12);
 }
 
 
@@ -231,6 +425,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .mapCard,
   .mapCard:hover,
   .mapBorder,
@@ -243,7 +438,8 @@
 /* Ensure the subheading used in Landing is larger than normal text but smaller than the H2 (Meet Vera).
    Use a global selector so the class works when applied as a plain string in JSX. */
 :global(.subheading_1) {
-  font-size: 1.5rem; /* base size */
+  font-size: 1.5rem;
+  /* base size */
   line-height: 1.15;
   font-weight: 600;
   margin-bottom: 1rem;
@@ -251,13 +447,14 @@
 
 @media (min-width: 768px) {
   :global(.subheading_1) {
-    font-size: 1.75rem; /* slightly larger on tablet / desktop */
+    font-size: 1.75rem;
+    /* slightly larger on tablet / desktop */
   }
 }
 
 @media (min-width: 1200px) {
   :global(.subheading_1) {
-    font-size: 2rem; /* still smaller than display-5 heading */
+    font-size: 2rem;
+    /* still smaller than display-5 heading */
   }
 }
-

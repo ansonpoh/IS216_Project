@@ -191,7 +191,7 @@ const OpportunityCard = ({
         {/* Actions */}
         <div className="flex space-x-2">
           <Link to="/opportunity-detail-pages" className="flex-1">
-            <Button variant="default" fullWidth size="sm" onClick={() => nav("/opportunities", {state: {id}})}>
+            <Button variant="default" fullWidth size="sm" onClick={() => nav("/opportunity", {state: {id}})}>
               Learn More
             </Button>
           </Link>
