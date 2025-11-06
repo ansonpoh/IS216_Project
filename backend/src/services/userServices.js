@@ -128,7 +128,6 @@ export async function update_user_info(payload, profile_image_file) {
             payload.email || null,
             payload.bio || null,
             payload.date_joined || new Date().toISOString(),
-            payload.hours !== undefined ? payload.hours : null,
             payload.user_id,
             profile_image_url || payload.profile_image || null,
             payload.full_name || null,
@@ -148,19 +147,18 @@ export async function update_user_info(payload, profile_image_file) {
 
         const query = `
             INSERT INTO users (
-                username, email, bio, date_joined, hours, user_id, profile_image,
+                username, email, bio, date_joined, user_id, profile_image,
                 full_name, skills, languages, availability, availability_start_time,
                 availability_end_time, location, contact, contact_phone,
                 emergency, emergency_name, emergency_relation, emergency_phone
             ) VALUES (
-                $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20
+                $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19
             )
             ON CONFLICT (user_id) DO UPDATE SET
                 username = EXCLUDED.username,
                 email = EXCLUDED.email,
                 bio = EXCLUDED.bio,
                 date_joined = EXCLUDED.date_joined,
-                hours = EXCLUDED.hours,
                 profile_image = COALESCE(EXCLUDED.profile_image, users.profile_image),
                 full_name = EXCLUDED.full_name,
                 skills = EXCLUDED.skills,
