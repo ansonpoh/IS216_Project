@@ -193,7 +193,7 @@ export default function Analytics() {
             <Title text="See What's Hot!" />
           </div>
           <div className="row g-3 mb-4">
-            <div className="col-lg-6 col-md-12">
+            <div className="col-lg-6 col-md-6">
               <TiltDiv style={{ height: '100%', borderRadius: '1rem', overflow: 'hidden' }}>
                 <section className={styles.section}>
                   <h2>Category Popularity</h2>
@@ -215,7 +215,7 @@ export default function Analytics() {
               </TiltDiv>
             </div> */}
 
-            <div className="col-lg-6 col-md-12">
+            <div className="col-lg-6 col-md-6">
               <TiltDiv style={{ height: '100%', borderRadius: '1rem', overflow: 'hidden' }}>
                 <section className={styles.section}>
                   <h2>Regional Popularity</h2>
