@@ -117,7 +117,8 @@ function Navbar() {
     {/* Mobile Links with Dividers */}
     <ul className="navbar-nav d-lg-none mobile-nav-list">
       {/* Mobile avatar row: shown when signed in, above the logout/get-started button */}
-      {auth?.id?.length > 0 && (
+      {auth?.id?.length > 0 && auth?.role === "volunteer" && (
+        // Show avatar in mobile collapse only for volunteers (organisers should not see avatar here)
         <li className="nav-item mobile-nav-item mobile-avatar-item">
           <div className="d-flex align-items-center gap-2" style={{ padding: '8px 12px' }}>
             <img
