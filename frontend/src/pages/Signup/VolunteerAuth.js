@@ -391,6 +391,20 @@ export default function LoginSignup() {
                 <i className="bx bxs-lock-alt"></i>
               </div>
 
+              <div className={styles['input-box']} style={{marginBottom: "5px"}}>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    setRegisterData({ ...registerData, profile_image: file });
+                  }}
+                />
+                <i className="bx bxs-image"></i>
+              </div>
+              <p className="text-muted">Upload a profile photo</p>
+
+
               {/* <div className="form-check mb-3">
                 <input
                   id="agree"
