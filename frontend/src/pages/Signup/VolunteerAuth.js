@@ -428,6 +428,7 @@ export default function LoginSignup() {
                     const file = e.target.files[0];
                     setRegisterData({ ...registerData, profile_image: file });
                   }}
+                  required
                 />
                 <i className="bx bxs-image"></i>
               </div>
