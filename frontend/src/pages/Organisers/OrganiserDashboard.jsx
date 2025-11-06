@@ -4,6 +4,66 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import { AuthProvider, useAuth } from "../../contexts/AuthProvider"; // optional if you guard by role
 import Title from "../../components/ui/Title";
+import Select from "react-select";
+
+const customSelectStyles = {
+  control: (base, state) => ({
+    ...base,
+    fontFamily: '"Gill Sans MT", "Gill Sans", Calibri, sans-serif',
+    backgroundColor: "#fff",
+    borderRadius: "8px",
+    borderColor: state.isFocused ? "#7494ec" : "#cfd8f7",
+    boxShadow: state.isFocused
+      ? "0 0 0 3px rgba(116,148,236,0.25)"
+      : "0 2px 8px rgba(116,148,236,0.08)",
+    padding: "2px",
+    transition: "all 0.2s ease",
+    "&:hover": { borderColor: "#7494ec" },
+    transform: state.isFocused ? "translateY(-1px)" : "translateY(0)",
+  }),
+  placeholder: (base) => ({
+    ...base,
+    color: "#64748b",
+    fontSize: "0.95rem",
+    fontFamily: '"Gill Sans MT", "Gill Sans", Calibri, sans-serif',
+  }),
+  singleValue: (base) => ({
+    ...base,
+    color: "#0f172a",
+    fontWeight: 500,
+    fontFamily: '"Gill Sans MT", "Gill Sans", Calibri, sans-serif',
+    whiteSpace: "nowrap",
+    overflow: "visible",
+    textOverflow: "unset",
+    minWidth: "2.5ch",
+  }),
+  option: (base, state) => ({
+    ...base,
+    fontFamily: '"Gill Sans MT", "Gill Sans", Calibri, sans-serif',
+    backgroundColor: state.isFocused ? "#eef2ff" : "#fff",
+    color: "#0f172a",
+    cursor: "pointer",
+    padding: "10px 12px",
+    transition: "background 0.15s ease",
+    borderRadius: "0",
+  }),
+  dropdownIndicator: (base, state) => ({
+    ...base,
+    color: state.isFocused ? "#7494ec" : "#64748b",
+    transition: "color 0.2s",
+    "&:hover": { color: "#7494ec" },
+  }),
+  indicatorSeparator: () => ({ display: "none" }),
+  menu: (base) => ({
+    ...base,
+    borderRadius: "8px",
+    marginTop: "4px",
+    boxShadow: "0 8px 20px rgba(15,23,42,0.15)",
+    overflow: "hidden",
+    zIndex: 9999,
+  }),
+  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+};
 
 export default function OrganiserDashboard() {
   const nav = useNavigate();
@@ -32,6 +92,18 @@ export default function OrganiserDashboard() {
   const [showUserModal, setShowUserModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [loadingUser, setLoadingUser] = useState(false);
+  const statusOptions = [
+  { value: "all", label: "All statuses" },
+  { value: "published", label: "Published" },
+  { value: "closed", label: "Closed" },
+];
+
+const sortOptions = [
+  { value: "title", label: "Sort by A-Z" },
+  { value: "startAt", label: "Sort by start time" },
+  { value: "createdAt", label: "Sort by created time" },
+  { value: "capacity", label: "Sort by capacity filled" },
+];
 
   useEffect(() => {
     let cancelled = false;
@@ -275,20 +347,27 @@ export default function OrganiserDashboard() {
             />
           </div>
           <div className="col-md-3">
-            <select className="form-select" value={status} onChange={(e) => setStatus(e.target.value)}>
-              <option value="all">All statuses</option>
-              <option value="published">Published</option>
-              <option value="closed">Closed</option>
-            </select>
-          </div>
-          <div className="col-md-3">
-            <select className="form-select" value={sort} onChange={(e) => setSort(e.target.value)}>
-              <option value="title">Sort by A-Z</option>
-              <option value="startAt">Sort by start time</option>
-              <option value="createdAt">Sort by created time</option>
-              <option value="capacity">Sort by capacity filled</option>
-            </select>
-          </div>
+          <Select
+            value={statusOptions.find(opt => opt.value === status)}
+            onChange={(opt) => setStatus(opt.value)}
+            options={statusOptions}
+            styles={customSelectStyles}
+            placeholder="Select status"
+            menuPortalTarget={document.body} // ensures dropdown shows above everything
+          />
+        </div>
+
+        <div className="col-md-3">
+          <Select
+            value={sortOptions.find(opt => opt.value === sort)}
+            onChange={(opt) => setSort(opt.value)}
+            options={sortOptions}
+            styles={customSelectStyles}
+            placeholder="Sort by"
+            menuPortalTarget={document.body}
+          />
+        </div>
+
         </div>
 
         {/* Content */}
