@@ -157,7 +157,7 @@ const format_reminder = `
       - For time, return the start time to the end time and include either AM or PM.
       - Return the data in 'Day Month, Year'
       - Ensure proper capitalisation.
-      - Then output a JSON array called "events" in the format :
+      - Then output a JSON array in the format :
         [
           {
             "title": "string",
@@ -183,7 +183,7 @@ const format_reminder = `
           "values": ["Option1", "Option2", "Option3", ...]
         }
 
-    Important: Do not include markdown lists or bullet points before the JSON.
+    Important: Do NOT include markdown lists or bullet points before the JSON.
     Output only a valid JSON structure.
 `
 
