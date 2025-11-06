@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import Navbar from "../components/Navbar.js";
 import styles from "../styles/Opportunities.module.css";
 import axios from 'axios';
@@ -25,8 +27,8 @@ export default function Opportunity() {
   const [regions, setRegions] = useState([]);
   const [categoryFilter, setCategoryFilter] = useState("");
   const [regionFilter, setRegionFilter] = useState("");
-  const [dateFromFilter, setDateFromFilter] = useState("");
-  const [dateToFilter, setDateToFilter] = useState("");
+  const [dateFromFilter, setDateFromFilter] = useState(null);
+  const [dateToFilter, setDateToFilter] = useState(null);
   const [selectedOpportunity, setSelectedOpportunity] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -240,8 +242,8 @@ export default function Opportunity() {
   const resetFilters = () => {
     setCategoryFilter("");
     setRegionFilter("");
-    setDateFromFilter("");
-    setDateToFilter("");
+    setDateFromFilter(null);
+    setDateToFilter(null);
   };
 
   if (loading) {
@@ -288,8 +290,8 @@ export default function Opportunity() {
   const filteredOpportunities = opportunities
     .filter((op) => (categoryFilter ? op.category === categoryFilter : true))
     .filter((op) => (regionFilter ? op.region === regionFilter : true))
-    .filter((op) => (dateFromFilter ? new Date(op.start_date) >= new Date(dateFromFilter) : true))
-    .filter((op) => (dateToFilter ? new Date(op.start_date) <= new Date(dateToFilter) : true));
+    .filter((op) => (dateFromFilter ? new Date(op.start_date) >= dateFromFilter : true))
+    .filter((op) => (dateToFilter ? new Date(op.start_date) <= dateToFilter : true));
 
   return (
     <>
@@ -354,11 +356,26 @@ export default function Opportunity() {
               <div className={styles['date-filter']}>
                 <label>
                   <span className={styles['date-label']}>Start</span>
-                  <input type="date" value={dateFromFilter} onChange={(e) => setDateFromFilter(e.target.value)} />
+                  <DatePicker
+                    selected={dateFromFilter}
+                    onChange={(date) => setDateFromFilter(date)}
+                    dateFormat="dd/MM/yyyy"
+                    placeholderText="Select start date"
+                    className={styles['custom-datepicker']}
+                    isClearable
+                  />
                 </label>
                 <label>
                   <span className={styles['date-label']}>End</span>
-                  <input type="date" value={dateToFilter} onChange={(e) => setDateToFilter(e.target.value)} />
+                  <DatePicker
+                    selected={dateToFilter}
+                    onChange={(date) => setDateToFilter(date)}
+                    dateFormat="dd/MM/yyyy"
+                    placeholderText="Select end date"
+                    className={styles['custom-datepicker']}
+                    isClearable
+                    minDate={dateFromFilter}
+                  />
                 </label>
               </div>
               <button className={styles['reset-btn']} onClick={resetFilters}>
