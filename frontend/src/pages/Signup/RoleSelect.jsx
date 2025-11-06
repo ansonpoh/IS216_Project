@@ -85,7 +85,7 @@ export default function RoleSelect() {
               <p>Discover causes, sign up fast, and track your impact.</p>
               <ul className="perks" style={{ listStyle: 'none', paddingLeft: 0 }}>
                 {/* <li><i className="bx bx-check"></i> Calendar sync</li> */}
-                <li><i className="bx bx-check"></i >Community Forum</li>
+                <li><i className="bx bx-check"></i> Community Forum</li>
                <li><i className="bx bx-check"></i> Goal Setting</li>
               <li><i className="bx bx-check"></i> Impact Analytics</li>
 
