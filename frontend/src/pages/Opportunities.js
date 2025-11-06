@@ -181,7 +181,28 @@ export default function Opportunities() {
     return (
       <>
         <Navbar />
-        <p>Loading opportunities...</p>
+        <div className="container py-4 flex-grow-1" style={{ position: 'relative', minHeight: '50vh' }}>
+          <div
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              zIndex: 50,
+              backgroundColor: 'white',
+              padding: '24px',
+              borderRadius: '12px',
+              boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+            }}
+          >
+            <div className="text-center">
+              <div className="spinner-border text-primary" role="status" style={{ marginBottom: '12px' }}>
+                <span className="visually-hidden">Loading...</span>
+              </div>
+              <p className="text-muted mb-0">Loading opportunities...</p>
+            </div>
+          </div>
+        </div>
       </>
     );
   }
