@@ -4,6 +4,74 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContaine
 import Navbar from "../components/Navbar";
 import Title from "../components/ui/Title";
 import styles from "../styles/Analytics.module.css";
+import PageTransition from "../components/Animation/PageTransition";
+import { gsap } from 'gsap';
+
+
+const TiltDiv = ({ children, className, style }) => {
+  const tiltRef = useRef(null);
+  const MOBILE_BREAKPOINT = 768; // Define mobile breakpoint for disabling effect
+
+  useEffect(() => {
+    const element = tiltRef.current;
+    const isMobile = window.innerWidth <= MOBILE_BREAKPOINT;
+
+    if (!element || isMobile) return;
+
+    const handleMouseMove = e => {
+      const rect = element.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+
+      // Tilt Calculation (subtler max 6 degrees)
+      const rotateX = ((y - centerY) / centerY) * -4;
+      const rotateY = ((x - centerX) / centerX) * 4;
+
+      gsap.to(element, {
+        rotateX,
+        rotateY,
+        duration: 0.1,
+        ease: 'power2.out',
+        transformPerspective: 1000 // Key for 3D tilt
+      });
+    };
+
+    const handleMouseLeave = () => {
+      gsap.to(element, {
+        rotateX: 0,
+        rotateY: 0,
+        duration: 0.3,
+        ease: 'power2.out'
+      });
+    };
+
+    // Apply necessary base styles for 3D perspective
+    element.style.transformStyle = 'preserve-3d';
+    element.style.transition = 'transform 0.3s ease-out'; // Keep a base transition for smooth exit
+
+    element.addEventListener('mousemove', handleMouseMove);
+    element.addEventListener('mouseleave', handleMouseLeave);
+
+    return () => {
+      element.removeEventListener('mousemove', handleMouseMove);
+      element.removeEventListener('mouseleave', handleMouseLeave);
+      gsap.killTweensOf(element); // Cleanup GSAP animations
+    };
+  }, []); // Empty dependency array means this runs once on mount
+
+  return (
+    <div
+      ref={tiltRef}
+      className={className}
+      style={{ ...style, position: 'relative' }} // Must be relative for internal positioning if needed
+    >
+      {children}
+    </div>
+  );
+};
+
 
 export default function Analytics() {
   const [categoryData, setCategoryData] = useState([]);
@@ -81,7 +149,7 @@ export default function Analytics() {
         radius: 50,
         // dissipating: true,
         opacity: 0.7,
-        maxIntensity:10
+        maxIntensity: 10
       });
 
       heatmap.setMap(map);
@@ -111,44 +179,69 @@ export default function Analytics() {
   return (
     <div>
       <Navbar />
-      <div className={styles.container}>
-        <Title text="Event Sign-up Analytics" />
+      <PageTransition>
+        <div className={`container py-4 ${styles.container}`}>
+          <div className="d-flex flex-column align-items-center mb-3 text-center">
+            <Title text="Event Sign-up Analytics" />
+          </div>
+          <div className="row g-3 mb-4">
+            <div className="col-lg-8">
+              <TiltDiv style={{ height: '100%', borderRadius: '1rem', overflow: 'hidden' }}>
+                <section className={styles.section}>
+                  <h2>Category Popularity</h2>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={categoryData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="category" />
+                      <YAxis />
+                      <Tooltip />
+                      <Bar dataKey="signup_count" fill="#82ca9d" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </section>
+              </TiltDiv>
+            </div>
+            <div className="col-lg-4">
+              <TiltDiv style={{ height: '100%', borderRadius: '1rem', overflow: 'hidden' }}>
+                something here
+              </TiltDiv>
+            </div>
 
-        <section className={styles.section}>
-          <h2>Category Popularity</h2>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={categoryData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="category" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="signup_count" fill="#82ca9d" />
-            </BarChart>
-          </ResponsiveContainer>
-        </section>
-
-        <section className={styles.section}>
-          <h2>Regional Popularity</h2>
-          {/* optional: placeholder map */}
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={regionData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="region" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="signup_count" fill="#8884d8" />
-            </BarChart>
-          </ResponsiveContainer>
-        </section>
-
-        <section className={styles.section}>
-          <h2>Regional Popularity Heatmap</h2>
-          <div
-            ref={mapRef}
-            style={{ width: "100%", height: "400px", borderRadius: "12px" }}
-          />
-        </section>
-      </div>
+            <div className="row g-3">
+              <div className="col-lg-4">
+                <TiltDiv style={{ height: '100%', borderRadius: '1rem', overflow: 'hidden' }}>
+                  <section className={styles.section}>
+                    <h2>Regional Popularity</h2>
+                    {/* optional: placeholder map */}
+                    <ResponsiveContainer width="100%" height={300}>
+                      <BarChart data={regionData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="region" />
+                        <YAxis />
+                        <Tooltip />
+                        <Bar dataKey="signup_count" fill="#8884d8" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </section>
+                </TiltDiv>
+              </div>
+              <div className="col-lg-8">
+                <TiltDiv style={{ height: '100%', borderRadius: '1rem', overflow: 'hidden' }}>
+                  <section className={styles.section}>
+                    <h2>Regional Popularity Heatmap</h2>
+                    <div
+                      ref={mapRef}
+                      style={{ width: "100%", height: "300px", borderRadius: "12px" }}
+                    />
+                  </section>
+                </TiltDiv>
+              </div>
+            </div>
+          </div>
+        </div>
+      </PageTransition>
     </div>
+
+
   );
 }
