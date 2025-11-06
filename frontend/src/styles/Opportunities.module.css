@@ -182,6 +182,14 @@
   top: 4px;
 }
 
+:global(.react-datepicker__navigation--previous) {
+  left: 8px;
+}
+
+:global(.react-datepicker__navigation--next) {
+  right: 8px;
+}
+
 :global(.react-datepicker__navigation-icon::before) {
   border-color: #fff;
 }
@@ -428,6 +436,19 @@
   .reset-btn {
     width: 100%; /* full-width buttons */
     min-width: auto;
+  }
+
+  /* Fix calendar picker navigation spacing on mobile */
+  :global(.react-datepicker__navigation--previous) {
+    left: -100px;
+  }
+
+  :global(.react-datepicker__navigation--next) {
+    right: -100px;
+  }
+
+  :global(.react-datepicker__current-month) {
+    padding: 0 40px; /* Add padding to prevent text overlapping with arrows */
   }
 }
 
