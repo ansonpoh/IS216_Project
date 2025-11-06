@@ -61,6 +61,61 @@
   cursor: pointer;
 }
 
+/* --- Shared Enhanced Hover/Focus Styles --- */
+.enhancedInput {
+  font-family: "Gill Sans MT", "Gill Sans", Calibri, sans-serif;
+  background-color: #fff;
+  border-radius: 8px;
+  border: 1px solid #cfd8f7;
+  padding: 0.5rem 0.9rem;
+  font-size: 0.95rem;
+  color: #0f172a;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(116, 148, 236, 0.08);
+  outline: none;
+}
+
+/* More obvious hover effect */
+.enhancedInput:hover {
+  border-color: #7494ec;
+  box-shadow: 0 4px 12px rgba(116, 148, 236, 0.25);
+  transform: translateY(-1px);
+}
+
+/* Same effect on focus/click */
+.enhancedInput:focus {
+  border-color: #7494ec;
+  box-shadow: 0 4px 12px rgba(116, 148, 236, 0.25);
+  transform: translateY(-1px);
+}
+
+/* Apply this class directly to your elements in HTML */
+.searchInput,
+.sortSelect {
+  font-family: "Gill Sans MT", "Gill Sans", Calibri, sans-serif;
+  background-color: #fff;
+  border-radius: 8px;
+  border: 1px solid #cfd8f7;
+  padding: 0.5rem 0.9rem;
+  font-size: 0.95rem;
+  color: #0f172a;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(116, 148, 236, 0.08);
+  outline: none;
+}
+
+.searchInput:hover,
+.sortSelect:hover,
+.searchInput:focus,
+.sortSelect:focus {
+  border-color: #7494ec;
+  box-shadow: 0 4px 12px rgba(116, 148, 236, 0.25);
+  transform: translateY(-1px);
+}
+
+
 /* --- Add Post Button Styles --- */
 .addPostButton {
   background: #7494ec;

@@ -63,6 +63,39 @@
   text-transform: uppercase;
 }
 
+/* Date filter inputs styled like custom select */
+.filters input[type="date"] {
+  font-family: "Gill Sans MT", "Gill Sans", Calibri, sans-serif;
+  background-color: #fff;
+  border-radius: 8px;
+  border: 1px solid #cfd8f7;
+  padding: 0.55rem 0.9rem;
+  font-size: 0.95rem;
+  color: #0f172a;
+  cursor: pointer;
+  transition: all 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 8px rgba(116, 148, 236, 0.08);
+}
+
+.filters input[type="date"]:hover {
+  border-color: #7494ec;
+}
+
+.filters input[type="date"]:focus {
+  border-color: #7494ec;
+  box-shadow: 0 0 0 3px rgba(116, 148, 236, 0.25);
+  outline: none; /* remove default browser outline */
+  transform: translateY(-1px);
+
+}
+
+/* Placeholder styling for browsers that support it */
+.filters input[type="date"]::placeholder {
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+
 .reset-btn {
   padding: 0.55rem 0.9rem;
   border-radius: 8px;

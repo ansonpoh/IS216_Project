@@ -9,6 +9,71 @@ import PageTransition from "../../components/Animation/PageTransition.jsx";
 // import NewDiscussion from "./component/NewDiscussion.jsx";
 import styles from "../../styles/Community.module.css";
 import { useAuth } from "../../contexts/AuthProvider.js";
+import Select from "react-select";
+
+// ForumPage.jsx (before your component)
+const customSelectStyles = {
+  control: (base, state) => ({
+    ...base,
+    fontFamily: '"Gill Sans MT", "Gill Sans", Calibri, sans-serif',
+    backgroundColor: "#fff",
+    borderRadius: "8px",
+    borderColor: state.isFocused ? "#7494ec" : "#cfd8f7",
+    boxShadow: state.isFocused
+      ? "0 0 0 3px rgba(116,148,236,0.25)"
+      : "0 2px 8px rgba(116,148,236,0.08)",
+    padding: "2px",
+    transition: "all 0.2s ease",
+    "&:hover": { borderColor: "#7494ec" },
+    transform: state.isFocused ? "translateY(-1px)" : "translateY(0)",
+    "&:hover": {
+      borderColor: "#7494ec",
+      transform: "translateY(-1px)",
+    },
+  }),
+  placeholder: (base) => ({
+    ...base,
+    color: "#64748b",
+    fontSize: "0.95rem",
+    fontFamily: '"Gill Sans MT", "Gill Sans", Calibri, sans-serif',
+  }),
+  singleValue: (base) => ({
+    ...base,
+    color: "#0f172a",
+    fontWeight: 500,
+    fontFamily: '"Gill Sans MT", "Gill Sans", Calibri, sans-serif',
+    whiteSpace: "nowrap",
+    overflow: "visible",
+    textOverflow: "unset",
+    minWidth: "2.5ch",
+  }),
+  option: (base, state) => ({
+    ...base,
+    fontFamily: '"Gill Sans MT", "Gill Sans", Calibri, sans-serif',
+    backgroundColor: state.isFocused ? "#eef2ff" : "#fff",
+    color: "#0f172a",
+    cursor: "pointer",
+    padding: "10px 12px",
+    transition: "background 0.15s ease",
+    borderRadius: "0",
+  }),
+  dropdownIndicator: (base, state) => ({
+    ...base,
+    color: state.isFocused ? "#7494ec" : "#64748b",
+    transition: "color 0.2s",
+    "&:hover": { color: "#7494ec" },
+  }),
+  indicatorSeparator: () => ({ display: "none" }),
+  menu: (base) => ({
+    ...base,
+    borderRadius: "8px",
+    marginTop: "4px",
+    boxShadow: "0 8px 20px rgba(15,23,42,0.15)",
+    overflow: "hidden",
+    zIndex: 9999,
+  }),
+  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+};
 
 const PostModal = ({ post, onClose, onLike }) => {
   if (!post) return null;
@@ -140,6 +205,11 @@ export default function ForumPage() {
   const nav = useNavigate();
   const {auth} = useAuth();
   const userId = auth?.id;
+  const sortOptions = [
+  { value: "date", label: "Sort by Date" },
+  { value: "likes", label: "Sort by Likes" },
+];
+
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -313,14 +383,15 @@ export default function ForumPage() {
                   />
 
                   {/* Sort */}
-                  <select
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
-                    className={styles.sortSelect} // Use CSS module for styles
-                  >
-                    <option value="date">Sort by Date</option>
-                    <option value="likes">Sort by Likes</option>
-                  </select>
+                <Select
+                value={sortOptions.find(opt => opt.value === sortBy)} // current value
+                onChange={(selected) => setSortBy(selected.value)}
+                options={sortOptions}
+                styles={customSelectStyles}
+                placeholder="Sort posts..." // optional placeholder
+                isSearchable={false} // remove search box if not needed
+/>
+
                 </div>
 
                 {/* Add Post Button */}

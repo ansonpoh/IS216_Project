@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Select from "react-select";
 import Navbar from "../components/Navbar.js";
 import styles from "../styles/Opportunities.module.css";
 import axios from 'axios';
@@ -6,6 +7,7 @@ import PageTransition from "../components/Animation/PageTransition.jsx";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthProvider.js";
 import Title from '../components/ui/Title';
+
 
 export default function Opportunity() {
 
@@ -33,6 +35,71 @@ export default function Opportunity() {
   const [signUpLoading, setSignUpLoading] = useState(false);
   const [signUpSuccess, setSignUpSuccess] = useState(false);
   const [alreadySignedUp, setAlreadySignedUp] = useState(false);
+  const customSelectStyles = {
+  control: (base, state) => ({
+    ...base,
+    fontFamily: '"Gill Sans MT", "Gill Sans", Calibri, sans-serif',
+    backgroundColor: "#fff",
+    borderRadius: "8px",
+    borderColor: state.isFocused ? "#7494ec" : "#cfd8f7",
+    boxShadow: state.isFocused
+      ? "0 0 0 3px rgba(116,148,236,0.25)"
+      : "0 2px 8px rgba(116,148,236,0.08)",
+    padding: "2px",
+    transition: "all 0.2s ease",
+    "&:hover": { borderColor: "#7494ec" },
+    transform: state.isFocused ? "translateY(-1px)" : "translateY(0)",
+    "&:hover": {
+      borderColor: "#7494ec",
+      transform: "translateY(-1px)",
+    },
+  }),
+  placeholder: (base) => ({
+    ...base,
+    color: "#64748b",
+    fontSize: "0.95rem",
+    fontFamily: '"Gill Sans MT", "Gill Sans", Calibri, sans-serif',
+  }),
+  singleValue: (base) => ({
+  ...base,
+  color: "#0f172a",
+  fontWeight: 500,
+  fontFamily: '"Gill Sans MT", "Gill Sans", Calibri, sans-serif',
+  whiteSpace: "nowrap",        // Prevent line breaks inside the value
+  overflow: "visible",         // Make sure text doesn't get clipped
+  textOverflow: "unset",       // Disable ellipsis
+  minWidth: "2.5ch",           // Ensure enough min width for very short words
+}),
+
+  option: (base, state) => ({
+    ...base,
+    fontFamily: '"Gill Sans MT", "Gill Sans", Calibri, sans-serif',
+    backgroundColor: state.isFocused ? "#eef2ff" : "#fff",
+    color: "#0f172a",
+    cursor: "pointer",
+    padding: "10px 12px",
+    transition: "background 0.15s ease",
+    borderRadius: "0", // ensures highlight fills full width
+  }),
+  dropdownIndicator: (base, state) => ({
+    ...base,
+    color: state.isFocused ? "#7494ec" : "#64748b",
+    transition: "color 0.2s",
+    "&:hover": { color: "#7494ec" },
+  }),
+  indicatorSeparator: () => ({ display: "none" }),
+  menu: (base) => ({
+    ...base,
+    borderRadius: "8px",
+    marginTop: "4px",
+    boxShadow: "0 8px 20px rgba(15,23,42,0.15)",
+    overflow: "hidden",
+    zIndex: 9999,
+  }),
+  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+};
+
+
 
   useEffect(() => {
     const fetchOpportunities = async () => {
@@ -237,24 +304,48 @@ export default function Opportunity() {
           <div className={styles.filters}>
             <div className={styles['group-left']}>
               <div className={styles['date-filter']}>
+      {/* CATEGORY FILTER */}
+      <Select
+        value={
+          categoryFilter
+            ? { value: categoryFilter, label: categoryFilter }
+            : null
+        }
+        onChange={(opt) => setCategoryFilter(opt?.value || "")}
+        options={[
+          { value: "", label: "All Categories" },
+          ...categories.map((catObj) => ({
+            value: catObj.category ?? catObj.name ?? "",
+            label: catObj.category ?? catObj.name ?? "Unknown",
+          })),
+        ]}
+        placeholder="All Categories"
+        styles={customSelectStyles}
+        menuPortalTarget={document.body}
+        menuPosition="fixed"
+      />
 
-              <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} aria-label="Filter by category">
-                <option value="">All Categories</option>
-                {categories.map((catObj, idx) => (
-                  <option key={catObj.id ?? catObj.category ?? idx} value={catObj.category ?? catObj.name ?? ""}>
-                    {catObj.category ?? catObj.name ?? "Unknown"}
-                  </option>
-                ))}
-              </select>
+      {/* REGION FILTER */}
+      <Select
+        value={
+          regionFilter
+            ? { value: regionFilter, label: regionFilter }
+            : null
+        }
+        onChange={(opt) => setRegionFilter(opt?.value || "")}
+        options={[
+          { value: "", label: "All Regions" },
+          ...regions.map((regObj) => ({
+            value: regObj.region ?? regObj.name ?? "",
+            label: regObj.region ?? regObj.name ?? "Unknown",
+          })),
+        ]}
+        placeholder="All Regions"
+        styles={customSelectStyles}
+        menuPortalTarget={document.body}
+        menuPosition="fixed"
+      />
 
-              <select value={regionFilter} onChange={(e) => setRegionFilter(e.target.value)} aria-label="Filter by region">
-                <option value="">All Regions</option>
-                {regions.map((regObj, idx) => (
-                  <option key={regObj.id ?? regObj.region ?? idx} value={regObj.region ?? regObj.name ?? ""}>
-                    {regObj.region ?? regObj.name ?? "Unknown"}
-                  </option>
-                ))}
-              </select>
             </div>
           </div>
             
