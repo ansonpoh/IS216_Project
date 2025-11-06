@@ -264,12 +264,18 @@ export default function Landing() {
               // Calculate dynamic Z-Index: Active card is highest (10), others are normal (3-i)
               const currentZIndex = isFocus ? 10 : 3 - i;
 
-              const baseTransform = `translateX(calc(-50% + ${(i - 1) * 45
-                }px)) translateY(${i * 5}px)`;
+              // Use a smaller horizontal offset on narrower screens to avoid
+              // the floating cards reaching into the right-column content
+              // (e.g. the AI/map preview) around widths like 940px.
+              const cardOffset = (typeof window !== 'undefined' && window.innerWidth < 992) ? 22 : 45;
+              const yOffset = (typeof window !== 'undefined' && window.innerWidth < 992) ? 4 : 5;
+
+              const baseTransform = `translateX(calc(-50% + ${(i - 1) * cardOffset
+                }px)) translateY(${i * yOffset}px)`;
 
               // Focus transform adds a slight lift and scale (subtle)
-              const focusTransform = `translateX(calc(-50% + ${(i - 1) * 45
-                }px)) translateY(${i * 8 - 5}px) scale(1.06) rotate(0deg)`;
+              const focusTransform = `translateX(calc(-50% + ${(i - 1) * cardOffset
+                }px)) translateY(${i * (yOffset + 3) - 5}px) scale(1.06) rotate(0deg)`;
 
               const colors = getCategoryColors(opportunities[i].category);
               // alias for clarity when rendering icon + colors

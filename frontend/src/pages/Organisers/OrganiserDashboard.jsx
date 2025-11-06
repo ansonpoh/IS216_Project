@@ -100,8 +100,6 @@ export default function OrganiserDashboard() {
 
 const sortOptions = [
   { value: "title", label: "Sort by A-Z" },
-  { value: "startAt", label: "Sort by start time" },
-  { value: "createdAt", label: "Sort by created time" },
   { value: "capacity", label: "Sort by capacity filled" },
 ];
 
@@ -318,8 +316,8 @@ const sortOptions = [
       <Navbar />
       <div className="container py-4">
         {/* Header */}
-        <div className="d-flex align-items-center justify-content-between mb-3">
-          <div style={{ minWidth: 0 }}>
+        <div className="d-flex flex-column align-items-start mb-3">
+          <div style={{ minWidth: 0 }} className="mb-2">
             <Title
               text="Organiser Dashboard"
               size="56px"
@@ -328,32 +326,12 @@ const sortOptions = [
               subtitle={`Welcome. ${org ? org.org_name : ""} Manage your opportunities and volunteers.`}
             />
           </div>
-<button
-  className="btn"
-  style={{
-    background: '#7494ec',
-    borderColor: '#7494ec',
-    color: '#fff',
-    fontWeight: '600',
-    borderRadius: '8px',
-    padding: '8px 16px',
-    whiteSpace: 'nowrap',
-    display: 'inline-block',
-    position: 'relative',
-    marginLeft: '0',
-    marginRight: '0',
-    marginTop:
-      window.innerWidth <= 768
-        ? '48px' 
-        : '12px',  
-  }}
-  onClick={goCreate}
->
-  + Create Opportunity
-</button>
-
-
-
+          <button className="btn w-100 w-lg-auto mt-2 py-3 px-4 "
+            style={{ background: '#7494ec', borderColor: '#7494ec', color: '#fff', fontWeight: '600', borderRadius: '0.75rem', fontSize: '1.8rem'  }}
+            onClick={goCreate}
+          >
+            + Create Opportunity
+          </button>
         </div>
 
         {/* Filters */}
@@ -684,6 +662,22 @@ const sortOptions = [
                       <p><strong>Volunteered Hours:</strong> {selectedUser?.hours || 0}</p>
                       <p><strong>Skills: </strong>{selectedUser?.skills?.join(", ") || "None"}</p>
                       <p><strong>Languages: </strong>{selectedUser?.languages?.join(", ") || "None"}</p>
+                      {selectedUser.availability && selectedUser.availability.days && (
+                        <div>
+                          {(() => {
+                            const daysObj = selectedUser.availability.days;
+                            const orderedDays = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
+                            const availableDays = orderedDays
+                              .filter(day => daysObj[day]) // keep only true ones
+                              .map(day => day.charAt(0).toUpperCase() + day.slice(1));
+                            return (
+                              <>
+                                <p><strong>Available Days:</strong> {availableDays.length ? availableDays.join(", ") : "None"}</p>
+                              </>
+                            );
+                          })()}
+                        </div>
+                      )}
                       {console.log(selectedUser)}
                     </div>
                   ) : (

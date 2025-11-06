@@ -458,3 +458,161 @@
     /* still smaller than display-5 heading */
   }
 }
+
+/* --- Mobile / small-screen refinements ---
+   These keep large-screen styles untouched and only apply
+   compression at narrow viewports (iPhone-width devices). */
+
+/* Very small phones (iPhone SE / narrow devices) */
+@media (max-width: 390px) {
+
+  /* Reduce hero height and vertical spacing so the hero content fits without heavy scrolling */
+  .hero-section {
+    min-height: auto !important;
+    padding-top: 1.5rem !important;
+    padding-bottom: 1.5rem !important;
+  }
+
+  /* Slightly smaller headline to avoid wrapping into many lines */
+  .hero-title {
+    font-size: 1.5rem !important;
+    line-height: 1.05 !important;
+  }
+
+  /* Floating cards should be narrower and slightly scaled down */
+  :global(.landing-page .opportunity-card-float) {
+    width: 220px !important;
+    transform-origin: center top;
+    animation-duration: 6s;
+  }
+
+  /* Ensure the mapCard does not overflow the viewport */
+  :global(.landing-page .mapCard) {
+    max-width: 92% !important;
+    width: 92% !important;
+  }
+
+  /* Reduce CTA/button padding so they fit comfortably */
+  :global(.landing-page .custom-btn-primary),
+  :global(.landing-page .custom-btn-cta) {
+    padding: 0.5rem 1rem !important;
+    font-size: 0.95rem !important;
+    display: block !important;
+    width: 92% !important;
+    max-width: 420px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    justify-content: center !important;
+  }
+
+}
+
+/* Small phones / narrow portrait (typical iPhone 12 width is 390–412px) */
+@media (max-width: 420px) {
+
+  .hero-section {
+    min-height: auto !important;
+    padding-top: 1.75rem !important;
+    padding-bottom: 1.75rem !important;
+  }
+
+  .hero-section .container.mt-7 {
+    margin-top: 0.75rem !important;
+  }
+
+  .hero-title {
+    font-size: 1.8rem !important;
+    line-height: 1.06 !important;
+  }
+
+  /* Floating cards scale down and reduce horizontal overlap */
+  :global(.landing-page .opportunity-card-float) {
+    width: 260px !important;
+    animation: float-card 6s infinite ease-in-out;
+  }
+
+  /* Map/preview cards: keep nice spacing but prevent overflow */
+  :global(.landing-page .mapCard) {
+    max-width: 95% !important;
+    width: 95% !important;
+  }
+
+  /* Facts area: reduce min-height so it fits above the fold more often */
+  :global(.landing-page .text-center.bg-white.border.bo.shadow-sm.p-4.rounded-3) {
+    min-height: 120px !important;
+  }
+
+  /* Slightly smaller subheading on small screens */
+  :global(.subheading_1) {
+    font-size: 1.25rem !important;
+  }
+
+  /* Make CTA buttons match the mapCard width on small phones */
+  :global(.landing-page .custom-btn-primary),
+  :global(.landing-page .custom-btn-cta) {
+    display: block !important;
+    width: 95% !important;
+    max-width: 420px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    justify-content: center !important;
+  }
+
+}
+
+/* Narrow desktop / large tablet breakpoint (fix floating cards overlap around 940px) */
+@media (max-width: 992px) {
+
+  /* Pull floating cards slightly up and reduce width so they don't collide
+     with the next-section preview cards (AI/map) when the layout stacks. */
+  :global(.landing-page .opportunity-card-float) {
+    width: 260px !important;
+    top: -10px !important;
+    transition: transform 0.25s ease, top 0.25s ease;
+  }
+
+  /* Reduce the extra spacing between the hero and following sections */
+  .hero-section .container.mt-7 {
+    margin-top: 0.5rem !important;
+  }
+
+}
+
+/* Tablet / small landscape fallback (still leave desktop untouched) */
+@media (max-width: 576px) {
+
+  /* Reduce vertical spacing across hero and sections */
+  .hero-section {
+    padding-top: 2rem !important;
+    padding-bottom: 2rem !important;
+  }
+
+  .container.mt-7 {
+    margin-top: 1rem !important;
+  }
+
+  /* Make the hero badges and small callouts slightly smaller */
+  .hero-section .d-inline-flex.px-4.py-3 {
+    padding: 0.5rem 1rem !important;
+  }
+
+  /* Make sure the CTA buttons remain tappable but not oversized */
+  :global(.landing-page .custom-btn-primary) {
+    padding: 0.6rem 1rem !important;
+    font-size: 1rem !important;
+  }
+
+  /* Floating cards: reduce overlap offset to avoid off-screen clipping */
+  :global(.landing-page .opportunity-card-float) {
+    left: 50% !important;
+    transform-origin: center top !important;
+  }
+
+}
+
+/* Make sure the global gradient animation isn't too heavy on small screens */
+@media (prefers-reduced-motion: reduce), (max-width: 420px) {
+  :global(.landing-page .animate-gradient) {
+    animation: none !important;
+  }
+}
