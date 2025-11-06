@@ -226,11 +226,20 @@ Each member should contribute 2–3 sentences on their learning and project expe
 > - *Anson:* Learned more in detail about cloud databases and configuring an agentic AI. Gained more experience in overall web development.
 > - *Sitinur:* 
 > - *Keying:*  Gained experience connecting frontend and backend API endpoints. Created reusable components.  
-> - *Riya:* Learned how to use reusable React components, design the frontend UI and understood how data is retrieved from the backend using routes and controllers
-> - *Joshua:* Learned how to use Fort Awesome, Bootstrap icons, SVG over map API, as well as map filter logic.
+> - *Riya:* Learned how to use reusable React components, design the frontend UI and understood how data is retrieved from the backend using routes and controllers.
+> - *Joshua:* Learned how to use Fort Awesome, Bootstrap icons, SVG over map API, as well as map filter logic. Also learned how different methods of styling are used for different cases, i.e. styling API in-built elements, default components.
 > - *Yuanlong:* Learned how to route pages and connect different components effectively and how to manage dynamic content across pages.
 
 As a team, reflect on:
 - Key takeaways from working with real-world frameworks  
 - Challenges faced and how they were resolved  
 - Insights on teamwork, project management, and problem-solving  
+
+> - Key Takeaways:
+Working with real-world frameworks like React and Node.js taught us the importance of proper architecture and code organisation. Integrating Supabase for authentication and database management gave us hands-on experience with modern cloud-based solutions. We learned that building scalable applications requires careful planning of API endpoints, proper state management, and understanding how frontend and backend communicate effectively. The use of APIs from Google Maps and OpenAI showed us how to make use of existing services to enhance functionality rather than building everything from scratch.
+
+> - Challenges and Solutions:
+One major challenge was configuring CORS and OAuth redirects when deploying to production environments. Initially, authentication worked locally but failed on Vercel, which we resolved by properly configuring the Supabase Site URL and backend CORS origins. Another issue was managing database queries efficiently. Ensuring accurate volunteer counts and event capacities required careful use of JOINs and GROUP BY clauses. We also faced difficulties coordinating across multiple features simultaneously, which we addressed by maintaining consistent communication through regular check-ins.
+
+> - Teamwork and Project Management:
+Clear role allocation (frontend, backend, UI/UX) helped us work simultaneously without blocking each other, though it required constant communication to ensure components integrated smoothly. Using Git for version control was crucial but also led to merge conflicts that taught us the value of frequent commits and clear branch naming. Regular testing of each feature across different team members' machines helped us to catch any environment-specific issues. Overall, this project reinforced that successful web development is as much about collaboration and communication as it is about coding skills.
