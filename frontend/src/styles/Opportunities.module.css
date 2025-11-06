@@ -246,7 +246,7 @@
 
 @media (max-width:420px) {
   .card-footer {
-    flex-direction: column;
+    flex-direction: row;
     align-items: stretch;
     gap: 0.6rem
   }
@@ -272,7 +272,8 @@
 
   .filters select,
   .filters input[type="date"] {
-    min-width: 140px
+    min-width: 140px;
+    width: 100%;
   }
 }
 
@@ -293,7 +294,7 @@
 /* Fix date filter overflow for very small screens */
 @media (max-width: 400px) {
   .date-filter {
-    flex-direction: column;
+    flex-direction: row;
     align-items: stretch;
     gap: 0.5rem;
   }
@@ -305,6 +306,30 @@
   .date-filter input[type="date"] {
     width: 100%;
     min-width: auto;
+  }
+}
+
+@media (max-width: 400px) {
+  .filters {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .filters .group-left,
+  .filters .group-right {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .filters .group-right {
+    justify-content: flex-start; /* Align the reset button to left instead of far right */
+  }
+
+  .reset-btn {
+    margin-left: 0; /* remove extra spacing */
+    flex-shrink: 0; /* avoid shrinking */
   }
 }
 

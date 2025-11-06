@@ -236,6 +236,8 @@ export default function Opportunity() {
 
           <div className={styles.filters}>
             <div className={styles['group-left']}>
+              <div className={styles['date-filter']}>
+
               <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} aria-label="Filter by category">
                 <option value="">All Categories</option>
                 {categories.map((catObj, idx) => (
@@ -254,6 +256,8 @@ export default function Opportunity() {
                 ))}
               </select>
             </div>
+          </div>
+            
 
             <div className={styles['group-right']}>
               <div className={styles['date-filter']}>
