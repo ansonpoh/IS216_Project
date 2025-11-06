@@ -36,12 +36,13 @@ export default function LoginSignup() {
     if (active) {
       setLoginData({ email: "", password: "" });
     } else {
-      setRegisterData({
+      setRegisterData(prev => ({
+        ...prev,
         username: "",
         email: "",
         password: "",
         confirmPassword: "",
-      });
+      }));
     }
   }, [active]);
 
@@ -79,6 +80,26 @@ export default function LoginSignup() {
         setRegisterErrors(error.message);
         return;
       }
+
+      const user = data.user;
+
+      if (user) {
+        const formData = new FormData();
+        formData.append("user_id", user.id);
+        formData.append("username", registerData.username);
+        formData.append("email", registerData.email);
+        if (registerData.profile_image instanceof File) {
+          formData.append("profile_image", registerData.profile_image);
+        }
+        try {
+          await axios.post(`${API_BASE}/users/complete_registration`, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+        } catch (uploadErr) {
+          console.error("Backend registration error:", uploadErr);
+        }
+      }
+
 
       alert("Verification link sent to email!");
       setActive(false);
@@ -131,46 +152,54 @@ export default function LoginSignup() {
         localStorage.removeItem("sb-persist-session");
       }
 
-      const userInDb = await axios.get(`${API_BASE}/users/get_user_by_id`, {params: {id: user.id}});
-      if(userInDb.data.result.length === 0) {
-        try {
-          const formData = new FormData();
-          formData.append("user_id", user.id);
-          formData.append("username", user.user_metadata?.username || "");
-          formData.append("email", user.email || "");
-          if (registerData.profile_image instanceof File) {
-            formData.append("profile_image", registerData.profile_image);
-          }
+      setAuth({
+        role:"volunteer",
+        id: user.id,
+        token: accessToken,
+      })
 
-          const res = await axios.post(
-            `${API_BASE}/users/complete_registration`,
-            formData,
-            { headers: { "Content-Type": "multipart/form-data" } }
-          );
+      nav("/");
 
-          if (res?.data?.status) {
-            alert("Login success");
-          } else {
-            console.log(res?.data);
-          }
+      // const userInDb = await axios.get(`${API_BASE}/users/get_user_by_id`, {params: {id: user.id}});
+      // if(userInDb.data.result.length === 0) {
+      //   try {
+      //     const formData = new FormData();
+      //     formData.append("user_id", user.id);
+      //     formData.append("username", user.user_metadata?.username || "");
+      //     formData.append("email", user.email || "");
+      //     if (registerData.profile_image instanceof File) {
+      //       formData.append("profile_image", registerData.profile_image);
+      //     }
 
-          setAuth({
-            role: "volunteer",
-            id: user.id,
-            token: accessToken || "",
-          });
-          nav("/");
-        } catch (err) {
-          console.error(err);
-        }
-      } else {
-        setAuth({
-          role: "volunteer",
-          id: user.id,
-          token: accessToken || "",
-        });
-        nav("/");
-      }
+      //     const res = await axios.post(
+      //       `${API_BASE}/users/complete_registration`,
+      //       formData,
+      //       { headers: { "Content-Type": "multipart/form-data" } }
+      //     );
+
+      //     if (res?.data?.status) {
+      //       alert("Login success");
+      //     } else {
+      //       console.log(res?.data);
+      //     }
+
+      //     setAuth({
+      //       role: "volunteer",
+      //       id: user.id,
+      //       token: accessToken || "",
+      //     });
+      //     nav("/");
+      //   } catch (err) {
+      //     console.error(err);
+      //   }
+      // } else {
+      //   setAuth({
+      //     role: "volunteer",
+      //     id: user.id,
+      //     token: accessToken || "",
+      //   });
+      //   nav("/");
+      // }
     } catch (err) {
       console.error(err);
       setLoginErrors("Unexpected error during login");
