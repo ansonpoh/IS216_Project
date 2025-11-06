@@ -4,6 +4,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Navbar from "../components/Navbar.js";
 import styles from "../styles/Opportunities.module.css";
+import modalStyles from "../styles/Modals.module.css";
 import axios from 'axios';
 import PageTransition from "../components/Animation/PageTransition.jsx";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -37,6 +38,8 @@ export default function Opportunity() {
   const [signUpLoading, setSignUpLoading] = useState(false);
   const [signUpSuccess, setSignUpSuccess] = useState(false);
   const [alreadySignedUp, setAlreadySignedUp] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorModalMessage, setErrorModalMessage] = useState("");
   const customSelectStyles = {
   control: (base, state) => ({
     ...base,
@@ -195,7 +198,8 @@ export default function Opportunity() {
       return;
     }
     if (auth.role === "organiser") {
-      alert("Only Volunteers can sign up!")
+      setErrorModalMessage("Only Volunteers can sign up!");
+      setShowErrorModal(true);
       return;
     }
     setConfirmModal(true);
@@ -217,13 +221,15 @@ export default function Opportunity() {
         if (res.data.result) {
           setSignUpSuccess(true);
         } else {
-          alert("Somethin went wrong.");
+          setErrorModalMessage("Something went wrong.");
+          setShowErrorModal(true);
         }
       }
       setSignUpLoading(false);
     } catch (err) {
       console.error(err);
-      alert("Error occured while signing up.")
+      setErrorModalMessage("Error occurred while signing up.");
+      setShowErrorModal(true);
       setSignUpLoading(false);
     }
   }
@@ -533,6 +539,19 @@ export default function Opportunity() {
               <div className={styles.body}>You have already signed up for this event!</div>
               <div className={styles.buttons}>
                 <button className={styles.btnPrimary} onClick={handleAcknowledgement}>OK</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showErrorModal && (
+          <div className={modalStyles.overlay} onClick={() => setShowErrorModal(false)}>
+            <div className={modalStyles.dialog} role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+              <div className={modalStyles.icon} style={{ color: '#f59e0b' }}>⚠️</div>
+              <div className={modalStyles.title}>Error</div>
+              <div className={modalStyles.body}>{errorModalMessage}</div>
+              <div className={modalStyles.buttons}>
+                <button className={modalStyles.btnPrimary} onClick={() => setShowErrorModal(false)}>OK</button>
               </div>
             </div>
           </div>

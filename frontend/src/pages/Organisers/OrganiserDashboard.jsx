@@ -92,6 +92,8 @@ export default function OrganiserDashboard() {
   const [showUserModal, setShowUserModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [loadingUser, setLoadingUser] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorModalMessage, setErrorModalMessage] = useState("");
   const statusOptions = [
   { value: "all", label: "All statuses" },
   { value: "published", label: "Published" },
@@ -233,7 +235,8 @@ const sortOptions = [
       });
     } catch (err) {
       console.error(err);
-      alert("Error updating registration");
+      setErrorModalMessage("Error updating registration");
+      setShowErrorModal(true);
 
       setRegistrations((prev) =>
         prev.map((r) =>
@@ -253,7 +256,8 @@ const sortOptions = [
     } catch {
       // revert on error
       setEvents((arr) => arr.map((e) => (e.id === id ? { ...e, status: ev.status } : e)));
-      alert("Could not change publish state.");
+      setErrorModalMessage("Could not change publish state.");
+      setShowErrorModal(true);
     }
   };
 
@@ -290,7 +294,8 @@ const sortOptions = [
       setEventToDelete(null);
     } catch (err) {
       console.error("Failed to delete event:", err);
-      alert("Failed to delete the event. Please try again.");
+      setErrorModalMessage("Failed to delete the event. Please try again.");
+      setShowErrorModal(true);
     }
   };
 
@@ -686,6 +691,34 @@ const sortOptions = [
                 </div>
                 <div className="modal-footer">
                   <button className="btn btn-secondary" onClick={() => setShowUserModal(false)}>
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        {showErrorModal && (
+          <div
+            className="modal fade show d-block"
+            tabIndex="-1"
+            style={{ backgroundColor: "rgba(0,0,0,0.6)", zIndex: 1060 }}
+          >
+            <div className="modal-dialog modal-dialog-centered">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title text-danger">Error</h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={() => setShowErrorModal(false)}
+                  ></button>
+                </div>
+                <div className="modal-body">
+                  <p>{errorModalMessage}</p>
+                </div>
+                <div className="modal-footer">
+                  <button className="btn btn-secondary" onClick={() => setShowErrorModal(false)}>
                     Close
                   </button>
                 </div>
