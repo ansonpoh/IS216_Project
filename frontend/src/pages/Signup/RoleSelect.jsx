@@ -45,9 +45,8 @@ export default function RoleSelect() {
           {/* Keep emoji original color by rendering it outside the gradient Title */}
           <div className="mb-2" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
             <Title text="Join the Movement" size="56px" className="m-0" />
-            <span role="img" aria-label="sparkles" style={{ fontSize: '56px', lineHeight: 1 }}></span>
           </div>
-          <p className={`fade-up text-center mb-5`} style={{ animationDelay: "100ms" }}>
+          <p className={`fade-up text-center mb-5`} style={{ animationDelay: "100ms", fontSize: '20px' }}>
             Choose your role to get a tailored experience.
           </p>
 
@@ -58,13 +57,14 @@ export default function RoleSelect() {
               style={{ animationDelay: "200ms" }}
               onClick={goOrganiser}
             >
-              <i className="bx bx-building-house role-icon"></i>
-              <h2>I'm an Organiser</h2>
-              <p>Create events and manage signups</p>
-              <ul className="perks">
+              {/* <i className="bx bx-building-house role-icon"></i> */}
+              <h2>I'm an Organiser!</h2>
+              <p>Create events and manage volunteer signups</p>
+              <ul className="perks" style={{ listStyle: 'none', paddingLeft: 0 }}>
                 {/* <li><i className="bx bx-check"></i> Bulk invites</li> */}
-                <li><i className="bx bx-check"></i> Attendance tools</li>
-                {/* <li><i className="bx bx-check"></i> Analytics overview</li> */}
+                <li><i className="bx bx-check"></i> Organiser Dashboard</li>
+                <li ><i className="bx bx-check"></i> Attendance Management</li>
+                <li ><i className="bx bx-check"></i> Opportunity Creation</li>
               </ul>
               <button
                 className={`${styles['role-btn']} ${styles.alt}`}
@@ -80,13 +80,15 @@ export default function RoleSelect() {
               style={{ animationDelay: "300ms" }}
               onClick={goVolunteer}
             >
-              <i className="bx bx-user-check role-icon"></i>
-              <h2>I'm a Volunteer</h2>
+              {/* <i className="bx bx-user-check role-icon"></i> */}
+              <h2>I'm a Volunteer!</h2>
               <p>Discover causes, sign up fast, and track your impact.</p>
-              <ul className="perks">
-                <li><i className="bx bx-check"></i> Smart matching</li>
+              <ul className="perks" style={{ listStyle: 'none', paddingLeft: 0 }}>
                 {/* <li><i className="bx bx-check"></i> Calendar sync</li> */}
-                <li><i className="bx bx-check"></i> Impact logbook</li>
+                <li><i className="bx bx-check"></i >Community Forum</li>
+               <li><i className="bx bx-check"></i> Goal Setting</li>
+              <li><i className="bx bx-check"></i> Impact Analytics</li>
+
               </ul>
               <button
                 className={styles['role-btn']}

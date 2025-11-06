@@ -78,7 +78,7 @@
 
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.25rem;
   padding: 0.25rem;
 }
@@ -125,11 +125,23 @@
   background: linear-gradient(180deg, #eee, #f7f7f7);
 }
 
+/* Set background for default image container */
+.card-image:has(img[src*="default-opportunity"]) {
+  background: #f8f9fa;
+}
+
 .card-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+/* Add padding for default opportunity image */
+.card-image img[src*="default-opportunity"] {
+  object-fit: contain;
+  padding: 2rem;
+  background-color: #f8f9fa;
 }
 
 .card-content {
@@ -177,55 +189,55 @@
 }
 
 .category-tag {
-  color: #fff;
-  padding: 0.45rem 0.95rem;
-  font-size: 0.92rem;
-  border-radius: 10px;
-  display: inline-flex;
-  align-items: center;
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  z-index: 10;
+    align-items: center;
+    border-radius: 16px;
+    color: #fff;
+    display: inline-flex;
+    font-size: .92rem;
+    left: 10px;
+    padding: .3rem .4rem;
+    position: absolute;
+    top: 10px;
+    z-index: 10;
 }
 
 .category-animal {
-  background-color: #f3ce8eea;
+  background-color: #f3ce8e;
   color: #333;
 }
 
 .category-children {
-  background-color: #f5b8d7e5;
+  background-color: #f5b8d7;
   color: #333;
 }
 
 .category-elderly {
-  background-color: #f5b69fe0;
+  background-color: #f5b69f;
   color: #333;
 }
 
 .category-environment {
-  background-color: #8eecbde7;
+  background-color: #8eecbd;
   color: #333;
 }
 
 .category-event-support {
-  background-color: #9dc0f7e5;
+  background-color: #9dc0f7;
   color: #333;
 }
 
 .category-mental-health {
-  background-color: #fcb3b3f1;
+  background-color: #fcb3b3;
   color: #333;
 }
 
 .category-pwds {
-  background-color: #afb0f1f1;
+  background-color: #afb0f1;
   color: #333;
 }
 
 .category-general {
-  background-color: #106db9ef;
+  background-color: #106db9;
   color: #fff;
 }
 
@@ -246,7 +258,7 @@
 
 @media (max-width:420px) {
   .card-footer {
-    flex-direction: column;
+    flex-direction: row;
     align-items: stretch;
     gap: 0.6rem
   }
@@ -272,8 +284,86 @@
 
   .filters select,
   .filters input[type="date"] {
-    min-width: 140px
+    min-width: 140px;
+    width: 100%;
   }
+}
+
+@media (max-width: 480px) {
+  .filters .group-left,
+  .filters .group-right {
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+
+  .filters button,
+  .reset-btn {
+    width: 100%; /* full-width buttons */
+    min-width: auto;
+  }
+}
+
+/* Fix date filter overflow for very small screens */
+@media (max-width: 400px) {
+  .date-filter {
+    flex-direction: row;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .date-filter label {
+    width: 100%;
+  }
+
+  .date-filter input[type="date"] {
+    width: 100%;
+    min-width: auto;
+  }
+}
+
+@media (max-width: 400px) {
+  .filters {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .filters .group-left,
+  .filters .group-right {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .filters .group-right {
+    justify-content: flex-start; /* Align the reset button to left instead of far right */
+  }
+
+  .reset-btn {
+    margin-left: 0; /* remove extra spacing */
+    flex-shrink: 0; /* avoid shrinking */
+  }
+}
+
+
+/* info item */
+/* Opportunities.module.css */
+.info-item {
+  display: flex;
+  align-items: flex-start; /* align icon with first line of text */
+  margin-bottom: 6px; /* optional spacing */
+}
+
+.info-icon {
+  flex-shrink: 0; /* prevent icon from shrinking */
+  width: 24px; /* fixed width for alignment */
+  display: inline-flex;
+  justify-content: center;
+  margin-right: 8px;
+}
+
+.info-text {
+  flex: 1; /* allow text to wrap */
 }
 
 
@@ -382,10 +472,23 @@
   min-width: 250px
 }
 
+/* Set background for default image in modal */
+.modal-left:has(img[src*="default-opportunity"]) {
+  background: #f8f9fa;
+  border-radius: 10px;
+}
+
 .modal-large-image {
   width: 100%;
   border-radius: 10px;
   object-fit: cover
+}
+
+/* Add padding for default opportunity image in modal */
+.modal-large-image[src*="default-opportunity"] {
+  object-fit: contain;
+  padding: 2rem;
+  background-color: #f8f9fa;
 }
 
 .modal-right {

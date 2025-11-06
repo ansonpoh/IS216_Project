@@ -147,30 +147,24 @@ export default function Analytics() {
       const heatmap = new window.google.maps.visualization.HeatmapLayer({
         data: heatmapPoints,
         radius: 50,
-        // dissipating: true,
+        dissipating: true,
         opacity: 0.7,
-        maxIntensity: 10
       });
+
+      const rainbowGradient = [
+        "rgba(0, 0, 255, 0)",     
+        "rgba(0, 0, 255, 1)",     
+        "rgba(0, 255, 255, 1)",   
+        "rgba(0, 255, 0, 1)",     
+        "rgba(255, 255, 0, 1)",   
+        "rgba(255, 165, 0, 1)",   
+        "rgba(255, 0, 0, 1)"    
+      ];
+
+      heatmap.set("gradient", rainbowGradient);
 
       heatmap.setMap(map);
       heatmapRef.current = heatmap;
-
-      heatmap.set('gradient', [
-        'rgba(0, 255, 255, 0)',
-        'rgba(0, 255, 255, 1)',
-        'rgba(0, 191, 255, 1)',
-        'rgba(0, 127, 255, 1)',
-        'rgba(0, 63, 255, 1)',
-        'rgba(0, 0, 255, 1)',
-        'rgba(0, 0, 223, 1)',
-        'rgba(0, 0, 191, 1)',
-        'rgba(0, 0, 159, 1)',
-        'rgba(0, 0, 127, 1)',
-        'rgba(63, 0, 91, 1)',
-        'rgba(127, 0, 63, 1)',
-        'rgba(191, 0, 31, 1)',
-        'rgba(255, 0, 0, 1)'
-      ]);
     };
 
     loadGoogleMaps();
@@ -185,7 +179,7 @@ export default function Analytics() {
             <Title text="See What's Hot!" />
           </div>
           <div className="row g-3 mb-4">
-            <div className="col-lg-12">
+            <div className="col-lg-6 col-md-12">
               <TiltDiv style={{ height: '100%', borderRadius: '1rem', overflow: 'hidden' }}>
                 <section className={styles.section}>
                   <h2>Category Popularity</h2>
@@ -193,7 +187,7 @@ export default function Analytics() {
                     <BarChart data={categoryData}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="category" />
-                      <YAxis />
+                      <YAxis allowDecimals={false}/>
                       <Tooltip />
                       <Bar dataKey="signup_count" fill="#82ca9d" name="Total Signups"/>
                     </BarChart>
@@ -207,7 +201,7 @@ export default function Analytics() {
               </TiltDiv>
             </div> */}
 
-            <div className="col-lg-4">
+            <div className="col-lg-6 col-md-12">
                 <TiltDiv style={{ height: '100%', borderRadius: '1rem', overflow: 'hidden' }}>
                   <section className={styles.section}>
                     <h2>Regional Popularity</h2>
@@ -216,7 +210,7 @@ export default function Analytics() {
                       <BarChart data={regionData}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="region" />
-                        <YAxis />
+                        <YAxis allowDecimals={false}/>
                         <Tooltip />
                         <Bar dataKey="signup_count" fill="#8884d8" name="Total Signups"/>
                       </BarChart>
@@ -224,7 +218,7 @@ export default function Analytics() {
                   </section>
                 </TiltDiv>
               </div>
-              <div className="col-lg-8">
+              <div className="col-12">
                 <TiltDiv style={{ height: '100%', borderRadius: '1rem', overflow: 'hidden' }}>
                   <section className={styles.section}>
                     <h2>Regional Popularity Heatmap</h2>

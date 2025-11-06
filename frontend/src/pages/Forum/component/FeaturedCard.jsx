@@ -12,7 +12,7 @@ export default function FeaturedCard({
   created_at = "",
   image = null,
   likes = 0,
-  liked_by_user = "",
+  liked_by_user,
   onClick,
 }) {
   const navigate = useNavigate();
@@ -53,7 +53,11 @@ export default function FeaturedCard({
         </small>
         <div className="d-flex align-items-center">
           {/* <i className="bi bi-heart me-1"></i> */}
-          <span aria-hidden="true" className="me-1" style={{ fontSize: '1rem' }}>💖</span>
+          {liked_by_user ? (
+            <span aria-hidden="true" className="me-1" style={{ fontSize: '1rem' }}>💖</span>
+          ) : (
+            <span aria-hidden="true" className="me-1" style={{ fontSize: '1rem' }}>♡</span>
+          )}
           <small>{likes}</small>
         </div>
       </div>

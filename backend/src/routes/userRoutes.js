@@ -9,7 +9,7 @@ router.get("/check_email", check_if_user_email_in_use_handler);
 router.get("/get_all_users", get_all_users_handler);
 router.get("/get_user_by_id", get_user_by_id_handler);
 
-router.post("/complete_registration", upload.none(), complete_registration_handler);
+router.post("/complete_registration", upload.single("profile_image"), complete_registration_handler);
 router.post("/login", login_user_handler);
 
 router.post("/update_profile", upload.single("avatar"), update_user_info_handler);

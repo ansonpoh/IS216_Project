@@ -103,7 +103,11 @@ const PostModal = ({ post, onClose, onLike }) => {
               }}
               onClick={() => onLike(post.feedback_id, post.liked_by_user)}
             >
-              <i className={`bi ${post.liked_by_user ? "bi-heart-fill" : "bi-heart"}`}></i>
+              {post.liked_by_user ? (
+                <span aria-hidden="true">💖</span>
+              ) : (
+                <span aria-hidden="true">♡</span>
+              )}
               {post.like_count || 0}
             </button>
 

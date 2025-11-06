@@ -236,6 +236,8 @@ export default function Opportunity() {
 
           <div className={styles.filters}>
             <div className={styles['group-left']}>
+              <div className={styles['date-filter']}>
+
               <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} aria-label="Filter by category">
                 <option value="">All Categories</option>
                 {categories.map((catObj, idx) => (
@@ -254,6 +256,8 @@ export default function Opportunity() {
                 ))}
               </select>
             </div>
+          </div>
+            
 
             <div className={styles['group-right']}>
               <div className={styles['date-filter']}>
@@ -284,7 +288,7 @@ export default function Opportunity() {
               filteredOpportunities.map((op) => (
                 <div className={styles['event-card']} key={op.event_id} onClick={() => { setShowModal(true); setSelectedOpportunity(op); }}>
                   <div className={styles['card-image']}>
-                    {op.image_url && <img src={op.image_url} alt={op.title} />}
+                    <img src={op.image_url || '/images/default-opportunity.svg'} alt={op.title} />
                     {/* <span className={`${styles['status-badge']} ${styles[op.status]}`}>{op.status}</span> */}
                   </div>
 
@@ -293,20 +297,23 @@ export default function Opportunity() {
                     <p className="text-muted">{op.org_name}</p>
                     <p>{op.description}</p>
                     <div className={styles['card-info']}>
-                      <p>
-                        <span aria-hidden="true" style={{ marginRight: "5px" }}>📍</span>
+                      <div className={styles['info-item']}>
+                        <span className={styles['info-icon']} aria-hidden="true">📍</span>
                         <span className={styles['info-text']}>{op.location || "N/A"}</span>
-                      </p>
-                      <p>
-                        <span aria-hidden="true" style={{ marginRight: "7px" }}>📅</span>
+                      </div>
+
+                      <div className={styles['info-item']}>
+                        <span className={styles['info-icon']} aria-hidden="true">📅</span>
                         <span className={styles['info-text']}>
                           {formatDate(op.start_date)} - {formatTime(op.start_time)} - {formatTime(op.end_time)}
                         </span>
-                      </p>
-                      <p>
-                        <span aria-hidden="true" style={{ marginRight: "5px" }}>👤</span>
-                        Capacity: {op.capacity ?? "N/A"}
-                      </p>
+                      </div>
+
+                      <div className={styles['info-item']}>
+                        <span className={styles['info-icon']} aria-hidden="true">👤</span>
+                        <span className={styles['info-text']}>Capacity: {op.capacity ?? "N/A"}</span>
+                      </div>
+
                     </div>
                   </div>
 
@@ -336,7 +343,7 @@ export default function Opportunity() {
                 <div className={styles["modal-content-row"]}>
                   <div className={styles["modal-left"]}>
                     <img
-                      src={selectedOpportunity.image_url}
+                      src={selectedOpportunity.image_url || '/images/default-opportunity.svg'}
                       alt={selectedOpportunity.title}
                       className={styles["modal-large-image"]}
                     />

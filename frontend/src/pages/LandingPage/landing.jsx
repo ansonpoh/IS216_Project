@@ -686,7 +686,7 @@ export default function Landing() {
                   {/* Secondary CTA */}
                   <button
                     className="btn btn-primary btn-lg custom-btn-primary d-flex align-items-center gap-2 fw-semibold hover-scale-105"
-                    onClick={() => navigate("/opportunities")}
+                    onClick={() => navigate("/opportunity")}
                   >
                     See All Opportunities
                     <BSIcon name="arrow-right" className="ms-2" />
@@ -699,7 +699,7 @@ export default function Landing() {
                 <div
                   className={`${styles.mapCard} bg-white rounded-4 border border-gray-100 w-100 position-relative p-0`}
                   style={{ maxWidth: 600, cursor: "pointer" }}
-                  onClick={() => navigate("/opportunities")}
+                  onClick={() => navigate("/opportunity")}
                   aria-label="Open opportunities listing"
                   role="button"
                 >
