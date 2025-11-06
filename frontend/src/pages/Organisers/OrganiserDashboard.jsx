@@ -205,7 +205,7 @@ const sortOptions = [
     setShowModal(true);
     setLoadingModal(true);
     try {
-      const res = await axios.get(`${LOCAL_BASE}/events/get_registered_users_for_event`, {params: {event_id: event.event_id}})
+      const res = await axios.get(`${API_BASE}/events/get_registered_users_for_event`, {params: {event_id: event.event_id}})
       setRegistrations(res.data.result);
       let approved = 0;
       for(let r of res.data.result) {
@@ -227,7 +227,7 @@ const sortOptions = [
         )
       );
 
-      await axios.post(`${LOCAL_BASE}/events/update_registration_status`, {
+      await axios.post(`${API_BASE}/events/update_registration_status`, {
         user_id,
         event_id,
         status: newStatus,
