@@ -22,7 +22,8 @@
   height: min(700px, 90vh);
   max-height: 700px;
   background: #fff;
-  margin: 20px auto; /* center horizontally */
+  margin: 20px auto;
+  /* center horizontally */
   border-radius: 30px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
   overflow: hidden;
@@ -68,6 +69,7 @@
 .form-box.register {
   visibility: hidden;
 }
+
 .login_signup_container.active .form-box.register {
   visibility: visible;
 }
@@ -105,6 +107,7 @@
 .forgot-link {
   margin: -15px 0 15px;
 }
+
 .forgot-link a {
   font-size: 14.5px;
   color: #333;
@@ -134,10 +137,11 @@
   align-items: center;
   justify-content: center;
   padding: 10px;
-  border: 2px solid #e5e7eb; 
+  border: 2px solid #e5e7eb;
   border-radius: 10px;
   font-size: 24px;
-  color: #4285f4; /* Google blue as base */
+  color: #4285f4;
+  /* Google blue as base */
   background: #fff;
   margin: 8px 8px;
   transition: all 0.2s ease;
@@ -145,7 +149,8 @@
 
 
 .social-icons-btn:hover {
-  border-color: #7494ec; /* app brand */
+  border-color: #7494ec;
+  /* app brand */
   box-shadow: 0 6px 18px rgba(116, 148, 236, 0.25);
   transform: translateY(-1px);
 }
@@ -201,6 +206,7 @@
   left: 0;
   transition-delay: 1.2s;
 }
+
 .login_signup_container.active .toggle-panel.toggle-left {
   left: -50%;
   transition-delay: 0.6s;
@@ -210,6 +216,7 @@
   right: -50%;
   transition-delay: 0.6s;
 }
+
 .login_signup_container.active .toggle-panel.toggle-right {
   right: 0;
   transition-delay: 1.2s;
@@ -218,6 +225,8 @@
 .toggle-panel p {
   margin-bottom: 20px;
 }
+
+
 
 .toggle-panel .signup_btn {
   width: 160px;
@@ -228,61 +237,71 @@
 }
 
 @media screen and (max-width: 650px) {
-  /* 1️⃣ Make form-box stop sliding side-to-side */
-.form-box {
-  position: relative;           /* change from absolute */
-  right: 0 !important;          /* stop horizontal movement */
-  width: 100%;
-  height: auto;
-  max-height: none;
-  overflow: visible;
-  padding: 30px 20px 40px;
-  transition: none !important;  /* disable side-slide transition */
-}
+  .login_signup_container {
+    width: 95%;
+    height: auto;
+    min-height: calc(70vh);
+    border-radius: 16px;
+    padding-bottom: 20px;
+  }
 
-/* 2️⃣ Prevent toggle panels from overlapping or animating horizontally */
-.toggle-panel {
-  position: relative;           /* change from absolute */
-  width: 100%;
-  height: auto;
-  text-align: center;
-  padding: 20px 10px;
-  transition: none !important;
-}
+  .form-box {
+    bottom: 0;
+    width: 100%;
+    height: auto;
+  }
 
-.toggle-panel.toggle-left,
-.toggle-panel.toggle-right {
-  left: 0;
-  right: 0;
-  top: auto;
-  bottom: auto;
-}
+  .login_signup_container.active .form-box {
+    right: 0;
+    bottom: 30%;
+  }
 
-/* 3️⃣ Disable background shape movement on mobile (optional but recommended) */
-.toggle-box::before {
-  display: none; /* hides the big blue oval so content doesn’t look broken */
-}
+  .toggle-box::before {
+    left: 0;
+    top: -270%;
+    width: 100%;
+    height: 300%;
+    border-radius: 20vw;
+  }
 
-/* 4️⃣ Keep the container stacked naturally */
-.login_signup_container {
-  flex-direction: column;
-  height: auto;
-  overflow: visible;
-}
+  .login_signup_container.active .toggle-box::before {
+    left: 0;
+    top: 70%;
+  }
 
+  .login_signup_container.active .toggle-panel.toggle-left {
+    left: 0;
+    top: -30%;
+  }
+
+  .toggle-panel {
+    width: 100%;
+    height: 30%;
+  }
+
+  .toggle-panel.toggle-left {
+    top: 0;
+  }
+
+  .toggle-panel.toggle-right {
+    right: 0;
+    bottom: -30%;
+  }
+
+  .login_signup_container.active .toggle-panel.toggle-right {
+    bottom: 0;
+  }
 }
 
 @media screen and (max-width: 400px) {
-  .login_signup_container h1 {
-    font-size: 28px;
+  .form-box {
+    padding: 20px;
   }
 
-  .toggle-panel p {
-    font-size: 13px;
-    padding: 0 10px;
+  .toggle-panel h1 {
+    font-size: 30px;
   }
 }
-
 
 .modalOverlay {
   position: fixed;
@@ -311,11 +330,23 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideUp {
-  from { transform: translateY(30px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }

@@ -1035,7 +1035,7 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
           title="Show nearby opportunities"
           style={{
             top: '10px',
-            left: '200.5px',
+            left: '174px',
             zIndex: 1000,
             backgroundColor: showNearbyOnly ? 'rgb(113, 113, 232)' : 'rgb(159, 159, 233)',
             border: showNearbyOnly ? '2px solid rgb(80, 80, 200)' : '2px solid rgba(113, 113, 232, 1)',
@@ -1060,7 +1060,7 @@ const MapContainer = React.forwardRef(({ activeFilters = [], onResetFilters, rec
           className="position-absolute"
           style={{
             top: '10px',
-            left: '246.5px',
+            left: '220px',
             zIndex: 1000,
             background: 'rgb(159, 159, 233)',
             borderRadius: '20px',
