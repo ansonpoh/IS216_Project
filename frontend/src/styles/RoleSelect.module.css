@@ -72,16 +72,16 @@
   padding:.75rem 1rem;
   font-weight:700;
   color:#ffffff;
-  background:linear-gradient(180deg,#9cc1ff,#5b8cff);
-  box-shadow:0 8px 22px rgba(91,140,255,.35);
+  background:linear-gradient(180deg, #7494ec);
+  box-shadow:0 8px 22px rgba(62, 98, 182, 0.35);
   transition:transform .12s,box-shadow .16s;
 }
 .role-btn:hover{
   transform:translateY(-2px);
 }
 .role-btn.alt{
-  background:linear-gradient(180deg,#37b180,#32b361);
-  box-shadow:0 8px 22px rgba(20, 116, 55, 0.35);
+  background:linear-gradient(180deg,rgb(121, 198, 150));
+  box-shadow:0 8px 22px rgba(28, 91, 51, 0.35);
 }
 
 /* Ripple */
