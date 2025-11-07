@@ -80,7 +80,7 @@ Provide screenshots and captions showing how users interact with your app.
 
 3. **Interactive Map**  
    <img src="screenshots/map.png" width="600">  
-   - Users explore opportunities by region and category visually.
+   - Users explore opportunities by region and category visually. 
 
 4. **Volunteer Dashboard**  
    <img src="screenshots/dashboard_volunteer.png" width="600">  
